@@ -83,9 +83,7 @@ public class CalendarCrawling extends ListActivity {
                 startActivityForResult(in, 100);
             }
         });
-
     }
-
 
     // Edit Event Activity
     @Override
