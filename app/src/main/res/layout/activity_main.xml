@@ -14,7 +14,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Welcome to our application that allows you to navigate through Innopolis city!"
+        android:text="@string/main_text"
         android:id="@+id/textView"
         android:textAlignment="center"
         android:textSize="24dp"
@@ -43,4 +43,15 @@
         android:id="@+id/button2"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Check Wi-FI"
+        android:id="@+id/button3"
+        android:layout_marginTop="33dp"
+        android:layout_below="@+id/button2"
+        android:layout_centerHorizontal="true"
+        android:onClick="openWiFi"
+        />
 </RelativeLayout>

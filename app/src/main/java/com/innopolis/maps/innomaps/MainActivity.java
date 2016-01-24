@@ -17,4 +17,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
     }
+
+    public void openWiFi(View view) {
+        Intent intent = new Intent(this, WiFiActivity.class);
+        startActivity(intent);
+    }
 }

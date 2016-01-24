@@ -5,6 +5,7 @@
     <string name="legal_info">Legal Info</string>
     <string name="no_demos">No demos</string>
     <string name="play_services_not_installed">Google Play services is not installed on this device.</string>
+    <string name="main_text">Welcome to our application that allows you to navigate through Innopolis city!</string>
 
     <string name="alpha">Alpha</string>
     <string name="animate">Animate</string>
