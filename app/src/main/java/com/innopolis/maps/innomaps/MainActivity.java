@@ -22,4 +22,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, WiFiActivity.class);
         startActivity(intent);
     }
+
+    public void openEvents(View view){
+        Intent intent = new Intent(this, Events.class);
+        startActivity(intent);
+    }
 }
