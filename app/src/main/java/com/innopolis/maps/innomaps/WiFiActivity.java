@@ -71,7 +71,6 @@ public class WiFiActivity extends AppCompatActivity implements View.OnClickListe
         list.clear();
         wifi.startScan();
 
-        Toast.makeText(this, "Scanning....", Toast.LENGTH_SHORT).show();
         try {
             size = size - 1;
             while (size >= 0) {

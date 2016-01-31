@@ -73,6 +73,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
+
         mSettings = mMap.getUiSettings();
         mSettings.setZoomControlsEnabled(true);
         mMap.setMyLocationEnabled(true);
