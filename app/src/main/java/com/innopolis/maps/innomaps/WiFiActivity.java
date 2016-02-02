@@ -53,17 +53,6 @@ public class WiFiActivity extends AppCompatActivity implements View.OnClickListe
                 size = results.size();
             }
         }, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-
-        /*for (ScanResult scanResult : wifiList) {
-            int level = WifiManager.calculateSignalLevel(scanResult.level, 5);
-            TextView view = (TextView) findViewById(R.id.textView2);
-            view.setText("Level is " + level + " out of 5");
-        }
-
-        int rssi = wifi.getConnectionInfo().getRssi();
-        int level = WifiManager.calculateSignalLevel(rssi, 5);
-        TextView view1 = (TextView) findViewById(R.id.textView3);
-        view1.setText("Level is " + level + " out of 5");*/
     }
 
     @Override

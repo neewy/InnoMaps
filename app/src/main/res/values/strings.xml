@@ -7,6 +7,8 @@
     <string name="play_services_not_installed">Google Play services is not installed on this device.</string>
     <string name="main_text">Welcome to our application that allows you to navigate through Innopolis city!</string>
 
+    <string name="currentHashJson">9a207e71e4d6689c3a1c58df863ef663</string>
+
     <string name="alpha">Alpha</string>
     <string name="animate">Animate</string>
     <string name="basic_map_demo_label">Basic Map</string>
