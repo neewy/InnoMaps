@@ -28,6 +28,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private UiSettings mSettings;
+    private Marker markerFrom;
+    private Marker markerTo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,9 +87,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMapLongClick(LatLng point) {
+        // TODO: remove all deprecated calls
         Log.i("luckychess", "Long click detected");
-        // TODO: remove deprecated method call
+        if (markerFrom == null) {
+            markerFrom = addMarker(new LatLng(mMap.getMyLocation().getLatitude(), mMap.getMyLocation().getLongitude()));
+        }
+        if (markerTo != null) {
+            markerTo.remove();
+        }
+        markerTo = addMarker(point);
         PathFinder pathToPoint = new PathFinder(new LatLng(mMap.getMyLocation().getLatitude(), mMap.getMyLocation().getLongitude()), point);
-        
+
+    }
+
+    private Marker addMarker(LatLng point) {
+        return mMap.addMarker(new MarkerOptions().position(point));
     }
 }
