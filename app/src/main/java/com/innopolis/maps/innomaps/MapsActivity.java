@@ -97,7 +97,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         markerTo = addMarker(point);
         PathFinder pathToPoint = new PathFinder(new LatLng(mMap.getMyLocation().getLatitude(), mMap.getMyLocation().getLongitude()), point);
-
+        pathToPoint.findPath();
     }
 
     private Marker addMarker(LatLng point) {
