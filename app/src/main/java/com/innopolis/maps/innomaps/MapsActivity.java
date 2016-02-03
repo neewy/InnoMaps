@@ -10,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -20,9 +21,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener, ActivityCompat.OnRequestPermissionsResultCallback, GoogleMap.OnMapLongClickListener {
 
     private GoogleMap mMap;
     private UiSettings mSettings;
@@ -52,6 +54,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public boolean onMyLocationButtonClick() {
         Toast.makeText(this, "MyLocation button clicked", Toast.LENGTH_SHORT).show();
+        // TODO: remove deprecated method call
         Location myLocation = mMap.getMyLocation();
         LatLng myLatLng = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
         CameraPosition myPosition = new CameraPosition.Builder().target(myLatLng).zoom(17).bearing(90).build();
@@ -77,5 +80,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mSettings = mMap.getUiSettings();
         mSettings.setZoomControlsEnabled(true);
         mMap.setMyLocationEnabled(true);
+        mMap.setOnMapLongClickListener(this);
+    }
+
+    @Override
+    public void onMapLongClick(LatLng point) {
+        Log.i("luckychess", "Long click detected");
+        // TODO: remove deprecated method call
+        PathFinder pathToPoint = new PathFinder(new LatLng(mMap.getMyLocation().getLatitude(), mMap.getMyLocation().getLongitude()), point);
+        
     }
 }
