@@ -1,0 +1,856 @@
+{
+  "kind": "calendar#events",
+  "etag": "\"1453888801154000\"",
+  "summary": "Innopolis Events Calendar",
+  "description": "Календарь обязательных и факультативных занятий",
+  "updated": "2016-01-27T10:00:01.154Z",
+  "timeZone": "Europe/Moscow",
+  "accessRole": "reader",
+  "defaultReminders": [],
+  "nextSyncToken": "CNDHpOzdycoCEAAYAQ==",
+  "items": [
+    {
+      "kind": "calendar#event",
+      "etag": "\"2882721630926000\"",
+      "id": "9450bafv2ldjgeltbo705ruf1c",
+      "status": "confirmed",
+      "htmlLink": "https://calendar.google.com/calendar/event?eid=OTQ1MGJhZnYybGRqZ2VsdGJvNzA1cnVmMWNfMjAxNTA4MzFUMTYzMDAwWiBodnR1c25mbXFiZzl1MnA1cm5jMXJ2aGRmZ0Bn",
+      "created": "2015-08-29T18:26:00.000Z",
+      "updated": "2015-09-04T10:00:15.463Z",
+      "summary": "Chinese club",
+      "creator": {
+        "email": "muradmagomedow@gmail.com",
+        "displayName": "Murad Magomedov"
+      },
+      "organizer": {
+        "email": "hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com",
+        "displayName": "Innopolis Events Calendar",
+        "self": true
+      },
+      "start": {
+        "dateTime": "2015-08-31T19:30:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "end": {
+        "dateTime": "2015-08-31T20:30:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;COUNT=20;BYDAY=MO"
+      ],
+      "iCalUID": "9450bafv2ldjgeltbo705ruf1c@google.com",
+      "sequence": 1
+    },
+    {
+      "kind": "calendar#event",
+      "etag": "\"2882736800642000\"",
+      "id": "kpn21aumltdqea0pkojmqpvla0",
+      "status": "confirmed",
+      "htmlLink": "https://calendar.google.com/calendar/event?eid=a3BuMjFhdW1sdGRxZWEwcGtvam1xcHZsYTBfMjAxNTA5MDRUMDczMDAwWiBodnR1c25mbXFiZzl1MnA1cm5jMXJ2aGRmZ0Bn",
+      "created": "2015-08-31T17:52:05.000Z",
+      "updated": "2015-09-04T12:06:40.321Z",
+      "summary": "Китайский",
+      "description": "Китайский язык",
+      "location": "312",
+      "creator": {
+        "email": "katarinaush@gmail.com",
+        "displayName": "Katia Ushakova"
+      },
+      "organizer": {
+        "email": "hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com",
+        "displayName": "Innopolis Events Calendar",
+        "self": true
+      },
+      "start": {
+        "dateTime": "2015-09-04T10:30:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "end": {
+        "dateTime": "2015-09-04T11:30:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;COUNT=20;BYDAY=FR"
+      ],
+      "iCalUID": "kpn21aumltdqea0pkojmqpvla0@google.com",
+      "sequence": 1
+    },
+    {
+      "kind": "calendar#event",
+      "etag": "\"2907281361216000\"",
+      "id": "gmhk5g0rf3tjvqb06ijjrng6f8",
+      "status": "confirmed",
+      "htmlLink": "https://calendar.google.com/calendar/event?eid=Z21oazVnMHJmM3RqdnFiMDZpampybmc2ZjhfMjAxNTA4MjVUMTUwMDAwWiBodnR1c25mbXFiZzl1MnA1cm5jMXJ2aGRmZ0Bn",
+      "created": "2015-08-25T22:05:00.000Z",
+      "updated": "2016-01-24T13:04:40.608Z",
+      "summary": "French club",
+      "creator": {
+        "email": "efnikolaev@gmail.com",
+        "displayName": "Евгений Николаев"
+      },
+      "organizer": {
+        "email": "hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com",
+        "displayName": "Innopolis Events Calendar",
+        "self": true
+      },
+      "start": {
+        "dateTime": "2015-08-25T18:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "end": {
+        "dateTime": "2015-08-25T19:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;UNTIL=20160112T150000Z;BYDAY=TU"
+      ],
+      "iCalUID": "gmhk5g0rf3tjvqb06ijjrng6f8@google.com",
+      "sequence": 1
+    },
+    {
+      "kind": "calendar#event",
+      "etag": "\"2907281388242000\"",
+      "id": "355rmltnlen1qkbresr5ofjdv8",
+      "status": "confirmed",
+      "htmlLink": "https://calendar.google.com/calendar/event?eid=MzU1cm1sdG5sZW4xcWticmVzcjVvZmpkdjhfMjAxNTA5MDZUMTMwMDAwWiBodnR1c25mbXFiZzl1MnA1cm5jMXJ2aGRmZ0Bn",
+      "created": "2015-09-02T21:17:45.000Z",
+      "updated": "2016-01-24T13:04:54.121Z",
+      "summary": "Capoeira",
+      "description": "Капоэйра — это бразильское боевое искусство, замаскированное под танец, с элементами акробатики, несущее в себе древнюю культуру, красивые песни и глубокую философию.",
+      "location": "Спорткомплекс, 3 этаж, дальний угол кардиозала (пока что)",
+      "creator": {
+        "email": "n.trshkv@gmail.com",
+        "displayName": "Nikolay Troshkov"
+      },
+      "organizer": {
+        "email": "hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com",
+        "displayName": "Innopolis Events Calendar",
+        "self": true
+      },
+      "start": {
+        "dateTime": "2015-09-06T16:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "end": {
+        "dateTime": "2015-09-06T18:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;UNTIL=20151101T125959Z;BYDAY=SU"
+      ],
+      "iCalUID": "355rmltnlen1qkbresr5ofjdv8@google.com",
+      "sequence": 0
+    },
+    {
+      "kind": "calendar#event",
+      "etag": "\"2907281388242000\"",
+      "id": "355rmltnlen1qkbresr5ofjdv8_R20151101T130000",
+      "status": "confirmed",
+      "htmlLink": "https://calendar.google.com/calendar/event?eid=MzU1cm1sdG5sZW4xcWticmVzcjVvZmpkdjhfUjIwMTUxMTAxVDEzMDAwMF8yMDE1MTEwMVQxMzAwMDBaIGh2dHVzbmZtcWJnOXUycDVybmMxcnZoZGZnQGc",
+      "created": "2015-09-02T21:17:45.000Z",
+      "updated": "2016-01-24T13:04:54.121Z",
+      "summary": "Capoeira",
+      "description": "Капоэйра — это бразильское боевое искусство, замаскированное под танец, с элементами акробатики, несущее в себе древнюю культуру, красивые песни и глубокую философию.",
+      "location": "Спорткомплекс, 1 этаж, игровой зал",
+      "creator": {
+        "email": "n.trshkv@gmail.com",
+        "displayName": "Nikolay Troshkov"
+      },
+      "organizer": {
+        "email": "hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com",
+        "displayName": "Innopolis Events Calendar",
+        "self": true
+      },
+      "start": {
+        "dateTime": "2015-11-01T16:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "end": {
+        "dateTime": "2015-11-01T18:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;UNTIL=20160117T130000Z;BYDAY=SU"
+      ],
+      "iCalUID": "355rmltnlen1qkbresr5ofjdv8_R20151101T130000@google.com",
+      "sequence": 0
+    },
+    {
+      "kind": "calendar#event",
+      "etag": "\"2907281404216000\"",
+      "id": "vqdousu6nvj1mfn2raiih6c1lo",
+      "status": "confirmed",
+      "htmlLink": "https://calendar.google.com/calendar/event?eid=dnFkb3VzdTZudmoxbWZuMnJhaWloNmMxbG9fMjAxNTA5MDZUMTcwMDAwWiBodnR1c25mbXFiZzl1MnA1cm5jMXJ2aGRmZ0Bn",
+      "created": "2015-08-30T13:33:19.000Z",
+      "updated": "2016-01-24T13:05:02.108Z",
+      "summary": "ЧтоГдеКогда",
+      "description": "Чат мероприятия: https://telegram.me/joinchat/071f0ed9016ce76204d455936ad584dc",
+      "location": "Кафе на 3 этаже",
+      "creator": {
+        "email": "britishrum@gmail.com",
+        "displayName": "Sasha F."
+      },
+      "organizer": {
+        "email": "hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com",
+        "displayName": "Innopolis Events Calendar",
+        "self": true
+      },
+      "start": {
+        "dateTime": "2015-09-06T20:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "end": {
+        "dateTime": "2015-09-06T21:30:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;UNTIL=20160117T170000Z;BYDAY=SU"
+      ],
+      "iCalUID": "vqdousu6nvj1mfn2raiih6c1lo@google.com",
+      "sequence": 0
+    },
+    {
+      "kind": "calendar#event",
+      "etag": "\"2907281413404000\"",
+      "id": "erpctopk59co3c55prer2mdq80",
+      "status": "confirmed",
+      "htmlLink": "https://calendar.google.com/calendar/event?eid=ZXJwY3RvcGs1OWNvM2M1NXByZXIybWRxODBfMjAxNTEwMTBUMTYzMDAwWiBodnR1c25mbXFiZzl1MnA1cm5jMXJ2aGRmZ0Bn",
+      "created": "2015-10-07T11:39:33.000Z",
+      "updated": "2016-01-24T13:05:06.702Z",
+      "summary": "Enacts Innopolis",
+      "creator": {
+        "email": "1andrey.getmanskiy@gmail.com",
+        "displayName": "Andrey Getmanskiy"
+      },
+      "organizer": {
+        "email": "hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com",
+        "displayName": "Innopolis Events Calendar",
+        "self": true
+      },
+      "start": {
+        "dateTime": "2015-10-10T19:30:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "end": {
+        "dateTime": "2015-10-10T21:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;UNTIL=20160116T163000Z;BYDAY=SA"
+      ],
+      "iCalUID": "erpctopk59co3c55prer2mdq80@google.com",
+      "sequence": 1
+    },
+    {
+      "kind": "calendar#event",
+      "etag": "\"2907281428946000\"",
+      "id": "vvtkkos8ebuad4vl0fnakcm3qk",
+      "status": "confirmed",
+      "htmlLink": "https://calendar.google.com/calendar/event?eid=dnZ0a2tvczhlYnVhZDR2bDBmbmFrY20zcWtfMjAxNTA5MTFUMTUwMDAwWiBodnR1c25mbXFiZzl1MnA1cm5jMXJ2aGRmZ0Bn",
+      "created": "2015-09-08T21:16:25.000Z",
+      "updated": "2016-01-24T13:05:14.473Z",
+      "summary": "Additional English Classes",
+      "description": "Рекомендуется людям с уровнем Intermediate.\n\nПроходим грамматику с нуля.",
+      "location": "318",
+      "creator": {
+        "email": "cheshirekrab@gmail.com",
+        "displayName": "Vlad Kravchenko"
+      },
+      "organizer": {
+        "email": "hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com",
+        "displayName": "Innopolis Events Calendar",
+        "self": true
+      },
+      "start": {
+        "dateTime": "2015-09-11T18:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "end": {
+        "dateTime": "2015-09-11T19:30:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;UNTIL=20160115T150000Z;BYDAY=FR"
+      ],
+      "iCalUID": "vvtkkos8ebuad4vl0fnakcm3qk@google.com",
+      "sequence": 0
+    },
+    {
+      "kind": "calendar#event",
+      "etag": "\"2907281452260000\"",
+      "id": "sbcchnurdg4vmci52b10d6rec8",
+      "status": "cancelled",
+      "htmlLink": "https://calendar.google.com/calendar/event?eid=c2JjY2hudXJkZzR2bWNpNTJiMTBkNnJlYzhfMjAxNTA5MDlUMTQwMDAwWiBodnR1c25mbXFiZzl1MnA1cm5jMXJ2aGRmZ0Bn",
+      "created": "2015-09-08T21:15:10.000Z",
+      "updated": "2016-01-24T13:05:26.130Z",
+      "summary": "Additional English Classes",
+      "description": "Рекомендуется людям с уровнем Intermediate.\n\nПроходим грамматику с нуля.",
+      "location": "421",
+      "creator": {
+        "email": "cheshirekrab@gmail.com",
+        "displayName": "Vlad Kravchenko"
+      },
+      "organizer": {
+        "email": "hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com",
+        "displayName": "Innopolis Events Calendar",
+        "self": true
+      },
+      "start": {
+        "dateTime": "2015-09-09T17:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "end": {
+        "dateTime": "2015-09-09T18:30:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;UNTIL=20150909T135959Z;BYDAY=WE"
+      ],
+      "iCalUID": "sbcchnurdg4vmci52b10d6rec8@google.com",
+      "sequence": 0
+    },
+    {
+      "kind": "calendar#event",
+      "etag": "\"2907281452260000\"",
+      "id": "sbcchnurdg4vmci52b10d6rec8_R20150909T140000",
+      "status": "confirmed",
+      "htmlLink": "https://calendar.google.com/calendar/event?eid=c2JjY2hudXJkZzR2bWNpNTJiMTBkNnJlYzhfUjIwMTUwOTA5VDE0MDAwMF8yMDE1MDkwOVQxNDAwMDBaIGh2dHVzbmZtcWJnOXUycDVybmMxcnZoZGZnQGc",
+      "created": "2015-09-08T21:15:10.000Z",
+      "updated": "2016-01-24T13:05:26.130Z",
+      "summary": "Additional English Classes",
+      "description": "Рекомендуется людям с уровнем Intermediate.",
+      "location": "Meeting Room 2",
+      "creator": {
+        "email": "cheshirekrab@gmail.com",
+        "displayName": "Vlad Kravchenko"
+      },
+      "organizer": {
+        "email": "hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com",
+        "displayName": "Innopolis Events Calendar",
+        "self": true
+      },
+      "start": {
+        "dateTime": "2015-09-09T17:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "end": {
+        "dateTime": "2015-09-09T18:30:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;UNTIL=20160113T140000Z;BYDAY=WE"
+      ],
+      "iCalUID": "sbcchnurdg4vmci52b10d6rec8_R20150909T140000@google.com",
+      "sequence": 0
+    },
+    {
+      "kind": "calendar#event",
+      "etag": "\"2907281466974000\"",
+      "id": "i6sfausk747d6m3h1kml1o1sjg",
+      "status": "confirmed",
+      "htmlLink": "https://calendar.google.com/calendar/event?eid=aTZzZmF1c2s3NDdkNm0zaDFrbWwxbzFzamdfMjAxNTEwMjhUMTcwMDAwWiBodnR1c25mbXFiZzl1MnA1cm5jMXJ2aGRmZ0Bn",
+      "created": "2015-10-16T14:06:56.000Z",
+      "updated": "2016-01-24T13:05:33.487Z",
+      "summary": "Capoeira",
+      "description": "Капоэйра — это бразильское боевое искусство, замаскированное под танец, с элементами акробатики, несущее в себе древнюю культуру, красивые песни и глубокую философию.",
+      "location": "Спорткомплекс, 2 этаж, зал боевых искусств",
+      "creator": {
+        "email": "n.trshkv@gmail.com",
+        "displayName": "Nikolay Troshkov"
+      },
+      "organizer": {
+        "email": "hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com",
+        "displayName": "Innopolis Events Calendar",
+        "self": true
+      },
+      "start": {
+        "dateTime": "2015-10-28T20:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "end": {
+        "dateTime": "2015-10-28T22:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;UNTIL=20151030T165959Z;BYDAY=WE,FR"
+      ],
+      "iCalUID": "i6sfausk747d6m3h1kml1o1sjg@google.com",
+      "sequence": 1
+    },
+    {
+      "kind": "calendar#event",
+      "etag": "\"2907281466974000\"",
+      "id": "i6sfausk747d6m3h1kml1o1sjg_R20151030T170000",
+      "status": "confirmed",
+      "htmlLink": "https://calendar.google.com/calendar/event?eid=aTZzZmF1c2s3NDdkNm0zaDFrbWwxbzFzamdfUjIwMTUxMDMwVDE3MDAwMF8yMDE1MTAzMFQxNzAwMDBaIGh2dHVzbmZtcWJnOXUycDVybmMxcnZoZGZnQGc",
+      "created": "2015-10-16T14:06:56.000Z",
+      "updated": "2016-01-24T13:05:33.487Z",
+      "summary": "Capoeira",
+      "description": "Капоэйра — это бразильское боевое искусство, замаскированное под танец, с элементами акробатики, несущее в себе древнюю культуру, красивые песни и глубокую философию.",
+      "location": "Спорткомплекс, 1 этаж, игровой зал",
+      "creator": {
+        "email": "n.trshkv@gmail.com",
+        "displayName": "Nikolay Troshkov"
+      },
+      "organizer": {
+        "email": "hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com",
+        "displayName": "Innopolis Events Calendar",
+        "self": true
+      },
+      "start": {
+        "dateTime": "2015-10-30T20:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "end": {
+        "dateTime": "2015-10-30T22:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;UNTIL=20160115T170000Z;BYDAY=WE,FR"
+      ],
+      "iCalUID": "i6sfausk747d6m3h1kml1o1sjg_R20151030T170000@google.com",
+      "sequence": 1
+    },
+    {
+      "kind": "calendar#event",
+      "etag": "\"2907281474538000\"",
+      "id": "412l1jblpi56sttbqtg40g0kto",
+      "status": "confirmed",
+      "htmlLink": "https://calendar.google.com/calendar/event?eid=NDEybDFqYmxwaTU2c3R0YnF0ZzQwZzBrdG9fMjAxNTA5MzBUMTYzMDAwWiBodnR1c25mbXFiZzl1MnA1cm5jMXJ2aGRmZ0Bn",
+      "created": "2015-09-06T22:47:28.000Z",
+      "updated": "2016-01-24T13:05:37.269Z",
+      "summary": "Hardware/Robotics|PIRS using Lego Midstorms",
+      "creator": {
+        "email": "somalrussia@gmail.com",
+        "displayName": "Максим Соколов"
+      },
+      "organizer": {
+        "email": "hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com",
+        "displayName": "Innopolis Events Calendar",
+        "self": true
+      },
+      "start": {
+        "dateTime": "2015-09-30T19:30:00+03:00",
+        "timeZone": "Europe/Kiev"
+      },
+      "end": {
+        "dateTime": "2015-09-30T22:30:00+03:00",
+        "timeZone": "Europe/Kiev"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;UNTIL=20160113T173000Z;BYDAY=WE"
+      ],
+      "iCalUID": "412l1jblpi56sttbqtg40g0kto@google.com",
+      "sequence": 1
+    },
+    {
+      "kind": "calendar#event",
+      "etag": "\"2907281482172000\"",
+      "id": "loe1vm9j3couct19b1452qlmm4",
+      "status": "cancelled",
+      "htmlLink": "https://calendar.google.com/calendar/event?eid=bG9lMXZtOWozY291Y3QxOWIxNDUycWxtbTRfMjAxNTA5MDJUMTYzMDAwWiBodnR1c25mbXFiZzl1MnA1cm5jMXJ2aGRmZ0Bn",
+      "created": "2015-08-30T11:58:14.000Z",
+      "updated": "2016-01-24T13:05:41.086Z",
+      "summary": "GameDev | Unreal",
+      "location": "455",
+      "creator": {
+        "email": "kaskar2008@gmail.com",
+        "displayName": "Karen Kasparov"
+      },
+      "organizer": {
+        "email": "hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com",
+        "displayName": "Innopolis Events Calendar",
+        "self": true
+      },
+      "start": {
+        "dateTime": "2015-09-02T19:30:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "end": {
+        "dateTime": "2015-09-02T21:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;UNTIL=20150902T162959Z;BYDAY=SU,WE"
+      ],
+      "iCalUID": "loe1vm9j3couct19b1452qlmm4@google.com",
+      "sequence": 2
+    },
+    {
+      "kind": "calendar#event",
+      "etag": "\"2907281482172000\"",
+      "id": "loe1vm9j3couct19b1452qlmm4_R20150902T163000",
+      "status": "confirmed",
+      "htmlLink": "https://calendar.google.com/calendar/event?eid=bG9lMXZtOWozY291Y3QxOWIxNDUycWxtbTRfUjIwMTUwOTAyVDE2MzAwMF8yMDE1MDkwMlQxNjMwMDBaIGh2dHVzbmZtcWJnOXUycDVybmMxcnZoZGZnQGc",
+      "created": "2015-08-30T11:58:14.000Z",
+      "updated": "2016-01-24T13:05:41.086Z",
+      "summary": "GameDev | Unreal",
+      "location": "318",
+      "creator": {
+        "email": "kaskar2008@gmail.com",
+        "displayName": "Karen Kasparov"
+      },
+      "organizer": {
+        "email": "hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com",
+        "displayName": "Innopolis Events Calendar",
+        "self": true
+      },
+      "start": {
+        "dateTime": "2015-09-02T19:30:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "end": {
+        "dateTime": "2015-09-02T21:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;UNTIL=20160117T163000Z;BYDAY=SU,WE"
+      ],
+      "iCalUID": "loe1vm9j3couct19b1452qlmm4_R20150902T163000@google.com",
+      "sequence": 2
+    },
+    {
+      "kind": "calendar#event",
+      "etag": "\"2907281487448000\"",
+      "id": "rdva7mdua7a74o68cn1u91au14",
+      "status": "confirmed",
+      "htmlLink": "https://calendar.google.com/calendar/event?eid=cmR2YTdtZHVhN2E3NG82OGNuMXU5MWF1MTRfMjAxNTA5MDlUMTYwMDAwWiBodnR1c25mbXFiZzl1MnA1cm5jMXJ2aGRmZ0Bn",
+      "created": "2015-09-07T17:21:55.000Z",
+      "updated": "2016-01-24T13:05:43.724Z",
+      "summary": "Китайский",
+      "creator": {
+        "email": "katarinaush@gmail.com",
+        "displayName": "Katia Ushakova"
+      },
+      "organizer": {
+        "email": "hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com",
+        "displayName": "Innopolis Events Calendar",
+        "self": true
+      },
+      "start": {
+        "dateTime": "2015-09-09T19:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "end": {
+        "dateTime": "2015-09-09T20:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;UNTIL=20160113T160000Z;BYDAY=WE"
+      ],
+      "iCalUID": "rdva7mdua7a74o68cn1u91au14@google.com",
+      "sequence": 0
+    },
+    {
+      "kind": "calendar#event",
+      "etag": "\"2907281494476000\"",
+      "id": "jadm33t528n1q8ssua8qejqr6s",
+      "status": "confirmed",
+      "htmlLink": "https://calendar.google.com/calendar/event?eid=amFkbTMzdDUyOG4xcThzc3VhOHFlanFyNnNfMjAxNTA5MDhUMTcwMDAwWiBodnR1c25mbXFiZzl1MnA1cm5jMXJ2aGRmZ0Bn",
+      "created": "2015-09-08T13:34:16.000Z",
+      "updated": "2016-01-24T13:05:47.238Z",
+      "summary": "Combat Sambo",
+      "description": "чат: https://telegram.me/joinchat/BAbqZwHcaT2mSK2G-qEzVA\nвторник - день партера.\nчетверг - день борьбы.\nсуббота - день ударной техники.",
+      "location": "Спортивный комплекс, 2 этаж",
+      "creator": {
+        "email": "andrewtropin@gmail.com",
+        "displayName": "Andrew Tropin"
+      },
+      "organizer": {
+        "email": "hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com",
+        "displayName": "Innopolis Events Calendar",
+        "self": true
+      },
+      "start": {
+        "dateTime": "2015-09-08T20:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "end": {
+        "dateTime": "2015-09-08T21:30:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;UNTIL=20160116T170000Z;BYDAY=TU,TH,SA"
+      ],
+      "iCalUID": "jadm33t528n1q8ssua8qejqr6s@google.com",
+      "sequence": 0,
+      "extendedProperties": {
+        "private": {
+          "sunrise:color": "{\"hex\":\"e67e22\",\"id\":\"6\"}"
+        },
+        "shared": {
+          "sunrise:place": "{\"name\":\"Спортивный комплекс, 2 этаж\"}"
+        }
+      }
+    },
+    {
+      "kind": "calendar#event",
+      "etag": "\"2907281501348000\"",
+      "id": "2d3ttc3nu6nu3cp94qoffjd0p4",
+      "status": "confirmed",
+      "htmlLink": "https://calendar.google.com/calendar/event?eid=MmQzdHRjM251Nm51M2NwOTRxb2ZmamQwcDRfMjAxNTA5MjhUMTYzMDAwWiBodnR1c25mbXFiZzl1MnA1cm5jMXJ2aGRmZ0Bn",
+      "created": "2015-09-06T22:47:28.000Z",
+      "updated": "2016-01-24T13:05:50.674Z",
+      "summary": "Hardware/Robotics | Electives",
+      "description": "Now We read course of autonomous car",
+      "creator": {
+        "email": "somalrussia@gmail.com",
+        "displayName": "Максим Соколов"
+      },
+      "organizer": {
+        "email": "hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com",
+        "displayName": "Innopolis Events Calendar",
+        "self": true
+      },
+      "start": {
+        "dateTime": "2015-09-28T19:30:00+03:00",
+        "timeZone": "Europe/Kiev"
+      },
+      "end": {
+        "dateTime": "2015-09-28T22:30:00+03:00",
+        "timeZone": "Europe/Kiev"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;UNTIL=20160111T173000Z;BYDAY=MO"
+      ],
+      "iCalUID": "2d3ttc3nu6nu3cp94qoffjd0p4@google.com",
+      "sequence": 1
+    },
+    {
+      "kind": "calendar#event",
+      "etag": "\"2907281515632000\"",
+      "id": "o6bsicokncsldhi5m4h4i6t6vg",
+      "status": "confirmed",
+      "htmlLink": "https://calendar.google.com/calendar/event?eid=bzZic2ljb2tuY3NsZGhpNW00aDRpNnQ2dmdfMjAxNTEwMDhUMTMzMDAwWiBodnR1c25mbXFiZzl1MnA1cm5jMXJ2aGRmZ0Bn",
+      "created": "2015-09-07T17:28:07.000Z",
+      "updated": "2016-01-24T13:05:57.816Z",
+      "summary": "Enactus Innopolis",
+      "creator": {
+        "email": "1andrey.getmanskiy@gmail.com",
+        "displayName": "Andrey Getmanskiy"
+      },
+      "organizer": {
+        "email": "hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com",
+        "displayName": "Innopolis Events Calendar",
+        "self": true
+      },
+      "start": {
+        "dateTime": "2015-10-08T16:30:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "end": {
+        "dateTime": "2015-10-08T18:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;UNTIL=20160114T133000Z;BYDAY=TH"
+      ],
+      "iCalUID": "o6bsicokncsldhi5m4h4i6t6vg@google.com",
+      "sequence": 4
+    },
+    {
+      "kind": "calendar#event",
+      "etag": "\"2907281531600000\"",
+      "id": "6smbqha2f4buuptgdn7q0pdov0",
+      "status": "confirmed",
+      "htmlLink": "https://calendar.google.com/calendar/event?eid=NnNtYnFoYTJmNGJ1dXB0Z2RuN3EwcGRvdjBfMjAxNTA4MjdUMTQwMDAwWiBodnR1c25mbXFiZzl1MnA1cm5jMXJ2aGRmZ0Bn",
+      "created": "2015-08-25T21:20:00.000Z",
+      "updated": "2016-01-24T13:06:05.800Z",
+      "summary": "ICPC Inno. Экспресс-курс по java с нуля.",
+      "description": "Первая группа - экспресс-курс по java с нуля. Рекомендуется людям вообще не знающим языки программирования.\n\nВторая группа - алгоритмы. Начинать будем с самых основ.\n\nКогда?\nПервая группа - четверг, 16.30, ауд. 307\nВторая группа - четверг, 19.30, ауд. 307",
+      "location": "307",
+      "creator": {
+        "email": "muradestate@gmail.com",
+        "displayName": "Murad M"
+      },
+      "organizer": {
+        "email": "hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com",
+        "displayName": "Innopolis Events Calendar",
+        "self": true
+      },
+      "start": {
+        "dateTime": "2015-08-27T17:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "end": {
+        "dateTime": "2015-08-27T18:30:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;UNTIL=20160114T140000Z;BYDAY=TH"
+      ],
+      "transparency": "transparent",
+      "visibility": "public",
+      "iCalUID": "6smbqha2f4buuptgdn7q0pdov0@google.com",
+      "sequence": 4
+    },
+    {
+      "kind": "calendar#event",
+      "etag": "\"2907281533382000\"",
+      "id": "0k85lsabojo0l9t8b67hf7tf7c",
+      "status": "confirmed",
+      "htmlLink": "https://calendar.google.com/calendar/event?eid=MGs4NWxzYWJvam8wbDl0OGI2N2hmN3RmN2NfMjAxNTA5MDNUMTQwMDAwWiBodnR1c25mbXFiZzl1MnA1cm5jMXJ2aGRmZ0Bn",
+      "created": "2015-09-02T21:23:41.000Z",
+      "updated": "2016-01-24T13:06:06.691Z",
+      "summary": "GameDev | GameDesign",
+      "location": "455",
+      "creator": {
+        "email": "kaskar2008@gmail.com",
+        "displayName": "Karen Kasparov"
+      },
+      "organizer": {
+        "email": "hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com",
+        "displayName": "Innopolis Events Calendar",
+        "self": true
+      },
+      "start": {
+        "dateTime": "2015-09-03T17:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "end": {
+        "dateTime": "2015-09-03T18:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;UNTIL=20160114T140000Z;BYDAY=TH"
+      ],
+      "iCalUID": "0k85lsabojo0l9t8b67hf7tf7c@google.com",
+      "sequence": 0
+    },
+    {
+      "kind": "calendar#event",
+      "etag": "\"2907281537904000\"",
+      "id": "mpk79sj6uqpb8q96e4bgbhe1m4",
+      "status": "confirmed",
+      "htmlLink": "https://calendar.google.com/calendar/event?eid=bXBrNzlzajZ1cXBiOHE5NmU0YmdiaGUxbTRfMjAxNTA5MDVUMTIwMDAwWiBodnR1c25mbXFiZzl1MnA1cm5jMXJ2aGRmZ0Bn",
+      "created": "2015-08-31T06:16:08.000Z",
+      "updated": "2016-01-24T13:06:08.952Z",
+      "summary": "CTF",
+      "description": "CTF — (Capture the Flag) это командные соревнования, целью которых является оценка умения участников атаковать и защищать компьютерные системы и сети. #Информационная_безопасность, #пентест, #поиск_уязвимостей, #защита_информации, #шифрование, #криптография, #XSS, #стеганография и многое другое.",
+      "creator": {
+        "email": "muradmagomedow@gmail.com",
+        "displayName": "Murad Magomedov"
+      },
+      "organizer": {
+        "email": "hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com",
+        "displayName": "Innopolis Events Calendar",
+        "self": true
+      },
+      "start": {
+        "dateTime": "2015-09-05T15:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "end": {
+        "dateTime": "2015-09-05T17:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;UNTIL=20160116T120000Z;BYDAY=SA"
+      ],
+      "iCalUID": "mpk79sj6uqpb8q96e4bgbhe1m4@google.com",
+      "sequence": 1
+    },
+    {
+      "kind": "calendar#event",
+      "etag": "\"2907281579612000\"",
+      "id": "hvc90mghb1c1m19i52qh6usj18",
+      "status": "confirmed",
+      "htmlLink": "https://calendar.google.com/calendar/event?eid=aHZjOTBtZ2hiMWMxbTE5aTUycWg2dXNqMThfMjAxNTA4MjdUMTYzMDAwWiBodnR1c25mbXFiZzl1MnA1cm5jMXJ2aGRmZ0Bn",
+      "created": "2015-08-25T21:21:10.000Z",
+      "updated": "2016-01-24T13:06:29.806Z",
+      "summary": "ICPC Inno. Вторая группа - алгоритмы. Начинать будем с самых основ.",
+      "description": "Первая группа - экспресс-курс по java с нуля. Рекомендуется людям вообще не знающим языки программирования.\n\nВторая группа - алгоритмы. Начинать будем с самых основ.\n\nКогда?\nПервая группа - четверг, 16.30, ауд. 307\nВторая группа - четверг, 19.30, ауд. 307",
+      "creator": {
+        "email": "muradestate@gmail.com",
+        "displayName": "Murad M"
+      },
+      "organizer": {
+        "email": "hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com",
+        "displayName": "Innopolis Events Calendar",
+        "self": true
+      },
+      "start": {
+        "dateTime": "2015-08-27T19:30:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "end": {
+        "dateTime": "2015-08-27T20:30:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;UNTIL=20160114T163000Z;BYDAY=TH"
+      ],
+      "transparency": "transparent",
+      "iCalUID": "hvc90mghb1c1m19i52qh6usj18@google.com",
+      "sequence": 2
+    },
+    {
+      "kind": "calendar#event",
+      "etag": "\"2907466890636000\"",
+      "id": "9cp5ns5unm2v9mg9tj4eb8etn0",
+      "status": "confirmed",
+      "htmlLink": "https://calendar.google.com/calendar/event?eid=OWNwNW5zNXVubTJ2OW1nOXRqNGViOGV0bjBfMjAxNjAxMjJUMTcwMDAwWiBodnR1c25mbXFiZzl1MnA1cm5jMXJ2aGRmZ0Bn",
+      "created": "2016-01-25T14:50:45.000Z",
+      "updated": "2016-01-25T14:50:45.318Z",
+      "summary": "Capoeira",
+      "description": "Капоэйра — это бразильское боевое искусство, замаскированное под танец, с элементами акробатики, несущее в себе древнюю культуру, красивые песни и глубокую философию.",
+      "location": "Спорткомплекс, 2 этаж, зал боевых искусств",
+      "creator": {
+        "email": "n.trshkv@gmail.com",
+        "displayName": "Nikolay Troshkov"
+      },
+      "organizer": {
+        "email": "hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com",
+        "displayName": "Innopolis Events Calendar",
+        "self": true
+      },
+      "start": {
+        "dateTime": "2016-01-22T20:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "end": {
+        "dateTime": "2016-01-22T22:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;UNTIL=20160603T170000Z;BYDAY=WE,FR"
+      ],
+      "iCalUID": "9cp5ns5unm2v9mg9tj4eb8etn0@google.com",
+      "sequence": 0
+    },
+    {
+      "kind": "calendar#event",
+      "etag": "\"2907466976298000\"",
+      "id": "0nm2lvqspijbrq3aa89io6nshk",
+      "status": "confirmed",
+      "htmlLink": "https://calendar.google.com/calendar/event?eid=MG5tMmx2cXNwaWpicnEzYWE4OWlvNm5zaGtfMjAxNjAxMjRUMTMwMDAwWiBodnR1c25mbXFiZzl1MnA1cm5jMXJ2aGRmZ0Bn",
+      "created": "2016-01-25T14:51:28.000Z",
+      "updated": "2016-01-25T14:51:28.149Z",
+      "summary": "Capoeira",
+      "description": "Капоэйра — это бразильское боевое искусство, замаскированное под танец, с элементами акробатики, несущее в себе древнюю культуру, красивые песни и глубокую философию.",
+      "location": "Спорткомплекс, 2 этаж, зал боевых искусств",
+      "creator": {
+        "email": "n.trshkv@gmail.com",
+        "displayName": "Nikolay Troshkov"
+      },
+      "organizer": {
+        "email": "hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com",
+        "displayName": "Innopolis Events Calendar",
+        "self": true
+      },
+      "start": {
+        "dateTime": "2016-01-24T16:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "end": {
+        "dateTime": "2016-01-24T18:00:00+03:00",
+        "timeZone": "Europe/Moscow"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;UNTIL=20160605T130000Z;BYDAY=SU"
+      ],
+      "iCalUID": "0nm2lvqspijbrq3aa89io6nshk@google.com",
+      "sequence": 0
+    }
+  ]
+}

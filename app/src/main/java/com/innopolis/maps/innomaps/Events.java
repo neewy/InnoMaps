@@ -9,9 +9,12 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
@@ -38,8 +41,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Events extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
-
+public class Events extends android.support.v4.app.Fragment implements SwipeRefreshLayout.OnRefreshListener {
+    static Context context;
     ListView listView;
     static ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
     SimpleAdapter adapter;
@@ -49,36 +52,38 @@ public class Events extends AppCompatActivity implements SwipeRefreshLayout.OnRe
     SharedPreferences sPref;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_events);
-        listView = (ListView) findViewById(R.id.eventList);
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //FragmentManager fragmentManager = getFragmentManager();
+        context = getActivity().getApplicationContext();
+        View view = inflater.inflate(R.layout.events, container, false);
+        listView = (ListView) view.findViewById(R.id.eventList);
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
-        this.adapter = new SimpleAdapter(Events.this, list, R.layout.single_event, new String[]{"summary", "creator_name", "location", "timeLeft"}, new int[]{R.id.nameEvent, R.id.creator, R.id.descEvent, R.id.timeLeft});
+        this.adapter = new SimpleAdapter(context, list, R.layout.single_event, new String[]{"summary", "creator_name", "location", "timeLeft"}, new int[]{R.id.nameEvent, R.id.creator, R.id.descEvent, R.id.timeLeft});
         listView.setAdapter(this.adapter);
         swipeRefreshLayout.post(new Runnable() {
                                     @Override
                                     public void run() {
                                         swipeRefreshLayout.setRefreshing(true);
-                                        dbHelper = new DBHelper(Events.this);
+                                        dbHelper = new DBHelper(context);
                                         database = dbHelper.getWritableDatabase();
                                         onRefresh();
                                     }
                                 }
         );
+        return view;
     }
 
     @Override
     public void onRefresh() {
-        dbHelper = new DBHelper(this);
+        dbHelper = new DBHelper(context);
         database = dbHelper.getWritableDatabase();
 
-        sPref = getPreferences(MODE_PRIVATE);
+        sPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String savedText = sPref.getString("updated", "");
 
         if (isNetworkAvailable()) {
-            Toast.makeText(this, "Getting new events", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Getting new events", Toast.LENGTH_SHORT).show();
             try {
                 new ParseTask().execute().get();
             } catch (InterruptedException e) {
@@ -87,13 +92,14 @@ public class Events extends AppCompatActivity implements SwipeRefreshLayout.OnRe
                 e.printStackTrace();
             }
         } else if (!isNetworkAvailable() && !savedText.equals("")) {
-            Toast.makeText(this, "You are offline. Showing last events", Toast.LENGTH_SHORT).show();
+            list.clear();
+            Toast.makeText(context, "You are offline. Showing last events", Toast.LENGTH_SHORT).show();
             readEvents(list);
             adapter.notifyDataSetChanged();
             database.close();
             swipeRefreshLayout.setRefreshing(false);
         } else if (!isNetworkAvailable() && savedText.equals("")) {
-            Toast.makeText(this, "Connect to the internet", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Connect to the internet", Toast.LENGTH_SHORT).show();
             swipeRefreshLayout.setRefreshing(false);
             database.close();
         }
@@ -138,7 +144,7 @@ public class Events extends AppCompatActivity implements SwipeRefreshLayout.OnRe
                 list.add(item);
             } while (cursor.moveToNext());
         } else
-            Toast.makeText(Events.this, "No current events", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "No current events", Toast.LENGTH_SHORT).show();
         cursor.close();
     }
 
@@ -223,7 +229,7 @@ public class Events extends AppCompatActivity implements SwipeRefreshLayout.OnRe
 
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
@@ -275,7 +281,7 @@ public class Events extends AppCompatActivity implements SwipeRefreshLayout.OnRe
         }
 
         protected boolean jsonUpdated(String updatedKey) {
-            sPref = getPreferences(MODE_PRIVATE);
+            sPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
             String savedText = sPref.getString("updated", "");
             if (savedText.equals(updatedKey)) {
                 return false;
@@ -300,6 +306,7 @@ public class Events extends AppCompatActivity implements SwipeRefreshLayout.OnRe
                     for (int i = 0; i < events.length(); i++) {
                         JSONObject jsonEvent = events.getJSONObject(i);
                         String summary, htmlLink, start, end, location, id, description, creator_name, creator_email = null;
+                        //TODO: Eliminate hardcode with keys collection in JSONObject
                         try {
                             summary = (jsonEvent.getString("summary") != null) ? jsonEvent.getString("summary") : "";
                         } catch (JSONException e) {
@@ -350,7 +357,7 @@ public class Events extends AppCompatActivity implements SwipeRefreshLayout.OnRe
                     }
                     readEvents(list);
                 } else {
-                    Toast.makeText(Events.this, "You've got the last events", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context , "You've got the last events", Toast.LENGTH_SHORT).show();
                     readEvents(list);
                 }
 
@@ -363,3 +370,4 @@ public class Events extends AppCompatActivity implements SwipeRefreshLayout.OnRe
         }
     }
 }
+

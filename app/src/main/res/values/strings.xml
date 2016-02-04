@@ -1,13 +1,20 @@
 <resources>
     <string name="app_name">InnoMaps</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="action_logout">Log out</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">
+        AIzaSyBtYaL2aDAeDqcnwGCED4Tp1QbRYtJjoSg
+    </string>
     <string name="title_activity_maps">Map</string>
     <string name="demo_title">Google Maps API Demos</string>
     <string name="legal_info">Legal Info</string>
     <string name="no_demos">No demos</string>
     <string name="play_services_not_installed">Google Play services is not installed on this device.</string>
     <string name="main_text">Welcome to our application that allows you to navigate through Innopolis city!</string>
-
-    <string name="currentHashJson">9a207e71e4d6689c3a1c58df863ef663</string>
 
     <string name="alpha">Alpha</string>
     <string name="animate">Animate</string>

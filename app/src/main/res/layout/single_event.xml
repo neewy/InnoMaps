@@ -16,7 +16,9 @@
         android:layout_alignLeft="@+id/favbutton"
         android:layout_alignStart="@+id/favbutton"
         android:layout_alignBottom="@+id/nameEvent"
-        android:layout_alignTop="@+id/nameEvent" />
+        android:layout_alignTop="@+id/nameEvent"
+        android:textColor="@android:color/tertiary_text_dark"
+        />
 
     <TextView
         android:layout_width="360dp"
@@ -29,7 +31,8 @@
         android:singleLine="true"
         android:layout_marginTop="5dp"
         android:layout_marginLeft="10dp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textColor="@android:color/tertiary_text_dark"/>
 
     <TextView
         android:layout_width="246dp"
@@ -43,7 +46,8 @@
         android:ellipsize="end"
         android:singleLine="true"
         android:maxLength="25"
-        android:layout_marginLeft="10dp" />
+        android:layout_marginLeft="10dp"
+        android:textColor="@android:color/tertiary_text_dark"/>
 
 
     <TextView
@@ -58,7 +62,8 @@
         android:singleLine="true"
         android:maxLength="40"
         android:layout_marginBottom="10dp"
-        android:layout_marginLeft="10dp" />
+        android:layout_marginLeft="10dp"
+        android:textColor="@android:color/tertiary_text_dark"/>
 
     <CheckBox
         android:id="@+id/favbutton"
