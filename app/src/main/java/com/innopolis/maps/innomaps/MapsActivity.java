@@ -1,21 +1,17 @@
 package com.innopolis.maps.innomaps;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
@@ -23,6 +19,15 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener, ActivityCompat.OnRequestPermissionsResultCallback, GoogleMap.OnMapLongClickListener {
 
@@ -30,6 +35,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private UiSettings mSettings;
     private Marker markerFrom;
     private Marker markerTo;
+    private Polyline currentPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +94,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapLongClick(LatLng point) {
         // TODO: remove all deprecated calls
-        Log.i("luckychess", "Long click detected");
+        if (currentPath != null) {
+            currentPath.remove();
+        }
         if (markerFrom == null) {
             markerFrom = addMarker(new LatLng(mMap.getMyLocation().getLatitude(), mMap.getMyLocation().getLongitude()));
         }
@@ -96,11 +104,69 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             markerTo.remove();
         }
         markerTo = addMarker(point);
-        PathFinder pathToPoint = new PathFinder(new LatLng(mMap.getMyLocation().getLatitude(), mMap.getMyLocation().getLongitude()), point);
+        PathFinder pathToPoint = new PathFinder(this, new LatLng(mMap.getMyLocation().getLatitude(), mMap.getMyLocation().getLongitude()), point);
         pathToPoint.findPath();
     }
 
     private Marker addMarker(LatLng point) {
         return mMap.addMarker(new MarkerOptions().position(point));
+    }
+
+    /**
+     * Taken from http://stackoverflow.com/questions/14702621
+     *
+     * @param path: json answer returned by the direction API
+     */
+    public void drawPath(String path) {
+        try {
+            final JSONObject json = new JSONObject(path);
+            JSONArray routeArray = json.getJSONArray("routes");
+            JSONObject routes = routeArray.getJSONObject(0);
+            JSONObject overviewPolylines = routes.getJSONObject("overview_polyline");
+            String encodedString = overviewPolylines.getString("points");
+            List<LatLng> list = decodePoly(encodedString);
+            currentPath = mMap.addPolyline(new PolylineOptions()
+                            .addAll(list)
+                            .width(12)
+                            .color(Color.parseColor("#05b1fb"))     // Google maps blue color
+                            .geodesic(true)
+            );
+        } catch (JSONException e) {
+            Log.e("Exception in drawPath", e.toString());
+        }
+    }
+
+    private List<LatLng> decodePoly(String encoded) {
+
+        List<LatLng> poly = new ArrayList<>();
+        int index = 0, len = encoded.length();
+        int lat = 0, lng = 0;
+
+        while (index < len) {
+            int b, shift = 0, result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lat += dlat;
+
+            shift = 0;
+            result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lng += dlng;
+
+            LatLng p = new LatLng((((double) lat / 1E5)),
+                    (((double) lng / 1E5)));
+            poly.add(p);
+        }
+
+        return poly;
     }
 }

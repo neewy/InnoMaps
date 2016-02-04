@@ -1,22 +1,14 @@
 package com.innopolis.maps.innomaps;
 
-import android.content.res.Resources;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
 
 /**
  * Class to find and show route between 2 points on a map.
@@ -25,8 +17,10 @@ import java.util.HashMap;
 public class PathFinder {
     LatLng from;
     LatLng to;
+    MapsActivity activity;
 
-    public PathFinder(LatLng from, LatLng to) {
+    public PathFinder(MapsActivity activity, LatLng from, LatLng to) {
+        this.activity = activity;
         this.from = from;
         this.to = to;
     }
@@ -47,14 +41,14 @@ public class PathFinder {
                         + from.latitude + ","
                         + from.longitude + "&destination="
                         + to.latitude + ","
-                        + to.longitude + "&key=" + "AIzaSyDli8qeotu4TGaEs5VKSWy15CDyl4cgZ-o");
+                        + to.longitude);
 
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
 
                 InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
+                StringBuilder buffer = new StringBuilder();
 
                 reader = new BufferedReader(new InputStreamReader(inputStream));
 
@@ -72,9 +66,9 @@ public class PathFinder {
         }
 
         @Override
-        protected void onPostExecute(String strJson) {
-            super.onPostExecute(strJson);
-            Log.i("luckychess", strJson);
+        protected void onPostExecute(String path) {
+            super.onPostExecute(path);
+            activity.drawPath(path);
         }
     }
 
