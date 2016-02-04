@@ -15,6 +15,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
@@ -36,6 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
@@ -71,6 +74,16 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
                                     }
                                 }
         );
+        CheckBox favCheckBox = ( CheckBox ) view.findViewById(R.id.favCheckBox);
+        favCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+
+                }
+
+            }
+        });
         return view;
     }
 
@@ -78,8 +91,8 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
     public void onRefresh() {
         dbHelper = new DBHelper(context);
         database = dbHelper.getWritableDatabase();
-
         sPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
         String savedText = sPref.getString("updated", "");
 
         if (isNetworkAvailable()) {
@@ -284,7 +297,7 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
             sPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
             String savedText = sPref.getString("updated", "");
             if (savedText.equals(updatedKey)) {
-                return false;
+                return true;
             } else {
                 SharedPreferences.Editor ed = sPref.edit();
                 ed.putString("updated", updatedKey);
@@ -305,52 +318,57 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
                     JSONArray events = dataJsonObj.getJSONArray("items");
                     for (int i = 0; i < events.length(); i++) {
                         JSONObject jsonEvent = events.getJSONObject(i);
-                        String summary, htmlLink, start, end, location, id, description, creator_name, creator_email = null;
-                        //TODO: Eliminate hardcode with keys collection in JSONObject
-                        try {
-                            summary = (jsonEvent.getString("summary") != null) ? jsonEvent.getString("summary") : "";
-                        } catch (JSONException e) {
-                            summary = "";
-                        }
-                        try {
-                            htmlLink = (jsonEvent.getString("htmlLink") != null) ? jsonEvent.getString("htmlLink") : "";
-                        } catch (JSONException e) {
-                            htmlLink = "";
-                        }
-                        try {
-                            start = (jsonEvent.getJSONObject("start").getString("dateTime") != null) ? jsonEvent.getJSONObject("start").getString("dateTime").substring(0, 16).replace('T', ' ') : "";
-                        } catch (JSONException e) {
-                            start = "";
-                        }
-                        try {
-                            end = (jsonEvent.getJSONObject("end").getString("dateTime") != null) ? jsonEvent.getJSONObject("end").getString("dateTime").substring(0, 16).replace('T', ' ') : "";
-                        } catch (JSONException e) {
-                            end = "";
-                        }
-                        try {
-                            location = (jsonEvent.getString("location") != null) ? jsonEvent.getString("location") : "";
-                        } catch (JSONException e) {
-                            location = "";
-                        }
-                        try {
-                            id = (jsonEvent.getString("id") != null) ? jsonEvent.getString("id") : "";
-                        } catch (JSONException e) {
-                            id = "";
-                        }
-                        try {
-                            description = (jsonEvent.getString("description") != null) ? jsonEvent.getString("description") : "";
-                        } catch (JSONException e) {
-                            description = "";
-                        }
-                        try {
-                            creator_name = (jsonEvent.getJSONObject("creator").getString("displayName") != null) ? jsonEvent.getJSONObject("creator").getString("displayName") : "";
-                        } catch (JSONException e) {
-                            creator_name = "";
-                        }
-                        try {
-                            creator_email = (jsonEvent.getJSONObject("creator").getString("email") != null) ? jsonEvent.getJSONObject("creator").getString("email") : "";
-                        } catch (JSONException e) {
-                            creator_email = "";
+                        String summary = null, htmlLink = null, start = null, end = null, location = null, id = null, description = null, creator_name = null, creator_email = null;
+                        Iterator<String> iter = jsonEvent.keys();
+                        while (iter.hasNext()) {
+                            String key = iter.next().toString();
+                            switch(key) {
+                                case "summary":
+                                    summary = jsonEvent.getString("summary");
+                                    break;
+                                case "htmlLink":
+                                    htmlLink = jsonEvent.getString("htmlLink");
+                                    break;
+                                case "start":
+                                    start = jsonEvent.getJSONObject("start").getString("dateTime");
+                                    break;
+                                case "end":
+                                    end = jsonEvent.getJSONObject("end").getString("dateTime");
+                                    break;
+                                case "location":
+                                    location = jsonEvent.getString("location");
+                                    break;
+                                case "id":
+                                    id = jsonEvent.getString("id");
+                                    break;
+                                case "description":
+                                    description = jsonEvent.getString("description");
+                                    break;
+                                case "creator":
+                                    creator_name = jsonEvent.getJSONObject("creator").getString("displayName");
+                                    creator_email = jsonEvent.getJSONObject("creator").getString("email");
+                                    break;
+                                default:
+                                    if (key.equals("summary"))
+                                        summary = "";
+                                    if (key.equals("htmlLink"))
+                                        htmlLink = "";
+                                    if (key.equals("start"))
+                                        start = "";
+                                    if (key.equals("end"))
+                                        end = "";
+                                    if (key.equals("location"))
+                                        location = "";
+                                    if (key.equals("id"))
+                                        id = "";
+                                    if (key.equals("description"))
+                                        description = "";
+                                    if (key.equals("creator")) {
+                                        creator_name = "";
+                                        creator_email = "";
+                                    }
+                                    break;
+                            }
                         }
                         insertEvent(summary, htmlLink, start, end, location, id);
                         insertEventType(summary, description, creator_name, creator_email);
