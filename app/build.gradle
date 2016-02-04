@@ -27,4 +27,5 @@ dependencies {
     compile 'com.android.support:design:23.1.1'
     compile 'org.apache.directory.studio:org.apache.commons.codec:1.8'
     compile 'com.readystatesoftware.sqliteasset:sqliteassethelper:+'
+    compile 'hanks.xyz:smallbang-library:0.1.2'
 }

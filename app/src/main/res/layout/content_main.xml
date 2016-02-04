@@ -5,7 +5,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="ru.innopolis.crawler.MainActivity"
+    tools:context="com.innopolis.maps.innomaps.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
     <FrameLayout
