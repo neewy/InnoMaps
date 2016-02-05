@@ -1,8 +1,10 @@
 package com.innopolis.maps.innomaps;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -76,6 +78,17 @@ public class EventsAdapter extends BaseAdapter {
             favCheckBox.setChecked(false);
         }
         final SmallBang mSmallBang = SmallBang.attach2Window(activity);
+        final View finalView = view;
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(ctx, DetailedEvent.class);
+                i.putExtra("eventID",values.get(DBHelper.COLUMN_EVENT_ID));
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                ctx.startActivity(i);
+            }
+
+        });
         favCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

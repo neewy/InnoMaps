@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
     private static final String DATABASE_NAME = "eventsDB";
     public static final String TABLE1 = "events";
     public static final String TABLE2 = "event_type";
@@ -97,9 +97,11 @@ public class DBHelper extends SQLiteOpenHelper {
                 }
                 item.put("timeLeft", Long.toString(timeLeft) + " days");
                 list.add(item);
+                cursor1.close();
             } while (cursor.moveToNext());
         }
         cursor.close();
+        database.close();
     }
 
     protected static void readEventsLog(SQLiteDatabase database) {
@@ -123,8 +125,8 @@ public class DBHelper extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         } else
             Log.d("mLog", "0 rows");
-
         cursor.close();
+        database.close();
     }
 
     protected void readEventsTypesLog(SQLiteDatabase database) {
@@ -146,6 +148,7 @@ public class DBHelper extends SQLiteOpenHelper {
         } else
             Log.d("mLog", "0 rows");
         cursor.close();
+        database.close();
     }
 
     protected static void insertEvent(SQLiteDatabase database, String summary, String htmlLink, String start, String end, String location, String id, String checked) {

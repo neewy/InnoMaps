@@ -9,9 +9,11 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -45,7 +47,7 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
     SharedPreferences sPref;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         context = getActivity().getApplicationContext();
         View view = inflater.inflate(R.layout.events, container, false);
         listView = (ListView) view.findViewById(R.id.eventList);
@@ -53,6 +55,7 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
         swipeRefreshLayout.setOnRefreshListener(this);
         this.adapter = new EventsAdapter(context, list, getActivity());
         listView.setAdapter(this.adapter);
+        listView.setItemsCanFocus(true);
         swipeRefreshLayout.post(new Runnable() {
                                     @Override
                                     public void run() {
@@ -96,6 +99,14 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
             database.close();
         }
     }
+
+  /*  @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        HashMap<String, Object> obj = (HashMap<String, Object>) adapter.getItem(position);
+        for (String key : obj.keySet()) {
+            Log.d(key, (String) obj.get(key));
+        }
+    }*/
 
     private class ParseTask extends AsyncTask<Void, Void, String> {
 
