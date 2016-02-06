@@ -1,5 +1,10 @@
 <resources>
-    <string name="app_name">InnoMaps</string>
+    <string name="applicationName">InnoMaps</string>
+    <string name="mainWelcomeText">Welcome to our application that allows you to navigate through Innopolis city!</string>
+    <string name="mainActivityLabel">Innopolis City</string>
+    <string name="mapActivityLabel">City Map</string>
+    <string name="mainOpenCityMapButton">Open City Map</string>
+
     <string name="title_activity_maps">Map</string>
     <string name="demo_title">Google Maps API Demos</string>
     <string name="legal_info">Legal Info</string>
