@@ -175,11 +175,12 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
             try {
                 dataJsonObj = new JSONObject(strJson);
                 if (jsonUpdated(md5)) {
+               // if (false) {
                     list.clear();
                     JSONArray events = dataJsonObj.getJSONArray("items");
                     for (int i = 0; i < events.length(); i++) {
                         JSONObject jsonEvent = events.getJSONObject(i);
-                        String summary = "", htmlLink = "", start = "", end = "", location = "", id = "", description = "", creator_name = "", creator_email = "", checked = "0";
+                        String summary = "", htmlLink = "", start = "", end = "", location = "", eventID = "", description = "", creator_name = "", creator_email = "", checked = "0";
                         Iterator<String> iter = jsonEvent.keys();
                         while (iter.hasNext()) {
                             String key = iter.next().toString();
@@ -200,7 +201,7 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
                                     location = jsonEvent.getString("location");
                                     break;
                                 case "id":
-                                    id = jsonEvent.getString("id");
+                                    eventID = jsonEvent.getString("id");
                                     break;
                                 case "description":
                                     description = jsonEvent.getString("description");
@@ -211,14 +212,16 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
                                     break;
                             }
                         }
-                        DBHelper.insertEvent(database, summary, htmlLink, start, end, location, id, checked);
+                        DBHelper.insertEvent(database, summary, htmlLink, start, end, eventID, checked);
                         DBHelper.insertEventType(database, summary, description, creator_name, creator_email);
+                        DBHelper.insertLocation(database,location);
                     }
                     DBHelper.readEvents(list, database, false);
                 } else {
                     list.clear();
                     Toast.makeText(context , "You've got the last events", Toast.LENGTH_SHORT).show();
                     DBHelper.readEvents(list, database, false);
+
                 }
 
             } catch (JSONException e) {
