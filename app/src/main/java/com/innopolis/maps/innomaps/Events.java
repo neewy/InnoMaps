@@ -212,9 +212,10 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
                                     break;
                             }
                         }
+
                         DBHelper.insertEvent(database, summary, htmlLink, start, end, eventID, checked);
                         DBHelper.insertEventType(database, summary, description, creator_name, creator_email);
-                        DBHelper.insertLocation(database,location);
+                        DBHelper.insertLocation(database,location,eventID);
                     }
                     DBHelper.readEvents(list, database, false);
                 } else {

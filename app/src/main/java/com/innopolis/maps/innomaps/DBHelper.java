@@ -75,20 +75,21 @@ public class DBHelper extends SQLiteOpenHelper {
             cursor = database.query(DBHelper.TABLE1, null, "checked=?", favourite, null, null, null);
         } else {
             cursor = database.query(DBHelper.TABLE1, null, null, null, null, null, null);
-            String sqlQuery = "select events.summary,htmlLink,start,end,"
-                    + " description,creator_name,creator_email,telegram, "
+            String sqlQuery = "select events.summary,htmlLink,start,end,events.eventID as eventID,"
+                    + " description,creator_name,creator_email,telegram, checked,"
                     + " building,floor,room,latitude,longitude"
                     + " from events "
-                    +"inner join event_type on events.summary=event_type.summary  "
+                    + "inner join event_type on events.summary=event_type.summary  "
                     + "inner join location on events.eventID=location.eventID";
+
             cursor = database.rawQuery(sqlQuery, null);
 
 
         }
         if (cursor.moveToFirst()) {
             int summary, htmlLink, start, end, eventID, checked;
-            int description,creator_name,creator_email,telegram;
-            int building,floor,room,lititude,longitude;
+            int description, creator_name, creator_email, telegram;
+            int building, floor, room, lititude, longitude;
 
             summary = cursor.getColumnIndex(DBHelper.COLUMN_SUMMARY);
             htmlLink = cursor.getColumnIndex(DBHelper.COLUMN_LINK);
@@ -96,7 +97,6 @@ public class DBHelper extends SQLiteOpenHelper {
             end = cursor.getColumnIndex(DBHelper.COLUMN_END);
             eventID = cursor.getColumnIndex(DBHelper.COLUMN_EVENT_ID);
             checked = cursor.getColumnIndex(DBHelper.COLUMN_FAV);
-
             description = cursor.getColumnIndex(DBHelper.COLUMN_DESCRIPTION);
             creator_name = cursor.getColumnIndex(DBHelper.COLUMN_CREATOR_NAME);
             creator_email = cursor.getColumnIndex(DBHelper.COLUMN_CREATOR_EMAIL);
@@ -108,6 +108,7 @@ public class DBHelper extends SQLiteOpenHelper {
             lititude = cursor.getColumnIndex(DBHelper.COLUMN_LATITIDE);
             longitude = cursor.getColumnIndex(DBHelper.COLUMN_LONGITUDE);
 
+
             do {
                 HashMap<String, String> item = new HashMap<String, String>();
                 item.put(DBHelper.COLUMN_SUMMARY, cursor.getString(summary));
@@ -116,25 +117,16 @@ public class DBHelper extends SQLiteOpenHelper {
                 item.put(DBHelper.COLUMN_END, cursor.getString(end));
                 item.put(DBHelper.COLUMN_EVENT_ID, cursor.getString(eventID));
                 item.put(DBHelper.COLUMN_FAV, cursor.getString(checked));
-
                 item.put(DBHelper.COLUMN_DESCRIPTION, cursor.getString(description));
                 item.put(DBHelper.COLUMN_CREATOR_NAME, cursor.getString(creator_name));
                 item.put(DBHelper.COLUMN_CREATOR_EMAIL, cursor.getString(creator_email));
                 item.put(DBHelper.COLUMN_TELEGRAM, cursor.getString(telegram));
-
                 item.put(DBHelper.COLUMN_BUILDING, cursor.getString(building));
                 item.put(DBHelper.COLUMN_FLOOR, cursor.getString(floor));
                 item.put(DBHelper.COLUMN_ROOM, cursor.getString(room));
                 item.put(DBHelper.COLUMN_LATITIDE, cursor.getString(lititude));
                 item.put(DBHelper.COLUMN_LONGITUDE, cursor.getString(longitude));
-                /////////////////////////////////////////////////////////////////////////////////////////////////////
-                /*String[] whereArgs = new String[]{cursor.getString(summary)};
-                Cursor cursor1 = database.query(DBHelper.TABLE2, null, "summary=?", whereArgs, null, null, null);
-                cursor1.moveToFirst();
-                int description = cursor1.getColumnIndex("description");
-                int creator_name = cursor1.getColumnIndex("creator_name");
-                item.put("description", cursor1.getString(description));
-                item.put("creator_name", cursor1.getString(creator_name));*/
+
                 long timeLeft;
                 SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                 try {
@@ -147,55 +139,6 @@ public class DBHelper extends SQLiteOpenHelper {
                 //cursor1.close();
             } while (cursor.moveToNext());
         }
-        readEventsLog(database);
-        readEventsTypesLog(database);
-        cursor.close();
-        database.close();
-    }
-
-    protected static void readEventsLog(SQLiteDatabase database) {
-        Cursor cursor = database.query(DBHelper.TABLE1, null, null, null, null, null, null);
-
-        if (cursor.moveToFirst()) {
-            int summary, htmlLink, start, end, location, id;
-            summary = cursor.getColumnIndex(DBHelper.COLUMN_SUMMARY);
-            htmlLink = cursor.getColumnIndex(DBHelper.COLUMN_LINK);
-            start = cursor.getColumnIndex(DBHelper.COLUMN_START);
-            end = cursor.getColumnIndex(DBHelper.COLUMN_END);
-            location = cursor.getColumnIndex(DBHelper.COLUMN_LOCATION);
-            id = cursor.getColumnIndex(DBHelper.COLUMN_EVENT_ID);
-            do {
-                Log.d("mLog", "summary = " + cursor.getString(summary) +
-                        ", htmlLink = " + cursor.getString(htmlLink) +
-                        ", start = " + cursor.getString(start) +
-                        ", end = " + cursor.getString(end) +
-                        ", eventID = " + cursor.getString(id));
-            } while (cursor.moveToNext());
-        } else
-            Log.d("mLog", "0 rows");
-
-        cursor.close();
-        //database.close();
-    }
-
-    protected static void readEventsTypesLog(SQLiteDatabase database) {
-        Cursor cursor = database.query(DBHelper.TABLE2, null, null, null, null, null, null);
-        if (cursor.moveToFirst()) {
-            int summary, description, creator_name, creator_email, telegram;
-            summary = cursor.getColumnIndex(DBHelper.COLUMN_SUMMARY);
-            description = cursor.getColumnIndex("description");
-            creator_name = cursor.getColumnIndex("creator_name");
-            creator_email = cursor.getColumnIndex("creator_email");
-            telegram = cursor.getColumnIndex("telegram");
-            do {
-                Log.d("LOG_TAG", "summary = " + cursor.getString(summary) +
-                        ", description = " + cursor.getString(description) +
-                        ", creator_name = " + cursor.getString(creator_name) +
-                        ", creator_email = " + cursor.getString(creator_email) +
-                        ", telegram = " + cursor.getString(telegram));
-            } while (cursor.moveToNext());
-        } else
-            Log.d("mLog", "0 rows");
         cursor.close();
         database.close();
     }
@@ -218,24 +161,31 @@ public class DBHelper extends SQLiteOpenHelper {
 
             ContentValues cv = new ContentValues();
             cv.put(DBHelper.COLUMN_SUMMARY, summary);
-            cv.put("description", description);
-            cv.put("creator_name", creator_name);
-            cv.put("creator_email", creator_email);
-            Pattern pattern = Pattern.compile("/https.*/");
-            Matcher matcher = pattern.matcher(description);
+            cv.put(DBHelper.COLUMN_DESCRIPTION, description);
+            cv.put(DBHelper.COLUMN_CREATOR_NAME, creator_name);
+            cv.put(DBHelper.COLUMN_CREATOR_EMAIL, creator_email);
 
-            if (matcher.find()) {
-                String telegram = matcher.group(1);
-                cv.put("telegram", telegram);
-            }
+            String telegr[] = description.split("https://");
+            if (telegr.length > 1) cv.put(DBHelper.COLUMN_TELEGRAM, telegr[1]);
 
             database.insert(DBHelper.TABLE2, null, cv);
         }
     }
 
-    protected static void insertLocation(SQLiteDatabase database,String location  ) {
+    protected static void insertLocation(SQLiteDatabase database, String location, String eventID) {
+        String[] whereArgs = new String[]{eventID};
+        Cursor cursor = database.query(DBHelper.TABLE3,null,"eventID=?", whereArgs, null, null, null);
+        ContentValues cv = new ContentValues();
+        if (cursor.getCount() == 0) {
+            cv.put(DBHelper.COLUMN_EVENT_ID, eventID);
+            String locaton[] = location.split("/");
+            cv.put(DBHelper.COLUMN_BUILDING, "1");
+            cv.put(DBHelper.COLUMN_FLOOR, "1");
+            cv.put(DBHelper.COLUMN_ROOM, "1");
+            cv.put(DBHelper.COLUMN_LATITIDE, "55.752071");
+            cv.put(DBHelper.COLUMN_LONGITUDE, "48.741831");
 
+        }
 
-        ///////////////////////////////////////////////////////////////////////
     }
 }
