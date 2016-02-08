@@ -184,7 +184,7 @@ public class DBHelper extends SQLiteOpenHelper {
             cv.put(DBHelper.COLUMN_ROOM, "1");
             cv.put(DBHelper.COLUMN_LATITIDE, "55.752071");
             cv.put(DBHelper.COLUMN_LONGITUDE, "48.741831");
-
+            database.insert(DBHelper.TABLE3, null, cv);
         }
 
     }
