@@ -55,12 +55,12 @@ public class DetailedEvent extends AppCompatActivity {
             htmlLink = cursor.getColumnIndex(DBHelper.COLUMN_LINK);
             start = cursor.getColumnIndex(DBHelper.COLUMN_START);
             end = cursor.getColumnIndex(DBHelper.COLUMN_END);
-            location = cursor.getColumnIndex(DBHelper.COLUMN_LOCATION);
+           // location = cursor.getColumnIndex(DBHelper.COLUMN_LOCATION);
             this.summary = cursor.getString(summary);
             this.htmlLink = cursor.getString(htmlLink);
             this.start = cursor.getString(start);
             this.end = cursor.getString(end);
-            this.locationStr = cursor.getString(location);
+           // this.locationStr = cursor.getString(location);
             String[] whereArgs = new String[]{cursor.getString(summary)};
             Cursor cursor1 = database.query(DBHelper.TABLE2, null, "summary=?", whereArgs, null, null, null);
             cursor1.moveToFirst();

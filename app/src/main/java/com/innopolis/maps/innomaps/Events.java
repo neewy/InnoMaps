@@ -175,7 +175,7 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
             try {
                 dataJsonObj = new JSONObject(strJson);
                 if (jsonUpdated(md5)) {
-               // if (false) {
+               // if (true) {
                     list.clear();
                     JSONArray events = dataJsonObj.getJSONArray("items");
                     for (int i = 0; i < events.length(); i++) {

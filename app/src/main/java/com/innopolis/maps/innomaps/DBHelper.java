@@ -70,22 +70,17 @@ public class DBHelper extends SQLiteOpenHelper {
         SimpleDateFormat formatter = new SimpleDateFormat();
         Date d = new Date();
         Cursor cursor = null;
+        String sqlQuery = "select events.summary,htmlLink,start,end,events.eventID as eventID,"
+                + " description,creator_name,creator_email,telegram, checked,"
+                + " building,floor,room,latitude,longitude"
+                + " from events "
+                + "inner join event_type on events.summary=event_type.summary  "
+                + "inner join location on events.eventID=location.eventID";
         if (areFavourite) {
-            String[] favourite = new String[]{"1"};
-            cursor = database.query(DBHelper.TABLE1, null, "checked=?", favourite, null, null, null);
-        } else {
-            cursor = database.query(DBHelper.TABLE1, null, null, null, null, null, null);
-            String sqlQuery = "select events.summary,htmlLink,start,end,events.eventID as eventID,"
-                    + " description,creator_name,creator_email,telegram, checked,"
-                    + " building,floor,room,latitude,longitude"
-                    + " from events "
-                    + "inner join event_type on events.summary=event_type.summary  "
-                    + "inner join location on events.eventID=location.eventID";
-
-            cursor = database.rawQuery(sqlQuery, null);
-
+            sqlQuery += " WHERE checked=1 ";
 
         }
+        cursor = database.rawQuery(sqlQuery, null);
         if (cursor.moveToFirst()) {
             int summary, htmlLink, start, end, eventID, checked;
             int description, creator_name, creator_email, telegram;
@@ -174,16 +169,21 @@ public class DBHelper extends SQLiteOpenHelper {
 
     protected static void insertLocation(SQLiteDatabase database, String location, String eventID) {
         String[] whereArgs = new String[]{eventID};
-        Cursor cursor = database.query(DBHelper.TABLE3,null,"eventID=?", whereArgs, null, null, null);
+        Cursor cursor = database.query(DBHelper.TABLE3, null, "eventID=?", whereArgs, null, null, null);
         ContentValues cv = new ContentValues();
         if (cursor.getCount() == 0) {
+
+            String locationMass[] = location.split("https://");
             cv.put(DBHelper.COLUMN_EVENT_ID, eventID);
-            String locaton[] = location.split("/");
-            cv.put(DBHelper.COLUMN_BUILDING, "1");
-            cv.put(DBHelper.COLUMN_FLOOR, "1");
-            cv.put(DBHelper.COLUMN_ROOM, "1");
-            cv.put(DBHelper.COLUMN_LATITIDE, "55.752071");
-            cv.put(DBHelper.COLUMN_LONGITUDE, "48.741831");
+            if (locationMass.length == 3) {
+                cv.put(DBHelper.COLUMN_BUILDING, locationMass[0]);
+                cv.put(DBHelper.COLUMN_FLOOR, locationMass[1]);
+                cv.put(DBHelper.COLUMN_ROOM, locationMass[2]);
+                cv.put(DBHelper.COLUMN_LATITIDE, "55.752071");
+                cv.put(DBHelper.COLUMN_LONGITUDE, "48.741831");
+            } else {
+                cv.put(DBHelper.COLUMN_BUILDING, location);
+            }
             database.insert(DBHelper.TABLE3, null, cv);
         }
 
