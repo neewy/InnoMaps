@@ -79,7 +79,10 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         Fragment fragment = null;
         String title = getString(R.string.app_name);
-        if (id == R.id.nav_favourite) {
+        if (id == R.id.nav_maps) {
+            fragment = new Maps();
+            title = "Maps";
+        } else if (id == R.id.nav_favourite) {
             fragment = new Favourite();
             title = "Favourite";
         } else if (id == R.id.nav_event) {
@@ -88,6 +91,8 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_share) {
         }
 
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
         if (fragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.content_frame, fragment).addToBackStack(title);
@@ -98,8 +103,6 @@ public class MainActivity extends AppCompatActivity
             getSupportActionBar().setTitle(title);
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
