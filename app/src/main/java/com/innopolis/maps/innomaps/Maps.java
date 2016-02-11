@@ -4,9 +4,13 @@ package com.innopolis.maps.innomaps;
  * Created by Nikolay on 02.02.2016.
  */
 
+import android.graphics.BitmapFactory;
+import android.graphics.Point;
+import android.graphics.drawable.Icon;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +23,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -108,7 +113,7 @@ public class Maps extends Fragment implements ActivityCompat.OnRequestPermission
     }
 
     private Marker addMarker(LatLng point) {
-        return map.addMarker(new MarkerOptions().position(point));
+        return map.addMarker(new MarkerOptions().position(point).icon(BitmapDescriptorFactory.fromResource(R.drawable.test_custom_marker)));
     }
 
 
