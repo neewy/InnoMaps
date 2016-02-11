@@ -1,4 +1,4 @@
-package com.innopolis.maps.innomaps;
+package com.innopolis.maps.innomaps.app;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
+
+import com.innopolis.maps.innomaps.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -94,19 +96,18 @@ public class EventsAdapter extends BaseAdapter {
             }
 
         });
-        favCheckBox.setClickable(true);
         favCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //setOnCheckedChangeListener probably? causes bugs with redrawing
                 mSmallBang.bang(favCheckBox);
                 String isFav = (favCheckBox.isChecked()) ? "1" : "0";
+                if (favCheckBox.isChecked())
+                    favCheckBox.setChecked(true);
+                else
+                    favCheckBox.setChecked(false);
                 String eventID = values.get(DBHelper.COLUMN_EVENT_ID);
                 ContentValues cv = new ContentValues();
-                if (favCheckBox.isChecked())
-                    values.put("checked", "1");
-                else
-                    values.put("checked", "0");
                 dbHelper = new DBHelper(ctx);
                 database = dbHelper.getWritableDatabase();
                 cv.put(DBHelper.COLUMN_FAV, isFav);
@@ -115,6 +116,7 @@ public class EventsAdapter extends BaseAdapter {
                 dbHelper.close();
             }
         });
+
         return view;
     }
 

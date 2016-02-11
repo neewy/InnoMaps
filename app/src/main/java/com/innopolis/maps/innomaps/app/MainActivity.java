@@ -1,4 +1,4 @@
-package com.innopolis.maps.innomaps;
+package com.innopolis.maps.innomaps.app;
 
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -11,6 +11,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.innopolis.maps.innomaps.R;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {

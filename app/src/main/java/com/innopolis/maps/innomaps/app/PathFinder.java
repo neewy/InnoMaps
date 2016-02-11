@@ -1,4 +1,4 @@
-package com.innopolis.maps.innomaps;
+package com.innopolis.maps.innomaps.app;
 
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -8,16 +8,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,42 +39,13 @@ public class PathFinder {
     }
 
     private class ParseTask extends AsyncTask<Void, Void, String> {
-
         @Override
         protected String doInBackground(Void... params) {
-            // TODO: use existing class (Events.java)
-            final URL url;
-            HttpURLConnection urlConnection;
-            BufferedReader reader;
-            String result = "";
-
-            try {
-                url = new URL("https://maps.googleapis.com/maps/api/directions/json?origin="
-                        + from.latitude + ","
-                        + from.longitude + "&destination="
-                        + to.latitude + ","
-                        + to.longitude);
-
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuilder buffer = new StringBuilder();
-
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    buffer.append(line);
-                }
-
-                result = buffer.toString();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return result;
+            return Utils.doGetRequest("https://maps.googleapis.com/maps/api/directions/json?origin="
+                    + from.latitude + ","
+                    + from.longitude + "&destination="
+                    + to.latitude + ","
+                    + to.longitude);
         }
 
         @Override
