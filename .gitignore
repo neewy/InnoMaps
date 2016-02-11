@@ -1,2 +1,14 @@
-local.properties
+.gradle/
+.idea/
 build/
+gradle/
+/app/build/
+/app/proguard-rules.pro
+/app/app.iml
+/app/.gitignore
+local.properties
+gradle.properties
+gradlew
+gradlew.bat
+InnoM.iml
+InnoMaps.iml
