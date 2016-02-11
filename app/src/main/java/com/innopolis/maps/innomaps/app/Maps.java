@@ -58,8 +58,6 @@ public class Maps extends Fragment implements ActivityCompat.OnRequestPermission
                     map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
                         @Override
                         public void onMapLongClick(LatLng latLng) {
-                            // TODO: remove all deprecated calls
-
                             if (markerFrom == null) {
                                 markerFrom = addMarker(new LatLng(map.getMyLocation().getLatitude(), map.getMyLocation().getLongitude()));
                             }

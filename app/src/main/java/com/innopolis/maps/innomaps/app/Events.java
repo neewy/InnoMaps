@@ -22,11 +22,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,7 +34,7 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
     static Context context;
     ListView listView;
 
-    static ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>(); //for storing entries
+    static ArrayList<HashMap<String, String>> list = new ArrayList<>(); //for storing entries
     EventsAdapter adapter; //to populate list from list above
     SwipeRefreshLayout swipeRefreshLayout;
     DBHelper dbHelper;
@@ -103,10 +98,7 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
      */
     private class ParseTask extends AsyncTask<Void, Void, String> {
 
-        HttpURLConnection urlConnection = null;
-        BufferedReader reader = null;
         String resultJson = "";
-
         Date date;
         DateFormat dateFormat;
 
@@ -144,7 +136,7 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
 
         @Override
         protected void onPostExecute(String strJson) {
-            JSONObject dataJsonObj = null;
+            JSONObject dataJsonObj;
             String md5 = new String(Hex.encodeHex(DigestUtils.md5(resultJson)));
             try {
                 dataJsonObj = new JSONObject(strJson);
@@ -158,7 +150,7 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
                                 creator_name = "", creator_email = "", checked = "0"; //initializing db fields
                         Iterator<String> iter = jsonEvent.keys();
                         while (iter.hasNext()) {
-                            String key = iter.next().toString();
+                            String key = iter.next();
                             switch (key) {
                                 case "summary":
                                     summary = jsonEvent.getString("summary");

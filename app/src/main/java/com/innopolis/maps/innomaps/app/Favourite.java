@@ -21,7 +21,7 @@ public class Favourite extends Fragment implements SwipeRefreshLayout.OnRefreshL
 
     static Context context;
     ListView listView;
-    static ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
+    static ArrayList<HashMap<String, String>> list = new ArrayList<>();
     EventsAdapter adapter;
     SwipeRefreshLayout swipeRefreshLayout;
     DBHelper dbHelper;
