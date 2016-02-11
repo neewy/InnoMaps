@@ -20,12 +20,19 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 public class Maps extends Fragment implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     MapView mapView; //an element of the layout
     private GoogleMap map;
     private UiSettings mSettings;
+
+    private Marker markerFrom;
+    private Marker markerTo;
+
+    private PathFinder pathFinder;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -46,6 +53,27 @@ public class Maps extends Fragment implements ActivityCompat.OnRequestPermission
                     mSettings.setZoomControlsEnabled(true);
                     LatLng university = new LatLng(55.752321, 48.744674);
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(university, 15));
+                    map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+                        @Override
+                        public void onMapLongClick(LatLng latLng) {
+                            // TODO: remove all deprecated calls
+
+                            if (markerFrom == null) {
+                                markerFrom = addMarker(new LatLng(map.getMyLocation().getLatitude(), map.getMyLocation().getLongitude()));
+                            }
+                            if (markerTo != null) {
+                                markerTo.remove();
+                            }
+                            markerTo = addMarker(latLng);
+                            if (pathFinder == null) {
+                                pathFinder = new PathFinder(map, new LatLng(map.getMyLocation().getLatitude(), map.getMyLocation().getLongitude()), latLng);
+                            }
+                            else {
+                                pathFinder.setLatLng(new LatLng(map.getMyLocation().getLatitude(), map.getMyLocation().getLongitude()), latLng);
+                            }
+                            pathFinder.findPath();
+                        }
+                    });
                 }
                 break;
             case ConnectionResult.SERVICE_MISSING:
@@ -78,6 +106,12 @@ public class Maps extends Fragment implements ActivityCompat.OnRequestPermission
         super.onLowMemory();
         mapView.onLowMemory();
     }
+
+    private Marker addMarker(LatLng point) {
+        return map.addMarker(new MarkerOptions().position(point));
+    }
+
+
 
 }
 
