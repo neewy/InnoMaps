@@ -32,7 +32,7 @@ public class Favourite extends Fragment implements SwipeRefreshLayout.OnRefreshL
         listView = (ListView) view.findViewById(R.id.eventList);
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
-        this.adapter = new EventsAdapter(context, list, getActivity());
+        this.adapter = new EventsAdapter(context, getActivity().getSupportFragmentManager(), list, getActivity());
         listView.setAdapter(this.adapter);
         swipeRefreshLayout.post(new Runnable() {
                                     @Override

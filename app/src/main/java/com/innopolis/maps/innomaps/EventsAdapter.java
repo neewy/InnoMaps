@@ -1,12 +1,13 @@
 package com.innopolis.maps.innomaps;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,12 +31,14 @@ public class EventsAdapter extends BaseAdapter {
     DBHelper dbHelper;
     SQLiteDatabase database;
     Activity activity;
+    FragmentManager fm;
 
-    public EventsAdapter(Context ctx, ArrayList<HashMap<String, String>> events, Activity activity) {
+    public EventsAdapter(Context ctx, FragmentManager fm, ArrayList<HashMap<String, String>> events, Activity activity) {
         this.ctx = ctx;
         lInflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.events = events;
         this.activity = activity;
+        this.fm = fm;
     }
 
     @Override
@@ -71,36 +74,42 @@ public class EventsAdapter extends BaseAdapter {
         timeLeft.setText(values.get("timeLeft"));
         nameEvent.setText(values.get("summary"));
         creator.setText(values.get("creator_name"));
-        descEvent.setText(values.get("creator_name"));
+        descEvent.setText(values.get("start"));
         if (values.get("checked").equals("1")) {
             favCheckBox.setChecked(true);
         } else {
             favCheckBox.setChecked(false);
         }
         final SmallBang mSmallBang = SmallBang.attach2Window(activity);
-        final View finalView = view;
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(ctx, DetailedEvent.class);
-                i.putExtra("eventID",values.get(DBHelper.COLUMN_EVENT_ID));
-                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                ctx.startActivity(i);
+                Fragment fragment = new DetailedEvent();
+                Bundle bundle = new Bundle();
+                bundle.putString("eventID", values.get(DBHelper.COLUMN_EVENT_ID));
+                fragment.setArguments(bundle);
+                FragmentTransaction ft = fm.beginTransaction();
+                ft.replace(R.id.content_frame, fragment).addToBackStack("Detailed");
+                ft.commit();
             }
 
         });
         favCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //setOnCheckedChangeListener probably? causes bugs with redrawing
                 mSmallBang.bang(favCheckBox);
                 String isFav = (favCheckBox.isChecked()) ? "1" : "0";
+                if (favCheckBox.isChecked())
+                    favCheckBox.setChecked(true);
+                else
+                    favCheckBox.setChecked(false);
                 String eventID = values.get(DBHelper.COLUMN_EVENT_ID);
                 ContentValues cv = new ContentValues();
                 dbHelper = new DBHelper(ctx);
                 database = dbHelper.getWritableDatabase();
                 cv.put(DBHelper.COLUMN_FAV, isFav);
-                int updCount = database.update(DBHelper.TABLE1, cv, "eventID = ?",
-                        new String[]{eventID});
+                int updCount = database.update(DBHelper.TABLE1, cv, "eventID = ?", new String[]{eventID});
                 //Log.d("Checked!", "updated rows count = " + updCount + " | " + eventID + " | " + isFav);
                 dbHelper.close();
             }

@@ -3,17 +3,13 @@ package com.innopolis.maps.innomaps;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -39,21 +35,22 @@ import java.util.concurrent.ExecutionException;
 public class Events extends android.support.v4.app.Fragment implements SwipeRefreshLayout.OnRefreshListener {
     static Context context;
     ListView listView;
-    static ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
-    EventsAdapter adapter;
+
+    static ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>(); //for storing entries
+    EventsAdapter adapter; //to populate list from list above
     SwipeRefreshLayout swipeRefreshLayout;
     DBHelper dbHelper;
     SQLiteDatabase database;
-    SharedPreferences sPref;
+    SharedPreferences sPref; //to store md5 hash of loaded file
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         context = getActivity().getApplicationContext();
-        View view = inflater.inflate(R.layout.events, container, false);
+        View view = inflater.inflate(R.layout.events, container, false); //changing the fragment
         listView = (ListView) view.findViewById(R.id.eventList);
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
-        this.adapter = new EventsAdapter(context, list, getActivity());
+        this.adapter = new EventsAdapter(context, getActivity().getSupportFragmentManager(), list, getActivity());
         listView.setAdapter(this.adapter);
         listView.setItemsCanFocus(true);
         swipeRefreshLayout.post(new Runnable() {
@@ -78,7 +75,7 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
         String savedText = sPref.getString("updated", "");
 
         if (Utils.isNetworkAvailable(context)) {
-            Toast.makeText(context, "Getting new events", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(context, "Getting new events", Toast.LENGTH_SHORT).show();
             try {
                 new ParseTask().execute().get();
             } catch (InterruptedException e) {
@@ -100,14 +97,9 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
         }
     }
 
-  /*  @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        HashMap<String, Object> obj = (HashMap<String, Object>) adapter.getItem(position);
-        for (String key : obj.keySet()) {
-            Log.d(key, (String) obj.get(key));
-        }
-    }*/
-
+    /**
+     * This class extends AsyncTask in order to do networking in separate thread (other than UI thread)
+     */
     private class ParseTask extends AsyncTask<Void, Void, String> {
 
         HttpURLConnection urlConnection = null;
@@ -116,20 +108,12 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
 
         Date date;
         DateFormat dateFormat;
-        private final static long MILLISECONDS_PER_8DAY = 1000L * 60 * 60 * 24 * 8;
-
-        //shift the given Date by exactly 8 days.
-        public void shiftDate(Date d) {
-            long time = d.getTime();
-            time -= MILLISECONDS_PER_8DAY;
-            d.setTime(time);
-        }
 
         @Override
         protected String doInBackground(Void... params) {
             dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             date = new Date();
-            shiftDate(date);
+            Utils.shiftDate(date);
             try {
                 URL url = new URL("https://www.googleapis.com/calendar/v3/calendars/hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com/events?timeMin=" + dateFormat.format(date) + "T10%3A00%3A00-07%3A00&orderby=updated&sortorder=descending&futureevents=true&alt=json&key=AIzaSyDli8qeotu4TGaEs5VKSWy15CDyl4cgZ-o");
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -142,9 +126,8 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
                 reader = new BufferedReader(new InputStreamReader(inputStream));
 
                 String line;
-                while ((line = reader.readLine()) != null) {
+                while ((line = reader.readLine()) != null)
                     buffer.append(line);
-                }
 
                 resultJson = buffer.toString();
 
@@ -154,6 +137,12 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
             return resultJson;
         }
 
+        /**
+         * Checks whether the JSON file was updated or not
+         *
+         * @param updatedKey - md5 hash
+         * @return true in case the JSON was updated
+         */
         protected boolean jsonUpdated(String updatedKey) {
             sPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
             String savedText = sPref.getString("updated", "");
@@ -175,16 +164,17 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
             try {
                 dataJsonObj = new JSONObject(strJson);
                 if (jsonUpdated(md5)) {
-               // if (true) {
                     list.clear();
                     JSONArray events = dataJsonObj.getJSONArray("items");
                     for (int i = 0; i < events.length(); i++) {
                         JSONObject jsonEvent = events.getJSONObject(i);
-                        String summary = "", htmlLink = "", start = "", end = "", location = "", eventID = "", description = "", creator_name = "", creator_email = "", checked = "0";
+                        String summary = "", htmlLink = "", start = "", end = "",
+                                location = "", eventID = "", description = "",
+                                creator_name = "", creator_email = "", checked = "0"; //initializing db fields
                         Iterator<String> iter = jsonEvent.keys();
                         while (iter.hasNext()) {
                             String key = iter.next().toString();
-                            switch(key) {
+                            switch (key) {
                                 case "summary":
                                     summary = jsonEvent.getString("summary");
                                     break;
@@ -212,17 +202,15 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
                                     break;
                             }
                         }
-
                         DBHelper.insertEvent(database, summary, htmlLink, start, end, eventID, checked);
                         DBHelper.insertEventType(database, summary, description, creator_name, creator_email);
-                        DBHelper.insertLocation(database,location,eventID);
+                        DBHelper.insertLocation(database, location, eventID);
                     }
                     DBHelper.readEvents(list, database, false);
                 } else {
                     list.clear();
-                    Toast.makeText(context , "You've got the last events", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context, "You've got the last events", Toast.LENGTH_SHORT).show();
                     DBHelper.readEvents(list, database, false);
-
                 }
 
             } catch (JSONException e) {

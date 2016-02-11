@@ -1,52 +1,60 @@
 package com.innopolis.maps.innomaps;
 
-import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
  * Created by Nikolay on 05.02.2016.
  */
-public class DetailedEvent extends AppCompatActivity {
+public class DetailedEvent extends android.support.v4.app.Fragment {
 
+
+    static Context context;
     DBHelper dbHelper;
     SQLiteDatabase database;
 
     TextView eventName;
     TextView timeLeft;
-    TextView location;
     TextView description;
     TextView organizer;
 
-    String summary, htmlLink, start, end, locationStr, descriptionStr, creator, telegram;
+    private GoogleMap mMap;
+    private UiSettings mSettings;
+    SupportMapFragment mSupportMapFragment;
 
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.event_desc);
-        dbHelper = new DBHelper(this);
+    String summary, htmlLink, start, end, descriptionStr, creator, telegram, eventID, latitude, longitude;
+
+
+    @Override
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
+        context = getActivity().getApplicationContext();
+        View view = inflater.inflate(R.layout.event_desc, container, false);
+        dbHelper = new DBHelper(context);
         database = dbHelper.getWritableDatabase();
-        Bundle extras = getIntent().getExtras();
-        eventName = (TextView) findViewById(R.id.eventName);
-        timeLeft = (TextView) findViewById(R.id.timeLeft);
-        location = (TextView) findViewById(R.id.location);
-        description = (TextView) findViewById(R.id.description);
-        organizer = (TextView) findViewById(R.id.organizer);
-        String eventID = extras.get("eventID").toString();
+        eventName = (TextView) view.findViewById(R.id.eventName);
+        timeLeft = (TextView) view.findViewById(R.id.timeLeft);
+        description = (TextView) view.findViewById(R.id.description);
+        organizer = (TextView) view.findViewById(R.id.organizer);
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            eventID = bundle.getString("eventID", "");
+        }
         Cursor cursor = database.query(DBHelper.TABLE1, null, "eventID=?", new String[]{eventID}, null, null, null);
         cursor.moveToFirst();
         do {
@@ -55,14 +63,12 @@ public class DetailedEvent extends AppCompatActivity {
             htmlLink = cursor.getColumnIndex(DBHelper.COLUMN_LINK);
             start = cursor.getColumnIndex(DBHelper.COLUMN_START);
             end = cursor.getColumnIndex(DBHelper.COLUMN_END);
-           // location = cursor.getColumnIndex(DBHelper.COLUMN_LOCATION);
             this.summary = cursor.getString(summary);
             this.htmlLink = cursor.getString(htmlLink);
             this.start = cursor.getString(start);
             this.end = cursor.getString(end);
-           // this.locationStr = cursor.getString(location);
-            String[] whereArgs = new String[]{cursor.getString(summary)};
-            Cursor cursor1 = database.query(DBHelper.TABLE2, null, "summary=?", whereArgs, null, null, null);
+            String[] summaryArgs = new String[]{cursor.getString(summary)};
+            Cursor cursor1 = database.query(DBHelper.TABLE2, null, "summary=?", summaryArgs, null, null, null);
             cursor1.moveToFirst();
             int description = cursor1.getColumnIndex("description");
             int creator_name = cursor1.getColumnIndex("creator_name");
@@ -71,14 +77,50 @@ public class DetailedEvent extends AppCompatActivity {
             this.creator = cursor1.getString(creator_name);
             this.telegram = cursor1.getString(telegram);
             cursor1.close();
-        }
-        while (cursor.moveToNext());
+        } while (cursor.moveToNext());
         cursor.close();
+        String[] eventIDArgs = new String[]{eventID};
+        Cursor locationC = database.query(DBHelper.TABLE3, null, "eventID=?", eventIDArgs, null, null, null);
+        if (locationC.moveToFirst()) {
+            latitude = locationC.getString(locationC.getColumnIndex(DBHelper.COLUMN_LATITIDE));
+            longitude = locationC.getString(locationC.getColumnIndex(DBHelper.COLUMN_LONGITUDE));
+        }
         database.close();
         eventName.setText(summary);
         timeLeft.setText(start);
-        location.setText(locationStr);
         description.setText(descriptionStr);
         organizer.setText(creator);
+        initializeMap(latitude, longitude);
+        return view;
+    }
+
+
+    private void initializeMap(final String latitude, final String longitude) {
+        mSupportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapDesc);
+        if (mSupportMapFragment == null) {
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            mSupportMapFragment = SupportMapFragment.newInstance();
+            fragmentTransaction.replace(R.id.mapWrapper, mSupportMapFragment).commit();
+        }
+        if (mSupportMapFragment != null) {
+            mSupportMapFragment.getMapAsync(new OnMapReadyCallback() {
+
+                @Override
+                public void onMapReady(GoogleMap googleMap) {
+                    mMap = googleMap;
+
+                    mSettings = mMap.getUiSettings();
+                    mSettings.setMyLocationButtonEnabled(false);
+                    mSettings.setZoomControlsEnabled(true);
+                    mMap.setMyLocationEnabled(true);
+                    if (latitude != null && longitude != null) {
+                        LatLng position = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+                        mMap.addMarker(new MarkerOptions().position(position).title(summary));
+                    }
+                }
+            });
+        }
     }
 }

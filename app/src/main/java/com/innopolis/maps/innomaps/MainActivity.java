@@ -1,7 +1,5 @@
 package com.innopolis.maps.innomaps;
 
-import android.app.FragmentManager;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -36,18 +34,23 @@ public class MainActivity extends AppCompatActivity
 
         Fragment fragment = new Maps();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.content_frame, fragment);
+        ft.add(R.id.content_frame, fragment, "Maps");
         ft.commit();
         getSupportActionBar().setTitle("InnoMaps");
     }
 
     @Override
     public void onBackPressed() {
+        if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+            this.finish();
+        } else {
+            android.support.v4.app.FragmentManager.BackStackEntry first = getSupportFragmentManager().getBackStackEntryAt(0);
+            getSupportActionBar().setTitle(first.getName());
+            getSupportFragmentManager().popBackStack();
+        }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
         }
     }
 
@@ -61,8 +64,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         } else if (id == R.id.action_logout) {
@@ -80,18 +81,16 @@ public class MainActivity extends AppCompatActivity
         String title = getString(R.string.app_name);
         if (id == R.id.nav_favourite) {
             fragment = new Favourite();
-            title = "Favourite events";
+            title = "Favourite";
         } else if (id == R.id.nav_event) {
             fragment = new Events();
             title = "Events";
         } else if (id == R.id.nav_share) {
-            Intent intent = new Intent(getApplicationContext(), Share.class);
-            startActivity(intent);
         }
 
         if (fragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.content_frame, fragment);
+            ft.replace(R.id.content_frame, fragment).addToBackStack(title);
             ft.commit();
         }
 

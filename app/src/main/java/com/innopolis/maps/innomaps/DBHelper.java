@@ -5,42 +5,40 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
-import android.widget.Toast;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 7; //in order to execute onUpdate() the number should be increased
+
     private static final String DATABASE_NAME = "eventsDB";
+
     public static final String TABLE1 = "events";
     public static final String TABLE2 = "event_type";
     public static final String TABLE3 = "location";
 
-    public static final String COLUMN_ID = "_id";
-    public static final String COLUMN_SUMMARY = "summary";
-    public static final String COLUMN_LINK = "htmlLink";
-    public static final String COLUMN_START = "start";
-    public static final String COLUMN_END = "end";
+    public static final String COLUMN_ID = "_id"; //Primary key (as stated in Android guidelines)
 
-    public static final String COLUMN_LOCATION = "location";
+    /* Events table */
+    public static final String COLUMN_SUMMARY = "summary"; //just a title
+    public static final String COLUMN_LINK = "htmlLink"; //calendar link
+    public static final String COLUMN_START = "start"; //start date
+    public static final String COLUMN_END = "end"; //end date
+    public static final String COLUMN_EVENT_ID = "eventID"; //unique field
+    public static final String COLUMN_FAV = "checked"; //is the event favourite
 
-    public static final String COLUMN_EVENT_ID = "eventID";
-    public static final String COLUMN_FAV = "checked";
+    /* Event_type table */
+    public static final String COLUMN_DESCRIPTION = "description"; //detailed description
+    public static final String COLUMN_CREATOR_NAME = "creator_name"; //the person, who created the event
+    public static final String COLUMN_CREATOR_EMAIL = "creator_email"; //his or her gmail
+    public static final String COLUMN_TELEGRAM = "telegram"; //telegram link available
 
-    public static final String COLUMN_DESCRIPTION = "description";
-    public static final String COLUMN_CREATOR_NAME = "creator_name";
-    public static final String COLUMN_CREATOR_EMAIL = "creator_email";
-    public static final String COLUMN_TELEGRAM = "telegram";
-
+    /* Location table */
     public static final String COLUMN_BUILDING = "building";
     public static final String COLUMN_FLOOR = "floor";
     public static final String COLUMN_ROOM = "room";
@@ -54,7 +52,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE events (_id INTEGER PRIMARY KEY, summary TEXT, htmlLink TEXT, start TEXT, end TEXT, eventID TEXT, checked TEXT)");
-        db.execSQL("CREATE TABLE event_type (_id INTEGER PRIMARY KEY, summary TEXT, description TEXT, creator_name TEXT, creator_email TEXT, telegram TEXT)");
+        db.execSQL("CREATE TABLE event_type (_id INTEGER PRIMARY KEY, summary TEXT, description TEXT, creator_name TEXT, creator_email TEXT, telegram TEXT)"); //TODO
         db.execSQL("CREATE TABLE location (_id INTEGER PRIMARY KEY, eventID TEXT, building TEXT, floor TEXT, room TEXT, latitude TEXT, longitude TEXT)");
     }
 
@@ -66,6 +64,13 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    /**
+     * Puts all the events in the List, supplied as first argument
+     *
+     * @param list         - where to put data, elements are HashMap<String, String>
+     * @param database     - where to get data from
+     * @param areFavourite - whether to put marked events or all of them
+     */
     protected static void readEvents(List list, SQLiteDatabase database, boolean areFavourite) {
         SimpleDateFormat formatter = new SimpleDateFormat();
         Date d = new Date();
@@ -76,15 +81,12 @@ public class DBHelper extends SQLiteOpenHelper {
                 + " from events "
                 + "inner join event_type on events.summary=event_type.summary  "
                 + "inner join location on events.eventID=location.eventID";
-        if (areFavourite) {
-            sqlQuery += " WHERE checked=1 ";
-
-        }
+        if (areFavourite) sqlQuery += " WHERE checked=1 ";
         cursor = database.rawQuery(sqlQuery, null);
         if (cursor.moveToFirst()) {
             int summary, htmlLink, start, end, eventID, checked;
             int description, creator_name, creator_email, telegram;
-            int building, floor, room, lititude, longitude;
+            int building, floor, room, latitude, longitude;
 
             summary = cursor.getColumnIndex(DBHelper.COLUMN_SUMMARY);
             htmlLink = cursor.getColumnIndex(DBHelper.COLUMN_LINK);
@@ -100,9 +102,8 @@ public class DBHelper extends SQLiteOpenHelper {
             building = cursor.getColumnIndex(DBHelper.COLUMN_BUILDING);
             floor = cursor.getColumnIndex(DBHelper.COLUMN_FLOOR);
             room = cursor.getColumnIndex(DBHelper.COLUMN_ROOM);
-            lititude = cursor.getColumnIndex(DBHelper.COLUMN_LATITIDE);
+            latitude = cursor.getColumnIndex(DBHelper.COLUMN_LATITIDE);
             longitude = cursor.getColumnIndex(DBHelper.COLUMN_LONGITUDE);
-
 
             do {
                 HashMap<String, String> item = new HashMap<String, String>();
@@ -119,25 +120,25 @@ public class DBHelper extends SQLiteOpenHelper {
                 item.put(DBHelper.COLUMN_BUILDING, cursor.getString(building));
                 item.put(DBHelper.COLUMN_FLOOR, cursor.getString(floor));
                 item.put(DBHelper.COLUMN_ROOM, cursor.getString(room));
-                item.put(DBHelper.COLUMN_LATITIDE, cursor.getString(lititude));
+                item.put(DBHelper.COLUMN_LATITIDE, cursor.getString(latitude));
                 item.put(DBHelper.COLUMN_LONGITUDE, cursor.getString(longitude));
-
-                long timeLeft;
-                SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-                try {
-                    timeLeft = (d.getTime() - s.parse(cursor.getString(start)).getTime()) / (24 * 60 * 60 * 1000);
-                } catch (ParseException e) {
-                    timeLeft = 0;
-                }
-                item.put("timeLeft", Long.toString(timeLeft) + " days");
                 list.add(item);
-                //cursor1.close();
             } while (cursor.moveToNext());
         }
         cursor.close();
         database.close();
     }
 
+    /**
+     * Inserts single event into database, stored on user device
+     * @param database - the name of database to put data
+     * @param summary - summary JSON field
+     * @param htmlLink - htmllink JSON field
+     * @param start - start date
+     * @param end - end date
+     * @param eventID - unique number to identify single event
+     * @param checked - whether it is favourite or not
+     */
     protected static void insertEvent(SQLiteDatabase database, String summary, String htmlLink, String start, String end, String eventID, String checked) {
         ContentValues cv = new ContentValues();
         cv.put(DBHelper.COLUMN_SUMMARY, summary);
@@ -149,31 +150,41 @@ public class DBHelper extends SQLiteOpenHelper {
         database.insert(DBHelper.TABLE1, null, cv);
     }
 
+    /**
+     * Inserts event type into database, stored on user device
+     * @param database - the name of database to put data
+     * @param summary - summary JSON field
+     * @param description - description JSON field
+     * @param creator_name - the name of person, who created the event
+     * @param creator_email - his or her email
+     */
     protected static void insertEventType(SQLiteDatabase database, String summary, String description, String creator_name, String creator_email) {
         String[] whereArgs = new String[]{summary};
         Cursor cursor = database.query(DBHelper.TABLE2, null, "summary=?", whereArgs, null, null, null);
         if (cursor.getCount() == 0) {
-
             ContentValues cv = new ContentValues();
             cv.put(DBHelper.COLUMN_SUMMARY, summary);
             cv.put(DBHelper.COLUMN_DESCRIPTION, description);
             cv.put(DBHelper.COLUMN_CREATOR_NAME, creator_name);
             cv.put(DBHelper.COLUMN_CREATOR_EMAIL, creator_email);
-
             String telegr[] = description.split("https://");
             if (telegr.length > 1) cv.put(DBHelper.COLUMN_TELEGRAM, telegr[1]);
-
             database.insert(DBHelper.TABLE2, null, cv);
         }
     }
 
+    /**
+     * Inserts location of a single event, both geographic position and relative one (building/floor/room)
+     * @param database - the name of database to put data
+     * @param location - location JSON field
+     * @param eventID - unique number to identify single event
+     */
     protected static void insertLocation(SQLiteDatabase database, String location, String eventID) {
         String[] whereArgs = new String[]{eventID};
         Cursor cursor = database.query(DBHelper.TABLE3, null, "eventID=?", whereArgs, null, null, null);
         ContentValues cv = new ContentValues();
         if (cursor.getCount() == 0) {
-
-            String locationMass[] = location.split("https://");
+            String locationMass[] = location.split("/");
             cv.put(DBHelper.COLUMN_EVENT_ID, eventID);
             if (locationMass.length == 3) {
                 cv.put(DBHelper.COLUMN_BUILDING, locationMass[0]);
@@ -186,6 +197,5 @@ public class DBHelper extends SQLiteOpenHelper {
             }
             database.insert(DBHelper.TABLE3, null, cv);
         }
-
     }
 }
