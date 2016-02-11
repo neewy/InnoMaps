@@ -1,4 +1,4 @@
-package com.innopolis.maps.innomaps;
+package com.innopolis.maps.innomaps.app;
 
 import android.content.ContentValues;
 import android.content.Context;

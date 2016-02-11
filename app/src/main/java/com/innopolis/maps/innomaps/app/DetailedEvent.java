@@ -1,4 +1,4 @@
-package com.innopolis.maps.innomaps;
+package com.innopolis.maps.innomaps.app;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -18,6 +18,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.innopolis.maps.innomaps.R;
 
 /**
  * Created by Nikolay on 05.02.2016.

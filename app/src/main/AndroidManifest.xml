@@ -14,7 +14,7 @@ package="com.innopolis.maps.innomaps">
     android:supportsRtl="true"
     android:theme="@style/AppTheme">
     <activity
-        android:name=".MainActivity"
+        android:name=".app.MainActivity"
         android:label="@string/app_name"
         android:theme="@style/AppTheme.NoActionBar">
         <intent-filter>

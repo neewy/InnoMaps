@@ -1,4 +1,4 @@
-package com.innopolis.maps.innomaps;
+package com.innopolis.maps.innomaps.app;
 
 /**
  * Created by Nikolay on 02.02.2016.
@@ -23,6 +23,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.innopolis.maps.innomaps.R;
 
 public class Maps extends Fragment implements ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -54,8 +55,6 @@ public class Maps extends Fragment implements ActivityCompat.OnRequestPermission
                     mSettings.setZoomControlsEnabled(true);
                     LatLng university = new LatLng(55.752321, 48.744674);
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(university, 15));
-                    mSettings.setIndoorLevelPickerEnabled(true);
-                    map.setIndoorEnabled(true);
                     map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
                         @Override
                         public void onMapLongClick(LatLng latLng) {
@@ -70,8 +69,7 @@ public class Maps extends Fragment implements ActivityCompat.OnRequestPermission
                             markerTo = addMarker(latLng);
                             if (pathFinder == null) {
                                 pathFinder = new PathFinder(map, new LatLng(map.getMyLocation().getLatitude(), map.getMyLocation().getLongitude()), latLng);
-                            }
-                            else {
+                            } else {
                                 pathFinder.setLatLng(new LatLng(map.getMyLocation().getLatitude(), map.getMyLocation().getLongitude()), latLng);
                             }
                             pathFinder.findPath();
@@ -113,7 +111,6 @@ public class Maps extends Fragment implements ActivityCompat.OnRequestPermission
     private Marker addMarker(LatLng point) {
         return map.addMarker(new MarkerOptions().position(point).icon(BitmapDescriptorFactory.fromResource(R.drawable.test_custom_marker)));
     }
-
 
 
 }

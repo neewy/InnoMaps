@@ -1,4 +1,4 @@
-package com.innopolis.maps.innomaps;
+package com.innopolis.maps.innomaps.app;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -10,9 +10,11 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -43,7 +45,6 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
     DBHelper dbHelper;
     SQLiteDatabase database;
     SharedPreferences sPref; //to store md5 hash of loaded file
-    CheckBox favCheckBox;
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
@@ -55,7 +56,6 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
         this.adapter = new EventsAdapter(context, getActivity().getSupportFragmentManager(), list, getActivity());
         listView.setAdapter(this.adapter);
         listView.setItemsCanFocus(true);
-        CheckBox favCheckBox = (CheckBox) view.findViewById(R.id.favCheckBox);
         swipeRefreshLayout.post(new Runnable() {
                                     @Override
                                     public void run() {
@@ -81,9 +81,7 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
             //Toast.makeText(context, "Getting new events", Toast.LENGTH_SHORT).show();
             try {
                 new ParseTask().execute().get();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
         } else if (!Utils.isNetworkAvailable(context) && !savedText.equals("")) {
@@ -114,30 +112,14 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
 
         @Override
         protected String doInBackground(Void... params) {
+
             dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             date = new Date();
             Utils.shiftDate(date);
-            try {
-                URL url = new URL("https://www.googleapis.com/calendar/v3/calendars/hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com/events?timeMin=" + dateFormat.format(date) + "T10%3A00%3A00-07%3A00&orderby=updated&sortorder=descending&futureevents=true&alt=json&key=AIzaSyDli8qeotu4TGaEs5VKSWy15CDyl4cgZ-o");
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
-
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null)
-                    buffer.append(line);
-
-                resultJson = buffer.toString();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return resultJson;
+            return Utils.doGetRequest(
+                    "https://www.googleapis.com/calendar/v3/calendars/hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com/events?timeMin="
+                    + dateFormat.format(date)
+                    + "T10%3A00%3A00-07%3A00&orderby=updated&sortorder=descending&futureevents=true&alt=json&key=AIzaSyDli8qeotu4TGaEs5VKSWy15CDyl4cgZ-o");
         }
 
         /**
