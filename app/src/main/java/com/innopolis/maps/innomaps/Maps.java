@@ -4,13 +4,9 @@ package com.innopolis.maps.innomaps;
  * Created by Nikolay on 02.02.2016.
  */
 
-import android.graphics.BitmapFactory;
-import android.graphics.Point;
-import android.graphics.drawable.Icon;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,6 +54,8 @@ public class Maps extends Fragment implements ActivityCompat.OnRequestPermission
                     mSettings.setZoomControlsEnabled(true);
                     LatLng university = new LatLng(55.752321, 48.744674);
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(university, 15));
+                    mSettings.setIndoorLevelPickerEnabled(true);
+                    map.setIndoorEnabled(true);
                     map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
                         @Override
                         public void onMapLongClick(LatLng latLng) {

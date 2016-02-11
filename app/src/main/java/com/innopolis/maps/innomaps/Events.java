@@ -10,6 +10,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -42,6 +43,7 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
     DBHelper dbHelper;
     SQLiteDatabase database;
     SharedPreferences sPref; //to store md5 hash of loaded file
+    CheckBox favCheckBox;
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
@@ -53,6 +55,7 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
         this.adapter = new EventsAdapter(context, getActivity().getSupportFragmentManager(), list, getActivity());
         listView.setAdapter(this.adapter);
         listView.setItemsCanFocus(true);
+        CheckBox favCheckBox = (CheckBox) view.findViewById(R.id.favCheckBox);
         swipeRefreshLayout.post(new Runnable() {
                                     @Override
                                     public void run() {
