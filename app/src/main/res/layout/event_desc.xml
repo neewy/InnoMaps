@@ -18,39 +18,68 @@
             android:typeface="serif" />
 
         <TextView
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/timeLeft"
-            android:layout_marginTop="48dp"
+            android:layout_marginTop="68dp"
             android:layout_alignParentTop="false"
+            android:textAlignment="center"
+            android:typeface="monospace"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
+            android:layout_marginRight="25dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/location"
+            android:layout_marginTop="68dp"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentRight="false"
+            android:layout_alignParentEnd="false"
             android:textAlignment="center"
-            android:typeface="monospace" />
+            android:typeface="monospace"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="25dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/hoursMinutes"
+            android:layout_marginTop="92dp"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentRight="false"
+            android:layout_alignParentEnd="false"
+            android:textAlignment="center"
+            android:typeface="monospace"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="25dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:id="@+id/description"
-            android:layout_below="@+id/timeLeft"
-            android:layout_marginTop="35dp"
-            android:layout_alignRight="@+id/timeLeft"
-            android:layout_alignEnd="@+id/timeLeft"
+            android:layout_marginTop="110dp"
             android:typeface="sans"
-            android:padding="15dp" />
+            android:padding="15dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_alignParentTop="true" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/organizer"
+            android:textSize="18sp"
             android:layout_marginBottom="34dp"
             android:layout_alignParentBottom="true"
             android:layout_alignLeft="@+id/description"
             android:layout_alignStart="@+id/description"
             android:layout_alignRight="@+id/eventName"
             android:layout_alignEnd="@+id/eventName"
-            android:paddingLeft="15dp" />
+            android:paddingLeft="15dp"
+            android:layout_marginLeft="10dp" />
 
     </RelativeLayout>
 

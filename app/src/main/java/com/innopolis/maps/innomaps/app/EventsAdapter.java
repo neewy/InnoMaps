@@ -16,8 +16,13 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.utils.Utils;
 
+import org.apache.commons.lang3.StringUtils;
+
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import xyz.hanks.library.SmallBang;
@@ -69,14 +74,27 @@ public class EventsAdapter extends BaseAdapter {
 
         TextView timeLeft = (TextView) view.findViewById(R.id.timeLeft);
         TextView nameEvent = (TextView) view.findViewById(R.id.nameEvent);
-        TextView creator = (TextView) view.findViewById(R.id.creator);
-        TextView descEvent = (TextView) view.findViewById(R.id.descEvent);
+        TextView location = (TextView) view.findViewById(R.id.location);
+        TextView time = (TextView) view.findViewById(R.id.time);
         final CheckBox favCheckBox = (CheckBox) view.findViewById(R.id.favCheckBox);
 
-        timeLeft.setText(values.get("timeLeft"));
-        nameEvent.setText(values.get("summary"));
-        creator.setText(values.get("creator_name"));
-        descEvent.setText(values.get("start"));
+        nameEvent.setText(values.get(DBHelper.COLUMN_SUMMARY));
+        String[] locationText = new String[3];
+        locationText[0] = (values.get(DBHelper.COLUMN_BUILDING) != null) ? values.get(DBHelper.COLUMN_BUILDING) : "null";
+        locationText[1] = (values.get(DBHelper.COLUMN_FLOOR) != null) ? values.get(DBHelper.COLUMN_FLOOR) : "null";
+        locationText[2] = (values.get(DBHelper.COLUMN_ROOM) != null) ? values.get(DBHelper.COLUMN_ROOM) : "null";
+        location.setText(StringUtils.join(Utils.clean(locationText), ", "));
+        Date startTime = null;
+
+        try {
+            startTime = Utils.googleTimeFormat.parse(values.get(DBHelper.COLUMN_START));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        if (startTime != null)
+            time.setText(Utils.hoursMinutes.format(startTime));
+
+        timeLeft.setText(Utils.prettyTime.format(startTime));
         if (values.get("checked").equals("1")) {
             favCheckBox.setChecked(true);
         } else {
@@ -99,24 +117,17 @@ public class EventsAdapter extends BaseAdapter {
         favCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //setOnCheckedChangeListener probably? causes bugs with redrawing
                 mSmallBang.bang(favCheckBox);
                 String isFav = (favCheckBox.isChecked()) ? "1" : "0";
-                if (favCheckBox.isChecked())
-                    favCheckBox.setChecked(true);
-                else
-                    favCheckBox.setChecked(false);
                 String eventID = values.get(DBHelper.COLUMN_EVENT_ID);
                 ContentValues cv = new ContentValues();
                 dbHelper = new DBHelper(ctx);
                 database = dbHelper.getWritableDatabase();
                 cv.put(DBHelper.COLUMN_FAV, isFav);
-                int updCount = database.update(DBHelper.TABLE1, cv, "eventID = ?", new String[]{eventID});
-                //Log.d("Checked!", "updated rows count = " + updCount + " | " + eventID + " | " + isFav);
+                database.update(DBHelper.TABLE1, cv, "eventID = ?", new String[]{eventID});
                 dbHelper.close();
             }
         });
-
         return view;
     }
 
