@@ -34,7 +34,7 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
     static Context context;
     ListView listView;
 
-    static ArrayList<HashMap<String, String>> list = new ArrayList<>(); //for storing entries
+    ArrayList<HashMap<String, String>> list = new ArrayList<>(); //for storing entries
     EventsAdapter adapter; //to populate list from list above
     SwipeRefreshLayout swipeRefreshLayout;
     DBHelper dbHelper;
@@ -140,52 +140,10 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
             String md5 = new String(Hex.encodeHex(DigestUtils.md5(resultJson)));
             try {
                 dataJsonObj = new JSONObject(strJson);
+                list.clear();
                 if (jsonUpdated(md5)) {
-                    list.clear();
-                    JSONArray events = dataJsonObj.getJSONArray("items");
-                    for (int i = 0; i < events.length(); i++) {
-                        JSONObject jsonEvent = events.getJSONObject(i);
-                        String summary = "", htmlLink = "", start = "", end = "",
-                                location = "", eventID = "", description = "",
-                                creator_name = "", creator_email = "", checked = "0"; //initializing db fields
-                        Iterator<String> iter = jsonEvent.keys();
-                        while (iter.hasNext()) {
-                            String key = iter.next();
-                            switch (key) {
-                                case "summary":
-                                    summary = jsonEvent.getString("summary");
-                                    break;
-                                case "htmlLink":
-                                    htmlLink = jsonEvent.getString("htmlLink");
-                                    break;
-                                case "start":
-                                    start = jsonEvent.getJSONObject("start").getString("dateTime");
-                                    break;
-                                case "end":
-                                    end = jsonEvent.getJSONObject("end").getString("dateTime");
-                                    break;
-                                case "location":
-                                    location = jsonEvent.getString("location");
-                                    break;
-                                case "id":
-                                    eventID = jsonEvent.getString("id");
-                                    break;
-                                case "description":
-                                    description = jsonEvent.getString("description");
-                                    break;
-                                case "creator":
-                                    creator_name = jsonEvent.getJSONObject("creator").getString("displayName");
-                                    creator_email = jsonEvent.getJSONObject("creator").getString("email");
-                                    break;
-                            }
-                        }
-                        DBHelper.insertEvent(database, summary, htmlLink, start, end, eventID, checked);
-                        DBHelper.insertEventType(database, summary, description, creator_name, creator_email);
-                        DBHelper.insertLocation(database, location, eventID);
-                    }
-                    DBHelper.readEvents(list, database, false);
+                    getEventsListLive(dataJsonObj);
                 } else {
-                    list.clear();
                     //Toast.makeText(context, "You've got the last events", Toast.LENGTH_SHORT).show();
                     DBHelper.readEvents(list, database, false);
                 }
@@ -197,6 +155,57 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
             database.close();
             swipeRefreshLayout.setRefreshing(false);
         }
+    }
+
+    private ArrayList<HashMap<String, String>> getEventsListLive(JSONObject dataJsonObj) throws JSONException {
+        return getEventsList(dataJsonObj, database);
+    }
+
+    public ArrayList<HashMap<String, String>> getEventsList(JSONObject dataJsonObj, SQLiteDatabase db) throws JSONException {
+        JSONArray events = dataJsonObj.getJSONArray("items");
+        for (int i = 0; i < events.length(); i++) {
+            JSONObject jsonEvent = events.getJSONObject(i);
+            String summary = "", htmlLink = "", start = "", end = "",
+                    location = "", eventID = "", description = "",
+                    creator_name = "", creator_email = "", checked = "0"; //initializing db fields
+            Iterator<String> iter = jsonEvent.keys();
+            while (iter.hasNext()) {
+                String key = iter.next();
+                switch (key) {
+                    case "summary":
+                        summary = jsonEvent.getString("summary");
+                        break;
+                    case "htmlLink":
+                        htmlLink = jsonEvent.getString("htmlLink");
+                        break;
+                    case "start":
+                        start = jsonEvent.getJSONObject("start").getString("dateTime");
+                        break;
+                    case "end":
+                        end = jsonEvent.getJSONObject("end").getString("dateTime");
+                        break;
+                    case "location":
+                        location = jsonEvent.getString("location");
+                        break;
+                    case "id":
+                        eventID = jsonEvent.getString("id");
+                        break;
+                    case "description":
+                        description = jsonEvent.getString("description");
+                        break;
+                    case "creator":
+                        creator_name = jsonEvent.getJSONObject("creator").getString("displayName");
+                        creator_email = jsonEvent.getJSONObject("creator").getString("email");
+                        break;
+                }
+            }
+            DBHelper.insertEvent(db, summary, htmlLink, start, end, eventID, checked);
+            DBHelper.insertEventType(db, summary, description, creator_name, creator_email);
+            DBHelper.insertLocation(db, location, eventID);
+        }
+        DBHelper.readEvents(list, db, false);
+
+        return list;
     }
 }
 

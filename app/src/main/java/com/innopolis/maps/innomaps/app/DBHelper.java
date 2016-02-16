@@ -49,6 +49,10 @@ public class DBHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    public DBHelper(Context context, String dbName) {
+        super(context, dbName, null, DATABASE_VERSION);
+    }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE events (_id INTEGER PRIMARY KEY, summary TEXT, htmlLink TEXT, start TEXT, end TEXT, eventID TEXT, checked TEXT)");
@@ -64,6 +68,7 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+
     /**
      * Puts all the events in the List, supplied as first argument
      *
@@ -74,7 +79,7 @@ public class DBHelper extends SQLiteOpenHelper {
     protected static void readEvents(List list, SQLiteDatabase database, boolean areFavourite) {
         SimpleDateFormat formatter = new SimpleDateFormat();
         Date d = new Date();
-        Cursor cursor = null;
+        Cursor cursor;
         String sqlQuery = "select events.summary,htmlLink,start,end,events.eventID as eventID,"
                 + " description,creator_name,creator_email,telegram, checked,"
                 + " building,floor,room,latitude,longitude"
