@@ -6,10 +6,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.innopolis.maps.innomaps.utils.Utils;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
 
 
 public class DBHelper extends SQLiteOpenHelper {
@@ -36,7 +39,8 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_DESCRIPTION = "description"; //detailed description
     public static final String COLUMN_CREATOR_NAME = "creator_name"; //the person, who created the event
     public static final String COLUMN_CREATOR_EMAIL = "creator_email"; //his or her gmail
-    public static final String COLUMN_TELEGRAM = "telegram"; //telegram link available
+    public static final String COLUMN_TELEGRAM_LOGIN = "telegram_login"; //telegram link available
+    public static final String COLUMN_TELEGRAM_GROUP = "telegram_group"; //telegram link available
 
     /* Location table */
     public static final String COLUMN_BUILDING = "building";
@@ -56,7 +60,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE events (_id INTEGER PRIMARY KEY, summary TEXT, htmlLink TEXT, start TEXT, end TEXT, eventID TEXT, checked TEXT)");
-        db.execSQL("CREATE TABLE event_type (_id INTEGER PRIMARY KEY, summary TEXT, description TEXT, creator_name TEXT, creator_email TEXT, telegram TEXT)"); //TODO
+        db.execSQL("CREATE TABLE event_type (_id INTEGER PRIMARY KEY, summary TEXT, description TEXT, creator_name TEXT, creator_email TEXT, telegram_login TEXT, telegram_group TEXT)");
         db.execSQL("CREATE TABLE location (_id INTEGER PRIMARY KEY, eventID TEXT, building TEXT, floor TEXT, room TEXT, latitude TEXT, longitude TEXT)");
     }
 
@@ -81,7 +85,7 @@ public class DBHelper extends SQLiteOpenHelper {
         Date d = new Date();
         Cursor cursor;
         String sqlQuery = "select events.summary,htmlLink,start,end,events.eventID as eventID,"
-                + " description,creator_name,creator_email,telegram, checked,"
+                + " description,creator_name,creator_email,telegram_login,telegram_group, checked,"
                 + " building,floor,room,latitude,longitude"
                 + " from events "
                 + "inner join event_type on events.summary=event_type.summary  "
@@ -90,7 +94,7 @@ public class DBHelper extends SQLiteOpenHelper {
         cursor = database.rawQuery(sqlQuery, null);
         if (cursor.moveToFirst()) {
             int summary, htmlLink, start, end, eventID, checked;
-            int description, creator_name, creator_email, telegram;
+            int description, creator_name, creator_email, telegram_login, telegram_group;
             int building, floor, room, latitude, longitude;
 
             summary = cursor.getColumnIndex(DBHelper.COLUMN_SUMMARY);
@@ -102,7 +106,8 @@ public class DBHelper extends SQLiteOpenHelper {
             description = cursor.getColumnIndex(DBHelper.COLUMN_DESCRIPTION);
             creator_name = cursor.getColumnIndex(DBHelper.COLUMN_CREATOR_NAME);
             creator_email = cursor.getColumnIndex(DBHelper.COLUMN_CREATOR_EMAIL);
-            telegram = cursor.getColumnIndex(DBHelper.COLUMN_TELEGRAM);
+            telegram_login = cursor.getColumnIndex(DBHelper.COLUMN_TELEGRAM_LOGIN);
+            telegram_group = cursor.getColumnIndex(DBHelper.COLUMN_TELEGRAM_GROUP);
 
             building = cursor.getColumnIndex(DBHelper.COLUMN_BUILDING);
             floor = cursor.getColumnIndex(DBHelper.COLUMN_FLOOR);
@@ -121,7 +126,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 item.put(DBHelper.COLUMN_DESCRIPTION, cursor.getString(description));
                 item.put(DBHelper.COLUMN_CREATOR_NAME, cursor.getString(creator_name));
                 item.put(DBHelper.COLUMN_CREATOR_EMAIL, cursor.getString(creator_email));
-                item.put(DBHelper.COLUMN_TELEGRAM, cursor.getString(telegram));
+                item.put(DBHelper.COLUMN_TELEGRAM_LOGIN, cursor.getString(telegram_login));
+                item.put(DBHelper.COLUMN_TELEGRAM_GROUP, cursor.getString(telegram_group));
                 item.put(DBHelper.COLUMN_BUILDING, cursor.getString(building));
                 item.put(DBHelper.COLUMN_FLOOR, cursor.getString(floor));
                 item.put(DBHelper.COLUMN_ROOM, cursor.getString(room));
@@ -172,8 +178,16 @@ public class DBHelper extends SQLiteOpenHelper {
             cv.put(DBHelper.COLUMN_DESCRIPTION, description);
             cv.put(DBHelper.COLUMN_CREATOR_NAME, creator_name);
             cv.put(DBHelper.COLUMN_CREATOR_EMAIL, creator_email);
-            String telegr[] = description.split("https://");
-            if (telegr.length > 1) cv.put(DBHelper.COLUMN_TELEGRAM, telegr[1]);
+            Matcher telLogMatch = Utils.telLogPattern.matcher(description);
+            if (telLogMatch.find())
+                cv.put(DBHelper.COLUMN_TELEGRAM_LOGIN, telLogMatch.group());
+            else
+                cv.put(DBHelper.COLUMN_TELEGRAM_LOGIN, "null");
+            Matcher telGroupMatch = Utils.telGroupPattern.matcher(description);
+            if (telGroupMatch.find())
+                cv.put(DBHelper.COLUMN_TELEGRAM_GROUP, telGroupMatch.group());
+            else
+                cv.put(DBHelper.COLUMN_TELEGRAM_GROUP, "null");
             database.insert(DBHelper.TABLE2, null, cv);
         }
     }
@@ -191,15 +205,23 @@ public class DBHelper extends SQLiteOpenHelper {
         if (cursor.getCount() == 0) {
             String locationMass[] = location.split("/");
             cv.put(DBHelper.COLUMN_EVENT_ID, eventID);
-            if (locationMass.length == 3) {
+            if (locationMass.length > 0) {
                 cv.put(DBHelper.COLUMN_BUILDING, locationMass[0]);
-                cv.put(DBHelper.COLUMN_FLOOR, locationMass[1]);
-                cv.put(DBHelper.COLUMN_ROOM, locationMass[2]);
-                cv.put(DBHelper.COLUMN_LATITIDE, "55.752071");
-                cv.put(DBHelper.COLUMN_LONGITUDE, "48.741831");
             } else {
-                cv.put(DBHelper.COLUMN_BUILDING, location);
+                cv.put(DBHelper.COLUMN_BUILDING, "null");
             }
+            if (locationMass.length > 1) {
+                cv.put(DBHelper.COLUMN_FLOOR, locationMass[1]);
+            } else {
+                cv.put(DBHelper.COLUMN_FLOOR, "null");
+            }
+            if (locationMass.length > 2) {
+                cv.put(DBHelper.COLUMN_ROOM, locationMass[2]);
+            } else {
+                cv.put(DBHelper.COLUMN_ROOM, "null");
+            }
+            cv.put(DBHelper.COLUMN_LATITIDE, "55.752071");
+            cv.put(DBHelper.COLUMN_LONGITUDE, "48.741831");
             database.insert(DBHelper.TABLE3, null, cv);
         }
     }

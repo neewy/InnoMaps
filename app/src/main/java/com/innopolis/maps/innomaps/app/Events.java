@@ -33,9 +33,8 @@ import java.util.concurrent.ExecutionException;
 public class Events extends android.support.v4.app.Fragment implements SwipeRefreshLayout.OnRefreshListener {
     static Context context;
     ListView listView;
-
     ArrayList<HashMap<String, String>> list = new ArrayList<>(); //for storing entries
-    EventsAdapter adapter; //to populate list from list above
+    EventsAdapter adapter; //to populate list above
     SwipeRefreshLayout swipeRefreshLayout;
     DBHelper dbHelper;
     SQLiteDatabase database;
