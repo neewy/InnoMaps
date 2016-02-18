@@ -1,10 +1,12 @@
 package com.innopolis.maps.innomaps.app;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.internal.NavigationMenu;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -12,6 +14,7 @@ import android.text.SpannableString;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.UnderlineSpan;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -31,6 +34,9 @@ import org.apache.commons.lang3.StringUtils;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+
+import io.github.yavski.fabspeeddial.FabSpeedDial;
+import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 
 /**
  * Created by Nikolay on 05.02.2016.
@@ -53,7 +59,7 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
     private UiSettings mSettings;
     SupportMapFragment mSupportMapFragment;
 
-    String summary, htmlLink, start, end, descriptionStr, creator, telegram, eventID, building, floor, room, latitude, longitude;
+    String summary, htmlLink, start, end, descriptionStr, creator, telegram, eventID, building, floor, room, latitude, longitude, checked;
 
 
     @Override
@@ -78,15 +84,17 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
         final Cursor cursor = database.query(DBHelper.TABLE1, null, "eventID=?", new String[]{eventID}, null, null, null);
         cursor.moveToFirst();
         do {
-            int summary, htmlLink, start, end;
+            int summary, htmlLink, start, end, checked;
             summary = cursor.getColumnIndex(DBHelper.COLUMN_SUMMARY);
             htmlLink = cursor.getColumnIndex(DBHelper.COLUMN_LINK);
             start = cursor.getColumnIndex(DBHelper.COLUMN_START);
             end = cursor.getColumnIndex(DBHelper.COLUMN_END);
+            checked = cursor.getColumnIndex(DBHelper.COLUMN_FAV);
             this.summary = cursor.getString(summary);
             this.htmlLink = cursor.getString(htmlLink);
             this.start = cursor.getString(start);
             this.end = cursor.getString(end);
+            this.checked = cursor.getString(checked);
             String[] summaryArgs = new String[]{cursor.getString(summary)};
             Cursor cursor1 = database.query(DBHelper.TABLE2, null, "summary=?", summaryArgs, null, null, null);
             cursor1.moveToFirst();
@@ -99,7 +107,7 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
             cursor1.close();
         } while (cursor.moveToNext());
         cursor.close();
-        String[] eventIDArgs = new String[]{eventID};
+        final String[] eventIDArgs = new String[]{eventID};
         Cursor locationC = database.query(DBHelper.TABLE3, null, "eventID=?", eventIDArgs, null, null, null);
         if (locationC.moveToFirst()) {
             building = locationC.getString(locationC.getColumnIndex(DBHelper.COLUMN_BUILDING));
@@ -144,6 +152,41 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
                 }
             });
         }
+        FabSpeedDial fabButton = (FabSpeedDial) view.findViewById(R.id.fabButton);
+        fabButton.bringToFront();
+        fabButton.setMenuListener(new SimpleMenuListenerAdapter() {
+
+            @Override
+            public boolean onPrepareMenu(NavigationMenu navigationMenu) {
+                if (checked.equals("1")) {
+                    navigationMenu.getItem(0).setTitle("Unfavourite");
+                } else {
+                    navigationMenu.getItem(0).setTitle("Favourite");
+                }
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemSelected(MenuItem menuItem) {
+                int id = menuItem.getItemId();
+                if (id == R.id.action_fav) {
+                    database = dbHelper.getWritableDatabase();
+                    Boolean isFav = (checked.equals("1"));
+                    ContentValues cv = new ContentValues();
+                    String res = (isFav) ? "0" : "1";
+                    checked = res;
+                    cv.put(DBHelper.COLUMN_FAV, res);
+                    database.update(DBHelper.TABLE1, cv, "eventID = ?", new String[]{eventID});
+                    database.close();
+                    return true;
+                } else if (id == R.id.action_map) {
+                    return true;
+                } else if (id == R.id.action_share) {
+                    return true;
+                }
+                return false;
+            }
+        });
         initializeMap(latitude, longitude);
         return view;
     }
@@ -166,7 +209,6 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
 
                     mSettings = mMap.getUiSettings();
                     mSettings.setMyLocationButtonEnabled(false);
-                    mSettings.setZoomControlsEnabled(true);
                     mMap.setMyLocationEnabled(true);
                     if (latitude != null && longitude != null) {
                         LatLng position = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));

@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="399dp">
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/topLayout"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
         <TextView
             android:layout_width="wrap_content"
@@ -66,7 +65,7 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="200dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:id="@+id/description"
             android:layout_marginTop="110dp"
@@ -84,16 +83,34 @@
             android:id="@+id/organizer"
             android:textSize="18sp"
             android:layout_marginBottom="15dp"
-            android:layout_alignParentBottom="true"
+            android:layout_alignParentBottom="false"
             android:layout_alignLeft="@+id/description"
             android:layout_alignStart="@+id/description"
             android:layout_alignRight="@+id/eventName"
             android:layout_alignEnd="@+id/eventName"
             android:paddingLeft="5dp"
             android:layout_marginLeft="10dp"
-            android:textAlignment="textStart" />
+            android:textAlignment="textStart"
+            android:layout_below="@+id/description" />
 
-    </RelativeLayout>
+    <io.github.yavski.fabspeeddial.FabSpeedDial
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:id="@+id/fabButton"
+        app:fabGravity="bottom_end"
+        app:fabMenu="@menu/detailedmenu"
+        app:miniFabBackgroundTint="@android:color/white"
+        app:miniFabDrawableTint="?attr/colorPrimaryDark"
+        app:miniFabTitleTextColor="?attr/colorPrimaryDark"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="false"
+        android:layout_marginBottom="-45dp"
+        android:layout_marginRight="10dp"
+        app:elevation="6dp"
+        app:pressedTranslationZ="12dp"
+        android:layout_above="@+id/mapDesc" />
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -101,5 +118,10 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.innopolis.maps.innomaps.MapsActivity" />
-</LinearLayout>
+        tools:context="com.innopolis.maps.innomaps.MapsActivity"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentStart="false"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentRight="false"
+        android:layout_below="@+id/organizer" />
+    </RelativeLayout>
