@@ -75,7 +75,7 @@ public class EventsAdapter extends BaseAdapter {
         TextView timeLeft = (TextView) view.findViewById(R.id.timeLeft);
         TextView nameEvent = (TextView) view.findViewById(R.id.nameEvent);
         TextView location = (TextView) view.findViewById(R.id.location);
-        TextView time = (TextView) view.findViewById(R.id.time);
+        TextView dateTime = (TextView) view.findViewById(R.id.dateTime);
         final CheckBox favCheckBox = (CheckBox) view.findViewById(R.id.favCheckBox);
 
         nameEvent.setText(values.get(DBHelper.COLUMN_SUMMARY));
@@ -85,16 +85,17 @@ public class EventsAdapter extends BaseAdapter {
         locationText[2] = (values.get(DBHelper.COLUMN_ROOM) != null) ? values.get(DBHelper.COLUMN_ROOM) : "null";
         location.setText(StringUtils.join(Utils.clean(locationText), ", "));
         Date startTime = null;
+        Date endTime = null;
 
         try {
             startTime = Utils.googleTimeFormat.parse(values.get(DBHelper.COLUMN_START));
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        if (startTime != null)
-            time.setText(Utils.hoursMinutes.format(startTime));
-
-        timeLeft.setText(Utils.prettyTime.format(startTime));
+        if (startTime != null) {
+            dateTime.setText(Utils.commonTime.format(startTime));
+            timeLeft.setText(Utils.prettyTime.format(startTime));
+        }
         if (values.get("checked").equals("1")) {
             favCheckBox.setChecked(true);
         } else {

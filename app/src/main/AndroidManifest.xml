@@ -6,7 +6,6 @@ package="com.innopolis.maps.innomaps">
     <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
 <application
     android:allowBackup="true"
     android:icon="@mipmap/ic_launcher"
@@ -16,6 +15,7 @@ package="com.innopolis.maps.innomaps">
     <activity
         android:name=".app.MainActivity"
         android:label="@string/app_name"
+        android:screenOrientation="portrait"
         android:theme="@style/AppTheme.NoActionBar">
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />

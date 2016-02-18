@@ -45,7 +45,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/hoursMinutes"
+            android:id="@+id/dateTime"
             android:layout_marginTop="92dp"
             android:layout_alignParentTop="false"
             android:layout_alignParentRight="false"
@@ -58,11 +58,22 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/duration"
+            android:layout_alignRight="@+id/timeLeft"
+            android:layout_alignEnd="@+id/timeLeft"
+            android:hyphenationFrequency="full"
+            android:layout_alignTop="@+id/dateTime" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:id="@+id/description"
             android:layout_marginTop="110dp"
             android:typeface="sans"
             android:padding="15dp"
+            android:maxLines="10"
+            android:scrollbars="vertical"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_alignParentTop="true" />
@@ -72,14 +83,15 @@
             android:layout_height="wrap_content"
             android:id="@+id/organizer"
             android:textSize="18sp"
-            android:layout_marginBottom="34dp"
+            android:layout_marginBottom="15dp"
             android:layout_alignParentBottom="true"
             android:layout_alignLeft="@+id/description"
             android:layout_alignStart="@+id/description"
             android:layout_alignRight="@+id/eventName"
             android:layout_alignEnd="@+id/eventName"
-            android:paddingLeft="15dp"
-            android:layout_marginLeft="10dp" />
+            android:paddingLeft="5dp"
+            android:layout_marginLeft="10dp"
+            android:textAlignment="textStart" />
 
     </RelativeLayout>
 

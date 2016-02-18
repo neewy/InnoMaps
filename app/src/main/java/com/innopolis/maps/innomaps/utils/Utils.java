@@ -27,6 +27,7 @@ public class Utils {
     private final static long MILLISECONDS_PER_8DAY = 1000L * 60 * 60 * 24 * 8; //considering 8 days to be most actual date boundaries
 
     public static SimpleDateFormat hoursMinutes = new SimpleDateFormat("HH:mm");
+    public static SimpleDateFormat commonTime = new SimpleDateFormat("dd/MM/yy HH:mm");
     public static SimpleDateFormat googleTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
     public static PrettyTime prettyTime = new PrettyTime(new Locale("en"));
     //shift the given Date by exactly 8 days.

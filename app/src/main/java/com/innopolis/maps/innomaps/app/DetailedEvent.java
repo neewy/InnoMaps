@@ -3,10 +3,14 @@ package com.innopolis.maps.innomaps.app;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.SpannableString;
+import android.text.method.ScrollingMovementMethod;
+import android.text.style.UnderlineSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Nikolay on 05.02.2016.
@@ -40,10 +45,10 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
     TextView eventName;
     TextView timeLeft;
     TextView location;
-    TextView hoursMinutes;
+    TextView dateTime;
     TextView description;
     TextView organizer;
-
+    TextView duration;
     private GoogleMap mMap;
     private UiSettings mSettings;
     SupportMapFragment mSupportMapFragment;
@@ -60,9 +65,12 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
         eventName = (TextView) view.findViewById(R.id.eventName);
         timeLeft = (TextView) view.findViewById(R.id.timeLeft);
         location = (TextView) view.findViewById(R.id.location);
-        hoursMinutes = (TextView) view.findViewById(R.id.hoursMinutes);
+        dateTime = (TextView) view.findViewById(R.id.dateTime);
         description = (TextView) view.findViewById(R.id.description);
+        description.setMovementMethod(new ScrollingMovementMethod());
         organizer = (TextView) view.findViewById(R.id.organizer);
+        duration = (TextView) view.findViewById(R.id.duration);
+
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             eventID = bundle.getString("eventID", "");
@@ -104,18 +112,26 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
 
         eventName.setText(summary);
         Date startDate = null;
+        Date endDate = null;
         try {
             startDate = Utils.googleTimeFormat.parse(start);
+            endDate = Utils.googleTimeFormat.parse(end);
         } catch (ParseException e) {
             e.printStackTrace();
         }
         timeLeft.setText(Utils.prettyTime.format(startDate));
         String[] locationText = {building, floor, room};
         location.setText(StringUtils.join(Utils.clean(locationText), ", "));
-        hoursMinutes.setText(Utils.hoursMinutes.format(startDate));
+        dateTime.setText(Utils.commonTime.format(startDate));
+        Long durationTime = TimeUnit.MILLISECONDS.toMinutes(endDate.getTime() - startDate.getTime());
+        duration.setText("Duration: " + String.valueOf(durationTime) + "min");
         description.setText(descriptionStr);
         organizer.setText(creator);
         if (telegram != null) {
+            organizer.setTextColor(Color.BLUE);
+            SpannableString content = new SpannableString(creator);
+            content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+            organizer.setText(content);
             organizer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

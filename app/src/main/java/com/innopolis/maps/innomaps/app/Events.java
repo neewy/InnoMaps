@@ -23,6 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -71,7 +72,6 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
         String savedText = sPref.getString("updated", "");
 
         if (Utils.isNetworkAvailable(context)) {
-            //Toast.makeText(context, "Getting new events", Toast.LENGTH_SHORT).show();
             new ParseTask().execute();
         } else if (!Utils.isNetworkAvailable(context) && !savedText.equals("")) {
             list.clear();
@@ -191,9 +191,17 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
                         break;
                 }
             }
-            DBHelper.insertEvent(db, summary, htmlLink, start, end, eventID, checked);
-            DBHelper.insertEventType(db, summary, description, creator_name, creator_email);
-            DBHelper.insertLocation(db, location, eventID);
+            Date currentDate = new Date();
+            try {
+                if (currentDate.before(Utils.googleTimeFormat.parse(start))) {
+                    DBHelper.insertEvent(db, summary, htmlLink, start, end, eventID, checked);
+                    DBHelper.insertEventType(db, summary, description, creator_name, creator_email);
+                    DBHelper.insertLocation(db, location, eventID);
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
         }
         DBHelper.readEvents(list, db, false);
         return list;
