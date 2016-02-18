@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.concurrent.ExecutionException;
 
 public class Events extends android.support.v4.app.Fragment implements SwipeRefreshLayout.OnRefreshListener {
     static Context context;
@@ -73,11 +72,7 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
 
         if (Utils.isNetworkAvailable(context)) {
             //Toast.makeText(context, "Getting new events", Toast.LENGTH_SHORT).show();
-            try {
-                new ParseTask().execute().get();
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
+            new ParseTask().execute();
         } else if (!Utils.isNetworkAvailable(context) && !savedText.equals("")) {
             list.clear();
             Toast.makeText(context, "You are offline. Showing last events", Toast.LENGTH_SHORT).show();
@@ -143,10 +138,8 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
                 if (jsonUpdated(md5)) {
                     getEventsListLive(dataJsonObj);
                 } else {
-                    //Toast.makeText(context, "You've got the last events", Toast.LENGTH_SHORT).show();
                     DBHelper.readEvents(list, database, false);
                 }
-
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -203,7 +196,6 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
             DBHelper.insertLocation(db, location, eventID);
         }
         DBHelper.readEvents(list, db, false);
-
         return list;
     }
 }
