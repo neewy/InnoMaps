@@ -106,7 +106,7 @@ public class Utils {
     }
 
     private static final String TELEGRAM_LOGIN = "(Contact: @)((?:[a-z][a-z]+))";
-    private static final String TELEGRAM_GROUP = "((telegram.me\\/)(.*)(?:\\/[\\w\\.\\-]+)+)";    // Unix Path
+    private static final String TELEGRAM_GROUP = "((Group link: https://)(telegram.me\\/)(.*)(?:\\/[\\w\\.\\-]+)+)";    // Unix Path
 
     public static Pattern telLogPattern = Pattern.compile(TELEGRAM_LOGIN, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     public static Pattern telGroupPattern = Pattern.compile(TELEGRAM_GROUP, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);

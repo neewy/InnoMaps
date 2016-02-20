@@ -27,13 +27,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 
-public class Events extends android.support.v4.app.Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class EventsFragment extends android.support.v4.app.Fragment implements SwipeRefreshLayout.OnRefreshListener {
     static Context context;
     ListView listView;
-    ArrayList<HashMap<String, String>> list = new ArrayList<>(); //for storing entries
+    ArrayList<Event> list = new ArrayList<>(); //for storing entries
     EventsAdapter adapter; //to populate list above
     SwipeRefreshLayout swipeRefreshLayout;
     DBHelper dbHelper;
@@ -149,11 +148,11 @@ public class Events extends android.support.v4.app.Fragment implements SwipeRefr
         }
     }
 
-    private ArrayList<HashMap<String, String>> getEventsListLive(JSONObject dataJsonObj) throws JSONException {
+    private ArrayList<Event> getEventsListLive(JSONObject dataJsonObj) throws JSONException {
         return getEventsList(dataJsonObj, database);
     }
 
-    public ArrayList<HashMap<String, String>> getEventsList(JSONObject dataJsonObj, SQLiteDatabase db) throws JSONException {
+    public ArrayList<Event> getEventsList(JSONObject dataJsonObj, SQLiteDatabase db) throws JSONException {
         JSONArray events = dataJsonObj.getJSONArray("items");
         for (int i = 0; i < events.length(); i++) {
             JSONObject jsonEvent = events.getJSONObject(i);

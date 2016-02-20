@@ -8,9 +8,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.innopolis.maps.innomaps.utils.Utils;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 
@@ -76,7 +76,7 @@ public class DBHelper extends SQLiteOpenHelper {
     /**
      * Puts all the events in the List, supplied as first argument
      *
-     * @param list         - where to put data, elements are HashMap<String, String>
+     * @param list         - where to put data, elements are Event
      * @param database     - where to get data from
      * @param areFavourite - whether to put marked events or all of them
      */
@@ -116,24 +116,28 @@ public class DBHelper extends SQLiteOpenHelper {
             longitude = cursor.getColumnIndex(DBHelper.COLUMN_LONGITUDE);
 
             do {
-                HashMap<String, String> item = new HashMap<String, String>();
-                item.put(DBHelper.COLUMN_SUMMARY, cursor.getString(summary));
-                item.put(DBHelper.COLUMN_LINK, cursor.getString(htmlLink));
-                item.put(DBHelper.COLUMN_START, cursor.getString(start));
-                item.put(DBHelper.COLUMN_END, cursor.getString(end));
-                item.put(DBHelper.COLUMN_EVENT_ID, cursor.getString(eventID));
-                item.put(DBHelper.COLUMN_FAV, cursor.getString(checked));
-                item.put(DBHelper.COLUMN_DESCRIPTION, cursor.getString(description));
-                item.put(DBHelper.COLUMN_CREATOR_NAME, cursor.getString(creator_name));
-                item.put(DBHelper.COLUMN_CREATOR_EMAIL, cursor.getString(creator_email));
-                item.put(DBHelper.COLUMN_TELEGRAM_LOGIN, cursor.getString(telegram_login));
-                item.put(DBHelper.COLUMN_TELEGRAM_GROUP, cursor.getString(telegram_group));
-                item.put(DBHelper.COLUMN_BUILDING, cursor.getString(building));
-                item.put(DBHelper.COLUMN_FLOOR, cursor.getString(floor));
-                item.put(DBHelper.COLUMN_ROOM, cursor.getString(room));
-                item.put(DBHelper.COLUMN_LATITIDE, cursor.getString(latitude));
-                item.put(DBHelper.COLUMN_LONGITUDE, cursor.getString(longitude));
-                list.add(item);
+                Event event = new Event();
+                event.setSummary(cursor.getString(summary));
+                event.setHtmlLink(cursor.getString(htmlLink));
+                try {
+                    event.setStart(Utils.googleTimeFormat.parse(cursor.getString(start)));
+                    event.setEnd(Utils.googleTimeFormat.parse(cursor.getString(end)));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                event.setEventID(cursor.getString(eventID));
+                event.setChecked(cursor.getString(checked));
+                event.setDescription(cursor.getString(description));
+                event.setCreatorName(cursor.getString(creator_name));
+                event.setCreatorEmail(cursor.getString(creator_email));
+                event.setTelegramLogin(cursor.getString(telegram_login));
+                event.setTelegramGroup(cursor.getString(telegram_group));
+                event.setBuilding(cursor.getString(building));
+                event.setFloor(cursor.getString(floor));
+                event.setRoom(cursor.getString(room));
+                event.setLatitude(cursor.getString(latitude));
+                event.setLongitude(cursor.getString(longitude));
+                list.add(event);
             } while (cursor.moveToNext());
         }
         cursor.close();
@@ -175,19 +179,26 @@ public class DBHelper extends SQLiteOpenHelper {
         if (cursor.getCount() == 0) {
             ContentValues cv = new ContentValues();
             cv.put(DBHelper.COLUMN_SUMMARY, summary);
-            cv.put(DBHelper.COLUMN_DESCRIPTION, description);
             cv.put(DBHelper.COLUMN_CREATOR_NAME, creator_name);
             cv.put(DBHelper.COLUMN_CREATOR_EMAIL, creator_email);
             Matcher telLogMatch = Utils.telLogPattern.matcher(description);
-            if (telLogMatch.find())
-                cv.put(DBHelper.COLUMN_TELEGRAM_LOGIN, telLogMatch.group());
-            else
+            String telegramGroup, telegramLogin = "";
+            if (telLogMatch.find()) {
+                telegramLogin = telLogMatch.group();
+                cv.put(DBHelper.COLUMN_TELEGRAM_LOGIN, telegramLogin);
+                description = description.replace(telegramLogin, "");
+            } else {
                 cv.put(DBHelper.COLUMN_TELEGRAM_LOGIN, "null");
+            }
             Matcher telGroupMatch = Utils.telGroupPattern.matcher(description);
-            if (telGroupMatch.find())
-                cv.put(DBHelper.COLUMN_TELEGRAM_GROUP, telGroupMatch.group());
-            else
+            if (telGroupMatch.find()) {
+                telegramGroup = telGroupMatch.group();
+                cv.put(DBHelper.COLUMN_TELEGRAM_GROUP, telegramGroup);
+                description = description.replace(telegramGroup, "");
+            } else {
                 cv.put(DBHelper.COLUMN_TELEGRAM_GROUP, "null");
+            }
+            cv.put(DBHelper.COLUMN_DESCRIPTION, description);
             database.insert(DBHelper.TABLE2, null, cv);
         }
     }

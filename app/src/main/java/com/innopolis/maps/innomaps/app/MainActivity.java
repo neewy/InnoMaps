@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        Fragment fragment = new Maps();
+        Fragment fragment = new MapsFragment();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.content_frame, fragment, "Maps");
         ft.commit();
@@ -82,13 +82,13 @@ public class MainActivity extends AppCompatActivity
         Fragment fragment = null;
         String title = getString(R.string.app_name);
         if (id == R.id.nav_maps) {
-            fragment = new Maps();
+            fragment = new MapsFragment();
             title = "Maps";
         } else if (id == R.id.nav_favourite) {
-            fragment = new Favourite();
+            fragment = new FavouriteFragment();
             title = "Favourite";
         } else if (id == R.id.nav_event) {
-            fragment = new Events();
+            fragment = new EventsFragment();
             title = "Events";
         } else if (id == R.id.nav_share) {
         }

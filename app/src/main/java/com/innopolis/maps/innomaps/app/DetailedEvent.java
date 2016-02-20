@@ -143,7 +143,7 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
             organizer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    DialogFragment newFragment = new TelegramOpen();
+                    DialogFragment newFragment = new TelegramOpenDialog();
                     Bundle bundle = new Bundle();
                     bundle.putString("dialogText", creator);
                     bundle.putString("dialogUrl", telegram);

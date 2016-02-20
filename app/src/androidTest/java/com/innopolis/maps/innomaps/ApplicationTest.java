@@ -6,10 +6,12 @@ import android.test.InstrumentationTestCase;
 import android.test.RenamingDelegatingContext;
 
 import com.innopolis.maps.innomaps.app.DBHelper;
-import com.innopolis.maps.innomaps.app.Events;
+import com.innopolis.maps.innomaps.app.Event;
+import com.innopolis.maps.innomaps.app.EventsFragment;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
@@ -20,7 +22,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 
@@ -29,7 +30,7 @@ public class ApplicationTest extends InstrumentationTestCase {
 
     private DBHelper dbHelper;
     private SQLiteDatabase database;
-    private Events e;
+    private EventsFragment e;
 
     @Before
     @Override
@@ -39,7 +40,7 @@ public class ApplicationTest extends InstrumentationTestCase {
         assertNotNull(dbHelper);
         database = dbHelper.getWritableDatabase();
         assertNotNull(database);
-        e = new Events();
+        e = new EventsFragment();
     }
 
     @After
@@ -70,7 +71,7 @@ public class ApplicationTest extends InstrumentationTestCase {
         JSONArray jsonObjects = dataJsonObj.getJSONArray("items");
         assertTrue("Events not found", jsonObjects != null);
 
-        ArrayList<HashMap<String, String>> events = e.getEventsList(dataJsonObj, database);
+        ArrayList<Event> events = e.getEventsList(dataJsonObj, database);
         assertTrue("The number of JSON objects (" + jsonObjects.length()
                 + ") differs from the number of events in the list"
                 + " (" + events.size() + ")", events.size() == jsonObjects.length());
@@ -91,11 +92,25 @@ public class ApplicationTest extends InstrumentationTestCase {
         assertTrue("JSON Object is empty", dataJsonObj.length() != 0);
 
         JSONArray jsonObjects = dataJsonObj.getJSONArray("items");
+        String start = null;
+        int newEvents = 0;
+        for (int i = 0; i < jsonObjects.length(); i++) {
+            JSONObject jsonEvent = jsonObjects.getJSONObject(i);
+            try {
+                start = jsonEvent.getJSONObject("start").getString("dateTime");
+            } catch (JSONException e) {
+                System.out.println("No date");
+            }
+            Date currentDate = new Date();
+            if (start != null & currentDate.before(Utils.googleTimeFormat.parse(start))) {
+                newEvents++;
+            }
+        }
         assertTrue("Events not found", jsonObjects != null);
 
-        ArrayList<HashMap<String, String>> events = e.getEventsList(dataJsonObj, database);
+        ArrayList<Event> events = e.getEventsList(dataJsonObj, database);
         assertTrue("The number of JSON objects (" + jsonObjects.length()
                 + ") differs from the number of events in the list"
-                + " (" + events.size() + ")", events.size() == jsonObjects.length());
+                + " (" + events.size() + ")", events.size() == newEvents);
     }
 }

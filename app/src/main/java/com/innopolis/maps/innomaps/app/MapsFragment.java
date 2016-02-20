@@ -25,7 +25,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.innopolis.maps.innomaps.R;
 
-public class Maps extends Fragment implements ActivityCompat.OnRequestPermissionsResultCallback {
+public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     MapView mapView; //an element of the layout
     private GoogleMap map;

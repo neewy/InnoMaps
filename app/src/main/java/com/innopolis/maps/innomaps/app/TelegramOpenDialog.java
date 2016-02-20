@@ -16,7 +16,7 @@ import com.innopolis.maps.innomaps.utils.Utils;
 /**
  * Created by neewy on 2/13/16.
  */
-public class TelegramOpen extends DialogFragment {
+public class TelegramOpenDialog extends DialogFragment {
     String message;
     String link;
 
@@ -35,7 +35,7 @@ public class TelegramOpen extends DialogFragment {
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        TelegramOpen.this.getDialog().cancel();
+                        TelegramOpenDialog.this.getDialog().cancel();
                     }
                 });
         return builder.create();

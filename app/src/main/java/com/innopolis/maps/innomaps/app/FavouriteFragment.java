@@ -14,14 +14,13 @@ import android.widget.Toast;
 import com.innopolis.maps.innomaps.R;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 
-public class Favourite extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class FavouriteFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     static Context context;
     ListView listView;
-    static ArrayList<HashMap<String, String>> list = new ArrayList<>();
+    ArrayList<Event> list = new ArrayList<>();
     EventsAdapter adapter;
     SwipeRefreshLayout swipeRefreshLayout;
     DBHelper dbHelper;
