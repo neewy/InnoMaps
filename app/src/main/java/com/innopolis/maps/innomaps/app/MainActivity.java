@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         if (fragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             ft.replace(R.id.content_frame, fragment).addToBackStack(title);
             ft.commit();
         }

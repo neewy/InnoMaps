@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,16 +94,22 @@ public class EventsAdapter extends BaseAdapter {
             favCheckBox.setChecked(false);
         }
         final SmallBang mSmallBang = SmallBang.attach2Window(activity);
+        final View finalView = view;
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Fragment fragment = new DetailedEvent();
-                Bundle bundle = new Bundle();
-                bundle.putString("eventID", event.getEventID());
-                fragment.setArguments(bundle);
-                FragmentTransaction ft = fm.beginTransaction();
-                ft.replace(R.id.content_frame, fragment).addToBackStack("Detailed");
-                ft.commit();
+                if (((SwipeRefreshLayout) finalView.getParent().getParent()).isRefreshing()) {
+                    return;
+                } else {
+                    Fragment fragment = new DetailedEvent();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("eventID", event.getEventID());
+                    fragment.setArguments(bundle);
+                    FragmentTransaction ft = fm.beginTransaction();
+                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                    ft.replace(R.id.content_frame, fragment).addToBackStack("Detailed");
+                    ft.commit();
+                }
             }
 
         });
