@@ -4,6 +4,7 @@ package com.innopolis.maps.innomaps.app;
  * Created by Nikolay on 02.02.2016.
  */
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -23,7 +24,11 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.innopolis.maps.innomaps.R;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Maps extends Fragment implements ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -46,31 +51,37 @@ public class Maps extends Fragment implements ActivityCompat.OnRequestPermission
             case ConnectionResult.SUCCESS:
                 mapView = (MapView) v.findViewById(R.id.map);
                 mapView.onCreate(savedInstanceState);
-                // Gets to GoogleMap from the MapView and does initialization stuff
                 if (mapView != null) {
                     map = mapView.getMap();
                     map.getUiSettings().setMyLocationButtonEnabled(true);
                     map.setMyLocationEnabled(true);
                     mSettings = map.getUiSettings();
                     mSettings.setZoomControlsEnabled(true);
-                    LatLng university = new LatLng(55.752321, 48.744674);
+                    final LatLng university = new LatLng(55.752321, 48.744674);
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(university, 15));
                     map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
                         @Override
                         public void onMapLongClick(LatLng latLng) {
-                            if (markerFrom == null) {
-                                markerFrom = addMarker(new LatLng(map.getMyLocation().getLatitude(), map.getMyLocation().getLongitude()));
-                            }
-                            if (markerTo != null) {
-                                markerTo.remove();
-                            }
-                            markerTo = addMarker(latLng);
-                            if (pathFinder == null) {
-                                pathFinder = new PathFinder(map, new LatLng(map.getMyLocation().getLatitude(), map.getMyLocation().getLongitude()), latLng);
-                            } else {
-                                pathFinder.setLatLng(new LatLng(map.getMyLocation().getLatitude(), map.getMyLocation().getLongitude()), latLng);
-                            }
-                            pathFinder.findPath();
+                            LatLng p1 = new LatLng(55.2, 48.2);
+                            LatLng p2 = new LatLng(55.2, 49.2);
+                            LatLng p3 = new LatLng(56.2, 49.2);
+                            LatLng p4 = new LatLng(56.2, 48.2);
+                            JGraphTWrapper graphWrapper = new JGraphTWrapper();
+                            graphWrapper.addVertex(p1);
+                            graphWrapper.addVertex(p2);
+                            graphWrapper.addVertex(p3);
+                            graphWrapper.addVertex(p4);
+                            graphWrapper.addVertex(university);
+                            graphWrapper.addEdge(university, p1);
+                            graphWrapper.addEdge(p1, p2);
+                            graphWrapper.addEdge(p2, p3);
+                            graphWrapper.addEdge(p3, p4);
+                            ArrayList<LatLng> path = graphWrapper.findShortestPath(university, p4);
+                            map.addPolyline(new PolylineOptions()
+                                    .addAll(path)
+                                    .width(12)
+                                    .color(Color.parseColor("#05b1fb"))     // Google maps blue color
+                                    .geodesic(true));
                         }
                     });
                 }

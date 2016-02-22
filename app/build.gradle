@@ -36,6 +36,7 @@ dependencies {
     compile 'hanks.xyz:smallbang-library:0.1.2'
     compile 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
     compile 'org.apache.commons:commons-lang3:3.3.2'
+    compile 'org.jgrapht:jgrapht-core:0.9.1'
 
     androidTestCompile 'com.android.support.test:runner:0.4'
     androidTestCompile 'com.android.support:support-annotations:23.1.1'
