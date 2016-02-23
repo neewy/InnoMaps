@@ -1,127 +1,158 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/topLayout"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:id="@+id/eventName"
-            android:layout_marginTop="16dp"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:typeface="serif" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/timeLeft"
-            android:layout_marginTop="68dp"
-            android:layout_alignParentTop="false"
-            android:textAlignment="center"
-            android:typeface="monospace"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginRight="25dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/location"
-            android:layout_marginTop="68dp"
-            android:layout_alignParentTop="false"
-            android:layout_alignParentRight="false"
-            android:layout_alignParentEnd="false"
-            android:textAlignment="center"
-            android:typeface="monospace"
-            android:layout_alignParentLeft="true"
-            android:layout_marginLeft="25dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/dateTime"
-            android:layout_marginTop="92dp"
-            android:layout_alignParentTop="false"
-            android:layout_alignParentRight="false"
-            android:layout_alignParentEnd="false"
-            android:textAlignment="center"
-            android:typeface="monospace"
-            android:layout_alignParentLeft="true"
-            android:layout_marginLeft="25dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/duration"
-            android:layout_alignRight="@+id/timeLeft"
-            android:layout_alignEnd="@+id/timeLeft"
-            android:hyphenationFrequency="full"
-            android:layout_alignTop="@+id/dateTime" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="200dp"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:id="@+id/description"
-            android:layout_marginTop="110dp"
-            android:typeface="sans"
-            android:padding="15dp"
-            android:maxLines="10"
-            android:scrollbars="vertical"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_alignParentTop="true" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/organizer"
-            android:textSize="18sp"
-            android:layout_marginBottom="15dp"
-            android:layout_alignParentBottom="false"
-            android:layout_alignLeft="@+id/description"
-            android:layout_alignStart="@+id/description"
-            android:layout_alignRight="@+id/eventName"
-            android:layout_alignEnd="@+id/eventName"
-            android:paddingLeft="5dp"
-            android:layout_marginLeft="10dp"
-            android:textAlignment="textStart"
-            android:layout_below="@+id/description" />
-
-    <io.github.yavski.fabspeeddial.FabSpeedDial
+    <TextView
+        android:id="@+id/eventName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:typeface="serif" />
+
+    <LinearLayout
+        android:id="@+id/upper_text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="100"
+        android:layout_weight="1"
+        >
+
+        <TextView
+            android:id="@+id/location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="false"
+            android:layout_alignParentTop="false"
+            android:layout_marginLeft="25dp"
+            android:layout_marginTop="68dp"
+            android:layout_weight="50"
+            android:ellipsize="end"
+            android:gravity="left"
+            android:typeface="monospace" />
+
+
+        <TextView
+            android:id="@+id/timeLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="false"
+            android:layout_marginRight="25dp"
+            android:layout_marginTop="68dp"
+            android:layout_weight="50"
+            android:layout_toRightOf="@+id/location"
+            android:gravity="right"
+            android:typeface="monospace" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lower_text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="100"
+        android:layout_below="@+id/upper_text">
+
+        <TextView
+            android:id="@+id/dateTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="25dp"
+            android:layout_weight="50"
+            android:ellipsize="end"
+            android:gravity="left"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="50"
+            android:layout_marginRight="25dp"
+            android:layout_toRightOf="@+id/dateTime"
+            android:gravity="right"
+            android:hyphenationFrequency="full" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/main_text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/lower_text">
+
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="110dp"
+            android:maxLines="10"
+            android:padding="15dp"
+            android:scrollbars="vertical"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:typeface="sans" />
+
+        <TextView
+            android:id="@+id/organizer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/eventName"
+            android:layout_alignParentBottom="false"
+            android:layout_alignRight="@+id/eventName"
+            android:layout_above="@+id/mapDesc"
+            android:layout_gravity="bottom|start"
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="10dp"
+            android:paddingLeft="5dp"
+            android:textAlignment="textStart"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <io.github.yavski.fabspeeddial.FabSpeedDial
         android:id="@+id/fabButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/mapDesc"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="-45dp"
+        android:layout_marginRight="10dp"
+        app:elevation="6dp"
         app:fabGravity="bottom_end"
         app:fabMenu="@menu/detailedmenu"
         app:miniFabBackgroundTint="@android:color/white"
         app:miniFabDrawableTint="?attr/colorPrimaryDark"
         app:miniFabTitleTextColor="?attr/colorPrimaryDark"
-        android:layout_alignParentBottom="false"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="false"
-        android:layout_marginBottom="-45dp"
-        android:layout_marginRight="10dp"
-        app:elevation="6dp"
-        app:pressedTranslationZ="12dp"
-        android:layout_above="@+id/mapDesc" />
+        app:pressedTranslationZ="12dp" />
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/mapDesc"
+        android:layout_weight="2"
         android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context="com.innopolis.maps.innomaps.MapsActivity"
-        android:layout_alignParentEnd="false"
-        android:layout_alignParentStart="false"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:layout_alignParentBottom="false"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentLeft="false"
         android:layout_alignParentRight="false"
-        android:layout_below="@+id/organizer" />
-    </RelativeLayout>
+        android:layout_alignParentStart="false"
+        android:layout_below="@+id/main_text"
+        tools:context="com.innopolis.maps.innomaps.MapsActivity" />
+</RelativeLayout>
