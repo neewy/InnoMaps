@@ -30,6 +30,13 @@ public class Utils {
     public static SimpleDateFormat commonTime = new SimpleDateFormat("dd/MM/yy HH:mm");
     public static SimpleDateFormat googleTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
     public static PrettyTime prettyTime = new PrettyTime(new Locale("en"));
+
+    private static final String TELEGRAM_LOGIN = "(Contact: @)((?:[a-z][a-z]+))";
+    private static final String TELEGRAM_GROUP = "((Group link: https://)(telegram.me\\/)(.*)(?:\\/[\\w\\.\\-]+)+)";    // Unix Path
+
+    public static Pattern telLogPattern = Pattern.compile(TELEGRAM_LOGIN, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    public static Pattern telGroupPattern = Pattern.compile(TELEGRAM_GROUP, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+
     //shift the given Date by exactly 8 days.
     public static void shiftDate(Date d) {
         long time = d.getTime();
@@ -105,9 +112,4 @@ public class Utils {
         }
     }
 
-    private static final String TELEGRAM_LOGIN = "(Contact: @)((?:[a-z][a-z]+))";
-    private static final String TELEGRAM_GROUP = "((Group link: https://)(telegram.me\\/)(.*)(?:\\/[\\w\\.\\-]+)+)";    // Unix Path
-
-    public static Pattern telLogPattern = Pattern.compile(TELEGRAM_LOGIN, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-    public static Pattern telGroupPattern = Pattern.compile(TELEGRAM_GROUP, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 }

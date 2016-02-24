@@ -43,8 +43,7 @@ import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
  */
 public class DetailedEvent extends android.support.v4.app.Fragment {
 
-
-    static Context context;
+    Context context;
     DBHelper dbHelper;
     SQLiteDatabase database;
 
@@ -63,7 +62,7 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
 
 
     @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         context = getActivity().getApplicationContext();
         View view = inflater.inflate(R.layout.event_desc, container, false);
         dbHelper = new DBHelper(context);

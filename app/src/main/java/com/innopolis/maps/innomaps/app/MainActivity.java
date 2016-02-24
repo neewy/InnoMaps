@@ -44,11 +44,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
-            this.finish();
+            super.onBackPressed();
         } else {
             android.support.v4.app.FragmentManager.BackStackEntry first = getSupportFragmentManager().getBackStackEntryAt(0);
             getSupportActionBar().setTitle(first.getName());
-            getSupportFragmentManager().popBackStack();
+            getSupportFragmentManager().popBackStackImmediate();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {

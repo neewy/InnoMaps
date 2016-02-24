@@ -30,35 +30,40 @@ import java.util.Date;
 import java.util.Iterator;
 
 public class EventsFragment extends android.support.v4.app.Fragment implements SwipeRefreshLayout.OnRefreshListener {
-    static Context context;
+
+    Context context;
     ListView listView;
     ArrayList<Event> list = new ArrayList<>(); //for storing entries
     EventsAdapter adapter; //to populate list above
     SwipeRefreshLayout swipeRefreshLayout;
     DBHelper dbHelper;
     SQLiteDatabase database;
+    String savedText;
     SharedPreferences sPref; //to store md5 hash of loaded file
 
     @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         context = getActivity().getApplicationContext();
         View view = inflater.inflate(R.layout.events, container, false); //changing the fragment
+        sPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
         listView = (ListView) view.findViewById(R.id.eventList);
+        sPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        savedText = sPref.getString("updated", "");
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
         this.adapter = new EventsAdapter(context, getActivity().getSupportFragmentManager(), list, getActivity());
         listView.setAdapter(this.adapter);
         listView.setItemsCanFocus(true);
-        swipeRefreshLayout.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        swipeRefreshLayout.setRefreshing(true);
-                                        dbHelper = new DBHelper(context);
-                                        database = dbHelper.getWritableDatabase();
-                                        onRefresh();
-                                    }
-                                }
-        );
+        dbHelper = new DBHelper(context);
+        database = dbHelper.getWritableDatabase();
+        if (!savedText.equals("")) {
+            list.clear();
+            DBHelper.readEvents(list, database, false);
+            adapter.notifyDataSetChanged();
+            database.close();
+        } else {
+            onRefresh();
+        }
         return view;
     }
 
@@ -66,11 +71,9 @@ public class EventsFragment extends android.support.v4.app.Fragment implements S
     public void onRefresh() {
         dbHelper = new DBHelper(context);
         database = dbHelper.getWritableDatabase();
-        sPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
-        String savedText = sPref.getString("updated", "");
 
         if (Utils.isNetworkAvailable(context)) {
+            swipeRefreshLayout.setRefreshing(true);
             new ParseTask().execute();
         } else if (!Utils.isNetworkAvailable(context) && !savedText.equals("")) {
             list.clear();
@@ -78,10 +81,8 @@ public class EventsFragment extends android.support.v4.app.Fragment implements S
             DBHelper.readEvents(list, database, false);
             adapter.notifyDataSetChanged();
             database.close();
-            swipeRefreshLayout.setRefreshing(false);
         } else if (!Utils.isNetworkAvailable(context) && savedText.equals("")) {
             Toast.makeText(context, "Connect to the internet", Toast.LENGTH_SHORT).show();
-            swipeRefreshLayout.setRefreshing(false);
             database.close();
         }
     }
@@ -114,7 +115,6 @@ public class EventsFragment extends android.support.v4.app.Fragment implements S
          * @return true in case the JSON was updated
          */
         protected boolean jsonUpdated(String updatedKey) {
-            sPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
             String savedText = sPref.getString("updated", "");
             if (savedText.equals(updatedKey)) {
                 return false;

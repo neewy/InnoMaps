@@ -98,9 +98,7 @@ public class EventsAdapter extends BaseAdapter {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (((SwipeRefreshLayout) finalView.getParent().getParent()).isRefreshing()) {
-                    return;
-                } else {
+                if (!((SwipeRefreshLayout) finalView.getParent().getParent()).isRefreshing()) {
                     Fragment fragment = new DetailedEvent();
                     Bundle bundle = new Bundle();
                     bundle.putString("eventID", event.getEventID());
