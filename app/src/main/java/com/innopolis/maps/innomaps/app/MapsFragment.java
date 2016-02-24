@@ -38,7 +38,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.activity_maps, container, false);
+        View v = inflater.inflate(R.layout.maps_fragment, container, false);
 
         MapsInitializer.initialize(getActivity());
 
