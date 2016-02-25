@@ -26,10 +26,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.innopolis.maps.innomaps.R;
-import com.innopolis.maps.innomaps.utils.LatLngGraphEdge;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class Maps extends Fragment implements ActivityCompat.OnRequestPermissionsResultCallback {
 

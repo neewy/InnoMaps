@@ -1,4 +1,4 @@
-package com.innopolis.maps.innomaps.utils;
+package com.innopolis.maps.innomaps.app;
 
 import com.google.android.gms.maps.model.LatLng;
 

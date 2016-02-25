@@ -1,7 +1,6 @@
 package com.innopolis.maps.innomaps.app;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.innopolis.maps.innomaps.utils.LatLngGraphEdge;
 
 import org.jgrapht.Graph;
 import org.jgrapht.graph.*;
