@@ -8,7 +8,6 @@ import org.jgrapht.alg.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -70,9 +69,7 @@ public class JGraphTWrapper {
     public ArrayList<LatLng> defaultShortestPath(LatLng v1, LatLng v2) {
         Set<LatLngGraphEdge> oldEdges = graph.edgeSet();
         Set<LatLngGraphEdge> defaultEdges = new HashSet<>();
-        Iterator<LatLngGraphEdge> iteratorOld = oldEdges.iterator();
-        while (iteratorOld.hasNext()) {
-            LatLngGraphEdge edge = iteratorOld.next();
+        for (LatLngGraphEdge edge : oldEdges) {
             if (edge.getEdgeType() == LatLngGraphEdge.EdgeType.DEFAULT) {
                 defaultEdges.add(edge);
             }

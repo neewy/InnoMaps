@@ -38,8 +38,6 @@ public class Maps extends Fragment implements ActivityCompat.OnRequestPermission
     private Marker markerFrom;
     private Marker markerTo;
 
-    private PathFinder pathFinder;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.activity_maps, container, false);
@@ -131,7 +129,5 @@ public class Maps extends Fragment implements ActivityCompat.OnRequestPermission
     private Marker addMarker(LatLng point) {
         return map.addMarker(new MarkerOptions().position(point).icon(BitmapDescriptorFactory.fromResource(R.drawable.test_custom_marker)));
     }
-
-
 }
 
