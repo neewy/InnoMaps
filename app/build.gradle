@@ -28,16 +28,17 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
 
-    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:appcompat-v7:23.2.0'
     compile 'com.google.android.gms:play-services:8.3.0'
-    compile 'com.android.support:design:23.1.1'
+    compile 'com.android.support:design:23.2.0'
     compile 'org.apache.directory.studio:org.apache.commons.codec:1.8'
     compile 'com.readystatesoftware.sqliteasset:sqliteassethelper:+'
     compile 'hanks.xyz:smallbang-library:0.1.2'
     compile 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
     compile 'org.apache.commons:commons-lang3:3.3.2'
+    compile 'org.jgrapht:jgrapht-core:0.9.1'
     compile 'io.github.yavski:fab-speed-dial:1.0.2'
 
     androidTestCompile 'com.android.support.test:runner:0.4'
-    androidTestCompile 'com.android.support:support-annotations:23.1.1'
+    androidTestCompile 'com.android.support:support-annotations:23.2.0'
 }
