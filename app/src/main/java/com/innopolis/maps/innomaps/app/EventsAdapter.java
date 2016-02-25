@@ -118,7 +118,7 @@ public class EventsAdapter extends BaseAdapter {
                     });
                     FragmentTransaction ft = fm.beginTransaction();
                     ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                    ft.replace(R.id.content_frame, fragment).addToBackStack("Detailed");
+                    ft.replace(R.id.content_frame, fragment, "Detailed").addToBackStack("Detailed");
                     ft.commit();
                 }
             }

@@ -1,6 +1,7 @@
 package com.innopolis.maps.innomaps.app;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -11,11 +12,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.innopolis.maps.innomaps.R;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private final String MAPS = "Maps";
+    private final String FAV = "Favourite";
+    private final String EVENTS = "Events";
+    private final String DETAILED = "Detailed";
+
+    private boolean doubleBackToExitPressedOnce = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,31 +45,52 @@ public class MainActivity extends AppCompatActivity
 
         Fragment fragment = new MapsFragment();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.add(R.id.content_frame, fragment, "Maps");
+        ft.add(R.id.content_frame, fragment, MAPS).addToBackStack(MAPS);
         ft.commit();
-        getSupportActionBar().setTitle("InnoMaps");
+        getSupportActionBar().setTitle(MAPS);
     }
 
     @Override
     public void onBackPressed() {
-        if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
-            super.onBackPressed();
-        } else {
-            android.support.v4.app.FragmentManager.BackStackEntry first = getSupportFragmentManager().getBackStackEntryAt(0);
-            getSupportActionBar().setTitle(first.getName());
-            getSupportFragmentManager().popBackStackImmediate();
-        }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else {
+            if (getSupportFragmentManager().getBackStackEntryCount() == 1) {
+
+                if (doubleBackToExitPressedOnce) {
+                    finish();
+                }
+
+                this.doubleBackToExitPressedOnce = true;
+                Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        doubleBackToExitPressedOnce = false;
+                    }
+                }, 2000);
+
+            } else {
+                int lastEntry = getSupportFragmentManager().getBackStackEntryCount()-1;
+                android.support.v4.app.FragmentManager.BackStackEntry last = getSupportFragmentManager().getBackStackEntryAt(lastEntry);
+                    if (last.getName().equals(DETAILED)) {
+                        getSupportActionBar().setTitle(getSupportFragmentManager().getBackStackEntryAt(lastEntry-1).getName());
+                        getSupportFragmentManager().popBackStackImmediate();
+                    } else {
+                        getSupportFragmentManager().popBackStackImmediate(MAPS, 0);
+                        getSupportActionBar().setTitle(MAPS);
+                    }
+            }
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                    this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            invalidateOptionsMenu();
+            toggle.setDrawerIndicatorEnabled(true);
+            toggle.syncState();
         }
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        invalidateOptionsMenu();
-        toggle.setDrawerIndicatorEnabled(true);
-        toggle.syncState();
     }
 
     @Override
@@ -82,22 +112,52 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+
         int id = item.getItemId();
+        String title = "";
         Fragment fragment = null;
-        String title = getString(R.string.app_name);
-        if (id == R.id.nav_maps) {
-            fragment = new MapsFragment();
-            title = "Maps";
-        } else if (id == R.id.nav_favourite) {
-            fragment = new FavouriteFragment();
-            title = "Favourite";
-        } else if (id == R.id.nav_event) {
-            fragment = new EventsFragment();
-            title = "Events";
-        } else if (id == R.id.nav_share) {
+
+        if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+            if (id == R.id.nav_maps) {
+                fragment = new MapsFragment();
+                title = MAPS;
+            } else if (id == R.id.nav_favourite) {
+                fragment = new FavouriteFragment();
+                title = FAV;
+            } else if (id == R.id.nav_event) {
+                fragment = new EventsFragment();
+                title = EVENTS;
+            } else if (id == R.id.nav_share) {
+               //nothing to do
+            }
+            if (getSupportActionBar() != null) getSupportActionBar().setTitle(title);
+        } else {
+            if (id == R.id.nav_maps) {
+                title = MAPS;
+                if (getSupportFragmentManager().findFragmentByTag(MAPS) !=null) {
+                    getSupportFragmentManager().popBackStackImmediate(MAPS, 0);
+                } else {
+                    fragment = new MapsFragment();
+                }
+            } else if (id == R.id.nav_favourite) {
+                title = FAV;
+                if (getSupportFragmentManager().findFragmentByTag(FAV)!=null) {
+                    getSupportFragmentManager().popBackStackImmediate(FAV, 0);
+                } else {
+                    fragment = new FavouriteFragment();
+                }
+            } else if (id == R.id.nav_event) {
+                title = EVENTS;
+                if (getSupportFragmentManager().findFragmentByTag(EVENTS)!=null) {
+                    getSupportFragmentManager().popBackStackImmediate(EVENTS, 0);
+                } else {
+                    fragment = new EventsFragment();
+                }
+            } else if (id == R.id.nav_share) {
+                //nothing to do
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -105,14 +165,10 @@ public class MainActivity extends AppCompatActivity
         if (fragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-            ft.replace(R.id.content_frame, fragment).addToBackStack(title);
+            ft.replace(R.id.content_frame, fragment, title).addToBackStack(title);
             ft.commit();
         }
-
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(title);
-        }
-
+        getSupportActionBar().setTitle(title);
         return true;
     }
 

@@ -11,6 +11,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -62,13 +63,16 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
     private GoogleMap mMap;
     private UiSettings mSettings;
     SupportMapFragment mSupportMapFragment;
+    ActionBar actionBar;
 
     String summary, htmlLink, start, end, descriptionStr, creator, telegram, eventID, building, floor, room, latitude, longitude, checked;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle("Detailed");
         context = getActivity().getApplicationContext();
         View view = inflater.inflate(R.layout.event_desc, container, false);
         dbHelper = new DBHelper(context);
