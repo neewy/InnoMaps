@@ -10,6 +10,10 @@ import android.support.design.internal.NavigationMenu;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.UnderlineSpan;
@@ -25,6 +29,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.utils.Utils;
@@ -63,6 +68,7 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         context = getActivity().getApplicationContext();
         View view = inflater.inflate(R.layout.event_desc, container, false);
         dbHelper = new DBHelper(context);
@@ -205,7 +211,7 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
                 @Override
                 public void onMapReady(GoogleMap googleMap) {
                     mMap = googleMap;
-
+                    mMap.getUiSettings().setMapToolbarEnabled(false);
                     mSettings = mMap.getUiSettings();
                     mSettings.setMyLocationButtonEnabled(false);
                     mMap.setMyLocationEnabled(true);
@@ -214,6 +220,18 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
                         mMap.addMarker(new MarkerOptions().position(position).title(summary));
                     }
+                    mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+
+                        @Override
+                        public void onInfoWindowClick(Marker marker) {
+                            DialogFragment newFragment = new MapFragmentAskForRouteDialog();
+                            Bundle bundle = new Bundle();
+                            bundle.putString("summary", summary);
+                            newFragment.setArguments(bundle);
+                            newFragment.show(getActivity().getSupportFragmentManager(), "FindRoute");
+
+                        }
+                    });
                 }
             });
         }
