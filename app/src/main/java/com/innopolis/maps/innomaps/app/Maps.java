@@ -26,6 +26,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.utils.LatLngGraphEdge;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,22 +66,34 @@ public class Maps extends Fragment implements ActivityCompat.OnRequestPermission
                             LatLng p1 = new LatLng(55.2, 48.2);
                             LatLng p2 = new LatLng(55.2, 49.2);
                             LatLng p3 = new LatLng(56.2, 49.2);
-                            LatLng p4 = new LatLng(56.2, 48.2);
+                            LatLng p4 = new LatLng(56.5, 48.7);
+                            LatLng end = new LatLng(56.2, 48.2);
                             JGraphTWrapper graphWrapper = new JGraphTWrapper();
+                            graphWrapper.addVertex(university);
                             graphWrapper.addVertex(p1);
                             graphWrapper.addVertex(p2);
                             graphWrapper.addVertex(p3);
                             graphWrapper.addVertex(p4);
-                            graphWrapper.addVertex(university);
-                            graphWrapper.addEdge(university, p1);
-                            graphWrapper.addEdge(p1, p2);
-                            graphWrapper.addEdge(p2, p3);
-                            graphWrapper.addEdge(p3, p4);
-                            ArrayList<LatLng> path = graphWrapper.findShortestPath(university, p4);
+                            graphWrapper.addVertex(end);
+                            graphWrapper.addEdge(university, p1, LatLngGraphEdge.EdgeType.DEFAULT);
+                            graphWrapper.addEdge(p1, p2, LatLngGraphEdge.EdgeType.DEFAULT);
+                            graphWrapper.addEdge(p2, p3, LatLngGraphEdge.EdgeType.DEFAULT);
+                            graphWrapper.addEdge(p3, end, LatLngGraphEdge.EdgeType.ELEVATOR);
+                            graphWrapper.addEdge(p3, p4, LatLngGraphEdge.EdgeType.DEFAULT);
+                            graphWrapper.addEdge(p4, end, LatLngGraphEdge.EdgeType.DEFAULT);
+
+                            ArrayList<LatLng> path = graphWrapper.shortestPath(university, end);
                             map.addPolyline(new PolylineOptions()
                                     .addAll(path)
                                     .width(12)
-                                    .color(Color.parseColor("#05b1fb"))     // Google maps blue color
+                                    .color(Color.BLACK)
+                                    .geodesic(true));
+
+                            ArrayList<LatLng> defaultPath = graphWrapper.defaultShortestPath(university, end);
+                            map.addPolyline(new PolylineOptions()
+                                    .addAll(defaultPath)
+                                    .width(12)
+                                    .color(Color.GREEN)
                                     .geodesic(true));
                         }
                     });

@@ -10,11 +10,25 @@ import org.jgrapht.graph.DefaultEdge;
  * Created by luckychess on 2/22/16.
  */
 public class LatLngGraphEdge extends DefaultEdge {
+    public enum EdgeType {
+        DEFAULT, ELEVATOR, STAIRS
+    }
+
+    EdgeType edgeType;
+
+    public LatLngGraphEdge(EdgeType edgeType) {
+        this.edgeType = edgeType;
+    }
+
     public LatLng getV1() {
         return (LatLng) getSource();
     }
 
     public LatLng getV2() {
         return (LatLng) getTarget();
+    }
+
+    public EdgeType getEdgeType() {
+        return edgeType;
     }
 }
