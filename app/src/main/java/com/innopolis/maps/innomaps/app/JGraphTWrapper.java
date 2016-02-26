@@ -1,15 +1,24 @@
 package com.innopolis.maps.innomaps.app;
 
+import android.content.Context;
+import android.util.Log;
+
 import com.google.android.gms.maps.model.LatLng;
 
 import org.jgrapht.Graph;
 import org.jgrapht.graph.*;
 import org.jgrapht.alg.*;
+import org.jgrapht.ext.GraphMLExporter;
+import org.xml.sax.SAXException;
 
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.xml.transform.TransformerConfigurationException;
 
 /**
  * Wrapper for JGraphT library. Creating graphs, adding vertices and edges, searching for
@@ -17,9 +26,11 @@ import java.util.Set;
  */
 public class JGraphTWrapper {
     private SimpleGraph<LatLng, LatLngGraphEdge> graph;
+    private Context context;
 
-    public JGraphTWrapper() {
+    public JGraphTWrapper(Context context) {
         graph = new SimpleGraph<>(LatLngGraphEdge.class);
+        this.context = context;
     }
 
     /**
@@ -76,5 +87,23 @@ public class JGraphTWrapper {
         }
         UndirectedSubgraph<LatLng, LatLngGraphEdge> defaultEdgesGraph = new UndirectedSubgraph<>(graph, null, defaultEdges);
         return shortestPathForGraph(v1, v2, defaultEdgesGraph);
+    }
+
+    public void exportGraphML() {
+        GraphMLExporter<LatLng, LatLngGraphEdge> graphMLExporter = new GraphMLExporter<>();
+
+        try {
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput("config.txt", Context.MODE_PRIVATE));
+            try {
+                graphMLExporter.export(outputStreamWriter, graph);
+            } catch (SAXException | TransformerConfigurationException e) {
+                e.printStackTrace();
+            }
+            outputStreamWriter.close();
+            Log.d("Graph Lib", "File saved successfully");
+        }
+        catch (IOException e) {
+            Log.e("Exception", "File write failed: " + e.toString());
+        }
     }
 }

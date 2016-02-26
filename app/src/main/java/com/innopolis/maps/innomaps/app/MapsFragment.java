@@ -64,7 +64,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                             LatLng p3 = new LatLng(56.2, 49.2);
                             LatLng p4 = new LatLng(56.5, 48.7);
                             LatLng end = new LatLng(56.2, 48.2);
-                            JGraphTWrapper graphWrapper = new JGraphTWrapper();
+                            JGraphTWrapper graphWrapper = new JGraphTWrapper(getContext());
                             graphWrapper.addVertex(university);
                             graphWrapper.addVertex(p1);
                             graphWrapper.addVertex(p2);
@@ -91,6 +91,8 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                                     .width(12)
                                     .color(Color.GREEN)
                                     .geodesic(true));
+
+                            graphWrapper.exportGraphML();
                         }
                     });
                 }
