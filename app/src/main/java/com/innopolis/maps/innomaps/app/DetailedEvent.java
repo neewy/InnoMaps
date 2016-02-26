@@ -10,10 +10,6 @@ import android.support.design.internal.NavigationMenu;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.UnderlineSpan;
@@ -29,7 +25,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.utils.Utils;
@@ -42,6 +37,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
+
 
 public class DetailedEvent extends android.support.v4.app.Fragment {
 
@@ -60,12 +56,11 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
     private UiSettings mSettings;
     SupportMapFragment mSupportMapFragment;
 
-    String summary, htmlLink, start, end, descriptionStr, creator, telegram, eventID, building, floor, room, latitude, longitude, checked;
+    String summary, htmlLink, start, end, descriptionStr, creator, telegram, telegramContact, eventID, building, floor, room, latitude, longitude, checked;
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         context = getActivity().getApplicationContext();
         View view = inflater.inflate(R.layout.event_desc, container, false);
         dbHelper = new DBHelper(context);
@@ -103,9 +98,12 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
             int description = cursor1.getColumnIndex("description");
             int creator_name = cursor1.getColumnIndex("creator_name");
             int telegram = cursor1.getColumnIndex(DBHelper.COLUMN_TELEGRAM_GROUP);
+            int telegramContact = cursor1.getColumnIndex(DBHelper.COLUMN_TELEGRAM_CONTACT);
             this.descriptionStr = cursor1.getString(description);
             this.creator = cursor1.getString(creator_name);
             this.telegram = cursor1.getString(telegram);
+            this.telegramContact = cursor1.getString(telegramContact);
+
             cursor1.close();
         } while (cursor.moveToNext());
         cursor.close();
@@ -136,23 +134,44 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
         Long durationTime = TimeUnit.MILLISECONDS.toMinutes(endDate.getTime() - startDate.getTime());
         duration.setText("Duration: " + String.valueOf(durationTime) + "min");
         description.setText(descriptionStr);
-        organizer.setText(creator);
-        if (telegram != null) {
+
+        if (!telegramContact.equals("null") || !telegram.equals("null")) {
             organizer.setTextColor(Color.BLUE);
-            SpannableString content = new SpannableString(creator);
-            content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
-            organizer.setText(content);
-            organizer.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    DialogFragment newFragment = new TelegramOpenDialog();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("dialogText", creator);
-                    bundle.putString("dialogUrl", telegram);
-                    newFragment.setArguments(bundle);
-                    newFragment.show(getActivity().getSupportFragmentManager(), "Telegram");
-                }
-            });
+
+            if (telegram.equals("null") && !telegramContact.equals("null")) {
+                SpannableString content = new SpannableString(creator);
+                content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+                organizer.setText(content);
+                organizer.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        DialogFragment newFragment = new TelegramOpenDialog();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("dialogText", creator);
+                        bundle.putString("dialogUrl", telegramContact);
+                        newFragment.setArguments(bundle);
+                        newFragment.show(getActivity().getSupportFragmentManager(), "Telegram");
+                    }
+                });
+
+            } else if (!telegram.equals("null")) {
+                SpannableString content = new SpannableString("Chat link");
+                content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+                organizer.setText(content);
+                organizer.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        DialogFragment newFragment = new TelegramOpenDialog();
+                        Bundle bundle = new Bundle();
+                        String chatLink = "chat of event";
+                        bundle.putString("dialogText", chatLink);
+                        bundle.putString("dialogUrl", telegram);
+                        newFragment.setArguments(bundle);
+                        newFragment.show(getActivity().getSupportFragmentManager(), "Telegram");
+                    }
+                });
+
+            }
         }
         FabSpeedDial fabButton = (FabSpeedDial) view.findViewById(R.id.fabButton);
         fabButton.bringToFront();
@@ -208,7 +227,7 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
                 @Override
                 public void onMapReady(GoogleMap googleMap) {
                     mMap = googleMap;
-                    mMap.getUiSettings().setMapToolbarEnabled(false);
+
                     mSettings = mMap.getUiSettings();
                     mSettings.setMyLocationButtonEnabled(false);
                     mMap.setMyLocationEnabled(true);
@@ -217,18 +236,6 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
                         mMap.addMarker(new MarkerOptions().position(position).title(summary));
                     }
-                    mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-
-                        @Override
-                        public void onInfoWindowClick(Marker marker) {
-                            DialogFragment newFragment = new MapFragmentAskForRouteDialog();
-                            Bundle bundle = new Bundle();
-                            bundle.putString("summary", summary);
-                            newFragment.setArguments(bundle);
-                            newFragment.show(getActivity().getSupportFragmentManager(), "FindRoute");
-
-                        }
-                    });
                 }
             });
         }
