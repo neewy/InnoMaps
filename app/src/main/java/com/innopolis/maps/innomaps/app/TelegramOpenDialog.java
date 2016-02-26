@@ -13,19 +13,31 @@ import android.widget.Toast;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 
-/**
- * Created by neewy on 2/13/16.
- */
 public class TelegramOpenDialog extends DialogFragment {
     String message;
     String link;
+    String url;
+    private static final String GROUP_URL = "tg://join?invite=";
+    private static final String CONTACT_URL = "https://telegram.me/";
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         message = "Get in touch with " + getArguments().getString("dialogText") + " via telegram";
-        String[] dialogUrl = getArguments().getString("dialogUrl").split("/");
-        link = dialogUrl[dialogUrl.length - 1];
+        String nickURL = getArguments().getString("dialogUrl").toString();
+        if (nickURL.indexOf("/") < 0) {
+            if (nickURL.indexOf("@") != -1) {
+                link = nickURL.substring(nickURL.indexOf("@") + 1);
+                url = CONTACT_URL + link;
+            } else {
+                link = getArguments().getString(nickURL);
+                url = CONTACT_URL + link;
+            }
+        } else {
+            String[] dialogUrl = getArguments().getString("dialogUrl").split("/");
+            link = dialogUrl[dialogUrl.length - 1];
+            url = GROUP_URL + link;
+        }
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(message)
                 .setPositiveButton("Open in Telegram", new DialogInterface.OnClickListener() {
@@ -39,13 +51,14 @@ public class TelegramOpenDialog extends DialogFragment {
                     }
                 });
         return builder.create();
+
     }
+
 
     protected void intentMessageTelegram(String link) {
         final String appName = "org.telegram.messenger";
         final boolean isAppInstalled = Utils.isAppAvailable(getContext(), appName);
         if (isAppInstalled) {
-            String url = "tg://join?invite=" + link;
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(url));
             startActivity(i);

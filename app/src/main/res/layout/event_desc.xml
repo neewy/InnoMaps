@@ -15,6 +15,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
         android:layout_weight="1"
+        android:gravity="center"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:typeface="serif" />
 
@@ -24,6 +25,8 @@
         android:layout_height="wrap_content"
         android:weightSum="100"
         android:layout_weight="1"
+        android:layout_below="@+id/eventName"
+        android:layout_marginTop="4dp"
         >
 
         <TextView
@@ -35,11 +38,11 @@
             android:layout_alignParentRight="false"
             android:layout_alignParentTop="false"
             android:layout_marginLeft="25dp"
-            android:layout_marginTop="68dp"
             android:layout_weight="50"
             android:ellipsize="end"
             android:gravity="left"
-            android:typeface="monospace" />
+            android:typeface="monospace"
+            android:maxWidth="80dp" />
 
 
         <TextView
@@ -50,11 +53,11 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="false"
             android:layout_marginRight="25dp"
-            android:layout_marginTop="68dp"
             android:layout_weight="50"
             android:layout_toRightOf="@+id/location"
             android:gravity="right"
-            android:typeface="monospace" />
+            android:typeface="monospace"
+            android:minWidth="32dp" />
 
     </LinearLayout>
 
@@ -90,36 +93,36 @@
         android:id="@+id/main_text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/lower_text">
+        android:layout_below="@+id/lower_text"
+        android:minHeight="200dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="6dp"
+        android:layout_marginTop="6dp">
 
         <TextView
             android:id="@+id/description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="110dp"
             android:maxLines="10"
-            android:padding="15dp"
             android:scrollbars="vertical"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:typeface="sans" />
+            android:typeface="sans"
+            android:gravity="left"
+            android:layout_gravity="center"
+
+            android:layout_marginBottom="5dp" />
 
         <TextView
             android:id="@+id/organizer"
-            android:layout_width="wrap_content"
+            android:layout_below="@+id/description"
             android:layout_height="wrap_content"
-            android:layout_alignEnd="@+id/eventName"
-            android:layout_alignParentBottom="false"
-            android:layout_alignRight="@+id/eventName"
+            android:layout_width="wrap_content"
             android:layout_above="@+id/mapDesc"
-            android:layout_gravity="bottom|start"
-            android:layout_marginBottom="15dp"
-            android:layout_marginLeft="10dp"
-            android:paddingLeft="5dp"
-            android:textAlignment="textStart"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:layout_marginBottom="5dp"
+            android:layout_gravity="bottom" />
     </LinearLayout>
 
     <io.github.yavski.fabspeeddial.FabSpeedDial

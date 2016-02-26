@@ -39,7 +39,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_DESCRIPTION = "description"; //detailed description
     public static final String COLUMN_CREATOR_NAME = "creator_name"; //the person, who created the event
     public static final String COLUMN_CREATOR_EMAIL = "creator_email"; //his or her gmail
-    public static final String COLUMN_TELEGRAM_LOGIN = "telegram_login"; //telegram link available
+    public static final String COLUMN_TELEGRAM_CONTACT = "telegram_login"; //telegram link available
     public static final String COLUMN_TELEGRAM_GROUP = "telegram_group"; //telegram link available
 
     /* Location table */
@@ -106,7 +106,7 @@ public class DBHelper extends SQLiteOpenHelper {
             description = cursor.getColumnIndex(DBHelper.COLUMN_DESCRIPTION);
             creator_name = cursor.getColumnIndex(DBHelper.COLUMN_CREATOR_NAME);
             creator_email = cursor.getColumnIndex(DBHelper.COLUMN_CREATOR_EMAIL);
-            telegram_login = cursor.getColumnIndex(DBHelper.COLUMN_TELEGRAM_LOGIN);
+            telegram_login = cursor.getColumnIndex(DBHelper.COLUMN_TELEGRAM_CONTACT);
             telegram_group = cursor.getColumnIndex(DBHelper.COLUMN_TELEGRAM_GROUP);
 
             building = cursor.getColumnIndex(DBHelper.COLUMN_BUILDING);
@@ -185,10 +185,10 @@ public class DBHelper extends SQLiteOpenHelper {
             String telegramGroup, telegramLogin = "";
             if (telLogMatch.find()) {
                 telegramLogin = telLogMatch.group();
-                cv.put(DBHelper.COLUMN_TELEGRAM_LOGIN, telegramLogin);
+                cv.put(DBHelper.COLUMN_TELEGRAM_CONTACT, telegramLogin);
                 description = description.replace(telegramLogin, "");
             } else {
-                cv.put(DBHelper.COLUMN_TELEGRAM_LOGIN, "null");
+                cv.put(DBHelper.COLUMN_TELEGRAM_CONTACT, "null");
             }
             Matcher telGroupMatch = Utils.telGroupPattern.matcher(description);
             if (telGroupMatch.find()) {
