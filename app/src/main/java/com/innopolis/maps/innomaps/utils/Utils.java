@@ -19,20 +19,21 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
- * Created by Nikolay on 04.02.2016.
  * Some helper methods which may be used from any place
  */
 public class Utils {
 
-    private final static long MILLISECONDS_PER_8DAY = 1000L * 60 * 60 * 24 * 8; //considering 8 days to be most actual date boundaries
+    private final static long MILLISECONDS_PER_8DAY = 1000L * 60 * 60 * 24 * 8;
+    //considering 8 days to be most actual date boundaries
 
     public static SimpleDateFormat hoursMinutes = new SimpleDateFormat("HH:mm");
     public static SimpleDateFormat commonTime = new SimpleDateFormat("dd/MM/yy HH:mm");
     public static SimpleDateFormat googleTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
     public static PrettyTime prettyTime = new PrettyTime(new Locale("en"));
 
-    private static final String TELEGRAM_LOGIN = "(Contact: @)((?:[a-z][a-z]+))";
-    private static final String TELEGRAM_GROUP = "((Group link: https://)(telegram.me\\/)(.*)(?:\\/[\\w\\.\\-]+)+)";    // Unix Path
+    private static final String TELEGRAM_LOGIN = "(Contact: @)((?:[a-z_][a-z_]+))";
+    private static final String TELEGRAM_GROUP = "((Group link: https://)(telegram.me\\/)" +
+            "(.*)(?:\\/[\\w\\.\\-]+)+)";    // Unix Path
 
     public static Pattern telLogPattern = Pattern.compile(TELEGRAM_LOGIN, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     public static Pattern telGroupPattern = Pattern.compile(TELEGRAM_GROUP, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);

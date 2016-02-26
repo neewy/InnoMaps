@@ -56,7 +56,8 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
     private UiSettings mSettings;
     SupportMapFragment mSupportMapFragment;
 
-    String summary, htmlLink, start, end, descriptionStr, creator, telegram, telegramContact, eventID, building, floor, room, latitude, longitude, checked;
+    String contactChecked, linkChecked, summary, htmlLink, start, end, descriptionStr, creator,
+            telegram, telegramContact, eventID, building, floor, room, latitude, longitude, checked;
 
 
     @Override
@@ -139,7 +140,9 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
             organizer.setTextColor(Color.BLUE);
 
             if (telegram.equals("null") && !telegramContact.equals("null")) {
-                SpannableString content = new SpannableString(creator);
+                final String contactLink = "Contact: ";
+                contactChecked = contactCutter(telegramContact);
+                SpannableString content = new SpannableString(contactLink + contactChecked);
                 content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
                 organizer.setText(content);
                 organizer.setOnClickListener(new View.OnClickListener() {
@@ -147,7 +150,7 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
                     public void onClick(View v) {
                         DialogFragment newFragment = new TelegramOpenDialog();
                         Bundle bundle = new Bundle();
-                        bundle.putString("dialogText", creator);
+                        bundle.putString("dialogText", contactChecked);
                         bundle.putString("dialogUrl", telegramContact);
                         newFragment.setArguments(bundle);
                         newFragment.show(getActivity().getSupportFragmentManager(), "Telegram");
@@ -155,17 +158,18 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
                 });
 
             } else if (!telegram.equals("null")) {
-                SpannableString content = new SpannableString("Chat link");
+                SpannableString content = new SpannableString("Group link");
                 content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+                linkChecked = checkLink(telegram);
                 organizer.setText(content);
                 organizer.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         DialogFragment newFragment = new TelegramOpenDialog();
                         Bundle bundle = new Bundle();
-                        String chatLink = "chat of event";
+                        String chatLink = "group of event";
                         bundle.putString("dialogText", chatLink);
-                        bundle.putString("dialogUrl", telegram);
+                        bundle.putString("dialogUrl", linkChecked);
                         newFragment.setArguments(bundle);
                         newFragment.show(getActivity().getSupportFragmentManager(), "Telegram");
                     }
@@ -212,6 +216,26 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
         return view;
     }
 
+    private static String cutter(String string, int index) {
+        String link = string.substring(0, index);
+        return link;
+    }
+
+    private static String checkLink(String string) {
+        int spaceIndex = string.indexOf(" ", 12);
+        int paragraphIndex = string.indexOf("\n");
+        int commaIndex = string.indexOf(",");
+        if (paragraphIndex != -1) return cutter(string, paragraphIndex);
+        else if (spaceIndex != -1) return cutter(string, spaceIndex);
+        else if (commaIndex != -1) return cutter(string, commaIndex);
+        else return string;
+    }
+
+    private static String contactCutter(String string) {
+        String checkedString = string.substring(9);
+        return checkedString;
+    }
+
 
     private void initializeMap(final String latitude, final String longitude) {
         mSupportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapDesc);
@@ -240,4 +264,6 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
             });
         }
     }
+
+
 }
