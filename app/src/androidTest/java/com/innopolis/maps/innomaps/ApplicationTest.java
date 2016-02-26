@@ -92,6 +92,8 @@ public class ApplicationTest extends InstrumentationTestCase {
         assertTrue("JSON Object is empty", dataJsonObj.length() != 0);
 
         JSONArray jsonObjects = dataJsonObj.getJSONArray("items");
+        assertTrue("Events not found", jsonObjects != null);
+
         String start = null;
         int newEvents = 0;
         for (int i = 0; i < jsonObjects.length(); i++) {
@@ -106,11 +108,10 @@ public class ApplicationTest extends InstrumentationTestCase {
                 newEvents++;
             }
         }
-        assertTrue("Events not found", jsonObjects != null);
 
         ArrayList<Event> events = e.getEventsList(dataJsonObj, database);
-        assertTrue("The number of JSON objects (" + jsonObjects.length()
-                + ") differs from the number of events in the list"
+        assertTrue("The number of parsed events (" + newEvents
+                + ") differs from the number of events database returned"
                 + " (" + events.size() + ")", events.size() == newEvents);
     }
 }
