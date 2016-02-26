@@ -104,8 +104,8 @@ public class EventsFragment extends android.support.v4.app.Fragment implements S
             Utils.shiftDate(date);
             return Utils.doGetRequest(
                     "https://www.googleapis.com/calendar/v3/calendars/hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com/events?timeMin="
-                    + dateFormat.format(date)
-                    + "T10%3A00%3A00-07%3A00&orderby=updated&sortorder=descending&futureevents=true&alt=json&key=AIzaSyDli8qeotu4TGaEs5VKSWy15CDyl4cgZ-o");
+                            + dateFormat.format(date)
+                            + "T10%3A00%3A00-07%3A00&orderby=updated&sortorder=descending&futureevents=true&alt=json&key=AIzaSyDli8qeotu4TGaEs5VKSWy15CDyl4cgZ-o");
         }
 
         /**
@@ -190,8 +190,14 @@ public class EventsFragment extends android.support.v4.app.Fragment implements S
                         break;
                 }
             }
-            Date currentDate = new Date();
-            try {
+
+
+            DBHelper.insertEvent(db, summary, htmlLink, start, end, eventID, checked);
+            DBHelper.insertEventType(db, summary, description, creator_name, creator_email);
+            DBHelper.insertLocation(db, location, eventID);
+
+/*            Date currentDate = new Date();
+              try {
                 if (currentDate.before(Utils.googleTimeFormat.parse(start))) {
                     DBHelper.insertEvent(db, summary, htmlLink, start, end, eventID, checked);
                     DBHelper.insertEventType(db, summary, description, creator_name, creator_email);
@@ -199,7 +205,7 @@ public class EventsFragment extends android.support.v4.app.Fragment implements S
                 }
             } catch (ParseException e) {
                 e.printStackTrace();
-            }
+            }*/
 
         }
         DBHelper.readEvents(list, db, false);
