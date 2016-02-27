@@ -1,5 +1,8 @@
 package com.innopolis.maps.innomaps.app;
 
+import com.google.common.base.Predicate;
+
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -182,4 +185,38 @@ public class Event implements Comparable<Event> {
     public int compareTo(Event another) {
         return this.start.compareTo(another.getStart());
     }
+
+    public static Predicate<Event> isToday = new Predicate<Event>() {
+        public boolean apply(Event event) {
+            Date today = new Date();
+            Calendar c = Calendar.getInstance();
+            c.setTime(today);
+            c.add(Calendar.DATE, 1);
+            Date tomorrow = c.getTime();
+            return (event.getStart().after(today) && event.getEnd().before(tomorrow));
+        }
+    };
+
+    public static Predicate<Event> isTomorrow = new Predicate<Event>() {
+        public boolean apply(Event event) {
+            Calendar c = Calendar.getInstance();
+            c.add(Calendar.DATE, 1);
+            Date tomorrow = c.getTime();
+            c.add(Calendar.DATE, 1);
+            Date afterTomorrow = c.getTime();
+            return (event.getStart().after(tomorrow) && event.getEnd().before(afterTomorrow));
+        }
+    };
+
+    public static Predicate<Event> isThisWeek = new Predicate<Event>() {
+        public boolean apply(Event event) {
+            Date today = new Date();
+            Calendar c = Calendar.getInstance();
+            c.setTime(today);
+            c.add(Calendar.DAY_OF_WEEK, c.getFirstDayOfWeek()+6);
+            Date endOfWeek = c.getTime();
+            return (event.getStart().after(today) && event.getEnd().before(endOfWeek));
+        }
+    };
+
 }
