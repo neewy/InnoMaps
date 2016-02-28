@@ -5,9 +5,6 @@ import com.google.common.base.Predicate;
 import java.util.Calendar;
 import java.util.Date;
 
-/**
- * Created by neewy on 2/18/16.
- */
 public class Event implements Comparable<Event> {
 
     private String summary;

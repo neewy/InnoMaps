@@ -29,9 +29,7 @@ import java.util.Date;
 
 import xyz.hanks.library.SmallBang;
 
-/**
- * Created by Nikolay on 04.02.2016.
- */
+
 public class EventsAdapter extends BaseAdapter {
 
     Context ctx;

@@ -1,8 +1,6 @@
 package com.innopolis.maps.innomaps.app;
 
-/**
- * Created by Nikolay on 02.02.2016.
- */
+
 
 import android.graphics.Color;
 import android.os.Bundle;

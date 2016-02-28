@@ -10,8 +10,6 @@ import android.support.design.internal.NavigationMenu;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.UnderlineSpan;
@@ -41,42 +39,36 @@ import java.util.concurrent.TimeUnit;
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 
+import android.support.v4.app.Fragment;
 
-public class DetailedEvent extends android.support.v4.app.Fragment {
 
-    Context mContext;
+public class DetailedEvent extends Fragment {
+
+    Context context;
     DBHelper dbHelper;
     SQLiteDatabase database;
 
-    private TextView eventName;
-    private TextView timeLeft;
-    private TextView location;
-    private TextView dateTime;
-    private TextView description;
-    private TextView organizer;
-    private TextView duration;
+    TextView eventName;
+    TextView timeLeft;
+    TextView location;
+    TextView dateTime;
+    TextView description;
+    TextView organizer;
+    TextView duration;
     private GoogleMap mMap;
     private UiSettings mSettings;
-    private SupportMapFragment mSupportMapFragment;
-    private ActionBar mActionBar;
+    SupportMapFragment mSupportMapFragment;
+    final String NULL = "";
 
     String contactChecked, linkChecked, summary, htmlLink, start, end, descriptionStr, creator,
             telegram, telegramContact, eventID, building, floor, room, latitude, longitude, checked;
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
-        mActionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
-        mActionBar.setDisplayHomeAsUpEnabled(true); //back button
-        mActionBar.setTitle("Detailed");
-
-        mContext = getActivity().getApplicationContext();
+        context = getActivity().getApplicationContext();
         View view = inflater.inflate(R.layout.event_desc, container, false);
-
-        dbHelper = new DBHelper(mContext);
+        dbHelper = new DBHelper(context);
         database = dbHelper.getWritableDatabase();
-
-        /*All fields that are presented on layout event_desc*/
         eventName = (TextView) view.findViewById(R.id.eventName);
         timeLeft = (TextView) view.findViewById(R.id.timeLeft);
         location = (TextView) view.findViewById(R.id.location);
@@ -90,7 +82,6 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
         if (bundle != null) {
             eventID = bundle.getString("eventID", "");
         }
-
         final Cursor cursor = database.query(DBHelper.TABLE1, null, "eventID=?", new String[]{eventID}, null, null, null);
         cursor.moveToFirst();
         do {
@@ -100,22 +91,18 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
             start = cursor.getColumnIndex(DBHelper.COLUMN_START);
             end = cursor.getColumnIndex(DBHelper.COLUMN_END);
             checked = cursor.getColumnIndex(DBHelper.COLUMN_FAV);
-
             this.summary = cursor.getString(summary);
             this.htmlLink = cursor.getString(htmlLink);
             this.start = cursor.getString(start);
             this.end = cursor.getString(end);
             this.checked = cursor.getString(checked);
-
             String[] summaryArgs = new String[]{cursor.getString(summary)};
             Cursor cursor1 = database.query(DBHelper.TABLE2, null, "summary=?", summaryArgs, null, null, null);
             cursor1.moveToFirst();
-
             int description = cursor1.getColumnIndex("description");
             int creator_name = cursor1.getColumnIndex("creator_name");
             int telegram = cursor1.getColumnIndex(DBHelper.COLUMN_TELEGRAM_GROUP);
             int telegramContact = cursor1.getColumnIndex(DBHelper.COLUMN_TELEGRAM_CONTACT);
-
             this.descriptionStr = cursor1.getString(description);
             this.creator = cursor1.getString(creator_name);
             this.telegram = cursor1.getString(telegram);
@@ -124,10 +111,8 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
             cursor1.close();
         } while (cursor.moveToNext());
         cursor.close();
-
         final String[] eventIDArgs = new String[]{eventID};
         Cursor locationC = database.query(DBHelper.TABLE3, null, "eventID=?", eventIDArgs, null, null, null);
-
         if (locationC.moveToFirst()) {
             building = locationC.getString(locationC.getColumnIndex(DBHelper.COLUMN_BUILDING));
             floor = locationC.getString(locationC.getColumnIndex(DBHelper.COLUMN_FLOOR));
@@ -135,78 +120,43 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
             latitude = locationC.getString(locationC.getColumnIndex(DBHelper.COLUMN_LATITIDE));
             longitude = locationC.getString(locationC.getColumnIndex(DBHelper.COLUMN_LONGITUDE));
         }
-        locationC.close();
         database.close();
 
         eventName.setText(summary);
         Date startDate = null;
         Date endDate = null;
-
         try {
             startDate = Utils.googleTimeFormat.parse(start);
             endDate = Utils.googleTimeFormat.parse(end);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
-        timeLeft.setText(Utils.prettyTime.format(startDate)); //human-readable date
-
-        /*Inserting text into location field*/
+        timeLeft.setText(Utils.prettyTime.format(startDate));
         String[] locationText = {building, floor, room};
         location.setText(StringUtils.join(Utils.clean(locationText), ", "));
-
         dateTime.setText(Utils.commonTime.format(startDate));
         Long durationTime = TimeUnit.MILLISECONDS.toMinutes(endDate.getTime() - startDate.getTime());
-        duration.setText("Duration: " + String.valueOf(durationTime) + "min"); //human-readable duration
+        duration.setText("Duration: " + String.valueOf(durationTime) + "min");
         description.setText(descriptionStr);
 
-        if (!telegramContact.equals("null") || !telegram.equals("null")) {
+        if (!telegramContact.equals(NULL) || !telegram.equals(NULL)) {
             organizer.setTextColor(Color.BLUE);
 
-            //TODO: @Telse <- to clear up the code (use methods for the same piece of code)
-            if (telegram.equals("null") && !telegramContact.equals("null")) {
+            if (telegram.equals(NULL) && !telegramContact.equals(NULL)) {
                 final String contactLink = "Contact: ";
                 contactChecked = contactCutter(telegramContact);
-
-                /*This setting enables text to look like ordinary link*/
                 SpannableString content = new SpannableString(contactLink + contactChecked);
-                content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
-                organizer.setText(content);
+                telegramTransfer(content, contactChecked, contactChecked);
 
-                /*Event is trigerred when you click on creator's name*/
-                organizer.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        DialogFragment newFragment = new TelegramOpenDialog();
-                        Bundle bundle = new Bundle();
-                        bundle.putString("dialogText", contactChecked);
-                        bundle.putString("dialogUrl", telegramContact);
-                        newFragment.setArguments(bundle);
-                        newFragment.show(getActivity().getSupportFragmentManager(), "Telegram");
-                    }
-                });
-            } else if (!telegram.equals("null")) {
+            } else if (!telegram.equals(NULL)) {
                 SpannableString content = new SpannableString("Group link");
                 content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+                final String chatLink = "group of event";
                 linkChecked = checkLink(telegram);
                 organizer.setText(content);
-                organizer.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        DialogFragment newFragment = new TelegramOpenDialog();
-                        Bundle bundle = new Bundle();
-                        String chatLink = "group of event";
-                        bundle.putString("dialogText", chatLink);
-                        bundle.putString("dialogUrl", linkChecked);
-                        newFragment.setArguments(bundle);
-                        newFragment.show(getActivity().getSupportFragmentManager(), "Telegram");
-                    }
-                });
-
+                telegramTransfer(content, chatLink, linkChecked);
             }
         }
-
-        /*Floating action button, that is located between map an description*/
         FabSpeedDial fabButton = (FabSpeedDial) view.findViewById(R.id.fabButton);
         fabButton.bringToFront();
         fabButton.setMenuListener(new SimpleMenuListenerAdapter() {
@@ -242,29 +192,46 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
                 return false;
             }
         });
-
         initializeMap(latitude, longitude);
         return view;
     }
 
-    private static String cutter(String string, int index) {
-        String link = string.substring(0, index);
+
+    private static String cutter(String string, int checkIndex) {
+        String link = string.substring(0, checkIndex);
         return link;
     }
 
+
     private static String checkLink(String string) {
-        int spaceIndex = string.indexOf(" ", 12);
+        int spaceIndex = string.indexOf(" ", 12); //except "Group chat: "
         int paragraphIndex = string.indexOf("\n");
         int commaIndex = string.indexOf(",");
-        if (paragraphIndex != -1) return cutter(string, paragraphIndex);
-        else if (spaceIndex != -1) return cutter(string, spaceIndex);
+        if (spaceIndex != -1) return cutter(string, spaceIndex);
+        else if (paragraphIndex != -1) return cutter(string, paragraphIndex);
         else if (commaIndex != -1) return cutter(string, commaIndex);
         else return string;
     }
 
     private static String contactCutter(String string) {
-        String checkedString = string.substring(9);
+        String checkedString = string.substring(9); //except "Contact: "
         return checkedString;
+    }
+
+    private void telegramTransfer(SpannableString content, final String dialogText, final String telegramLink) {
+        content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+        organizer.setText(content);
+        organizer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragment newFragment = new TelegramOpenDialog();
+                Bundle bundle = new Bundle();
+                bundle.putString("dialogText", dialogText);
+                bundle.putString("dialogUrl", telegramLink);
+                newFragment.setArguments(bundle);
+                newFragment.show(getActivity().getSupportFragmentManager(), "Telegram");
+            }
+        });
     }
 
 
@@ -282,15 +249,16 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
                 @Override
                 public void onMapReady(GoogleMap googleMap) {
                     mMap = googleMap;
+
                     mSettings = mMap.getUiSettings();
                     mSettings.setMyLocationButtonEnabled(false);
-                    mSettings.setMapToolbarEnabled(false);
                     mMap.setMyLocationEnabled(true);
                     if (latitude != null && longitude != null) {
                         LatLng position = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
                         mMap.addMarker(new MarkerOptions().position(position).title(summary));
                     }
+
                     mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
 
                         @Override
@@ -300,6 +268,7 @@ public class DetailedEvent extends android.support.v4.app.Fragment {
                             bundle.putString("summary", summary);
                             newFragment.setArguments(bundle);
                             newFragment.show(getActivity().getSupportFragmentManager(), "FindRoute");
+
                         }
                     });
                 }

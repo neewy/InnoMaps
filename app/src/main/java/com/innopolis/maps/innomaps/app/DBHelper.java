@@ -20,6 +20,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 7; //in order to execute onUpdate() the number should be increased
 
     private static final String DATABASE_NAME = "eventsDB";
+    private static final String NULL = "";
 
     public static final String TABLE1 = "events";
     public static final String TABLE2 = "event_type";
@@ -188,7 +189,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 cv.put(DBHelper.COLUMN_TELEGRAM_CONTACT, telegramLogin);
                 description = description.replace(telegramLogin, "");
             } else {
-                cv.put(DBHelper.COLUMN_TELEGRAM_CONTACT, "null");
+                cv.put(DBHelper.COLUMN_TELEGRAM_CONTACT, NULL);
             }
             Matcher telGroupMatch = Utils.telGroupPattern.matcher(description);
             if (telGroupMatch.find()) {
@@ -196,7 +197,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 cv.put(DBHelper.COLUMN_TELEGRAM_GROUP, telegramGroup);
                 description = description.replace(telegramGroup, "");
             } else {
-                cv.put(DBHelper.COLUMN_TELEGRAM_GROUP, "null");
+                cv.put(DBHelper.COLUMN_TELEGRAM_GROUP, NULL);
             }
             cv.put(DBHelper.COLUMN_DESCRIPTION, description);
             database.insert(DBHelper.TABLE2, null, cv);
@@ -219,17 +220,17 @@ public class DBHelper extends SQLiteOpenHelper {
             if (locationMass.length > 0) {
                 cv.put(DBHelper.COLUMN_BUILDING, locationMass[0]);
             } else {
-                cv.put(DBHelper.COLUMN_BUILDING, "null");
+                cv.put(DBHelper.COLUMN_BUILDING, NULL);
             }
             if (locationMass.length > 1) {
                 cv.put(DBHelper.COLUMN_FLOOR, locationMass[1]);
             } else {
-                cv.put(DBHelper.COLUMN_FLOOR, "null");
+                cv.put(DBHelper.COLUMN_FLOOR, NULL);
             }
             if (locationMass.length > 2) {
                 cv.put(DBHelper.COLUMN_ROOM, locationMass[2]);
             } else {
-                cv.put(DBHelper.COLUMN_ROOM, "null");
+                cv.put(DBHelper.COLUMN_ROOM, NULL);
             }
             cv.put(DBHelper.COLUMN_LATITIDE, "55.752071");
             cv.put(DBHelper.COLUMN_LONGITUDE, "48.741831");
