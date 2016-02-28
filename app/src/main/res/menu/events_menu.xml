@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_today"
+        android:orderInCategory="100"
+        android:title="@string/today"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_tomorrow"
+        android:orderInCategory="100"
+        android:title="@string/tomorrow"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_this_week"
+        android:orderInCategory="100"
+        android:title="@string/this_week"
+        app:showAsAction="never" />
+</menu>

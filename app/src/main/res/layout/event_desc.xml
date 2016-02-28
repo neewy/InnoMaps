@@ -138,7 +138,7 @@
         android:layout_marginRight="10dp"
         app:elevation="6dp"
         app:fabGravity="bottom_end"
-        app:fabMenu="@menu/detailedmenu"
+        app:fabMenu="@menu/detailed_menu"
         app:miniFabBackgroundTint="@android:color/white"
         app:miniFabDrawableTint="?attr/colorPrimaryDark"
         app:miniFabTitleTextColor="?attr/colorPrimaryDark"
