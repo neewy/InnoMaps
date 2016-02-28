@@ -26,7 +26,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.pathfinding.JGraphTWrapper;
+import com.innopolis.maps.innomaps.pathfinding.LatLngGraphEdge;
 
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPermissionsResultCallback {
@@ -92,7 +97,29 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                                     .color(Color.GREEN)
                                     .geodesic(true));
 
-                            graphWrapper.exportGraphML();
+                            graphWrapper.exportGraphML("test.graphml");
+                            try {
+                                graphWrapper.importGraphML("test.graphml");
+                            }
+                            catch (XmlPullParserException | FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+
+                            map.clear();
+                            path = graphWrapper.shortestPath(university, end);
+                            map.addPolyline(new PolylineOptions()
+                                    .addAll(path)
+                                    .width(12)
+                                    .color(Color.BLUE)
+                                    .geodesic(true));
+
+                            defaultPath = graphWrapper.defaultShortestPath(university, end);
+                            map.addPolyline(new PolylineOptions()
+                                    .addAll(defaultPath)
+                                    .width(12)
+                                    .color(Color.CYAN)
+                                    .geodesic(true));
+
                         }
                     });
                 }

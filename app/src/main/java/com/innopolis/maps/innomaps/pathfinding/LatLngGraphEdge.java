@@ -1,6 +1,4 @@
-package com.innopolis.maps.innomaps.app;
-
-import com.google.android.gms.maps.model.LatLng;
+package com.innopolis.maps.innomaps.pathfinding;
 
 import org.jgrapht.graph.DefaultEdge;
 
@@ -20,12 +18,12 @@ public class LatLngGraphEdge extends DefaultEdge {
         this.edgeType = edgeType;
     }
 
-    public LatLng getV1() {
-        return (LatLng) getSource();
+    public LatLngGraphVertex getV1() {
+        return (LatLngGraphVertex) getSource();
     }
 
-    public LatLng getV2() {
-        return (LatLng) getTarget();
+    public LatLngGraphVertex getV2() {
+        return (LatLngGraphVertex) getTarget();
     }
 
     public EdgeType getEdgeType() {
