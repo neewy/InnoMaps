@@ -1,14 +1,20 @@
 package com.innopolis.maps.innomaps.app;
 
 
-
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.CheckedTextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -38,13 +44,23 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     private GoogleMap map;
     private UiSettings mSettings;
 
-    private Marker markerFrom;
-    private Marker markerTo;
+    DBHelper dbHelper;
+    SQLiteDatabase database;
+
+    SearchView searchView;
+    SearchView.SearchAutoComplete searchBox;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.maps_fragment, container, false);
-
+        dbHelper = new DBHelper(getContext());
+        database = dbHelper.getReadableDatabase();
         MapsInitializer.initialize(getActivity());
 
         switch (GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity())) {
@@ -58,6 +74,15 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                     mSettings = map.getUiSettings();
                     mSettings.setZoomControlsEnabled(true);
                     final LatLng university = new LatLng(55.752321, 48.744674);
+                    Cursor cursor = database.query(DBHelper.TABLE3,null,null,null,null,null,null);
+                    if (cursor.moveToFirst()) {
+                        do {
+                            String latitude = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_LATITIDE));
+                            String longitude = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_LONGITUDE));
+                            MarkerOptions marker = new MarkerOptions().position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
+                            map.addMarker(marker);
+                        } while (cursor.moveToNext());
+                    };
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(university, 15));
                     map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
                         @Override
@@ -132,6 +157,33 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                 Toast.makeText(getActivity(), GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity()), Toast.LENGTH_SHORT).show();
         }
         return v;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        searchView =
+                (SearchView) menu.findItem(R.id.search).getActionView();
+        searchBox = (SearchView.SearchAutoComplete) searchView.findViewById(R.id.search_src_text);
+        searchBox.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String latitude = null;
+                String longitude = null;
+                CheckedTextView text = (CheckedTextView) view.findViewById(R.id.text1);
+                String sqlQuery = "SELECT * FROM location inner join events on events.eventID=location.eventID WHERE events.summary=?";
+                Cursor cursor = database.rawQuery(sqlQuery, new String[]{String.valueOf(text.getText())});
+                if (cursor.moveToFirst()) {
+                    do {
+                        latitude = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_LATITIDE));
+                        longitude = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_LONGITUDE));
+                        map.clear();
+                        map.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(latitude),Double.parseDouble(longitude))));
+                    } while (cursor.moveToNext());
+                };
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)), 17));
+            }
+        });
     }
 
 

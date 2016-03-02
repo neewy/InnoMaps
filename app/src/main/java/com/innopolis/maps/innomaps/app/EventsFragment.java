@@ -10,15 +10,19 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.CheckedTextView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.utils.Utils;
@@ -51,12 +55,17 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
     ArrayList<Event> list = new ArrayList<>(); //for storing entries
     EventsAdapter adapter; //to populate list above
     SwipeRefreshLayout swipeRefreshLayout;
+
     DBHelper dbHelper;
     SQLiteDatabase database;
     SharedPreferences sPref; //to store md5 hash of loaded file
+
     String hashPref;
     String updatedPref;
+
     ActionBar mActionBar;
+    SearchView searchView;
+    SearchView.SearchAutoComplete searchBox;
 
 
     @Override
@@ -125,6 +134,28 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.events_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
+        searchView =
+                (SearchView) menu.findItem(R.id.search).getActionView();
+        searchBox = (SearchView.SearchAutoComplete) searchView.findViewById(R.id.search_src_text);
+        searchBox.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ArrayList<Event> filteredList = new ArrayList<Event>(list);
+                ArrayList<Event> origin = new ArrayList<Event>(list);
+                final CheckedTextView text = (CheckedTextView) view.findViewById(R.id.text1);
+                Predicate<Event> predicate = new Predicate<Event>() {
+                    @Override
+                    public boolean apply(Event event) {
+                        return event.getSummary().equals(text.getText());
+                    }
+                };
+                adapter.events.clear();
+                for (Event event: Collections2.filter(filteredList,predicate))
+                    adapter.events.add(event);
+                adapter.notifyDataSetChanged();
+                list = new ArrayList<>(origin);
+            }
+        });
     }
 
     @Override
@@ -324,9 +355,9 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
             int maxInstances = 100; // limit instances for rules that recur forever
             int weekCount = 0;
 
-            /*Variable weekCount stand for two event, occurring after today's date
-            * the duration is the same - so there is no need to look for end date,
-            * we can get it with the duration*/
+           /* Variable weekCount stands for two events, occurring after today's date
+            *  the duration is the same - so there is no need to look for end date,
+            *  we can get it with the duration */
             while (it.hasNext() && (maxInstances-- > 0) && weekCount < 2) {
                 DateTime nextInstance = it.nextDateTime();
                 if (nextInstance.after(currentDate)) {

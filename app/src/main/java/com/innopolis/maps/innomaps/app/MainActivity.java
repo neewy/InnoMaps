@@ -1,5 +1,8 @@
 package com.innopolis.maps.innomaps.app;
 
+import android.app.SearchManager;
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
@@ -9,12 +12,18 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.utils.Utils;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -25,6 +34,11 @@ public class MainActivity extends AppCompatActivity
     private final String DETAILED = "Detailed";
 
     private boolean doubleBackToExitPressedOnce = false;
+
+    DBHelper dbHelper;
+    SQLiteDatabase database;
+
+    SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +62,8 @@ public class MainActivity extends AppCompatActivity
         ft.add(R.id.content_frame, fragment, MAPS).addToBackStack(MAPS);
         ft.commit();
         getSupportActionBar().setTitle(MAPS);
+        dbHelper = new DBHelper(MainActivity.this);
+        database = dbHelper.getReadableDatabase();
     }
 
     @Override
@@ -97,6 +113,35 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView =
+                (SearchView) menu.findItem(R.id.search).getActionView();
+        final List<String> eventNames = Utils.getEventNames(database);
+        final SearchView.SearchAutoComplete searchBox = (SearchView.SearchAutoComplete) searchView.findViewById(R.id.search_src_text);
+        searchBox.setAdapter(new SuggestionAdapter<String>(this, R.layout.complete_row, eventNames));
+        searchBox.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                eventNames.clear();
+                for (String string: Utils.getEventNames(database)) {
+                    if (string.toLowerCase().contains(s.toString().toLowerCase())) {
+                        eventNames.add(string);
+                    }
+                }
+                ((SuggestionAdapter) searchBox.getAdapter()).refresh(eventNames);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
         return true;
     }
 

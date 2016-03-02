@@ -197,4 +197,6 @@
     <string name="today">Today</string>
     <string name="tomorrow">Tomorrow</string>
     <string name="this_week">This week</string>
+    <string name="search_hint">Search...</string>
+    <string name="search_title">Search</string>
 </resources>

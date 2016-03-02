@@ -12,6 +12,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Matcher;
 
 
@@ -232,8 +233,11 @@ public class DBHelper extends SQLiteOpenHelper {
             } else {
                 cv.put(DBHelper.COLUMN_ROOM, NULL);
             }
-            cv.put(DBHelper.COLUMN_LATITIDE, "55.752071");
-            cv.put(DBHelper.COLUMN_LONGITUDE, "48.741831");
+            Random random = new Random();
+            Double latitude = 55.7520 + random.nextDouble()*0.01;
+            Double longitude = 48.7418 + random.nextDouble()*0.01;
+            cv.put(DBHelper.COLUMN_LATITIDE, latitude.toString());
+            cv.put(DBHelper.COLUMN_LONGITUDE, longitude.toString());
             database.insert(DBHelper.TABLE3, null, cv);
         }
     }
