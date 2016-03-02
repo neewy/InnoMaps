@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -129,7 +130,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 eventNames.clear();
-                for (String string: Utils.getEventNames(database)) {
+                for (String string : Utils.getEventNames(database)) {
                     if (string.toLowerCase().contains(s.toString().toLowerCase())) {
                         eventNames.add(string);
                     }
