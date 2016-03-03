@@ -199,4 +199,5 @@
     <string name="this_week">This week</string>
     <string name="search_hint">Search...</string>
     <string name="search_title">Search</string>
+    <string name="empty_search">No events or locations found</string>
 </resources>

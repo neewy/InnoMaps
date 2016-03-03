@@ -6,8 +6,6 @@
     android:layout_height="match_parent"
     >
 
-
-
     <TextView
         android:id="@+id/eventName"
         android:layout_width="wrap_content"
@@ -147,7 +145,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:src="@drawable/ic_directions_36"
+        android:src="@drawable/ic_directions_24dp"
         android:layout_alignParentRight="true"
         android:layout_alignBottom="@id/main_text"
         android:layout_marginBottom="-32dp"

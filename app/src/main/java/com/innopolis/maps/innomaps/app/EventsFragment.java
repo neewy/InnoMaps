@@ -43,6 +43,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -164,22 +165,37 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
         ArrayList<Event> origin = new ArrayList<Event>(list);
         switch (item.getItemId()) {
             case R.id.action_today:
+                Collection<Event> today = Collections2.filter(filteredList, Event.isToday);
+                if (today.isEmpty()) {
+                    Toast.makeText(getContext(),"No events today", Toast.LENGTH_LONG).show();
+                    return true;
+                }
                 adapter.events.clear();
-                for (Event event: Collections2.filter(filteredList,Event.isToday))
+                for (Event event: today)
                     adapter.events.add(event);
                 adapter.notifyDataSetChanged();
                 list = new ArrayList<>(origin);
                 return true;
             case R.id.action_tomorrow:
+                Collection<Event> tomorrow = Collections2.filter(filteredList, Event.isTomorrow);
+                if (tomorrow.isEmpty()) {
+                    Toast.makeText(getContext(),"No events tomorrow", Toast.LENGTH_LONG).show();
+                    return true;
+                }
                 adapter.events.clear();
-                for (Event event: Collections2.filter(filteredList,Event.isTomorrow))
+                for (Event event: tomorrow)
                     adapter.events.add(event);
                 adapter.notifyDataSetChanged();
                 list = new ArrayList<>(origin);
                 return true;
             case R.id.action_this_week:
+                Collection<Event> thisWeek = Collections2.filter(filteredList, Event.isTomorrow);
+                if (thisWeek.isEmpty()) {
+                    Toast.makeText(getContext(),"No events this week", Toast.LENGTH_LONG).show();
+                    return true;
+                }
                 adapter.events.clear();
-                for (Event event: Collections2.filter(filteredList,Event.isThisWeek))
+                for (Event event: thisWeek)
                     adapter.events.add(event);
                 adapter.notifyDataSetChanged();
                 list = new ArrayList<>(origin);
@@ -187,7 +203,6 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
             default:
                 break;
         }
-
         return false;
     }
 
@@ -276,6 +291,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
                 e.printStackTrace();
             }
             Collections.sort(list);
+            adapter.events = list;
             adapter.notifyDataSetChanged();
             database.close();
             swipeRefreshLayout.setRefreshing(false);
@@ -351,22 +367,17 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
             }
 
             RecurrenceRuleIterator it = rule.iterator(startDate);
+            it.fastForward(new DateTime(new Date().getTime()));
+            int maxInstances = 5; // limit instances for rules that recur forever
 
-            int maxInstances = 100; // limit instances for rules that recur forever
-            int weekCount = 0;
-
-           /* Variable weekCount stands for two events, occurring after today's date
-            *  the duration is the same - so there is no need to look for end date,
-            *  we can get it with the duration */
-            while (it.hasNext() && (maxInstances-- > 0) && weekCount < 2) {
+            while (it.hasNext() && (maxInstances-- > 0)) {
                 DateTime nextInstance = it.nextDateTime();
                 if (nextInstance.after(currentDate)) {
-                    weekCount++;
                     String finalStartDate = Utils.googleTimeFormat.format(new Date(nextInstance.getTimestamp()));
                     String finalEndDate = Utils.googleTimeFormat.format(new Date(nextInstance.addDuration(new Duration(1, 0, 0, durationTime.intValue(), 0)).getTimestamp()));
-                    DBHelper.insertEvent(db, summary, htmlLink, finalStartDate, finalEndDate, eventID + "_" + weekCount, checked);
+                    DBHelper.insertEvent(db, summary, htmlLink, finalStartDate, finalEndDate, eventID + "_" + maxInstances, checked);
                     DBHelper.insertEventType(db, summary, description, creator_name, creator_email);
-                    DBHelper.insertLocation(db, location, eventID + "_" + weekCount);
+                    DBHelper.insertLocation(db, location, eventID + "_" + maxInstances);
                 }
             }
         }
