@@ -87,37 +87,27 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                     map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
                         @Override
                         public void onMapLongClick(LatLng latLng) {
-                            LatLng p1 = new LatLng(55.2, 48.2);
-                            LatLng p2 = new LatLng(55.2, 49.2);
-                            LatLng p3 = new LatLng(56.2, 49.2);
-                            LatLng p4 = new LatLng(56.5, 48.7);
-                            LatLng end = new LatLng(56.2, 48.2);
-                            JGraphTWrapper graphWrapper = new JGraphTWrapper(getContext());
-                            graphWrapper.addVertex(university);
-                            graphWrapper.addVertex(p1);
-                            graphWrapper.addVertex(p2);
-                            graphWrapper.addVertex(p3);
-                            graphWrapper.addVertex(p4);
-                            graphWrapper.addVertex(end);
-                            graphWrapper.addEdge(university, p1, LatLngGraphEdge.EdgeType.DEFAULT);
-                            graphWrapper.addEdge(p1, p2, LatLngGraphEdge.EdgeType.DEFAULT);
-                            graphWrapper.addEdge(p2, p3, LatLngGraphEdge.EdgeType.DEFAULT);
-                            graphWrapper.addEdge(p3, end, LatLngGraphEdge.EdgeType.ELEVATOR);
-                            graphWrapper.addEdge(p3, p4, LatLngGraphEdge.EdgeType.DEFAULT);
-                            graphWrapper.addEdge(p4, end, LatLngGraphEdge.EdgeType.DEFAULT);
+                            LatLng[] coords = {new LatLng(55.753082, 48.744011),
+                                    new LatLng(55.753182, 48.743887),
+                                    new LatLng(55.753310, 48.743762),
+                                    new LatLng(55.753372, 48.743631),
+                                    new LatLng(55.753689, 48.743274),
+                                    new LatLng(55.753791, 48.743357),
+                                    new LatLng(55.754276, 48.743376)};
 
-                            ArrayList<LatLng> path = graphWrapper.shortestPath(university, end);
+                            JGraphTWrapper graphWrapper = new JGraphTWrapper(getContext());
+                            for (LatLng v: coords) {
+                                graphWrapper.addVertex(v);
+                            }
+                            for (int i = 1; i < coords.length; ++i) {
+                                graphWrapper.addEdge(coords[i-1], coords[i], LatLngGraphEdge.EdgeType.DEFAULT);
+                            }
+
+                            ArrayList<LatLng> path = graphWrapper.shortestPath(coords[0], coords[coords.length-1]);
                             map.addPolyline(new PolylineOptions()
                                     .addAll(path)
                                     .width(12)
                                     .color(Color.BLACK)
-                                    .geodesic(true));
-
-                            ArrayList<LatLng> defaultPath = graphWrapper.defaultShortestPath(university, end);
-                            map.addPolyline(new PolylineOptions()
-                                    .addAll(defaultPath)
-                                    .width(12)
-                                    .color(Color.GREEN)
                                     .geodesic(true));
 
                             graphWrapper.exportGraphML("test.graphml");
@@ -127,22 +117,6 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                             catch (XmlPullParserException | FileNotFoundException e) {
                                 e.printStackTrace();
                             }
-
-                            map.clear();
-                            path = graphWrapper.shortestPath(university, end);
-                            map.addPolyline(new PolylineOptions()
-                                    .addAll(path)
-                                    .width(12)
-                                    .color(Color.BLUE)
-                                    .geodesic(true));
-
-                            defaultPath = graphWrapper.defaultShortestPath(university, end);
-                            map.addPolyline(new PolylineOptions()
-                                    .addAll(defaultPath)
-                                    .width(12)
-                                    .color(Color.CYAN)
-                                    .geodesic(true));
-
                         }
                     });
                 }
