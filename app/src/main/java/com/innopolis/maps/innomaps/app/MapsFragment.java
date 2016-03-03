@@ -94,7 +94,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                     map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                         @Override
                         public void onMapClick(LatLng latLng) {
-                            if (markerList != null) markerList.get(0).remove();
+                            if (markerList != null && markerList.size()>0) markerList.get(0).remove();
                             markerList.clear();
                             Marker marker = map.addMarker(new MarkerOptions().position(latLng).title(latLng.toString()));
                             markerList.add(marker);
