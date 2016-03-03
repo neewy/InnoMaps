@@ -24,8 +24,11 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -156,6 +159,15 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
             default:
                 Toast.makeText(getActivity(), GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity()), Toast.LENGTH_SHORT).show();
         }
+
+        BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.raw.ai6_floor1);
+        LatLng southWest = new LatLng(55.752533,48.742492);
+        LatLng northEast = new LatLng(55.754656,48.744589);
+        LatLngBounds latLngBounds = new LatLngBounds(southWest, northEast);
+        GroundOverlayOptions groundOverlayOptions = new GroundOverlayOptions();
+        groundOverlayOptions.positionFromBounds(latLngBounds);
+        groundOverlayOptions.image(bitmapDescriptor);
+        map.addGroundOverlay(groundOverlayOptions);
         return v;
     }
 
@@ -208,5 +220,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     private Marker addMarker(LatLng point) {
         return map.addMarker(new MarkerOptions().position(point).icon(BitmapDescriptorFactory.fromResource(R.drawable.test_custom_marker)));
     }
+
+
 }
 
