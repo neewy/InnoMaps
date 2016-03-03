@@ -40,6 +40,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -52,6 +53,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
 
     SearchView searchView;
     SearchView.SearchAutoComplete searchBox;
+    List<Marker> markerList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -87,6 +89,16 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                         } while (cursor.moveToNext());
                     };
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(university, 15));
+                    map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                    markerList = new ArrayList<>();
+                    map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                        @Override
+                        public void onMapClick(LatLng latLng) {
+                            markerList.clear();
+                            Marker marker = map.addMarker(new MarkerOptions().position(latLng).title(latLng.toString()));
+                            markerList.add(marker);
+                        }
+                    });
                     map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
                         @Override
                         public void onMapLongClick(LatLng latLng) {
