@@ -109,7 +109,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                             ArrayList<LatLng> path = graphWrapper.shortestPath(coords[0], coords[coords.length-1]);
                             map.addPolyline(new PolylineOptions()
                                     .addAll(path)
-                                    .width(12)
+                                    .width(4)
                                     .color(Color.BLACK)
                                     .geodesic(true));
 
