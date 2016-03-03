@@ -96,6 +96,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                                     new LatLng(55.753372, 48.743631),
                                     new LatLng(55.753689, 48.743274),
                                     new LatLng(55.753791, 48.743357),
+                                    new LatLng(55.754257, 48.743569),
                                     new LatLng(55.754276, 48.743376)};
 
                             JGraphTWrapper graphWrapper = new JGraphTWrapper(getContext());
@@ -110,7 +111,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                             map.addPolyline(new PolylineOptions()
                                     .addAll(path)
                                     .width(4)
-                                    .color(Color.BLACK)
+                                    .color(Color.GREEN)
                                     .geodesic(true));
 
                             graphWrapper.exportGraphML("test.graphml");
