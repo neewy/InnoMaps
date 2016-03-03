@@ -7,17 +7,30 @@
     >
 
 
+
     <TextView
         android:id="@+id/eventName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
         android:layout_weight="1"
         android:gravity="center"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:typeface="serif" />
+        android:typeface="serif"
+        android:layout_toStartOf="@+id/fabButton"
+        android:layout_toLeftOf="@+id/fabButton"
+        android:layout_alignStart="@+id/upper_text" />
+
+    <CheckBox
+        android:id="@+id/favCheckBox"
+        style="?android:attr/starStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="false"
+        android:layout_alignTop="@+id/eventName"
+        android:layout_alignRight="@+id/main_text"
+        android:layout_alignEnd="@+id/main_text" />
 
     <LinearLayout
         android:id="@+id/upper_text"
@@ -95,6 +108,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/lower_text"
         android:minHeight="200dp"
+        android:maxHeight="210dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginBottom="6dp"
@@ -106,13 +120,14 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:maxLines="10"
+            android:maxEms="39"
             android:scrollbars="vertical"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:typeface="sans"
             android:gravity="left"
             android:layout_gravity="center"
-
-            android:layout_marginBottom="5dp" />
+            android:layout_marginBottom="5dp"
+            android:maxHeight="150dp" />
 
         <TextView
             android:id="@+id/organizer"
@@ -122,30 +137,25 @@
             android:layout_above="@+id/mapDesc"
             android:textSize="18sp"
             android:layout_marginBottom="5dp"
-            android:layout_gravity="bottom" />
+            android:layout_gravity="bottom"
+            android:maxLines="1"
+            android:maxHeight="19dp" />
     </LinearLayout>
 
-    <io.github.yavski.fabspeeddial.FabSpeedDial
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/mapDesc"
-        android:layout_alignParentBottom="false"
-        android:layout_alignParentEnd="false"
+        android:clickable="true"
+        android:src="@drawable/ic_directions_36"
         android:layout_alignParentRight="true"
-        android:layout_gravity="bottom|end"
-        android:layout_marginBottom="-45dp"
-        android:layout_marginRight="10dp"
-        app:elevation="6dp"
-        app:fabGravity="bottom_end"
-        app:fabMenu="@menu/detailed_menu"
-        app:miniFabBackgroundTint="@android:color/white"
-        app:miniFabDrawableTint="?attr/colorPrimaryDark"
-        app:miniFabTitleTextColor="?attr/colorPrimaryDark"
-        app:pressedTranslationZ="12dp" />
+        android:layout_alignBottom="@id/main_text"
+        android:layout_marginBottom="-32dp"
+        android:layout_marginRight="20dp"/>
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
+        android:minHeight="160dp"
         android:id="@+id/mapDesc"
         android:layout_weight="2"
         android:name="com.google.android.gms.maps.SupportMapFragment"

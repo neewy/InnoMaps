@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.internal.NavigationMenu;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -16,9 +16,10 @@ import android.text.SpannableString;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.UnderlineSpan;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CheckedTextView;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -38,10 +39,8 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import io.github.yavski.fabspeeddial.FabSpeedDial;
-import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
-
 import android.support.v4.app.Fragment;
+import android.widget.Toast;
 
 
 public class DetailedEvent extends Fragment {
@@ -57,10 +56,12 @@ public class DetailedEvent extends Fragment {
     TextView description;
     TextView organizer;
     TextView duration;
+
+    CheckedTextView favCheckBox;
     private GoogleMap mMap;
     private UiSettings mSettings;
     SupportMapFragment mSupportMapFragment;
-    final String NULL = "";
+    final private String NULL = "";
 
     String contactChecked, linkChecked, summary, htmlLink, start, end, descriptionStr, creator,
             telegram, telegramContact, eventID, building, floor, room, latitude, longitude, checked;
@@ -81,6 +82,7 @@ public class DetailedEvent extends Fragment {
         description.setMovementMethod(new ScrollingMovementMethod());
         organizer = (TextView) view.findViewById(R.id.organizer);
         duration = (TextView) view.findViewById(R.id.duration);
+        final CheckBox favCheckBox = (CheckBox) view.findViewById(R.id.favCheckBox);
 
         Bundle bundle = this.getArguments();
         if (bundle != null) {
@@ -148,7 +150,7 @@ public class DetailedEvent extends Fragment {
 
             if (telegram.equals(NULL) && !telegramContact.equals(NULL)) {
                 final String contactLink = "Contact: ";
-                contactChecked = contactCutter(telegramContact);
+                contactChecked = checkContact(telegramContact);
                 SpannableString content = new SpannableString(contactLink + contactChecked);
                 telegramTransfer(content, contactChecked, contactChecked);
 
@@ -161,39 +163,33 @@ public class DetailedEvent extends Fragment {
                 telegramTransfer(content, chatLink, linkChecked);
             }
         }
-        FabSpeedDial fabButton = (FabSpeedDial) view.findViewById(R.id.fabButton);
-        fabButton.bringToFront();
-        fabButton.setMenuListener(new SimpleMenuListenerAdapter() {
 
+        if (checked.equals("1")) {
+            favCheckBox.setChecked(true);
+        } else {
+            favCheckBox.setChecked(false);
+        }
+        favCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onPrepareMenu(NavigationMenu navigationMenu) {
-                if (checked.equals("1")) {
-                    navigationMenu.getItem(0).setTitle("Unfavourite");
-                } else {
-                    navigationMenu.getItem(0).setTitle("Favourite");
-                }
-                return true;
+            public void onClick(View v) {
+                String isFav = (favCheckBox.isChecked()) ? "1" : "0";
+                ContentValues cv = new ContentValues();
+                dbHelper = new DBHelper(context);
+                database = dbHelper.getWritableDatabase();
+                cv.put(DBHelper.COLUMN_FAV, isFav);
+                database.update(DBHelper.TABLE1, cv, "eventID = ?", new String[]{eventID});
+                dbHelper.close();
             }
+        });
+
+
+        FloatingActionButton fabButton = (FloatingActionButton) view.findViewById(R.id.fabButton);
+        fabButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
-            public boolean onMenuItemSelected(MenuItem menuItem) {
-                int id = menuItem.getItemId();
-                if (id == R.id.action_fav) {
-                    database = dbHelper.getWritableDatabase();
-                    Boolean isFav = (checked.equals("1"));
-                    ContentValues cv = new ContentValues();
-                    String res = (isFav) ? "0" : "1";
-                    checked = res;
-                    cv.put(DBHelper.COLUMN_FAV, res);
-                    database.update(DBHelper.TABLE1, cv, "eventID = ?", new String[]{eventID});
-                    database.close();
-                    return true;
-                } else if (id == R.id.action_map) {
-                    return true;
-                } else if (id == R.id.action_share) {
-                    return true;
-                }
-                return false;
+            public void onClick(View v) {
+                Toast.makeText(DetailedEvent.this.context, "Hello World", Toast.LENGTH_SHORT).show();
+
             }
         });
         initializeMap(latitude, longitude);
@@ -217,9 +213,15 @@ public class DetailedEvent extends Fragment {
         else return string;
     }
 
-    private static String contactCutter(String string) {
-        String checkedString = string.substring(9); //except "Contact: "
-        return checkedString;
+    private static String contactCutter(String string, int checkIndex) {
+        String contact = string.substring(9, checkIndex);
+        return contact;
+    }
+
+    private static String checkContact(String string) {
+        int dogIndex = string.indexOf("@", 10);
+        if (dogIndex != -1) return contactCutter(string, dogIndex);
+        else return string.substring(9);  //except "Contact: "
     }
 
     private void telegramTransfer(SpannableString content, final String dialogText, final String telegramLink) {
@@ -253,7 +255,7 @@ public class DetailedEvent extends Fragment {
                 @Override
                 public void onMapReady(GoogleMap googleMap) {
                     mMap = googleMap;
-
+                    mMap.getUiSettings().setMapToolbarEnabled(false);
                     mSettings = mMap.getUiSettings();
                     mSettings.setMyLocationButtonEnabled(false);
                     mMap.setMyLocationEnabled(true);
