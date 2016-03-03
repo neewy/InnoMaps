@@ -29,10 +29,10 @@ public class DrawerTest extends ActivityInstrumentationTestCase2<MainActivity> {
 
 // Drawer should not be open to start.
         onView(withId(R.id.drawer_layout)).check(matches(isClosed()));
-        openDrawer(R.id.drawer_layout);
+
         // onView(withId(R.id.buttonChoose)).perform(click());
         //onView(withId(R.id.textViewInfo)).check(matches(withText("hello")));
-
+        openDrawer(R.id.drawer_layout);
         //closeDrawer(R.id.drawer_layout);
         // The drawer should now be open.
         onView(withId(R.id.drawer_layout)).check(matches(isOpen()));
