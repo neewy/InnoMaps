@@ -50,7 +50,6 @@ import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
-
     Context context;
     ListView listView;
     ArrayList<Event> list = new ArrayList<>(); //for storing entries
@@ -77,7 +76,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mActionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
+        mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         context = getActivity().getApplicationContext();
         View view = inflater.inflate(R.layout.events, container, false); //changing the fragment
 
@@ -107,6 +106,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
         } else {
             onRefresh();
         }
+
         return view;
     }
 
@@ -135,9 +135,10 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.events_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
-        searchView =
-                (SearchView) menu.findItem(R.id.search).getActionView();
+
+        searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchBox = (SearchView.SearchAutoComplete) searchView.findViewById(R.id.search_src_text);
+
         searchBox.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -151,8 +152,9 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
                     }
                 };
                 adapter.events.clear();
-                for (Event event: Collections2.filter(filteredList,predicate))
+                for (Event event : Collections2.filter(filteredList, predicate)) {
                     adapter.events.add(event);
+                }
                 adapter.notifyDataSetChanged();
                 list = new ArrayList<>(origin);
             }
@@ -167,23 +169,23 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
             case R.id.action_today:
                 Collection<Event> today = Collections2.filter(filteredList, Event.isToday);
                 if (today.isEmpty()) {
-                    Toast.makeText(getContext(),"No events today", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "No events today", Toast.LENGTH_LONG).show();
                     return true;
                 }
-                adapter.events.clear();
-                for (Event event: today)
+                this.adapter.events.clear();
+                for (Event event : today)
                     adapter.events.add(event);
-                adapter.notifyDataSetChanged();
+                this.adapter.notifyDataSetChanged();
                 list = new ArrayList<>(origin);
                 return true;
             case R.id.action_tomorrow:
                 Collection<Event> tomorrow = Collections2.filter(filteredList, Event.isTomorrow);
                 if (tomorrow.isEmpty()) {
-                    Toast.makeText(getContext(),"No events tomorrow", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "No events tomorrow", Toast.LENGTH_LONG).show();
                     return true;
                 }
                 adapter.events.clear();
-                for (Event event: tomorrow)
+                for (Event event : tomorrow)
                     adapter.events.add(event);
                 adapter.notifyDataSetChanged();
                 list = new ArrayList<>(origin);
@@ -191,11 +193,11 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
             case R.id.action_this_week:
                 Collection<Event> thisWeek = Collections2.filter(filteredList, Event.isTomorrow);
                 if (thisWeek.isEmpty()) {
-                    Toast.makeText(getContext(),"No events this week", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "No events this week", Toast.LENGTH_LONG).show();
                     return true;
                 }
                 adapter.events.clear();
-                for (Event event: thisWeek)
+                for (Event event : thisWeek)
                     adapter.events.add(event);
                 adapter.notifyDataSetChanged();
                 list = new ArrayList<>(origin);
@@ -367,8 +369,8 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
             }
 
             RecurrenceRuleIterator it = rule.iterator(startDate);
-            it.fastForward(new DateTime(new Date().getTime()));
-            int maxInstances = 5; // limit instances for rules that recur forever
+            it.fastForward(currentDate);
+            int maxInstances = 5; // limit instances for 5 times
 
             while (it.hasNext() && (maxInstances-- > 0)) {
                 DateTime nextInstance = it.nextDateTime();

@@ -6,14 +6,4 @@
         android:icon="@drawable/ic_search_24dp"
         app:showAsAction="collapseActionView|ifRoom"
         app:actionViewClass="android.support.v7.widget.SearchView" />
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_logout"
-        android:orderInCategory="100"
-        android:title="@string/action_logout"
-        app:showAsAction="never" />
 </menu>
