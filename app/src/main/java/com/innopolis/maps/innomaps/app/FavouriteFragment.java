@@ -17,6 +17,10 @@ import android.widget.ListView;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.database.DBHelper;
+import com.innopolis.maps.innomaps.events.Event;
+import com.innopolis.maps.innomaps.events.EventsAdapter;
+import com.innopolis.maps.innomaps.events.EventsFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +59,7 @@ public class FavouriteFragment extends EventsFragment {
         inflater.inflate(R.menu.events_menu, menu);
         searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         final List<String> favouriteNames = new ArrayList<>();
-        for (Event event: list) {
+        for (Event event : list) {
             favouriteNames.add(event.getSummary());
         }
 

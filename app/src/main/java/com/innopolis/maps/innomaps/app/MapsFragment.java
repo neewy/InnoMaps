@@ -33,6 +33,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.pathfinding.JGraphTWrapper;
 import com.innopolis.maps.innomaps.pathfinding.LatLngGraphEdge;
 
@@ -79,22 +80,25 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                     mSettings = map.getUiSettings();
                     mSettings.setZoomControlsEnabled(true);
                     final LatLng university = new LatLng(55.752321, 48.744674);
-                    Cursor cursor = database.query(DBHelper.TABLE3,null,null,null,null,null,null);
+                    Cursor cursor = database.query(DBHelper.TABLE3, null, null, null, null, null, null);
                     if (cursor.moveToFirst()) {
                         do {
-                            String latitude = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_LATITIDE));
+                            String latitude = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_LATITUDE));
                             String longitude = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_LONGITUDE));
                             MarkerOptions marker = new MarkerOptions().position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
                             map.addMarker(marker);
                         } while (cursor.moveToNext());
-                    };
+                    }
+
+
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(university, 15));
                     map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
                     markerList = new ArrayList<>();
                     map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                         @Override
                         public void onMapClick(LatLng latLng) {
-                            if (markerList != null && markerList.size()>0) markerList.get(0).remove();
+                            if (markerList != null && markerList.size() > 0)
+                                markerList.get(0).remove();
                             markerList.clear();
                             Marker marker = map.addMarker(new MarkerOptions().position(latLng).title(latLng.toString()));
                             markerList.add(marker);
@@ -113,14 +117,14 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                                     new LatLng(55.754276, 48.743376)};
 
                             JGraphTWrapper graphWrapper = new JGraphTWrapper(getContext());
-                            for (LatLng v: coords) {
+                            for (LatLng v : coords) {
                                 graphWrapper.addVertex(v);
                             }
                             for (int i = 1; i < coords.length; ++i) {
-                                graphWrapper.addEdge(coords[i-1], coords[i], LatLngGraphEdge.EdgeType.DEFAULT);
+                                graphWrapper.addEdge(coords[i - 1], coords[i], LatLngGraphEdge.EdgeType.DEFAULT);
                             }
 
-                            ArrayList<LatLng> path = graphWrapper.shortestPath(coords[0], coords[coords.length-1]);
+                            ArrayList<LatLng> path = graphWrapper.shortestPath(coords[0], coords[coords.length - 1]);
                             map.addPolyline(new PolylineOptions()
                                     .addAll(path)
                                     .width(4)
@@ -130,8 +134,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                             graphWrapper.exportGraphML("test.graphml");
                             try {
                                 graphWrapper.importGraphML("test.graphml");
-                            }
-                            catch (XmlPullParserException | FileNotFoundException e) {
+                            } catch (XmlPullParserException | FileNotFoundException e) {
                                 e.printStackTrace();
                             }
                         }
@@ -149,8 +152,8 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         }
 
         BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.raw.ai6_floor1);
-        LatLng southWest = new LatLng(55.752533,48.742492);
-        LatLng northEast = new LatLng(55.754656,48.744589);
+        LatLng southWest = new LatLng(55.752533, 48.742492);
+        LatLng northEast = new LatLng(55.754656, 48.744589);
         LatLngBounds latLngBounds = new LatLngBounds(southWest, northEast);
         GroundOverlayOptions groundOverlayOptions = new GroundOverlayOptions();
         groundOverlayOptions.positionFromBounds(latLngBounds);
@@ -175,13 +178,23 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                 Cursor cursor = database.rawQuery(sqlQuery, new String[]{String.valueOf(text.getText())});
                 if (cursor.moveToFirst()) {
                     do {
-                        latitude = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_LATITIDE));
+                        latitude = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_LATITUDE));
                         longitude = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_LONGITUDE));
                         map.clear();
-                        map.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(latitude),Double.parseDouble(longitude))));
+                        map.addMarker(
+                                new MarkerOptions().position(
+                                        new LatLng(
+                                                Double.parseDouble(latitude),
+                                                Double.parseDouble(longitude))));
                     } while (cursor.moveToNext());
-                };
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)), 17));
+                }
+
+                map.animateCamera(
+                        CameraUpdateFactory.newLatLngZoom(
+                                new LatLng(
+                                        Double.parseDouble(latitude),
+                                        Double.parseDouble(longitude)),
+                                17));
             }
         });
     }

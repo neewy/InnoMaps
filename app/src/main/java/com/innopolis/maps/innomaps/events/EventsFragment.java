@@ -1,4 +1,4 @@
-package com.innopolis.maps.innomaps.app;
+package com.innopolis.maps.innomaps.events;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.codec.binary.Hex;
@@ -50,22 +51,22 @@ import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
-    Context context;
-    ListView listView;
-    ArrayList<Event> list = new ArrayList<>(); //for storing entries
-    EventsAdapter adapter; //to populate list above
-    SwipeRefreshLayout swipeRefreshLayout;
+    public Context context;
+    public ListView listView;
+    public ArrayList<Event> list = new ArrayList<>(); //for storing entries
+    public EventsAdapter adapter; //to populate list above
+    public SwipeRefreshLayout swipeRefreshLayout;
 
-    DBHelper dbHelper;
-    SQLiteDatabase database;
-    SharedPreferences sPref; //to store md5 hash of loaded file
+    public DBHelper dbHelper;
+    public SQLiteDatabase database;
+    public SharedPreferences sPref; //to store md5 hash of loaded file
 
     String hashPref;
     String updatedPref;
 
     ActionBar mActionBar;
-    SearchView searchView;
-    SearchView.SearchAutoComplete searchBox;
+    public SearchView searchView;
+    public SearchView.SearchAutoComplete searchBox;
 
 
     @Override
@@ -191,7 +192,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
                 list = new ArrayList<>(origin);
                 return true;
             case R.id.action_this_week:
-                Collection<Event> thisWeek = Collections2.filter(filteredList, Event.isTomorrow);
+                Collection<Event> thisWeek = Collections2.filter(filteredList, Event.isThisWeek);
                 if (thisWeek.isEmpty()) {
                     Toast.makeText(getContext(), "No events this week", Toast.LENGTH_LONG).show();
                     return true;

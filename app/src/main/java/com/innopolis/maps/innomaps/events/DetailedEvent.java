@@ -1,4 +1,4 @@
-package com.innopolis.maps.innomaps.app;
+package com.innopolis.maps.innomaps.events;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -12,7 +12,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
 import android.text.SpannableString;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.UnderlineSpan;
@@ -22,9 +21,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.CheckBox;
-import android.widget.CheckedTextView;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -35,15 +32,13 @@ import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -65,7 +60,7 @@ public class DetailedEvent extends Fragment {
     TextView organizer;
     TextView duration;
 
-    CheckedTextView favCheckBox;
+
     private GoogleMap mMap;
     private UiSettings mSettings;
     SupportMapFragment mSupportMapFragment;
@@ -156,7 +151,7 @@ public class DetailedEvent extends Fragment {
             building = locationC.getString(locationC.getColumnIndex(DBHelper.COLUMN_BUILDING));
             floor = locationC.getString(locationC.getColumnIndex(DBHelper.COLUMN_FLOOR));
             room = locationC.getString(locationC.getColumnIndex(DBHelper.COLUMN_ROOM));
-            latitude = locationC.getString(locationC.getColumnIndex(DBHelper.COLUMN_LATITIDE));
+            latitude = locationC.getString(locationC.getColumnIndex(DBHelper.COLUMN_LATITUDE));
             longitude = locationC.getString(locationC.getColumnIndex(DBHelper.COLUMN_LONGITUDE));
         }
         database.close();
@@ -301,13 +296,10 @@ public class DetailedEvent extends Fragment {
                             bundle.putString("summary", summary);
                             newFragment.setArguments(bundle);
                             newFragment.show(getActivity().getSupportFragmentManager(), "FindRoute");
-
                         }
                     });
                 }
             });
         }
     }
-
-
 }

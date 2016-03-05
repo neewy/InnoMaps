@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.innopolis.maps.innomaps.app.DBHelper;
+import com.innopolis.maps.innomaps.database.DBHelper;
 
 import org.ocpsoft.prettytime.PrettyTime;
 

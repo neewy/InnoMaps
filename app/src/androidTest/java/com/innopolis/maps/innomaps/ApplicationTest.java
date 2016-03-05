@@ -5,9 +5,9 @@ import android.support.test.runner.AndroidJUnit4;
 import android.test.InstrumentationTestCase;
 import android.test.RenamingDelegatingContext;
 
-import com.innopolis.maps.innomaps.app.DBHelper;
-import com.innopolis.maps.innomaps.app.Event;
-import com.innopolis.maps.innomaps.app.EventsFragment;
+import com.innopolis.maps.innomaps.database.DBHelper;
+import com.innopolis.maps.innomaps.events.Event;
+import com.innopolis.maps.innomaps.events.EventsFragment;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.json.JSONArray;

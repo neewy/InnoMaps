@@ -1,4 +1,4 @@
-package com.innopolis.maps.innomaps.app;
+package com.innopolis.maps.innomaps.events;
 
 import com.google.common.base.Predicate;
 
@@ -27,28 +27,6 @@ public class Event implements Comparable<Event> {
     public Event() {
     }
 
-    public Event(String summary, String htmlLink, Date start,
-                 Date end, String eventID, String checked,
-                 String description, String creatorName, String creatorEmail,
-                 String telegramLogin, String telegramGroup, String building,
-                 String floor, String room, String latitude, String longitude) {
-        this.summary = summary;
-        this.htmlLink = htmlLink;
-        this.start = start;
-        this.end = end;
-        this.eventID = eventID;
-        this.checked = checked;
-        this.description = description;
-        this.creatorName = creatorName;
-        this.creatorEmail = creatorEmail;
-        this.telegramLogin = telegramLogin;
-        this.telegramGroup = telegramGroup;
-        this.building = building;
-        this.floor = floor;
-        this.room = room;
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
 
     public String getSummary() {
         return summary;
