@@ -90,15 +90,15 @@ public class MainActivity extends AppCompatActivity
                 }, 2000);
 
             } else {
-                int lastEntry = getSupportFragmentManager().getBackStackEntryCount()-1;
+                int lastEntry = getSupportFragmentManager().getBackStackEntryCount() - 1;
                 android.support.v4.app.FragmentManager.BackStackEntry last = getSupportFragmentManager().getBackStackEntryAt(lastEntry);
-                    if (last.getName().equals(DETAILED)) {
-                        getSupportActionBar().setTitle(getSupportFragmentManager().getBackStackEntryAt(lastEntry-1).getName());
-                        getSupportFragmentManager().popBackStackImmediate();
-                    } else {
-                        getSupportFragmentManager().popBackStackImmediate(MAPS, 0);
-                        getSupportActionBar().setTitle(MAPS);
-                    }
+                if (last.getName().equals(DETAILED)) {
+                    getSupportActionBar().setTitle(getSupportFragmentManager().getBackStackEntryAt(lastEntry - 1).getName());
+                    getSupportFragmentManager().popBackStackImmediate();
+                } else {
+                    getSupportFragmentManager().popBackStackImmediate(MAPS, 0);
+                    getSupportActionBar().setTitle(MAPS);
+                }
             }
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -154,7 +154,8 @@ public class MainActivity extends AppCompatActivity
             public boolean onQueryTextChange(String newText) {
                 return false;
             }
-        });;
+        });
+        ;
         return true;
     }
 
@@ -175,34 +176,31 @@ public class MainActivity extends AppCompatActivity
             } else if (id == R.id.nav_event) {
                 fragment = new EventsFragment();
                 title = EVENTS;
-            } else if (id == R.id.nav_share) {
-               //nothing to do
             }
             if (getSupportActionBar() != null) getSupportActionBar().setTitle(title);
         } else {
             if (id == R.id.nav_maps) {
                 title = MAPS;
-                if (getSupportFragmentManager().findFragmentByTag(MAPS) !=null) {
+                if (getSupportFragmentManager().findFragmentByTag(MAPS) != null) {
                     getSupportFragmentManager().popBackStackImmediate(MAPS, 0);
                 } else {
                     fragment = new MapsFragment();
                 }
             } else if (id == R.id.nav_favourite) {
                 title = FAV;
-                if (getSupportFragmentManager().findFragmentByTag(FAV)!=null) {
+                if (getSupportFragmentManager().findFragmentByTag(FAV) != null) {
                     getSupportFragmentManager().popBackStackImmediate(FAV, 0);
                 } else {
                     fragment = new FavouriteFragment();
                 }
             } else if (id == R.id.nav_event) {
                 title = EVENTS;
-                if (getSupportFragmentManager().findFragmentByTag(EVENTS)!=null) {
+                if (getSupportFragmentManager().findFragmentByTag(EVENTS) != null) {
                     getSupportFragmentManager().popBackStackImmediate(EVENTS, 0);
                 } else {
                     fragment = new EventsFragment();
                 }
-            } else if (id == R.id.nav_share) {
-                //nothing to do
+
             }
         }
 
