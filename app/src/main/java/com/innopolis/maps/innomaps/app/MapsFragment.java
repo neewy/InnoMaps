@@ -75,9 +75,9 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                 mapView.onCreate(savedInstanceState);
                 if (mapView != null) {
                     map = mapView.getMap();
-                    map.getUiSettings().setMyLocationButtonEnabled(true);
                     map.setMyLocationEnabled(true);
                     mSettings = map.getUiSettings();
+                    mSettings.setMyLocationButtonEnabled(true);
                     mSettings.setZoomControlsEnabled(true);
                     final LatLng university = new LatLng(55.752321, 48.744674);
                     Cursor cursor = database.query(DBHelper.TABLE3,null,null,null,null,null,null);
