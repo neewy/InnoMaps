@@ -1,12 +1,19 @@
 package com.innopolis.maps.innomaps.app;
 
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -48,7 +55,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     MapView mapView; //an element of the layout
     private GoogleMap map;
     private UiSettings mSettings;
-
+    private LocationManager locationManager;
     DBHelper dbHelper;
     SQLiteDatabase database;
 
@@ -75,12 +82,12 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                 mapView.onCreate(savedInstanceState);
                 if (mapView != null) {
                     map = mapView.getMap();
-                    map.getUiSettings().setMyLocationButtonEnabled(true);
                     map.setMyLocationEnabled(true);
                     mSettings = map.getUiSettings();
+                    mSettings.setMyLocationButtonEnabled(true);
                     mSettings.setZoomControlsEnabled(true);
                     final LatLng university = new LatLng(55.752321, 48.744674);
-                    Cursor cursor = database.query(DBHelper.TABLE3, null, null, null, null, null, null);
+                    Cursor cursor = database.query(DBHelper.TABLE3,null,null,null,null,null,null);
                     if (cursor.moveToFirst()) {
                         do {
                             String latitude = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_LATITUDE));
@@ -88,17 +95,24 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                             MarkerOptions marker = new MarkerOptions().position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
                             map.addMarker(marker);
                         } while (cursor.moveToNext());
-                    }
-
-
+                    };
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(university, 15));
                     map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
                     markerList = new ArrayList<>();
+                    map.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+                        @Override
+                        public boolean onMyLocationButtonClick() {
+                            locationManager = (LocationManager)getContext().getSystemService(Context.LOCATION_SERVICE);
+                            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+                                displayPromptForEnablingGPS(getActivity());
+                            }
+                            return false;
+                        }
+                    });
                     map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                         @Override
                         public void onMapClick(LatLng latLng) {
-                            if (markerList != null && markerList.size() > 0)
-                                markerList.get(0).remove();
+                            if (markerList != null && markerList.size()>0) markerList.get(0).remove();
                             markerList.clear();
                             Marker marker = map.addMarker(new MarkerOptions().position(latLng).title(latLng.toString()));
                             markerList.add(marker);
@@ -117,14 +131,14 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                                     new LatLng(55.754276, 48.743376)};
 
                             JGraphTWrapper graphWrapper = new JGraphTWrapper(getContext());
-                            for (LatLng v : coords) {
+                            for (LatLng v: coords) {
                                 graphWrapper.addVertex(v);
                             }
                             for (int i = 1; i < coords.length; ++i) {
-                                graphWrapper.addEdge(coords[i - 1], coords[i], LatLngGraphEdge.EdgeType.DEFAULT);
+                                graphWrapper.addEdge(coords[i-1], coords[i], LatLngGraphEdge.EdgeType.DEFAULT);
                             }
 
-                            ArrayList<LatLng> path = graphWrapper.shortestPath(coords[0], coords[coords.length - 1]);
+                            ArrayList<LatLng> path = graphWrapper.shortestPath(coords[0], coords[coords.length-1]);
                             map.addPolyline(new PolylineOptions()
                                     .addAll(path)
                                     .width(4)
@@ -134,7 +148,8 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                             graphWrapper.exportGraphML("test.graphml");
                             try {
                                 graphWrapper.importGraphML("test.graphml");
-                            } catch (XmlPullParserException | FileNotFoundException e) {
+                            }
+                            catch (XmlPullParserException | FileNotFoundException e) {
                                 e.printStackTrace();
                             }
                         }
@@ -152,8 +167,8 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         }
 
         BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.raw.ai6_floor1);
-        LatLng southWest = new LatLng(55.752533, 48.742492);
-        LatLng northEast = new LatLng(55.754656, 48.744589);
+        LatLng southWest = new LatLng(55.752533,48.742492);
+        LatLng northEast = new LatLng(55.754656,48.744589);
         LatLngBounds latLngBounds = new LatLngBounds(southWest, northEast);
         GroundOverlayOptions groundOverlayOptions = new GroundOverlayOptions();
         groundOverlayOptions.positionFromBounds(latLngBounds);
@@ -181,20 +196,11 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                         latitude = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_LATITUDE));
                         longitude = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_LONGITUDE));
                         map.clear();
-                        map.addMarker(
-                                new MarkerOptions().position(
-                                        new LatLng(
-                                                Double.parseDouble(latitude),
-                                                Double.parseDouble(longitude))));
+                        map.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude))));
                     } while (cursor.moveToNext());
                 }
-
-                map.animateCamera(
-                        CameraUpdateFactory.newLatLngZoom(
-                                new LatLng(
-                                        Double.parseDouble(latitude),
-                                        Double.parseDouble(longitude)),
-                                17));
+                ;
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)), 17));
             }
         });
     }
@@ -222,6 +228,30 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         return map.addMarker(new MarkerOptions().position(point).icon(BitmapDescriptorFactory.fromResource(R.drawable.test_custom_marker)));
     }
 
+    private void displayPromptForEnablingGPS(Activity activity)
+    {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        final String action = Settings.ACTION_LOCATION_SOURCE_SETTINGS;
+        final String message = "Enable either GPS or any other location"
+                + " service to find current location.  Click OK to go to"
+                + " location services settings to let you do so.";
 
+        builder.setMessage(message)
+                .setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface d, int id) {
+                                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                d.dismiss();
+                                startActivity(intent);
+                            }
+                        })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface d, int id) {
+                                d.cancel();
+                            }
+                        });
+        builder.create().show();
+    }
 }
 

@@ -215,7 +215,11 @@ public class DetailedEvent extends Fragment {
 
             @Override
             public void onClick(View v) {
-                Toast.makeText(DetailedEvent.this.context, "Hello World", Toast.LENGTH_SHORT).show();
+                DialogFragment newFragment = new MapFragmentAskForRouteDialog();
+                Bundle bundle = new Bundle();
+                bundle.putString("summary", summary);
+                newFragment.setArguments(bundle);
+                newFragment.show(getActivity().getSupportFragmentManager(), "FindRoute");
 
             }
         });
