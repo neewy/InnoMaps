@@ -33,6 +33,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.pathfinding.JGraphTWrapper;
 import com.innopolis.maps.innomaps.pathfinding.LatLngGraphEdge;
 
@@ -82,7 +83,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                     Cursor cursor = database.query(DBHelper.TABLE3,null,null,null,null,null,null);
                     if (cursor.moveToFirst()) {
                         do {
-                            String latitude = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_LATITIDE));
+                            String latitude = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_LATITUDE));
                             String longitude = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_LONGITUDE));
                             MarkerOptions marker = new MarkerOptions().position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
                             map.addMarker(marker);
@@ -175,7 +176,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                 Cursor cursor = database.rawQuery(sqlQuery, new String[]{String.valueOf(text.getText())});
                 if (cursor.moveToFirst()) {
                     do {
-                        latitude = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_LATITIDE));
+                        latitude = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_LATITUDE));
                         longitude = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_LONGITUDE));
                         map.clear();
                         map.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(latitude),Double.parseDouble(longitude))));
