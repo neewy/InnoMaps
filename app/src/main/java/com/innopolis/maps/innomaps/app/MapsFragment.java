@@ -1,12 +1,19 @@
 package com.innopolis.maps.innomaps.app;
 
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -48,7 +55,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     MapView mapView; //an element of the layout
     private GoogleMap map;
     private UiSettings mSettings;
-
+    private LocationManager locationManager;
     DBHelper dbHelper;
     SQLiteDatabase database;
 
@@ -92,6 +99,16 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(university, 15));
                     map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
                     markerList = new ArrayList<>();
+                    map.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+                        @Override
+                        public boolean onMyLocationButtonClick() {
+                            locationManager = (LocationManager)getContext().getSystemService(Context.LOCATION_SERVICE);
+                            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+                                displayPromptForEnablingGPS(getActivity());
+                            }
+                            return false;
+                        }
+                    });
                     map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                         @Override
                         public void onMapClick(LatLng latLng) {
@@ -179,9 +196,10 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                         latitude = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_LATITUDE));
                         longitude = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_LONGITUDE));
                         map.clear();
-                        map.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(latitude),Double.parseDouble(longitude))));
+                        map.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude))));
                     } while (cursor.moveToNext());
-                };
+                }
+                ;
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)), 17));
             }
         });
@@ -210,6 +228,30 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         return map.addMarker(new MarkerOptions().position(point).icon(BitmapDescriptorFactory.fromResource(R.drawable.test_custom_marker)));
     }
 
+    private void displayPromptForEnablingGPS(Activity activity)
+    {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        final String action = Settings.ACTION_LOCATION_SOURCE_SETTINGS;
+        final String message = "Enable either GPS or any other location"
+                + " service to find current location.  Click OK to go to"
+                + " location services settings to let you do so.";
 
+        builder.setMessage(message)
+                .setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface d, int id) {
+                                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                d.dismiss();
+                                startActivity(intent);
+                            }
+                        })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface d, int id) {
+                                d.cancel();
+                            }
+                        });
+        builder.create().show();
+    }
 }
 
