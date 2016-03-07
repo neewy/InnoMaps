@@ -1,4 +1,4 @@
-package com.innopolis.maps.innomaps.app;
+package com.innopolis.maps.innomaps.events;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -16,10 +16,12 @@ import android.text.SpannableString;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.UnderlineSpan;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CheckedTextView;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -31,6 +33,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -57,7 +60,7 @@ public class DetailedEvent extends Fragment {
     TextView organizer;
     TextView duration;
 
-    CheckedTextView favCheckBox;
+
     private GoogleMap mMap;
     private UiSettings mSettings;
     SupportMapFragment mSupportMapFragment;
@@ -65,6 +68,31 @@ public class DetailedEvent extends Fragment {
 
     String contactChecked, linkChecked, summary, htmlLink, start, end, descriptionStr, creator,
             telegram, telegramContact, eventID, building, floor, room, latitude, longitude, checked;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.detailed_menu_toolbar, menu);
+        MenuItem item = menu.findItem(R.id.toolbar_share);
+        item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.toolbar_share:
+                        Toast.makeText(DetailedEvent.this.context, "Hello World", Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            }
+
+        });
+        super.onCreateOptionsMenu(menu, inflater);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
@@ -123,7 +151,7 @@ public class DetailedEvent extends Fragment {
             building = locationC.getString(locationC.getColumnIndex(DBHelper.COLUMN_BUILDING));
             floor = locationC.getString(locationC.getColumnIndex(DBHelper.COLUMN_FLOOR));
             room = locationC.getString(locationC.getColumnIndex(DBHelper.COLUMN_ROOM));
-            latitude = locationC.getString(locationC.getColumnIndex(DBHelper.COLUMN_LATITIDE));
+            latitude = locationC.getString(locationC.getColumnIndex(DBHelper.COLUMN_LATITUDE));
             longitude = locationC.getString(locationC.getColumnIndex(DBHelper.COLUMN_LONGITUDE));
         }
         database.close();
@@ -149,9 +177,8 @@ public class DetailedEvent extends Fragment {
             organizer.setTextColor(Color.BLUE);
 
             if (telegram.equals(NULL) && !telegramContact.equals(NULL)) {
-                final String contactLink = "Contact: ";
                 contactChecked = checkContact(telegramContact);
-                SpannableString content = new SpannableString(contactLink + contactChecked);
+                SpannableString content = new SpannableString(contactChecked);
                 telegramTransfer(content, contactChecked, contactChecked);
 
             } else if (!telegram.equals(NULL)) {
@@ -213,15 +240,10 @@ public class DetailedEvent extends Fragment {
         else return string;
     }
 
-    private static String contactCutter(String string, int checkIndex) {
-        String contact = string.substring(9, checkIndex);
-        return contact;
-    }
 
     private static String checkContact(String string) {
-        int dogIndex = string.indexOf("@", 10);
-        if (dogIndex != -1) return contactCutter(string, dogIndex);
-        else return string.substring(9);  //except "Contact: "
+        String checkContact = string.substring(9);
+        return checkContact;  //except "Contact: "
     }
 
     private void telegramTransfer(SpannableString content, final String dialogText, final String telegramLink) {
@@ -274,13 +296,10 @@ public class DetailedEvent extends Fragment {
                             bundle.putString("summary", summary);
                             newFragment.setArguments(bundle);
                             newFragment.show(getActivity().getSupportFragmentManager(), "FindRoute");
-
                         }
                     });
                 }
             });
         }
     }
-
-
 }

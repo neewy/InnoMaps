@@ -9,13 +9,9 @@ import android.widget.Filter;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by neewy on 3/2/16.
- */
 public class SuggestionAdapter<T> extends ArrayAdapter<T> {
 
     private List<T> items;
-    private List<T> filteredItems;
     private ArrayFilter mFilter;
 
     public SuggestionAdapter(Context context, @LayoutRes int resource, @NonNull List<T> objects) {

@@ -21,6 +21,8 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.database.DBHelper;
+import com.innopolis.maps.innomaps.events.EventsFragment;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import java.util.List;
@@ -90,15 +92,15 @@ public class MainActivity extends AppCompatActivity
                 }, 2000);
 
             } else {
-                int lastEntry = getSupportFragmentManager().getBackStackEntryCount()-1;
+                int lastEntry = getSupportFragmentManager().getBackStackEntryCount() - 1;
                 android.support.v4.app.FragmentManager.BackStackEntry last = getSupportFragmentManager().getBackStackEntryAt(lastEntry);
-                    if (last.getName().equals(DETAILED)) {
-                        getSupportActionBar().setTitle(getSupportFragmentManager().getBackStackEntryAt(lastEntry-1).getName());
-                        getSupportFragmentManager().popBackStackImmediate();
-                    } else {
-                        getSupportFragmentManager().popBackStackImmediate(MAPS, 0);
-                        getSupportActionBar().setTitle(MAPS);
-                    }
+                if (last.getName().equals(DETAILED)) {
+                    getSupportActionBar().setTitle(getSupportFragmentManager().getBackStackEntryAt(lastEntry - 1).getName());
+                    getSupportFragmentManager().popBackStackImmediate();
+                } else {
+                    getSupportFragmentManager().popBackStackImmediate(MAPS, 0);
+                    getSupportActionBar().setTitle(MAPS);
+                }
             }
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -124,7 +126,6 @@ public class MainActivity extends AppCompatActivity
         searchBox.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
@@ -140,22 +141,24 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void afterTextChanged(Editable s) {
-
             }
         });
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if (eventNames.size() == 0) {
+                    Toast.makeText(MainActivity.this, R.string.empty_search, Toast.LENGTH_LONG).show();
+                }
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+        ;
         return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        } else if (id == R.id.action_logout) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -175,34 +178,31 @@ public class MainActivity extends AppCompatActivity
             } else if (id == R.id.nav_event) {
                 fragment = new EventsFragment();
                 title = EVENTS;
-            } else if (id == R.id.nav_share) {
-               //nothing to do
             }
             if (getSupportActionBar() != null) getSupportActionBar().setTitle(title);
         } else {
             if (id == R.id.nav_maps) {
                 title = MAPS;
-                if (getSupportFragmentManager().findFragmentByTag(MAPS) !=null) {
+                if (getSupportFragmentManager().findFragmentByTag(MAPS) != null) {
                     getSupportFragmentManager().popBackStackImmediate(MAPS, 0);
                 } else {
                     fragment = new MapsFragment();
                 }
             } else if (id == R.id.nav_favourite) {
                 title = FAV;
-                if (getSupportFragmentManager().findFragmentByTag(FAV)!=null) {
+                if (getSupportFragmentManager().findFragmentByTag(FAV) != null) {
                     getSupportFragmentManager().popBackStackImmediate(FAV, 0);
                 } else {
                     fragment = new FavouriteFragment();
                 }
             } else if (id == R.id.nav_event) {
                 title = EVENTS;
-                if (getSupportFragmentManager().findFragmentByTag(EVENTS)!=null) {
+                if (getSupportFragmentManager().findFragmentByTag(EVENTS) != null) {
                     getSupportFragmentManager().popBackStackImmediate(EVENTS, 0);
                 } else {
                     fragment = new EventsFragment();
                 }
-            } else if (id == R.id.nav_share) {
-                //nothing to do
+
             }
         }
 

@@ -1,4 +1,4 @@
-package com.innopolis.maps.innomaps.app;
+package com.innopolis.maps.innomaps.events;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -20,6 +20,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -32,17 +33,17 @@ import xyz.hanks.library.SmallBang;
 
 public class EventsAdapter extends BaseAdapter {
 
-    Context ctx;
-    LayoutInflater lInflater;
-    ArrayList<Event> events;
-    DBHelper dbHelper;
-    SQLiteDatabase database;
-    Activity activity;
-    FragmentManager fm;
+    public ArrayList<Event> events;
+    private Context context;
+    private LayoutInflater lInflater;
+    private DBHelper dbHelper;
+    private SQLiteDatabase database;
+    private Activity activity;
+    private FragmentManager fm;
 
-    public EventsAdapter(Context ctx, FragmentManager fm, ArrayList<Event> events, Activity activity) {
-        this.ctx = ctx;
-        lInflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    public EventsAdapter(Context context, FragmentManager fm, ArrayList<Event> events, Activity activity) {
+        this.context = context;
+        lInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.events = events;
         this.activity = activity;
         this.fm = fm;
@@ -95,6 +96,7 @@ public class EventsAdapter extends BaseAdapter {
             favCheckBox.setChecked(false);
         }
         final SmallBang mSmallBang = SmallBang.attach2Window(activity);
+
         final View finalView = view;
         view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,7 +131,7 @@ public class EventsAdapter extends BaseAdapter {
                 String isFav = (favCheckBox.isChecked()) ? "1" : "0";
                 String eventID = event.getEventID();
                 ContentValues cv = new ContentValues();
-                dbHelper = new DBHelper(ctx);
+                dbHelper = new DBHelper(context);
                 database = dbHelper.getWritableDatabase();
                 cv.put(DBHelper.COLUMN_FAV, isFav);
                 database.update(DBHelper.TABLE1, cv, "eventID = ?", new String[]{eventID});

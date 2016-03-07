@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.innopolis.maps.innomaps.app.DBHelper;
+import com.innopolis.maps.innomaps.database.DBHelper;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
@@ -37,7 +37,7 @@ public class Utils {
     public static SimpleDateFormat googleTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
     public static PrettyTime prettyTime = new PrettyTime(new Locale("en"));
 
-    private static final String TELEGRAM_LOGIN = "(Contact: @)((?:[a-z_][a-z_][0-9]+))";
+    private static final String TELEGRAM_LOGIN = "(Contact: @)((?:[a-zA-Z0-9_]+))";
     private static final String TELEGRAM_GROUP = "((Group link: https://)(telegram.me\\/)" +
             "(.*)(?:\\/[\\w\\.\\-]+)+)";    // Unix Path
 

@@ -1,4 +1,4 @@
-package com.innopolis.maps.innomaps.app;
+package com.innopolis.maps.innomaps.database;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.innopolis.maps.innomaps.events.Event;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import java.text.ParseException;
@@ -22,6 +23,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "eventsDB";
     private static final String NULL = "";
+
+    private static final String DROP = "DROP TABLE IF EXISTS ";
 
     public static final String TABLE1 = "events";
     public static final String TABLE2 = "event_type";
@@ -48,7 +51,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_BUILDING = "building";
     public static final String COLUMN_FLOOR = "floor";
     public static final String COLUMN_ROOM = "room";
-    public static final String COLUMN_LATITIDE = "latitude";
+    public static final String COLUMN_LATITUDE = "latitude";
     public static final String COLUMN_LONGITUDE = "longitude";
 
     public DBHelper(Context context) {
@@ -68,9 +71,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE1);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE2);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE3);
+        db.execSQL(DROP + TABLE1);
+        db.execSQL(DROP + TABLE2);
+        db.execSQL(DROP + TABLE3);
         onCreate(db);
     }
 
@@ -82,7 +85,7 @@ public class DBHelper extends SQLiteOpenHelper {
      * @param database     - where to get data from
      * @param areFavourite - whether to put marked events or all of them
      */
-    protected static void readEvents(List list, SQLiteDatabase database, boolean areFavourite) {
+    public static void readEvents(List list, SQLiteDatabase database, boolean areFavourite) {
         SimpleDateFormat formatter = new SimpleDateFormat();
         Date d = new Date();
         Cursor cursor;
@@ -114,7 +117,7 @@ public class DBHelper extends SQLiteOpenHelper {
             building = cursor.getColumnIndex(DBHelper.COLUMN_BUILDING);
             floor = cursor.getColumnIndex(DBHelper.COLUMN_FLOOR);
             room = cursor.getColumnIndex(DBHelper.COLUMN_ROOM);
-            latitude = cursor.getColumnIndex(DBHelper.COLUMN_LATITIDE);
+            latitude = cursor.getColumnIndex(DBHelper.COLUMN_LATITUDE);
             longitude = cursor.getColumnIndex(DBHelper.COLUMN_LONGITUDE);
 
             do {
@@ -148,15 +151,16 @@ public class DBHelper extends SQLiteOpenHelper {
 
     /**
      * Inserts single event into database, stored on user device
+     *
      * @param database - the name of database to put data
-     * @param summary - summary JSON field
+     * @param summary  - summary JSON field
      * @param htmlLink - htmllink JSON field
-     * @param start - start date
-     * @param end - end date
-     * @param eventID - unique number to identify single event
-     * @param checked - whether it is favourite or not
+     * @param start    - start date
+     * @param end      - end date
+     * @param eventID  - unique number to identify single event
+     * @param checked  - whether it is favourite or not
      */
-    protected static void insertEvent(SQLiteDatabase database, String summary, String htmlLink, String start, String end, String eventID, String checked) {
+    public static void insertEvent(SQLiteDatabase database, String summary, String htmlLink, String start, String end, String eventID, String checked) {
         ContentValues cv = new ContentValues();
         cv.put(DBHelper.COLUMN_SUMMARY, summary);
         cv.put(DBHelper.COLUMN_LINK, htmlLink);
@@ -169,13 +173,14 @@ public class DBHelper extends SQLiteOpenHelper {
 
     /**
      * Inserts event type into database, stored on user device
-     * @param database - the name of database to put data
-     * @param summary - summary JSON field
-     * @param description - description JSON field
-     * @param creator_name - the name of person, who created the event
+     *
+     * @param database      - the name of database to put data
+     * @param summary       - summary JSON field
+     * @param description   - description JSON field
+     * @param creator_name  - the name of person, who created the event
      * @param creator_email - his or her email
      */
-    protected static void insertEventType(SQLiteDatabase database, String summary, String description, String creator_name, String creator_email) {
+    public static void insertEventType(SQLiteDatabase database, String summary, String description, String creator_name, String creator_email) {
         String[] whereArgs = new String[]{summary};
         Cursor cursor = database.query(DBHelper.TABLE2, null, "summary=?", whereArgs, null, null, null);
         if (cursor.getCount() == 0) {
@@ -207,11 +212,12 @@ public class DBHelper extends SQLiteOpenHelper {
 
     /**
      * Inserts location of a single event, both geographic position and relative one (building/floor/room)
+     *
      * @param database - the name of database to put data
      * @param location - location JSON field
-     * @param eventID - unique number to identify single event
+     * @param eventID  - unique number to identify single event
      */
-    protected static void insertLocation(SQLiteDatabase database, String location, String eventID) {
+    public static void insertLocation(SQLiteDatabase database, String location, String eventID) {
         String[] whereArgs = new String[]{eventID};
         Cursor cursor = database.query(DBHelper.TABLE3, null, "eventID=?", whereArgs, null, null, null);
         ContentValues cv = new ContentValues();
@@ -234,9 +240,9 @@ public class DBHelper extends SQLiteOpenHelper {
                 cv.put(DBHelper.COLUMN_ROOM, NULL);
             }
             Random random = new Random();
-            Double latitude = 55.7520 + random.nextDouble()*0.01;
-            Double longitude = 48.7418 + random.nextDouble()*0.01;
-            cv.put(DBHelper.COLUMN_LATITIDE, latitude.toString());
+            Double latitude = 55.7520 + random.nextDouble() * 0.01;
+            Double longitude = 48.7418 + random.nextDouble() * 0.01;
+            cv.put(DBHelper.COLUMN_LATITUDE, latitude.toString());
             cv.put(DBHelper.COLUMN_LONGITUDE, longitude.toString());
             database.insert(DBHelper.TABLE3, null, cv);
         }

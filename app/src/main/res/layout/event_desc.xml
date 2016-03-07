@@ -1,46 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/topLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
 
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/main_text"
+        android:background="@color/colorPrimary"
+        android:elevation="2dp"
+
+        android:orientation="horizontal"></LinearLayout>
 
     <TextView
         android:id="@+id/eventName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_toLeftOf="@+id/favCheckBox"
+        android:layout_toStartOf="@+id/favCheckBox"
         android:layout_weight="1"
-        android:gravity="center"
+        android:elevation="2dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/textColor"
         android:typeface="serif"
-        android:layout_toStartOf="@+id/fabButton"
-        android:layout_toLeftOf="@+id/fabButton"
-        android:layout_alignStart="@+id/upper_text" />
+        android:gravity="center"
+        android:layout_marginLeft="56dp"
+        android:layout_marginRight="12dp"
+        android:layout_alignParentStart="true" />
 
     <CheckBox
         android:id="@+id/favCheckBox"
         style="?android:attr/starStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:checked="false"
-        android:layout_alignTop="@+id/eventName"
+        android:layout_marginRight="12dp"
         android:layout_alignRight="@+id/main_text"
-        android:layout_alignEnd="@+id/main_text" />
+        android:layout_alignTop="@+id/eventName"
+        android:checked="false"
+        android:elevation="2dp" />
 
     <LinearLayout
         android:id="@+id/upper_text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:weightSum="100"
-        android:layout_weight="1"
         android:layout_below="@+id/eventName"
-        android:layout_marginTop="4dp"
-        >
+        android:layout_marginTop="12dp"
+        android:layout_weight="1"
+        android:elevation="2dp"
+        android:weightSum="100">
 
         <TextView
             android:id="@+id/location"
@@ -51,11 +62,12 @@
             android:layout_alignParentRight="false"
             android:layout_alignParentTop="false"
             android:layout_marginLeft="25dp"
-            android:layout_weight="50"
+            android:layout_weight="53.84"
             android:ellipsize="end"
             android:gravity="left"
-            android:typeface="monospace"
-            android:maxWidth="80dp" />
+            android:maxWidth="80dp"
+            android:textColor="@color/textColor"
+             />
 
 
         <TextView
@@ -66,11 +78,12 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="false"
             android:layout_marginRight="25dp"
-            android:layout_weight="50"
             android:layout_toRightOf="@+id/location"
+            android:layout_weight="50"
             android:gravity="right"
-            android:typeface="monospace"
-            android:minWidth="32dp" />
+            android:minWidth="32dp"
+            android:textColor="@color/textColor"
+             />
 
     </LinearLayout>
 
@@ -78,8 +91,11 @@
         android:id="@+id/lower_text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:weightSum="100"
-        android:layout_below="@+id/upper_text">
+        android:layout_below="@+id/upper_text"
+        android:layout_marginBottom="6dp"
+        android:elevation="2dp"
+        android:paddingTop="3dp"
+        android:weightSum="100">
 
         <TextView
             android:id="@+id/dateTime"
@@ -89,75 +105,89 @@
             android:layout_weight="50"
             android:ellipsize="end"
             android:gravity="left"
-            android:typeface="monospace" />
+            android:textColor="@color/textColor"
+             />
 
         <TextView
             android:id="@+id/duration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="50"
             android:layout_marginRight="25dp"
             android:layout_toRightOf="@+id/dateTime"
+            android:layout_weight="50"
             android:gravity="right"
-            android:hyphenationFrequency="full" />
+            android:hyphenationFrequency="full"
+            android:textColor="@color/textColor" />
+
     </LinearLayout>
+
 
     <LinearLayout
         android:id="@+id/main_text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/lower_text"
-        android:minHeight="200dp"
-        android:maxHeight="210dp"
+        android:layout_marginBottom="6dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginBottom="6dp"
-        android:layout_marginTop="6dp">
+        android:layout_marginTop="10dp"
+        android:maxHeight="210dp"
+        android:minHeight="200dp"
+
+        >
 
         <TextView
             android:id="@+id/description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:maxLines="10"
+            android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:gravity="left"
             android:maxEms="39"
+            android:maxHeight="150dp"
+            android:maxLines="10"
             android:scrollbars="vertical"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:typeface="sans"
-            android:gravity="left"
-            android:layout_gravity="center"
-            android:layout_marginBottom="5dp"
-            android:maxHeight="150dp" />
+            android:autoLink="web" />
 
         <TextView
             android:id="@+id/organizer"
-            android:layout_below="@+id/description"
-            android:layout_height="wrap_content"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_above="@+id/mapDesc"
-            android:textSize="18sp"
-            android:layout_marginBottom="5dp"
+            android:layout_below="@+id/description"
             android:layout_gravity="bottom"
+            android:layout_marginBottom="5dp"
+            android:maxHeight="19dp"
             android:maxLines="1"
-            android:maxHeight="19dp" />
+            android:textSize="18sp" />
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:clickable="true"
-        android:src="@drawable/ic_directions_36"
-        android:layout_alignParentRight="true"
         android:layout_alignBottom="@id/main_text"
+        android:layout_alignParentRight="true"
         android:layout_marginBottom="-32dp"
-        android:layout_marginRight="20dp"/>
+        android:layout_marginRight="20dp"
+        android:clickable="true"
+        android:src="@drawable/ic_directions_36" />
+
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/main_text"
+        android:background="@color/borderColor"></LinearLayout>
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:minHeight="160dp"
+
         android:id="@+id/mapDesc"
-        android:layout_weight="2"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -167,5 +197,11 @@
         android:layout_alignParentRight="false"
         android:layout_alignParentStart="false"
         android:layout_below="@+id/main_text"
+        android:layout_marginTop="1dp"
+        android:layout_weight="2"
+        android:elevation="1dp"
+        android:minHeight="160dp"
         tools:context="com.innopolis.maps.innomaps.MapsActivity" />
+
+
 </RelativeLayout>

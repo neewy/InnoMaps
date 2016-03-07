@@ -1,4 +1,4 @@
-package com.innopolis.maps.innomaps.app;
+package com.innopolis.maps.innomaps.events;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.codec.binary.Hex;
@@ -43,29 +44,29 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+    public Context context;
+    public ListView listView;
+    public ArrayList<Event> list = new ArrayList<>(); //for storing entries
+    public EventsAdapter adapter; //to populate list above
+    public SwipeRefreshLayout swipeRefreshLayout;
 
-    Context context;
-    ListView listView;
-    ArrayList<Event> list = new ArrayList<>(); //for storing entries
-    EventsAdapter adapter; //to populate list above
-    SwipeRefreshLayout swipeRefreshLayout;
-
-    DBHelper dbHelper;
-    SQLiteDatabase database;
-    SharedPreferences sPref; //to store md5 hash of loaded file
+    public DBHelper dbHelper;
+    public SQLiteDatabase database;
+    public SharedPreferences sPref; //to store md5 hash of loaded file
 
     String hashPref;
     String updatedPref;
 
     ActionBar mActionBar;
-    SearchView searchView;
-    SearchView.SearchAutoComplete searchBox;
+    public SearchView searchView;
+    public SearchView.SearchAutoComplete searchBox;
 
 
     @Override
@@ -76,7 +77,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mActionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
+        mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         context = getActivity().getApplicationContext();
         View view = inflater.inflate(R.layout.events, container, false); //changing the fragment
 
@@ -106,6 +107,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
         } else {
             onRefresh();
         }
+
         return view;
     }
 
@@ -134,9 +136,10 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.events_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
-        searchView =
-                (SearchView) menu.findItem(R.id.search).getActionView();
+
+        searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchBox = (SearchView.SearchAutoComplete) searchView.findViewById(R.id.search_src_text);
+
         searchBox.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -150,8 +153,9 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
                     }
                 };
                 adapter.events.clear();
-                for (Event event: Collections2.filter(filteredList,predicate))
+                for (Event event : Collections2.filter(filteredList, predicate)) {
                     adapter.events.add(event);
+                }
                 adapter.notifyDataSetChanged();
                 list = new ArrayList<>(origin);
             }
@@ -164,22 +168,37 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
         ArrayList<Event> origin = new ArrayList<Event>(list);
         switch (item.getItemId()) {
             case R.id.action_today:
-                adapter.events.clear();
-                for (Event event: Collections2.filter(filteredList,Event.isToday))
+                Collection<Event> today = Collections2.filter(filteredList, Event.isToday);
+                if (today.isEmpty()) {
+                    Toast.makeText(getContext(), "No events today", Toast.LENGTH_LONG).show();
+                    return true;
+                }
+                this.adapter.events.clear();
+                for (Event event : today)
                     adapter.events.add(event);
-                adapter.notifyDataSetChanged();
+                this.adapter.notifyDataSetChanged();
                 list = new ArrayList<>(origin);
                 return true;
             case R.id.action_tomorrow:
+                Collection<Event> tomorrow = Collections2.filter(filteredList, Event.isTomorrow);
+                if (tomorrow.isEmpty()) {
+                    Toast.makeText(getContext(), "No events tomorrow", Toast.LENGTH_LONG).show();
+                    return true;
+                }
                 adapter.events.clear();
-                for (Event event: Collections2.filter(filteredList,Event.isTomorrow))
+                for (Event event : tomorrow)
                     adapter.events.add(event);
                 adapter.notifyDataSetChanged();
                 list = new ArrayList<>(origin);
                 return true;
             case R.id.action_this_week:
+                Collection<Event> thisWeek = Collections2.filter(filteredList, Event.isThisWeek);
+                if (thisWeek.isEmpty()) {
+                    Toast.makeText(getContext(), "No events this week", Toast.LENGTH_LONG).show();
+                    return true;
+                }
                 adapter.events.clear();
-                for (Event event: Collections2.filter(filteredList,Event.isThisWeek))
+                for (Event event : thisWeek)
                     adapter.events.add(event);
                 adapter.notifyDataSetChanged();
                 list = new ArrayList<>(origin);
@@ -187,7 +206,6 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
             default:
                 break;
         }
-
         return false;
     }
 
@@ -276,6 +294,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
                 e.printStackTrace();
             }
             Collections.sort(list);
+            adapter.events = list;
             adapter.notifyDataSetChanged();
             database.close();
             swipeRefreshLayout.setRefreshing(false);
@@ -351,22 +370,17 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
             }
 
             RecurrenceRuleIterator it = rule.iterator(startDate);
+            it.fastForward(currentDate);
+            int maxInstances = 5; // limit instances for 5 times
 
-            int maxInstances = 100; // limit instances for rules that recur forever
-            int weekCount = 0;
-
-           /* Variable weekCount stands for two events, occurring after today's date
-            *  the duration is the same - so there is no need to look for end date,
-            *  we can get it with the duration */
-            while (it.hasNext() && (maxInstances-- > 0) && weekCount < 2) {
+            while (it.hasNext() && (maxInstances-- > 0)) {
                 DateTime nextInstance = it.nextDateTime();
                 if (nextInstance.after(currentDate)) {
-                    weekCount++;
                     String finalStartDate = Utils.googleTimeFormat.format(new Date(nextInstance.getTimestamp()));
                     String finalEndDate = Utils.googleTimeFormat.format(new Date(nextInstance.addDuration(new Duration(1, 0, 0, durationTime.intValue(), 0)).getTimestamp()));
-                    DBHelper.insertEvent(db, summary, htmlLink, finalStartDate, finalEndDate, eventID + "_" + weekCount, checked);
+                    DBHelper.insertEvent(db, summary, htmlLink, finalStartDate, finalEndDate, eventID + "_" + maxInstances, checked);
                     DBHelper.insertEventType(db, summary, description, creator_name, creator_email);
-                    DBHelper.insertLocation(db, location, eventID + "_" + weekCount);
+                    DBHelper.insertLocation(db, location, eventID + "_" + maxInstances);
                 }
             }
         }
