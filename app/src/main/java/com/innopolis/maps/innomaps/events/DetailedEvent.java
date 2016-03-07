@@ -2,16 +2,20 @@ package com.innopolis.maps.innomaps.events;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ShareActionProvider;
 import android.text.SpannableString;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.UnderlineSpan;
@@ -41,9 +45,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
-
-import android.support.v4.app.Fragment;
-import android.widget.Toast;
 
 
 public class DetailedEvent extends Fragment {
@@ -80,17 +81,12 @@ public class DetailedEvent extends Fragment {
         menu.clear();
         inflater.inflate(R.menu.detailed_menu_toolbar, menu);
         MenuItem item = menu.findItem(R.id.toolbar_share);
-        item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.toolbar_share:
-                        Toast.makeText(DetailedEvent.this.context, "Hello World", Toast.LENGTH_SHORT).show();
-                }
-                return true;
-            }
-
-        });
+        ShareActionProvider shareAction = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        //Consider changing content for relevant share information
+        shareIntent.putExtra(Intent.EXTRA_TEXT, (eventName.getText() + " begins in " + dateTime.getText()+". Join us!"));
+        shareAction.setShareIntent(shareIntent);
         super.onCreateOptionsMenu(menu, inflater);
     }
 

@@ -1,4 +1,4 @@
-package com.innopolis.maps.innomaps.app;
+package com.innopolis.maps.innomaps.events;
 
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -17,10 +17,8 @@ import android.widget.ListView;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.app.SuggestionAdapter;
 import com.innopolis.maps.innomaps.database.DBHelper;
-import com.innopolis.maps.innomaps.events.Event;
-import com.innopolis.maps.innomaps.events.EventsAdapter;
-import com.innopolis.maps.innomaps.events.EventsFragment;
 
 import java.util.ArrayList;
 import java.util.List;
