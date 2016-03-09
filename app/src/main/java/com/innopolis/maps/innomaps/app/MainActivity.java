@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.events.EventsFragment;
+import com.innopolis.maps.innomaps.events.FavouriteFragment;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import java.util.List;

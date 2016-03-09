@@ -50,6 +50,8 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.innopolis.maps.innomaps.database.TableFields.*;
+
 public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     MapView mapView; //an element of the layout
@@ -87,11 +89,11 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                     mSettings.setMyLocationButtonEnabled(true);
                     mSettings.setZoomControlsEnabled(true);
                     final LatLng university = new LatLng(55.752321, 48.744674);
-                    Cursor cursor = database.query(DBHelper.TABLE3,null,null,null,null,null,null);
+                    Cursor cursor = database.query(LOCATION,null,null,null,null,null,null);
                     if (cursor.moveToFirst()) {
                         do {
-                            String latitude = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_LATITUDE));
-                            String longitude = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_LONGITUDE));
+                            String latitude = cursor.getString(cursor.getColumnIndex(LATITUDE));
+                            String longitude = cursor.getString(cursor.getColumnIndex(LONGITUDE));
                             MarkerOptions marker = new MarkerOptions().position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
                             map.addMarker(marker);
                         } while (cursor.moveToNext());
@@ -193,8 +195,8 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                 Cursor cursor = database.rawQuery(sqlQuery, new String[]{String.valueOf(text.getText())});
                 if (cursor.moveToFirst()) {
                     do {
-                        latitude = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_LATITUDE));
-                        longitude = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_LONGITUDE));
+                        latitude = cursor.getString(cursor.getColumnIndex(LATITUDE));
+                        longitude = cursor.getString(cursor.getColumnIndex(LONGITUDE));
                         map.clear();
                         map.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude))));
                     } while (cursor.moveToNext());
