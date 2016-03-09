@@ -30,11 +30,12 @@ import com.innopolis.maps.innomaps.utils.Utils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     Context context;
     ListView listView;
-    ArrayList<Event> list = new ArrayList<>(); //for storing entries
+    List<Event> list = new ArrayList<>(); //for storing entries
     EventsAdapter adapter; //to populate list above
     SwipeRefreshLayout swipeRefreshLayout;
 
@@ -81,7 +82,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
         if (!hashPref.equals("")) {
             list.clear();
-            DBHelper.readEvents(list, database, false);
+            list = DBHelper.readEvents(getContext(), false);
             Collections.sort(list);
             adapter.notifyDataSetChanged();
             database.close();
@@ -101,7 +102,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
             adapter.events.clear();
             swipeRefreshLayout.setRefreshing(true);
             new com.innopolis.maps.innomaps.database.DBUpdater(context);
-            DBHelper.readEvents(adapter.events, database, false);
+            adapter.events = DBHelper.readEvents(getContext(), false);
             Collections.sort(adapter.events);
             adapter.notifyDataSetChanged();
             database.close();
@@ -109,7 +110,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
         } else if (!Utils.isNetworkAvailable(context) && !hashPref.equals("")) {
             adapter.events.clear();
             Toast.makeText(context, "You are offline. Showing last events", Toast.LENGTH_SHORT).show();
-            DBHelper.readEvents(adapter.events, database, false);
+            adapter.events = DBHelper.readEvents(getContext(), false);
             Collections.sort(adapter.events);
             adapter.notifyDataSetChanged();
             database.close();
@@ -132,7 +133,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ArrayList<Event> filteredList = new ArrayList<Event>(list);
                 ArrayList<Event> origin = new ArrayList<Event>(list);
-                final CheckedTextView text = (CheckedTextView) view.findViewById(R.id.text1);
+                final CheckedTextView text = (CheckedTextView) view.findViewById(R.id.name);
                 Predicate<Event> predicate = new Predicate<Event>() {
                     @Override
                     public boolean apply(Event event) {

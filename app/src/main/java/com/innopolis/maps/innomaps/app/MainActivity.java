@@ -1,7 +1,5 @@
 package com.innopolis.maps.innomaps.app;
 
-import android.app.SearchManager;
-import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,10 +20,11 @@ import android.widget.Toast;
 
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.database.DBHelper;
+import com.innopolis.maps.innomaps.events.Event;
 import com.innopolis.maps.innomaps.events.EventsFragment;
 import com.innopolis.maps.innomaps.events.FavouriteFragment;
-import com.innopolis.maps.innomaps.utils.Utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -117,13 +116,14 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-        SearchManager searchManager =
-                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView =
-                (SearchView) menu.findItem(R.id.search).getActionView();
-        final List<String> eventNames = Utils.getEventNames(database);
+        searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+
+        final List<Event> eventsAdapter = DBHelper.readUniqueEvents(this, false);
+        final List<Event> eventsDB = new ArrayList<>(eventsAdapter);
+
         final SearchView.SearchAutoComplete searchBox = (SearchView.SearchAutoComplete) searchView.findViewById(R.id.search_src_text);
-        searchBox.setAdapter(new SuggestionAdapter<String>(this, R.layout.complete_row, eventNames));
+        searchBox.setAdapter(new SuggestionAdapter(this, R.layout.complete_row, eventsAdapter));
+        searchBox.setThreshold(1);
         searchBox.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -131,13 +131,16 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                eventNames.clear();
-                for (String string : Utils.getEventNames(database)) {
-                    if (string.toLowerCase().contains(s.toString().toLowerCase())) {
-                        eventNames.add(string);
+                eventsAdapter.clear();
+                for (Event event : eventsDB) {
+                    if (event.getSummary().toLowerCase().contains(s.toString().toLowerCase())  ||
+                        event.getBuilding().toLowerCase().contains(s.toString().toLowerCase()) ||
+                        event.getFloor().toLowerCase().contains(s.toString().toLowerCase())    ||
+                        event.getRoom().toLowerCase().contains(s.toString().toLowerCase())) {
+                            eventsAdapter.add(event);
                     }
                 }
-                ((SuggestionAdapter) searchBox.getAdapter()).refresh(eventNames);
+                ((SuggestionAdapter) searchBox.getAdapter()).refresh(eventsAdapter);
             }
 
             @Override
@@ -147,7 +150,7 @@ public class MainActivity extends AppCompatActivity
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                if (eventNames.size() == 0) {
+                if (eventsAdapter.size() == 0) {
                     Toast.makeText(MainActivity.this, R.string.empty_search, Toast.LENGTH_LONG).show();
                 }
                 return true;

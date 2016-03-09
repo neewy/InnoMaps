@@ -26,15 +26,15 @@ import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import xyz.hanks.library.SmallBang;
 
 
 public class EventsAdapter extends BaseAdapter {
 
-    public ArrayList<Event> events;
+    public List<Event> events;
     private Context context;
     private LayoutInflater lInflater;
     private DBHelper dbHelper;
@@ -42,7 +42,7 @@ public class EventsAdapter extends BaseAdapter {
     private Activity activity;
     private FragmentManager fm;
 
-    public EventsAdapter(Context context, FragmentManager fm, ArrayList<Event> events, Activity activity) {
+    public EventsAdapter(Context context, FragmentManager fm, List<Event> events, Activity activity) {
         this.context = context;
         lInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.events = events;

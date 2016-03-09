@@ -10,8 +10,11 @@ import com.innopolis.maps.innomaps.events.Event;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 
 import static com.innopolis.maps.innomaps.database.TableFields.*;
@@ -52,13 +55,13 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
     /**
-     * Puts all the events in the List, supplied as first argument
-     *
-     * @param list         - where to put data, elements are Event
-     * @param database     - where to get data from
+     * Returns the list with events
      * @param areFavourite - whether to put marked events or all of them
      */
-    public static void readEvents(List list, SQLiteDatabase database, boolean areFavourite) {
+    public static List<Event> readEvents(Context context, boolean areFavourite) {
+        List<Event> events = new ArrayList<>();
+        DBHelper dbHelper = new DBHelper(context);
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor;
         String selectQuery = "select events.summary,htmlLink,start,end,events.eventID as eventID,"
                 + " description,creator_name,creator_email,telegram_login,telegram_group, checked,"
@@ -113,12 +116,26 @@ public class DBHelper extends SQLiteOpenHelper {
                 event.setRoom(cursor.getString(room));
                 event.setLatitude(cursor.getString(latitude));
                 event.setLongitude(cursor.getString(longitude));
-                list.add(event);
+
+                events.add(event);
             } while (cursor.moveToNext());
         }
         cursor.close();
         database.close();
+        return events;
     }
+
+    /**
+     * Returns list of unique events (based on their names)
+     * @param areFavourite - whether to put marked events or all of them
+     */
+    public static List<Event> readUniqueEvents(Context context, boolean areFavourite) {
+        List<Event> events = readEvents(context, areFavourite);
+        Set<Event> eventSet = new TreeSet<>(Event.summaryComparator);
+        eventSet.addAll(events);
+        return new ArrayList<>(eventSet);
+    }
+
 
     /**
      * Inserts single event into database, stored on user device

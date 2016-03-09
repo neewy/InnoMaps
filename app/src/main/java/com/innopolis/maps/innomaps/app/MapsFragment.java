@@ -182,15 +182,14 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        searchView =
-                (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchBox = (SearchView.SearchAutoComplete) searchView.findViewById(R.id.search_src_text);
         searchBox.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String latitude = null;
                 String longitude = null;
-                CheckedTextView text = (CheckedTextView) view.findViewById(R.id.text1);
+                CheckedTextView text = (CheckedTextView) view.findViewById(R.id.name);
                 String sqlQuery = "SELECT * FROM location inner join events on events.eventID=location.eventID WHERE events.summary=?";
                 Cursor cursor = database.rawQuery(sqlQuery, new String[]{String.valueOf(text.getText())});
                 if (cursor.moveToFirst()) {
@@ -201,7 +200,6 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                         map.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude))));
                     } while (cursor.moveToNext());
                 }
-                ;
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)), 17));
             }
         });
