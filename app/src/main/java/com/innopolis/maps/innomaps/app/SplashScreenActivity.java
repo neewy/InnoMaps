@@ -24,7 +24,7 @@ public class SplashScreenActivity extends Activity {
         setContentView(R.layout.splash_screen);
 
         if (Utils.isNetworkAvailable(SplashScreenActivity.this)) {
-            new com.innopolis.maps.innomaps.app.DBUpdater(SplashScreenActivity.this);
+            new com.innopolis.maps.innomaps.database.DBUpdater(SplashScreenActivity.this);
         }
 
         new Handler().postDelayed(new Runnable() {
@@ -34,7 +34,6 @@ public class SplashScreenActivity extends Activity {
                 Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
                 startActivity(intent);
 
-                // Kills this Activity
                 finish();
             }
         }, DELAY);

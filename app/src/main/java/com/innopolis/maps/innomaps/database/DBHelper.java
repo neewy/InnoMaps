@@ -10,49 +10,22 @@ import com.innopolis.maps.innomaps.events.Event;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 
+import static com.innopolis.maps.innomaps.database.TableFields.*;
 
 public class DBHelper extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 7; //in order to execute onUpdate() the number should be increased
 
     private static final String DATABASE_NAME = "eventsDB";
-    private static final String NULL = "";
 
     private static final String DROP = "DROP TABLE IF EXISTS ";
 
-    public static final String TABLE1 = "events";
-    public static final String TABLE2 = "event_type";
-    public static final String TABLE3 = "location";
 
-    public static final String COLUMN_ID = "_id"; //Primary key (as stated in Android guidelines)
 
-    /* Events table */
-    public static final String COLUMN_SUMMARY = "summary"; //just a title
-    public static final String COLUMN_LINK = "htmlLink"; //calendar link
-    public static final String COLUMN_START = "start"; //start date
-    public static final String COLUMN_END = "end"; //end date
-    public static final String COLUMN_EVENT_ID = "eventID"; //unique field
-    public static final String COLUMN_FAV = "checked"; //is the event favourite
-
-    /* Event_type table */
-    public static final String COLUMN_DESCRIPTION = "description"; //detailed description
-    public static final String COLUMN_CREATOR_NAME = "creator_name"; //the person, who created the event
-    public static final String COLUMN_CREATOR_EMAIL = "creator_email"; //his or her gmail
-    public static final String COLUMN_TELEGRAM_CONTACT = "telegram_login"; //telegram link available
-    public static final String COLUMN_TELEGRAM_GROUP = "telegram_group"; //telegram link available
-
-    /* Location table */
-    public static final String COLUMN_BUILDING = "building";
-    public static final String COLUMN_FLOOR = "floor";
-    public static final String COLUMN_ROOM = "room";
-    public static final String COLUMN_LATITUDE = "latitude";
-    public static final String COLUMN_LONGITUDE = "longitude";
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -64,16 +37,16 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE events (_id INTEGER PRIMARY KEY, summary TEXT, htmlLink TEXT, start TEXT, end TEXT, eventID TEXT, checked TEXT)");
-        db.execSQL("CREATE TABLE event_type (_id INTEGER PRIMARY KEY, summary TEXT, description TEXT, creator_name TEXT, creator_email TEXT, telegram_login TEXT, telegram_group TEXT)");
-        db.execSQL("CREATE TABLE location (_id INTEGER PRIMARY KEY, eventID TEXT, building TEXT, floor TEXT, room TEXT, latitude TEXT, longitude TEXT)");
+        db.execSQL(DBTables.createTable(DBTables.TableColumns.TABLE_EVENTS_CREATE));
+        db.execSQL(DBTables.createTable(DBTables.TableColumns.TABLE_EVENT_TYPE_CREATE));
+        db.execSQL(DBTables.createTable(DBTables.TableColumns.TABLE_LOCATION_CREATE));
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL(DROP + TABLE1);
-        db.execSQL(DROP + TABLE2);
-        db.execSQL(DROP + TABLE3);
+        db.execSQL(DROP + EVENTS);
+        db.execSQL(DROP + EVENT_TYPE);
+        db.execSQL(DROP + LOCATION);
         onCreate(db);
     }
 
@@ -86,39 +59,37 @@ public class DBHelper extends SQLiteOpenHelper {
      * @param areFavourite - whether to put marked events or all of them
      */
     public static void readEvents(List list, SQLiteDatabase database, boolean areFavourite) {
-        SimpleDateFormat formatter = new SimpleDateFormat();
-        Date d = new Date();
         Cursor cursor;
-        String sqlQuery = "select events.summary,htmlLink,start,end,events.eventID as eventID,"
+        String selectQuery = "select events.summary,htmlLink,start,end,events.eventID as eventID,"
                 + " description,creator_name,creator_email,telegram_login,telegram_group, checked,"
                 + " building,floor,room,latitude,longitude"
                 + " from events "
                 + "inner join event_type on events.summary=event_type.summary  "
                 + "inner join location on events.eventID=location.eventID";
-        if (areFavourite) sqlQuery += " WHERE checked=1 ";
-        cursor = database.rawQuery(sqlQuery, null);
+        if (areFavourite) selectQuery += " WHERE checked=1 ";
+        cursor = database.rawQuery(selectQuery, null);
         if (cursor.moveToFirst()) {
             int summary, htmlLink, start, end, eventID, checked;
             int description, creator_name, creator_email, telegram_login, telegram_group;
             int building, floor, room, latitude, longitude;
 
-            summary = cursor.getColumnIndex(DBHelper.COLUMN_SUMMARY);
-            htmlLink = cursor.getColumnIndex(DBHelper.COLUMN_LINK);
-            start = cursor.getColumnIndex(DBHelper.COLUMN_START);
-            end = cursor.getColumnIndex(DBHelper.COLUMN_END);
-            eventID = cursor.getColumnIndex(DBHelper.COLUMN_EVENT_ID);
-            checked = cursor.getColumnIndex(DBHelper.COLUMN_FAV);
-            description = cursor.getColumnIndex(DBHelper.COLUMN_DESCRIPTION);
-            creator_name = cursor.getColumnIndex(DBHelper.COLUMN_CREATOR_NAME);
-            creator_email = cursor.getColumnIndex(DBHelper.COLUMN_CREATOR_EMAIL);
-            telegram_login = cursor.getColumnIndex(DBHelper.COLUMN_TELEGRAM_CONTACT);
-            telegram_group = cursor.getColumnIndex(DBHelper.COLUMN_TELEGRAM_GROUP);
+            summary = cursor.getColumnIndex(SUMMARY);
+            htmlLink = cursor.getColumnIndex(LINK);
+            start = cursor.getColumnIndex(START);
+            end = cursor.getColumnIndex(END);
+            eventID = cursor.getColumnIndex(EVENT_ID);
+            checked = cursor.getColumnIndex(FAV);
+            description = cursor.getColumnIndex(DESCRIPTION);
+            creator_name = cursor.getColumnIndex(CREATOR_NAME);
+            creator_email = cursor.getColumnIndex(CREATOR_EMAIL);
+            telegram_login = cursor.getColumnIndex(TELEGRAM_CONTACT);
+            telegram_group = cursor.getColumnIndex(TELEGRAM_GROUP);
 
-            building = cursor.getColumnIndex(DBHelper.COLUMN_BUILDING);
-            floor = cursor.getColumnIndex(DBHelper.COLUMN_FLOOR);
-            room = cursor.getColumnIndex(DBHelper.COLUMN_ROOM);
-            latitude = cursor.getColumnIndex(DBHelper.COLUMN_LATITUDE);
-            longitude = cursor.getColumnIndex(DBHelper.COLUMN_LONGITUDE);
+            building = cursor.getColumnIndex(BUILDING);
+            floor = cursor.getColumnIndex(FLOOR);
+            room = cursor.getColumnIndex(ROOM);
+            latitude = cursor.getColumnIndex(LATITUDE);
+            longitude = cursor.getColumnIndex(LONGITUDE);
 
             do {
                 Event event = new Event();
@@ -162,13 +133,13 @@ public class DBHelper extends SQLiteOpenHelper {
      */
     public static void insertEvent(SQLiteDatabase database, String summary, String htmlLink, String start, String end, String eventID, String checked) {
         ContentValues cv = new ContentValues();
-        cv.put(DBHelper.COLUMN_SUMMARY, summary);
-        cv.put(DBHelper.COLUMN_LINK, htmlLink);
-        cv.put(DBHelper.COLUMN_START, start);
-        cv.put(DBHelper.COLUMN_END, end);
-        cv.put(DBHelper.COLUMN_EVENT_ID, eventID);
-        cv.put(DBHelper.COLUMN_FAV, checked);
-        database.insert(DBHelper.TABLE1, null, cv);
+        cv.put(SUMMARY, summary);
+        cv.put(LINK, htmlLink);
+        cv.put(START, start);
+        cv.put(END, end);
+        cv.put(EVENT_ID, eventID);
+        cv.put(FAV, checked);
+        database.insert(EVENTS, null, cv);
     }
 
     /**
@@ -182,31 +153,31 @@ public class DBHelper extends SQLiteOpenHelper {
      */
     public static void insertEventType(SQLiteDatabase database, String summary, String description, String creator_name, String creator_email) {
         String[] whereArgs = new String[]{summary};
-        Cursor cursor = database.query(DBHelper.TABLE2, null, "summary=?", whereArgs, null, null, null);
+        Cursor cursor = database.query(EVENT_TYPE, null, "summary=?", whereArgs, null, null, null);
         if (cursor.getCount() == 0) {
             ContentValues cv = new ContentValues();
-            cv.put(DBHelper.COLUMN_SUMMARY, summary);
-            cv.put(DBHelper.COLUMN_CREATOR_NAME, creator_name);
-            cv.put(DBHelper.COLUMN_CREATOR_EMAIL, creator_email);
+            cv.put(SUMMARY, summary);
+            cv.put(CREATOR_NAME, creator_name);
+            cv.put(CREATOR_EMAIL, creator_email);
             Matcher telLogMatch = Utils.telLogPattern.matcher(description);
             String telegramGroup, telegramLogin = "";
             if (telLogMatch.find()) {
                 telegramLogin = telLogMatch.group();
-                cv.put(DBHelper.COLUMN_TELEGRAM_CONTACT, telegramLogin);
+                cv.put(TELEGRAM_CONTACT, telegramLogin);
                 description = description.replace(telegramLogin, "");
             } else {
-                cv.put(DBHelper.COLUMN_TELEGRAM_CONTACT, NULL);
+                cv.put(TELEGRAM_CONTACT, NULL);
             }
             Matcher telGroupMatch = Utils.telGroupPattern.matcher(description);
             if (telGroupMatch.find()) {
                 telegramGroup = telGroupMatch.group();
-                cv.put(DBHelper.COLUMN_TELEGRAM_GROUP, telegramGroup);
+                cv.put(TELEGRAM_GROUP, telegramGroup);
                 description = description.replace(telegramGroup, "");
             } else {
-                cv.put(DBHelper.COLUMN_TELEGRAM_GROUP, NULL);
+                cv.put(TELEGRAM_GROUP, NULL);
             }
-            cv.put(DBHelper.COLUMN_DESCRIPTION, description);
-            database.insert(DBHelper.TABLE2, null, cv);
+            cv.put(DESCRIPTION, description);
+            database.insert(EVENT_TYPE, null, cv);
         }
     }
 
@@ -219,32 +190,32 @@ public class DBHelper extends SQLiteOpenHelper {
      */
     public static void insertLocation(SQLiteDatabase database, String location, String eventID) {
         String[] whereArgs = new String[]{eventID};
-        Cursor cursor = database.query(DBHelper.TABLE3, null, "eventID=?", whereArgs, null, null, null);
+        Cursor cursor = database.query(LOCATION, null, "eventID=?", whereArgs, null, null, null);
         ContentValues cv = new ContentValues();
         if (cursor.getCount() == 0) {
             String locationMass[] = location.split("/");
-            cv.put(DBHelper.COLUMN_EVENT_ID, eventID);
+            cv.put(EVENT_ID, eventID);
             if (locationMass.length > 0) {
-                cv.put(DBHelper.COLUMN_BUILDING, locationMass[0]);
+                cv.put(BUILDING, locationMass[0]);
             } else {
-                cv.put(DBHelper.COLUMN_BUILDING, NULL);
+                cv.put(BUILDING, NULL);
             }
             if (locationMass.length > 1) {
-                cv.put(DBHelper.COLUMN_FLOOR, locationMass[1]);
+                cv.put(FLOOR, locationMass[1]);
             } else {
-                cv.put(DBHelper.COLUMN_FLOOR, NULL);
+                cv.put(FLOOR, NULL);
             }
             if (locationMass.length > 2) {
-                cv.put(DBHelper.COLUMN_ROOM, locationMass[2]);
+                cv.put(ROOM, locationMass[2]);
             } else {
-                cv.put(DBHelper.COLUMN_ROOM, NULL);
+                cv.put(ROOM, NULL);
             }
             Random random = new Random();
             Double latitude = 55.7520 + random.nextDouble() * 0.01;
             Double longitude = 48.7418 + random.nextDouble() * 0.01;
-            cv.put(DBHelper.COLUMN_LATITUDE, latitude.toString());
-            cv.put(DBHelper.COLUMN_LONGITUDE, longitude.toString());
-            database.insert(DBHelper.TABLE3, null, cv);
+            cv.put(LATITUDE, latitude.toString());
+            cv.put(LONGITUDE, longitude.toString());
+            database.insert(LOCATION, null, cv);
         }
     }
 }

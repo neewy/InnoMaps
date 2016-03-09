@@ -1,4 +1,4 @@
-package com.innopolis.maps.innomaps.app;
+package com.innopolis.maps.innomaps.database;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -6,7 +6,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 
-import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.codec.binary.Hex;
@@ -20,19 +19,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by Nikolay on 05.03.2016.
- */
+import static com.innopolis.maps.innomaps.database.TableFields.*;
+
 public class DBUpdater {
+
 
     Context context;
     DBHelper dbHelper;
@@ -50,18 +46,11 @@ public class DBUpdater {
     private class ParseTask extends AsyncTask<Void, Void, String> {
 
         String resultJson = "";
-        Date date;
-        DateFormat dateFormat;
+        String DELETE = "delete from ";
 
         @Override
         protected String doInBackground(Void... params) {
-            dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-            date = new Date();
-            Utils.shiftDate(date);
-            return Utils.doGetRequest(
-                    "https://www.googleapis.com/calendar/v3/calendars/hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com/events?timeMin="
-                            + dateFormat.format(date)
-                            + "T10%3A00%3A00-07%3A00&orderby=updated&sortorder=descending&futureevents=true&alt=json&key=AIzaSyDli8qeotu4TGaEs5VKSWy15CDyl4cgZ-o");
+            return Utils.getGoogleApi();
         }
 
         /**
@@ -71,18 +60,27 @@ public class DBUpdater {
          * @return true in case the JSON was updated
          */
         protected boolean jsonUpdated(String hashKey) {
-            String savedText = sPref.getString("hash", "");
+            String savedText = sPref.getString(HASH, NULL);
             if (savedText.equals(hashKey)) {
                 return false;
             } else {
                 SharedPreferences.Editor ed = sPref.edit();
-                ed.putString("hash", hashKey);
-                database.execSQL("delete from " + DBHelper.TABLE1);
-                database.execSQL("delete from " + DBHelper.TABLE2);
-                database.execSQL("delete from " + DBHelper.TABLE3);
+                ed.putString(HASH, hashKey);
+                removeTables();
                 ed.apply();
                 return true;
             }
+        }
+
+        private void removeTables() {
+            removeTable(EVENTS);
+            removeTable(EVENT_TYPE);
+            removeTable(LOCATION);
+
+        }
+
+        private void removeTable(String tableName) {
+            database.execSQL(DELETE + tableName);
         }
 
         protected boolean weekUpdated() {
@@ -94,17 +92,15 @@ public class DBUpdater {
             cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek()); //the starting date of current week
             Date updatedDate = null;
             try {
-                updatedDate = Utils.googleTimeFormat.parse(sPref.getString("lastUpdate", ""));
+                updatedDate = Utils.googleTimeFormat.parse(sPref.getString(LAST_UPDATE, NULL));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
             /*If it's null or old - update the database*/
             if (updatedDate == null || !updatedDate.equals(cal.getTime())) {
                 SharedPreferences.Editor ed = sPref.edit();
-                ed.putString("lastUpdate", Utils.googleTimeFormat.format(cal.getTime()));
-                database.execSQL("delete from " + DBHelper.TABLE1);
-                database.execSQL("delete from " + DBHelper.TABLE2);
-                database.execSQL("delete from " + DBHelper.TABLE3);
+                ed.putString(LAST_UPDATE, Utils.googleTimeFormat.format(cal.getTime()));
+                removeTables();
                 ed.apply();
                 return true;
             } else {
@@ -128,46 +124,48 @@ public class DBUpdater {
         }
     }
 
+
     public boolean populateDB(JSONObject dataJsonObj, SQLiteDatabase db) throws JSONException {
         JSONArray events = dataJsonObj.getJSONArray("items");
         for (int i = 0; i < events.length(); i++) {
             JSONObject jsonEvent = events.getJSONObject(i);
-            String summary = "", htmlLink = "", start = "", end = "",
-                    location = "", eventID = "", description = "",
-                    creator_name = "", creator_email = "", checked = "0",
-                    recurrence = ""; //initializing db fields
+            String summary = NULL, htmlLink = NULL, start = NULL, end = NULL,
+                    location = NULL, eventID = NULL, description = NULL,
+                    creator_name = NULL, creator_email = NULL, checked = "0",
+                    recurrence = NULL; //initializing db fields
             Iterator<String> iter = jsonEvent.keys();
             while (iter.hasNext()) {
                 String key = iter.next();
                 switch (key) {
-                    case "summary":
-                        summary = jsonEvent.getString("summary");
+
+                    case SUMMARY:
+                        summary = jsonEvent.getString(SUMMARY);
                         break;
-                    case "htmlLink":
-                        htmlLink = jsonEvent.getString("htmlLink");
+                    case LINK:
+                        htmlLink = jsonEvent.getString(LINK);
                         break;
-                    case "start":
-                        start = jsonEvent.getJSONObject("start").getString("dateTime");
+                    case START:
+                        start = jsonEvent.getJSONObject(START).getString(DATETIME);
                         break;
-                    case "end":
-                        end = jsonEvent.getJSONObject("end").getString("dateTime");
+                    case END:
+                        end = jsonEvent.getJSONObject(END).getString(DATETIME);
                         break;
-                    case "location":
-                        location = jsonEvent.getString("location");
+                    case LOCATION:
+                        location = jsonEvent.getString(LOCATION);
                         break;
-                    case "id":
-                        eventID = jsonEvent.getString("id");
+                    case ID:
+                        eventID = jsonEvent.getString(ID);
                         break;
-                    case "description":
-                        description = jsonEvent.getString("description");
+                    case DESCRIPTION:
+                        description = jsonEvent.getString(DESCRIPTION);
                         break;
-                    case "creator":
-                        creator_name = jsonEvent.getJSONObject("creator").getString("displayName");
-                        creator_email = jsonEvent.getJSONObject("creator").getString("email");
+                    case CREATOR:
+                        creator_name = jsonEvent.getJSONObject(CREATOR).getString(DISPLAY_NAME);
+                        creator_email = jsonEvent.getJSONObject(CREATOR).getString(EMAIL);
                         break;
                     /*Field that tells how often does the event repeats*/
-                    case "recurrence":
-                        recurrence = jsonEvent.getJSONArray("recurrence").getString(0).replace("RRULE:", "");
+                    case RECURRENCE:
+                        recurrence = jsonEvent.getJSONArray(RECURRENCE).getString(0).replace(RRULE, NULL);
                         break;
                 }
             }

@@ -100,7 +100,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
         if (Utils.isNetworkAvailable(context)) {
             adapter.events.clear();
             swipeRefreshLayout.setRefreshing(true);
-            new com.innopolis.maps.innomaps.app.DBUpdater(context);
+            new com.innopolis.maps.innomaps.database.DBUpdater(context);
             DBHelper.readEvents(adapter.events, database, false);
             Collections.sort(adapter.events);
             adapter.notifyDataSetChanged();

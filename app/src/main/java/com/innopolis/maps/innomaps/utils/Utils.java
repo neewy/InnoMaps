@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.innopolis.maps.innomaps.database.DBHelper;
+import static com.innopolis.maps.innomaps.database.TableFields.*;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
@@ -17,12 +17,14 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
+
 
 /**
  * Some helper methods which may be used from any place
@@ -43,6 +45,22 @@ public class Utils {
 
     public static Pattern telLogPattern = Pattern.compile(TELEGRAM_LOGIN, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     public static Pattern telGroupPattern = Pattern.compile(TELEGRAM_GROUP, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+
+    public static String GOOGLE_MAP_API_FIRST_PART = "https://www.googleapis.com/calendar/v3/calendars/hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com/events?timeMin=";
+    public static String GOOGLE_MAP_API_SECOND_PART = "T10%3A00%3A00-07%3A00&orderby=updated&sortorder=descending&futureevents=true&alt=json&key=AIzaSyDli8qeotu4TGaEs5VKSWy15CDyl4cgZ-o";
+    public static String GOOGLE_MAP_API;
+    public static String NULL = "null";
+
+    public static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+    public static Date date = new Date();
+
+    public static String getGoogleApi() {
+        shiftDate(date);
+        return GOOGLE_MAP_API = doGetRequest(GOOGLE_MAP_API_FIRST_PART
+                + dateFormat.format(date)
+                + GOOGLE_MAP_API_SECOND_PART);
+    }
+
 
     //shift the given Date by exactly 8 days.
     public static void shiftDate(Date d) {
@@ -100,7 +118,7 @@ public class Utils {
         int r, w, n = r = w = v.length;
         while (r > 0) {
             final String s = v[--r];
-            if (!s.equals("null")) {
+            if (!s.equals(NULL)) {
                 v[--w] = s;
             }
         }
@@ -121,10 +139,10 @@ public class Utils {
 
     public static List<String> getEventNames(SQLiteDatabase database) {
         List<String> namesRes = new ArrayList<>();
-        Cursor cursor = database.query(DBHelper.TABLE2, null, null, null, null, null, null);
+        Cursor cursor = database.query(EVENT_TYPE, null, null, null, null, null, null);
         if (cursor.moveToFirst()) {
             do {
-                namesRes.add(cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_SUMMARY)));
+                namesRes.add(cursor.getString(cursor.getColumnIndex(SUMMARY)));
             } while (cursor.moveToNext());
         }
         return namesRes;

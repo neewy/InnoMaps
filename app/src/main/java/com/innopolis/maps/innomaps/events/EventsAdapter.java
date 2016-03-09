@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.database.DBHelper;
+import com.innopolis.maps.innomaps.database.TableFields;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -133,8 +134,8 @@ public class EventsAdapter extends BaseAdapter {
                 ContentValues cv = new ContentValues();
                 dbHelper = new DBHelper(context);
                 database = dbHelper.getWritableDatabase();
-                cv.put(DBHelper.COLUMN_FAV, isFav);
-                database.update(DBHelper.TABLE1, cv, "eventID = ?", new String[]{eventID});
+                cv.put(TableFields.FAV, isFav);
+                database.update(TableFields.EVENTS, cv, "eventID = ?", new String[]{eventID});
                 dbHelper.close();
             }
         });
