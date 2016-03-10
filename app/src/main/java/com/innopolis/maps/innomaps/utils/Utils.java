@@ -19,7 +19,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-
 /**
  * Some helper methods which may be used from any place
  */

@@ -14,6 +14,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.text.SpannableString;
@@ -66,9 +67,11 @@ public class DetailedEvent extends Fragment {
     TextView duration;
 
 
-    private GoogleMap mMap;
-    private UiSettings mSettings;
-    SupportMapFragment mSupportMapFragment;
+    private static GoogleMap mMap;
+    private static UiSettings mSettings;
+    static SupportMapFragment mSupportMapFragment;
+
+
     final private String NULL = "";
 
     String contactChecked, linkChecked, summary, htmlLink, start, end, descriptionStr, creator,
@@ -79,6 +82,8 @@ public class DetailedEvent extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
+
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -269,8 +274,7 @@ public class DetailedEvent extends Fragment {
         });
     }
 
-
-    private void initializeMap(final String latitude, final String longitude) {
+    public void initializeMap(final String latitude, final String longitude) {
         mSupportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapDesc);
         if (mSupportMapFragment == null) {
             FragmentManager fragmentManager = getFragmentManager();
@@ -309,4 +313,7 @@ public class DetailedEvent extends Fragment {
             });
         }
     }
+
+
+
 }

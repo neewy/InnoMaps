@@ -41,6 +41,7 @@ public final class TableFields {
 
 
 
+
     /*table names*/
     public static final String EVENTS = "events";
     public static final String EVENT_TYPE = "event_type";

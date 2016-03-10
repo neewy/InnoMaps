@@ -11,23 +11,18 @@
         "client_id": "android:com.innopolis.maps.innomaps",
         "client_type": 1,
         "android_client_info": {
-          "package_name": "com.innopolis.maps.innomaps"
+          "package_name": "com.innopolis.maps.innomaps",
+          "certificate_hash": []
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "523337618079-20rvsaepanfabm5g1o3kvpu5q3ve0ged.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.innopolis.maps.innomaps",
-            "certificate_hash": "7C5ECB57197684AB2DCC3529B09833CB9CE5A341"
-          }
-        }
-      ],
+      "oauth_client": [],
       "api_key": [],
       "services": {
         "analytics_service": {
-          "status": 1
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-74969081-1"
+          }
         },
         "cloud_messaging_service": {
           "status": 1,
@@ -38,7 +33,7 @@
           "other_platform_oauth_client": []
         },
         "google_signin_service": {
-          "status": 2
+          "status": 1
         },
         "ads_service": {
           "status": 1

@@ -1,10 +1,12 @@
 package com.innopolis.maps.innomaps.app;
 
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -18,11 +20,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.events.Event;
 import com.innopolis.maps.innomaps.events.EventsFragment;
 import com.innopolis.maps.innomaps.events.FavouriteFragment;
+import com.innopolis.maps.innomaps.utils.AnalyticsApplication;
+import com.innopolis.maps.innomaps.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +41,10 @@ public class MainActivity extends AppCompatActivity
     private final String MAPS = "Maps";
     private final String FAV = "Favourite";
     private final String EVENTS = "Events";
+    private final String ABOUT = "About";
     private final String DETAILED = "Detailed";
+
+    private Tracker mTracker;
 
     private boolean doubleBackToExitPressedOnce = false;
 
@@ -41,9 +52,15 @@ public class MainActivity extends AppCompatActivity
     SQLiteDatabase database;
 
     SearchView searchView;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -66,6 +83,9 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().setTitle(MAPS);
         dbHelper = new DBHelper(MainActivity.this);
         database = dbHelper.getReadableDatabase();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     @Override
@@ -93,7 +113,7 @@ public class MainActivity extends AppCompatActivity
 
             } else {
                 int lastEntry = getSupportFragmentManager().getBackStackEntryCount() - 1;
-                android.support.v4.app.FragmentManager.BackStackEntry last = getSupportFragmentManager().getBackStackEntryAt(lastEntry);
+                FragmentManager.BackStackEntry last = getSupportFragmentManager().getBackStackEntryAt(lastEntry);
                 if (last.getName().equals(DETAILED)) {
                     getSupportActionBar().setTitle(getSupportFragmentManager().getBackStackEntryAt(lastEntry - 1).getName());
                     getSupportFragmentManager().popBackStackImmediate();
@@ -133,11 +153,11 @@ public class MainActivity extends AppCompatActivity
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 eventsAdapter.clear();
                 for (Event event : eventsDB) {
-                    if (event.getSummary().toLowerCase().contains(s.toString().toLowerCase())  ||
-                        event.getBuilding().toLowerCase().contains(s.toString().toLowerCase()) ||
-                        event.getFloor().toLowerCase().contains(s.toString().toLowerCase())    ||
-                        event.getRoom().toLowerCase().contains(s.toString().toLowerCase())) {
-                            eventsAdapter.add(event);
+                    if (event.getSummary().toLowerCase().contains(s.toString().toLowerCase()) ||
+                            event.getBuilding().toLowerCase().contains(s.toString().toLowerCase()) ||
+                            event.getFloor().toLowerCase().contains(s.toString().toLowerCase()) ||
+                            event.getRoom().toLowerCase().contains(s.toString().toLowerCase())) {
+                        eventsAdapter.add(event);
                     }
                 }
                 ((SuggestionAdapter) searchBox.getAdapter()).refresh(eventsAdapter);
@@ -182,6 +202,9 @@ public class MainActivity extends AppCompatActivity
             } else if (id == R.id.nav_event) {
                 fragment = new EventsFragment();
                 title = EVENTS;
+            }else if (id == R.id.nav_about) {
+                fragment = new About();
+                title = ABOUT;
             }
             if (getSupportActionBar() != null) getSupportActionBar().setTitle(title);
         } else {
@@ -207,6 +230,13 @@ public class MainActivity extends AppCompatActivity
                     fragment = new EventsFragment();
                 }
 
+            }else if (id == R.id.nav_about) {
+                title = ABOUT;
+                if (getSupportFragmentManager().findFragmentByTag(ABOUT) != null) {
+                    getSupportFragmentManager().popBackStackImmediate(ABOUT, 0);
+                } else {
+                    fragment = new EventsFragment();
+                }
             }
         }
 

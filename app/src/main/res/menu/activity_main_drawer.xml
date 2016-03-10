@@ -14,6 +14,11 @@
             android:id="@+id/nav_event"
             android:icon="@drawable/ic_menu_event2"
             android:title="Events" />
+
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/ic_help_24dp"
+            android:title="About" />
     </group>
 
 </menu>
