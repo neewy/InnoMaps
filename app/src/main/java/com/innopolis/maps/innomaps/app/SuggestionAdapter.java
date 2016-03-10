@@ -3,20 +3,47 @@ package com.innopolis.maps.innomaps.app;
 import android.content.Context;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckedTextView;
 import android.widget.Filter;
+import android.widget.TextView;
+
+import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.events.Event;
+import com.innopolis.maps.innomaps.utils.Utils;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SuggestionAdapter<T> extends ArrayAdapter<T> {
+public class SuggestionAdapter extends ArrayAdapter<Event> {
 
-    private List<T> items;
+    private List<Event> items;
     private ArrayFilter mFilter;
 
-    public SuggestionAdapter(Context context, @LayoutRes int resource, @NonNull List<T> objects) {
+    public SuggestionAdapter(Context context, @LayoutRes int resource, @NonNull List<Event> objects) {
         super(context, resource, objects);
         this.items = new ArrayList<>(objects);
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        Event event = getItem(position);
+
+        if (convertView == null) {
+            convertView = LayoutInflater.from(getContext())
+                    .inflate(R.layout.complete_row, null);
+        }
+        String[] locationText = {event.getBuilding(), event.getFloor(), event.getRoom()};
+        ((CheckedTextView) convertView.findViewById(R.id.name))
+                .setText(event.getSummary());
+        ((TextView) convertView.findViewById(R.id.location))
+                .setText(StringUtils.join(Utils.clean(locationText), ", "));
+        return convertView;
     }
 
     @Override
@@ -25,8 +52,8 @@ public class SuggestionAdapter<T> extends ArrayAdapter<T> {
     }
 
     @Override
-    public T getItem(int position) {
-        T item = items.get(position);
+    public Event getItem(int position) {
+        Event item = items.get(position);
         return item;
     }
 
@@ -38,8 +65,8 @@ public class SuggestionAdapter<T> extends ArrayAdapter<T> {
         return mFilter;
     }
 
-    public void refresh(List<T> newData) {
-        this.items = new ArrayList<>(newData);
+    public void refresh(List<Event> newData) {
+        this.items = new ArrayList<Event>(newData);
         notifyDataSetChanged();
     }
 
@@ -53,10 +80,13 @@ public class SuggestionAdapter<T> extends ArrayAdapter<T> {
         @Override
         protected FilterResults performFiltering(CharSequence prefix) {
             FilterResults results = new FilterResults();
-            List<T> resList = new ArrayList<>();
-            for (T string: items){
-                if (prefix != null && ((String) string).toLowerCase().contains(prefix.toString().toLowerCase())){
-                    resList.add(string);
+            List<Event> resList = new ArrayList<>();
+            for (Event event: items){
+                if (prefix != null && (event.getSummary().toLowerCase().contains(prefix.toString().toLowerCase()) ||
+                        event.getBuilding().toLowerCase().contains(prefix.toString().toLowerCase()) ||
+                        event.getFloor().toLowerCase().contains(prefix.toString().toLowerCase()) ||
+                        event.getRoom().toLowerCase().contains(prefix.toString().toLowerCase()))) {
+                    resList.add(event);
                 }
             }
             results.values = resList;

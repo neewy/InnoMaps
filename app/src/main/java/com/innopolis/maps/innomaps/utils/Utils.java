@@ -2,12 +2,8 @@ package com.innopolis.maps.innomaps.utils;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-
-import static com.innopolis.maps.innomaps.database.TableFields.*;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
@@ -19,9 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
@@ -135,16 +129,5 @@ public class Utils {
         } catch (PackageManager.NameNotFoundException e) {
             return false;
         }
-    }
-
-    public static List<String> getEventNames(SQLiteDatabase database) {
-        List<String> namesRes = new ArrayList<>();
-        Cursor cursor = database.query(EVENT_TYPE, null, null, null, null, null, null);
-        if (cursor.moveToFirst()) {
-            do {
-                namesRes.add(cursor.getString(cursor.getColumnIndex(SUMMARY)));
-            } while (cursor.moveToNext());
-        }
-        return namesRes;
     }
 }

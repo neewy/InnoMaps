@@ -46,6 +46,8 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import xyz.hanks.library.SmallBang;
+
 import static com.innopolis.maps.innomaps.database.TableFields.*;
 
 
@@ -194,9 +196,12 @@ public class DetailedEvent extends Fragment {
         } else {
             favCheckBox.setChecked(false);
         }
+        final SmallBang mSmallBang = SmallBang.attach2Window(getActivity());
+
         favCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mSmallBang.bang(favCheckBox);
                 String isFav = (favCheckBox.isChecked()) ? "1" : "0";
                 ContentValues cv = new ContentValues();
                 dbHelper = new DBHelper(context);

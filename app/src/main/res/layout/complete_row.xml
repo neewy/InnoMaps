@@ -1,9 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<CheckedTextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/text1"
-    style="?android:attr/spinnerDropDownItemStyle"
-    android:singleLine="true"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
-    android:background="@color/cardview_light_background"
-    android:ellipsize="marquee"/>
+    android:layout_height="wrap_content">
+
+    <CheckedTextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/name"
+        style="?android:attr/spinnerDropDownItemStyle"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/cardview_light_background"
+        android:ellipsize="marquee"
+        android:singleLine="true" />
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/location"
+        style="?android:attr/spinnerDropDownItemStyle"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_below="@+id/name"
+        android:background="@color/cardview_light_background"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:gravity="top|left"
+        android:textSize="11dp"
+        android:textColor="@color/common_plus_signin_btn_text_dark_disabled"
+        android:textAlignment="gravity" />
+</RelativeLayout>
