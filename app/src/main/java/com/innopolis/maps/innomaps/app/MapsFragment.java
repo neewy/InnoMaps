@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckedTextView;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -33,6 +34,7 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -50,7 +52,9 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.innopolis.maps.innomaps.database.TableFields.*;
+import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
+import static com.innopolis.maps.innomaps.database.TableFields.LOCATION;
+import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
 
 public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -63,6 +67,8 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
 
     SearchView searchView;
     SearchView.SearchAutoComplete searchBox;
+
+    RadioGroup floorPicker;
     List<Marker> markerList;
 
     @Override
@@ -81,6 +87,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         switch (GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity())) {
             case ConnectionResult.SUCCESS:
                 mapView = (MapView) v.findViewById(R.id.map);
+                floorPicker = (RadioGroup) v.findViewById(R.id.floorPicker);
                 mapView.onCreate(savedInstanceState);
                 if (mapView != null) {
                     map = mapView.getMap();
@@ -114,7 +121,8 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                     map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                         @Override
                         public void onMapClick(LatLng latLng) {
-                            if (markerList != null && markerList.size()>0) markerList.get(0).remove();
+                            if (markerList != null && markerList.size() > 0)
+                                markerList.get(0).remove();
                             markerList.clear();
                             Marker marker = map.addMarker(new MarkerOptions().position(latLng).title(latLng.toString()));
                             markerList.add(marker);
@@ -133,14 +141,14 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                                     new LatLng(55.754276, 48.743376)};
 
                             JGraphTWrapper graphWrapper = new JGraphTWrapper(getContext());
-                            for (LatLng v: coords) {
+                            for (LatLng v : coords) {
                                 graphWrapper.addVertex(v);
                             }
                             for (int i = 1; i < coords.length; ++i) {
-                                graphWrapper.addEdge(coords[i-1], coords[i], LatLngGraphEdge.EdgeType.DEFAULT);
+                                graphWrapper.addEdge(coords[i - 1], coords[i], LatLngGraphEdge.EdgeType.DEFAULT);
                             }
 
-                            ArrayList<LatLng> path = graphWrapper.shortestPath(coords[0], coords[coords.length-1]);
+                            ArrayList<LatLng> path = graphWrapper.shortestPath(coords[0], coords[coords.length - 1]);
                             map.addPolyline(new PolylineOptions()
                                     .addAll(path)
                                     .width(4)
@@ -150,9 +158,20 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                             graphWrapper.exportGraphML("test.graphml");
                             try {
                                 graphWrapper.importGraphML("test.graphml");
-                            }
-                            catch (XmlPullParserException | FileNotFoundException e) {
+                            } catch (XmlPullParserException | FileNotFoundException e) {
                                 e.printStackTrace();
+                            }
+                        }
+                    });
+                    map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+                        @Override
+                        public void onCameraChange(CameraPosition cameraPosition) {
+                            LatLng cameraTarget = cameraPosition.target;
+                            if ((cameraTarget.latitude > 55.752116019 && cameraTarget.latitude < 55.754923377) &&
+                                    (cameraTarget.longitude < 48.7448166297 && cameraTarget.longitude > 48.742106790) && cameraPosition.zoom > 17.50) {
+                                floorPicker.setVisibility(View.VISIBLE);
+                            } else {
+                                floorPicker.setVisibility(View.INVISIBLE);
                             }
                         }
                     });
