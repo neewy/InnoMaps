@@ -81,9 +81,9 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
         database = dbHelper.getWritableDatabase();
 
         if (!hashPref.equals("")) {
-            list.clear();
-            list = DBHelper.readEvents(getContext(), false);
-            Collections.sort(list);
+            adapter.events.clear();
+            adapter.events = DBHelper.readEvents(getContext(), false);
+            Collections.sort(adapter.events);
             adapter.notifyDataSetChanged();
             database.close();
         } else {

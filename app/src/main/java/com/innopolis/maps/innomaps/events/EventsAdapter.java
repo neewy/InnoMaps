@@ -130,6 +130,7 @@ public class EventsAdapter extends BaseAdapter {
             public void onClick(View v) {
                 mSmallBang.bang(favCheckBox);
                 String isFav = (favCheckBox.isChecked()) ? "1" : "0";
+                event.setChecked(isFav);
                 String eventID = event.getEventID();
                 ContentValues cv = new ContentValues();
                 dbHelper = new DBHelper(context);
