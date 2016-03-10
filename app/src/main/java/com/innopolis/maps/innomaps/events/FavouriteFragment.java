@@ -1,4 +1,4 @@
-package com.innopolis.maps.innomaps.app;
+package com.innopolis.maps.innomaps.events;
 
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -17,10 +17,8 @@ import android.widget.ListView;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.app.SuggestionAdapter;
 import com.innopolis.maps.innomaps.database.DBHelper;
-import com.innopolis.maps.innomaps.events.Event;
-import com.innopolis.maps.innomaps.events.EventsAdapter;
-import com.innopolis.maps.innomaps.events.EventsFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,13 +56,10 @@ public class FavouriteFragment extends EventsFragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.events_menu, menu);
         searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-        final List<String> favouriteNames = new ArrayList<>();
-        for (Event event : list) {
-            favouriteNames.add(event.getSummary());
-        }
+        final List<Event> favouriteNames = new ArrayList<>(list);
 
         searchBox = (SearchView.SearchAutoComplete) searchView.findViewById(R.id.search_src_text);
-        searchBox.setAdapter(new SuggestionAdapter<String>(getContext(), R.layout.complete_row, favouriteNames));
+        searchBox.setAdapter(new SuggestionAdapter(getContext(), R.layout.complete_row, favouriteNames));
 
         searchBox.addTextChangedListener(new TextWatcher() {
             @Override
@@ -72,7 +67,7 @@ public class FavouriteFragment extends EventsFragment {
                 favouriteNames.clear();
                 for (Event event : adapter.events) {
                     if (event.getSummary().toLowerCase().contains(s.toString().toLowerCase())) {
-                        favouriteNames.add(event.getSummary());
+                        favouriteNames.add(event);
                     }
                 }
                 ((SuggestionAdapter) searchBox.getAdapter()).refresh(favouriteNames);
@@ -93,7 +88,7 @@ public class FavouriteFragment extends EventsFragment {
                 ArrayList<Event> filteredList = new ArrayList<Event>(list);
                 ArrayList<Event> origin = new ArrayList<Event>(list);
 
-                final CheckedTextView text = (CheckedTextView) view.findViewById(R.id.text1);
+                final CheckedTextView text = (CheckedTextView) view.findViewById(R.id.name);
 
                 Predicate<Event> predicate = new Predicate<Event>() {
                     @Override
@@ -119,7 +114,7 @@ public class FavouriteFragment extends EventsFragment {
         database = dbHelper.getWritableDatabase();
 
         list.clear();
-        DBHelper.readEvents(list, database, true);
+        list = DBHelper.readEvents(getContext(), true);
         adapter.events = list;
         adapter.notifyDataSetChanged();
         database.close();

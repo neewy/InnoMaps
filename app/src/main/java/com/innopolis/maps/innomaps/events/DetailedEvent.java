@@ -2,16 +2,20 @@ package com.innopolis.maps.innomaps.events;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ShareActionProvider;
 import android.text.SpannableString;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.UnderlineSpan;
@@ -42,8 +46,9 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import android.support.v4.app.Fragment;
-import android.widget.Toast;
+import xyz.hanks.library.SmallBang;
+
+import static com.innopolis.maps.innomaps.database.TableFields.*;
 
 
 public class DetailedEvent extends Fragment {
@@ -80,17 +85,12 @@ public class DetailedEvent extends Fragment {
         menu.clear();
         inflater.inflate(R.menu.detailed_menu_toolbar, menu);
         MenuItem item = menu.findItem(R.id.toolbar_share);
-        item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.toolbar_share:
-                        Toast.makeText(DetailedEvent.this.context, "Hello World", Toast.LENGTH_SHORT).show();
-                }
-                return true;
-            }
-
-        });
+        ShareActionProvider shareAction = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        //Consider changing content for relevant share information
+        shareIntent.putExtra(Intent.EXTRA_TEXT, (eventName.getText() + " begins in " + dateTime.getText()+". Join us!"));
+        shareAction.setShareIntent(shareIntent);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -116,27 +116,27 @@ public class DetailedEvent extends Fragment {
         if (bundle != null) {
             eventID = bundle.getString("eventID", "");
         }
-        final Cursor cursor = database.query(DBHelper.TABLE1, null, "eventID=?", new String[]{eventID}, null, null, null);
+        final Cursor cursor = database.query(EVENTS, null, "eventID=?", new String[]{eventID}, null, null, null);
         cursor.moveToFirst();
         do {
             int summary, htmlLink, start, end, checked;
-            summary = cursor.getColumnIndex(DBHelper.COLUMN_SUMMARY);
-            htmlLink = cursor.getColumnIndex(DBHelper.COLUMN_LINK);
-            start = cursor.getColumnIndex(DBHelper.COLUMN_START);
-            end = cursor.getColumnIndex(DBHelper.COLUMN_END);
-            checked = cursor.getColumnIndex(DBHelper.COLUMN_FAV);
+            summary = cursor.getColumnIndex(SUMMARY);
+            htmlLink = cursor.getColumnIndex(LINK);
+            start = cursor.getColumnIndex(START);
+            end = cursor.getColumnIndex(END);
+            checked = cursor.getColumnIndex(FAV);
             this.summary = cursor.getString(summary);
             this.htmlLink = cursor.getString(htmlLink);
             this.start = cursor.getString(start);
             this.end = cursor.getString(end);
             this.checked = cursor.getString(checked);
             String[] summaryArgs = new String[]{cursor.getString(summary)};
-            Cursor cursor1 = database.query(DBHelper.TABLE2, null, "summary=?", summaryArgs, null, null, null);
+            Cursor cursor1 = database.query(EVENT_TYPE, null, "summary=?", summaryArgs, null, null, null);
             cursor1.moveToFirst();
             int description = cursor1.getColumnIndex("description");
             int creator_name = cursor1.getColumnIndex("creator_name");
-            int telegram = cursor1.getColumnIndex(DBHelper.COLUMN_TELEGRAM_GROUP);
-            int telegramContact = cursor1.getColumnIndex(DBHelper.COLUMN_TELEGRAM_CONTACT);
+            int telegram = cursor1.getColumnIndex(TELEGRAM_GROUP);
+            int telegramContact = cursor1.getColumnIndex(TELEGRAM_CONTACT);
             this.descriptionStr = cursor1.getString(description);
             this.creator = cursor1.getString(creator_name);
             this.telegram = cursor1.getString(telegram);
@@ -146,13 +146,13 @@ public class DetailedEvent extends Fragment {
         } while (cursor.moveToNext());
         cursor.close();
         final String[] eventIDArgs = new String[]{eventID};
-        Cursor locationC = database.query(DBHelper.TABLE3, null, "eventID=?", eventIDArgs, null, null, null);
+        Cursor locationC = database.query(LOCATION, null, "eventID=?", eventIDArgs, null, null, null);
         if (locationC.moveToFirst()) {
-            building = locationC.getString(locationC.getColumnIndex(DBHelper.COLUMN_BUILDING));
-            floor = locationC.getString(locationC.getColumnIndex(DBHelper.COLUMN_FLOOR));
-            room = locationC.getString(locationC.getColumnIndex(DBHelper.COLUMN_ROOM));
-            latitude = locationC.getString(locationC.getColumnIndex(DBHelper.COLUMN_LATITUDE));
-            longitude = locationC.getString(locationC.getColumnIndex(DBHelper.COLUMN_LONGITUDE));
+            building = locationC.getString(locationC.getColumnIndex(BUILDING));
+            floor = locationC.getString(locationC.getColumnIndex(FLOOR));
+            room = locationC.getString(locationC.getColumnIndex(ROOM));
+            latitude = locationC.getString(locationC.getColumnIndex(LATITUDE));
+            longitude = locationC.getString(locationC.getColumnIndex(LONGITUDE));
         }
         database.close();
 
@@ -196,15 +196,18 @@ public class DetailedEvent extends Fragment {
         } else {
             favCheckBox.setChecked(false);
         }
+        final SmallBang mSmallBang = SmallBang.attach2Window(getActivity());
+
         favCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mSmallBang.bang(favCheckBox);
                 String isFav = (favCheckBox.isChecked()) ? "1" : "0";
                 ContentValues cv = new ContentValues();
                 dbHelper = new DBHelper(context);
                 database = dbHelper.getWritableDatabase();
-                cv.put(DBHelper.COLUMN_FAV, isFav);
-                database.update(DBHelper.TABLE1, cv, "eventID = ?", new String[]{eventID});
+                cv.put(FAV, isFav);
+                database.update(EVENTS, cv, "eventID = ?", new String[]{eventID});
                 dbHelper.close();
             }
         });
@@ -215,7 +218,11 @@ public class DetailedEvent extends Fragment {
 
             @Override
             public void onClick(View v) {
-                Toast.makeText(DetailedEvent.this.context, "Hello World", Toast.LENGTH_SHORT).show();
+                DialogFragment newFragment = new MapFragmentAskForRouteDialog();
+                Bundle bundle = new Bundle();
+                bundle.putString("summary", summary);
+                newFragment.setArguments(bundle);
+                newFragment.show(getActivity().getSupportFragmentManager(), "FindRoute");
 
             }
         });

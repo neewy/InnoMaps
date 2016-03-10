@@ -3,6 +3,7 @@ package com.innopolis.maps.innomaps.events;
 import com.google.common.base.Predicate;
 
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 
 public class Event implements Comparable<Event> {
@@ -124,9 +125,7 @@ public class Event implements Comparable<Event> {
         this.building = building;
     }
 
-    public String getFloor() {
-        return floor;
-    }
+    public String getFloor() { return floor; }
 
     public void setFloor(String floor) {
         this.floor = floor;
@@ -194,4 +193,10 @@ public class Event implements Comparable<Event> {
         }
     };
 
+    public static Comparator<Event> summaryComparator = new Comparator<Event>() {
+        @Override
+        public int compare(Event lhs, Event rhs) {
+            return lhs.getSummary().compareTo(rhs.getSummary());
+        }
+    };
 }
