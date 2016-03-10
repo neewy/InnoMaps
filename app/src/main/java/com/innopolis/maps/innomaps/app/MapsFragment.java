@@ -31,6 +31,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -82,12 +83,17 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         View v = inflater.inflate(R.layout.maps_fragment, container, false);
         dbHelper = new DBHelper(getContext());
         database = dbHelper.getReadableDatabase();
-        MapsInitializer.initialize(getActivity());
 
         switch (GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity())) {
             case ConnectionResult.SUCCESS:
                 mapView = (MapView) v.findViewById(R.id.map);
                 floorPicker = (RadioGroup) v.findViewById(R.id.floorPicker);
+                mapView.getMapAsync(new OnMapReadyCallback() {
+                    @Override
+                    public void onMapReady(GoogleMap googleMap) {
+                        MapsInitializer.initialize(getActivity().getApplicationContext());
+                    }
+                });
                 mapView.onCreate(savedInstanceState);
                 if (mapView != null) {
                     map = mapView.getMap();
