@@ -44,6 +44,8 @@ public class Utils {
     public static Pattern telLogPattern = Pattern.compile(TELEGRAM_LOGIN, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     public static Pattern telGroupPattern = Pattern.compile(TELEGRAM_GROUP, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
+    public static final String restServerUrl = "http://10.240.19.135:8000";
+
     //shift the given Date by exactly 8 days.
     public static void shiftDate(Date d) {
         long time = d.getTime();
