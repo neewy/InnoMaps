@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -193,18 +195,39 @@ public class JGraphTWrapper {
             Log.d("Graph Lib", "File saved successfully");
         }
         catch (IOException e) {
-            Log.e("Exception", "File write failed: " + e.toString());
+            Log.e("Graph lib exception", "File write failed: " + e.toString());
         }
+
+
+
+        File file = new File(context.getFilesDir(), filename);
+        StringBuilder text = new StringBuilder();
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                text.append(line);
+                text.append('\n');
+            }
+            br.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        Log.i("graph", text.toString());
+
     }
 
     /**
      * Imports graph from the file of GraphML format. Doesn't return anything but if import was
      * successful internal graph object will be replaced by the imported one.
-     * @param filename - import file name
+     * @param inputStream - stream to read.
      */
-    public void importGraphML(String filename) throws XmlPullParserException, FileNotFoundException {
-        File file = new File(context.getFilesDir(), filename);
-        BufferedReader br = new BufferedReader(new FileReader(file));
+    public void importGraphML(InputStream inputStream) throws XmlPullParserException, FileNotFoundException {
+        //File file = new File(context.getFilesDir(), filename);
+        //BufferedReader br = new BufferedReader(new FileReader(file));
+        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
 
         XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
         factory.setNamespaceAware(true);

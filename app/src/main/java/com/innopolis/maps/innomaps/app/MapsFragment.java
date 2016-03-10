@@ -8,13 +8,17 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+
+import android.os.AsyncTask;
 import android.location.LocationManager;
+
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,6 +35,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -44,11 +49,12 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.pathfinding.JGraphTWrapper;
-import com.innopolis.maps.innomaps.pathfinding.LatLngGraphEdge;
+import com.innopolis.maps.innomaps.utils.Utils;
 
+import org.apache.commons.io.IOUtils;
 import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,6 +76,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
 
     RadioGroup floorPicker;
     List<Marker> markerList;
+    JGraphTWrapper graphWrapper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -82,12 +89,17 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         View v = inflater.inflate(R.layout.maps_fragment, container, false);
         dbHelper = new DBHelper(getContext());
         database = dbHelper.getReadableDatabase();
-        MapsInitializer.initialize(getActivity());
 
         switch (GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity())) {
             case ConnectionResult.SUCCESS:
                 mapView = (MapView) v.findViewById(R.id.map);
                 floorPicker = (RadioGroup) v.findViewById(R.id.floorPicker);
+                mapView.getMapAsync(new OnMapReadyCallback() {
+                    @Override
+                    public void onMapReady(GoogleMap googleMap) {
+                        MapsInitializer.initialize(getActivity().getApplicationContext());
+                    }
+                });
                 mapView.onCreate(savedInstanceState);
                 if (mapView != null) {
                     map = mapView.getMap();
@@ -131,36 +143,8 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                     map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
                         @Override
                         public void onMapLongClick(LatLng latLng) {
-                            LatLng[] coords = {new LatLng(55.753082, 48.744011),
-                                    new LatLng(55.753182, 48.743887),
-                                    new LatLng(55.753310, 48.743762),
-                                    new LatLng(55.753372, 48.743631),
-                                    new LatLng(55.753689, 48.743274),
-                                    new LatLng(55.753791, 48.743357),
-                                    new LatLng(55.754257, 48.743569),
-                                    new LatLng(55.754276, 48.743376)};
-
-                            JGraphTWrapper graphWrapper = new JGraphTWrapper(getContext());
-                            for (LatLng v : coords) {
-                                graphWrapper.addVertex(v);
-                            }
-                            for (int i = 1; i < coords.length; ++i) {
-                                graphWrapper.addEdge(coords[i - 1], coords[i], LatLngGraphEdge.EdgeType.DEFAULT);
-                            }
-
-                            ArrayList<LatLng> path = graphWrapper.shortestPath(coords[0], coords[coords.length - 1]);
-                            map.addPolyline(new PolylineOptions()
-                                    .addAll(path)
-                                    .width(4)
-                                    .color(Color.GREEN)
-                                    .geodesic(true));
-
-                            graphWrapper.exportGraphML("test.graphml");
-                            try {
-                                graphWrapper.importGraphML("test.graphml");
-                            } catch (XmlPullParserException | FileNotFoundException e) {
-                                e.printStackTrace();
-                            }
+                            graphWrapper = new JGraphTWrapper(getContext());
+                            new RestRequest().execute();
                         }
                     });
                     map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
@@ -245,6 +229,36 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
 
     private Marker addMarker(LatLng point) {
         return map.addMarker(new MarkerOptions().position(point).icon(BitmapDescriptorFactory.fromResource(R.drawable.test_custom_marker)));
+    }
+
+    private class RestRequest extends AsyncTask<Void, Void, String> {
+        @Override
+        protected String doInBackground(Void... params) {
+            return Utils.doGetRequest(Utils.restServerUrl + "/innomaps/graphml/loadmap?floor=1");
+        }
+
+        @Override
+        protected void onPostExecute(String str) {
+            Log.i("graph", str);
+            if (str.equals("")) {
+                return;
+            }
+            try {
+                graphWrapper.importGraphML(IOUtils.toInputStream(str, "UTF-8"));
+            } catch (XmlPullParserException | IOException e) {
+                e.printStackTrace();
+            }
+            LatLng start = new LatLng(55.7535822464872, 48.74364696443081);
+            LatLng finish = new LatLng(55.7542861967414, 48.743378072977066);
+
+            ArrayList<LatLng> path = graphWrapper.shortestPath(start, finish);
+            map.addPolyline(new PolylineOptions()
+                    .addAll(path)
+                    .width(4)
+                    .color(Color.GREEN)
+                    .geodesic(true));
+
+        }
     }
 
     private void displayPromptForEnablingGPS(Activity activity)

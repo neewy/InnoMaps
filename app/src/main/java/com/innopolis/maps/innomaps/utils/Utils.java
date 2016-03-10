@@ -40,6 +40,8 @@ public class Utils {
     public static Pattern telLogPattern = Pattern.compile(TELEGRAM_LOGIN, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     public static Pattern telGroupPattern = Pattern.compile(TELEGRAM_GROUP, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
+    public static final String restServerUrl = "http://10.240.19.135:8000";
+
     public static String GOOGLE_MAP_API_FIRST_PART = "https://www.googleapis.com/calendar/v3/calendars/hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com/events?timeMin=";
     public static String GOOGLE_MAP_API_SECOND_PART = "T10%3A00%3A00-07%3A00&orderby=updated&sortorder=descending&futureevents=true&alt=json&key=AIzaSyDli8qeotu4TGaEs5VKSWy15CDyl4cgZ-o";
     public static String GOOGLE_MAP_API;
@@ -54,7 +56,6 @@ public class Utils {
                 + dateFormat.format(date)
                 + GOOGLE_MAP_API_SECOND_PART);
     }
-
 
     //shift the given Date by exactly 8 days.
     public static void shiftDate(Date d) {
