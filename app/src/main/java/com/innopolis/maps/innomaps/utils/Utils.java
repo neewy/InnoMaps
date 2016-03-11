@@ -32,13 +32,6 @@ public class Utils {
     public static SimpleDateFormat googleTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
     public static PrettyTime prettyTime = new PrettyTime(new Locale("en"));
 
-    private static final String TELEGRAM_LOGIN = "(Contact: @)((?:[a-zA-Z0-9_]+))";
-    private static final String TELEGRAM_GROUP = "((Group link: https://)(telegram.me\\/)" +
-            "(.*)(?:\\/[\\w\\.\\-]+)+)";    // Unix Path
-
-    public static Pattern telLogPattern = Pattern.compile(TELEGRAM_LOGIN, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-    public static Pattern telGroupPattern = Pattern.compile(TELEGRAM_GROUP, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-
     public static final String restServerUrl = "http://10.240.19.135:8000";
 
     public static String GOOGLE_MAP_API_FIRST_PART = "https://www.googleapis.com/calendar/v3/calendars/hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com/events?timeMin=";
@@ -55,6 +48,7 @@ public class Utils {
                 + dateFormat.format(date)
                 + GOOGLE_MAP_API_SECOND_PART);
     }
+
 
     //shift the given Date by exactly 8 days.
     public static void shiftDate(Date d) {

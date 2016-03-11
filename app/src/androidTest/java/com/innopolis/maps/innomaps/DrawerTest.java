@@ -55,7 +55,6 @@ public class DrawerTest extends ActivityInstrumentationTestCase2<MainActivity> {
                 onView(withId(R.id.description)).check(matches(isDisplayed()));
                 onView(withId(R.id.timeLeft)).check(matches(isDisplayed()));
                 onView(withId(R.id.location)).check(matches(isDisplayed()));
-                onView(withId(R.id.organizer)).check(matches(isDisplayed()));
                 Thread.sleep(100);
                 Espresso.pressBack();
             }

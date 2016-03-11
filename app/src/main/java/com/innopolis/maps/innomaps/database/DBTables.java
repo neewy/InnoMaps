@@ -13,7 +13,7 @@ public class DBTables{
 
         public static String TABLE_EVENT_TYPE_CREATE = CREATE_TABLE + TableFields.EVENT_TYPE + " ("
                 + ID_INTEGER + SUMMARY_TEXT + DESCRIPTION_TEXT + CREATOR_NAME_TEXT
-                + CREATOR_EMAIL_TEXT + TEL_LOGIN_TEXT + TEL_GROUP_TEXT;
+                + CREATOR_EMAIL_TEXT;
 
         public static String TABLE_LOCATION_CREATE = CREATE_TABLE + TableFields.LOCATION + " ("
                 + ID_INTEGER + EVENTID_TEXT + BUILDING_TEXT + FLOOR_TEXT + ROOM_TEXT

@@ -13,8 +13,6 @@ public final class TableTypeFields {
     public static final String DESCRIPTION_TEXT = "description TEXT, ";
     public static final String CREATOR_NAME_TEXT = "creator_name TEXT, ";
     public static final String CREATOR_EMAIL_TEXT = "creator_email TEXT, ";
-    public static final String TEL_LOGIN_TEXT = "telegram_login TEXT, ";
-    public static final String TEL_GROUP_TEXT = "telegram_group TEXT, ";
     public static final String BUILDING_TEXT = "building TEXT, ";
     public static final String FLOOR_TEXT = "floor TEXT, ";
     public static final String ROOM_TEXT = "room TEXT, ";

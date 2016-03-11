@@ -12,7 +12,6 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/main_text"
         android:background="@color/colorPrimary"
-        android:elevation="2dp"
 
         android:orientation="horizontal"></LinearLayout>
 
@@ -21,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="5dp"
         android:layout_toLeftOf="@+id/favCheckBox"
         android:layout_toStartOf="@+id/favCheckBox"
         android:layout_weight="1"
@@ -136,10 +135,10 @@
         android:layout_marginTop="10dp"
         android:maxHeight="210dp"
         android:minHeight="200dp"
-
+        android:autoLink="web"
         >
 
-        <TextView
+        <com.apradanas.simplelinkabletext.LinkableTextView
             android:id="@+id/description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -155,19 +154,8 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:typeface="sans"
             android:autoLink="web" />
-
-        <TextView
-            android:id="@+id/organizer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/mapDesc"
-            android:layout_below="@+id/description"
-            android:layout_gravity="bottom"
-            android:layout_marginBottom="5dp"
-            android:maxHeight="19dp"
-            android:maxLines="1"
-            android:textSize="18sp" />
     </LinearLayout>
+
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabButton"

@@ -101,21 +101,6 @@ public class Event implements Comparable<Event> {
         this.creatorEmail = creatorEmail;
     }
 
-    public String getTelegramLogin() {
-        return telegramLogin;
-    }
-
-    public void setTelegramLogin(String telegramLogin) {
-        this.telegramLogin = telegramLogin;
-    }
-
-    public String getTelegramGroup() {
-        return telegramGroup;
-    }
-
-    public void setTelegramGroup(String telegramGroup) {
-        this.telegramGroup = telegramGroup;
-    }
 
     public String getBuilding() {
         return building;

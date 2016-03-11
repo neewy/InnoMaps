@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity
                 if (getSupportFragmentManager().findFragmentByTag(ABOUT) != null) {
                     getSupportFragmentManager().popBackStackImmediate(ABOUT, 0);
                 } else {
-                    fragment = new EventsFragment();
+                    fragment = new About();
                 }
             }
         }

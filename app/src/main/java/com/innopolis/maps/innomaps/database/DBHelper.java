@@ -64,7 +64,7 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor;
         String selectQuery = "select events.summary,htmlLink,start,end,events.eventID as eventID,"
-                + " description,creator_name,creator_email,telegram_login,telegram_group, checked,"
+                + " description,creator_name,creator_email, checked,"
                 + " building,floor,room,latitude,longitude"
                 + " from events "
                 + "inner join event_type on events.summary=event_type.summary  "
@@ -73,7 +73,7 @@ public class DBHelper extends SQLiteOpenHelper {
         cursor = database.rawQuery(selectQuery, null);
         if (cursor.moveToFirst()) {
             int summary, htmlLink, start, end, eventID, checked;
-            int description, creator_name, creator_email, telegram_login, telegram_group;
+            int description, creator_name, creator_email;
             int building, floor, room, latitude, longitude;
 
             summary = cursor.getColumnIndex(SUMMARY);
@@ -85,8 +85,6 @@ public class DBHelper extends SQLiteOpenHelper {
             description = cursor.getColumnIndex(DESCRIPTION);
             creator_name = cursor.getColumnIndex(CREATOR_NAME);
             creator_email = cursor.getColumnIndex(CREATOR_EMAIL);
-            telegram_login = cursor.getColumnIndex(TELEGRAM_CONTACT);
-            telegram_group = cursor.getColumnIndex(TELEGRAM_GROUP);
 
             building = cursor.getColumnIndex(BUILDING);
             floor = cursor.getColumnIndex(FLOOR);
@@ -109,8 +107,6 @@ public class DBHelper extends SQLiteOpenHelper {
                 event.setDescription(cursor.getString(description));
                 event.setCreatorName(cursor.getString(creator_name));
                 event.setCreatorEmail(cursor.getString(creator_email));
-                event.setTelegramLogin(cursor.getString(telegram_login));
-                event.setTelegramGroup(cursor.getString(telegram_group));
                 event.setBuilding(cursor.getString(building));
                 event.setFloor(cursor.getString(floor));
                 event.setRoom(cursor.getString(room));
@@ -176,23 +172,6 @@ public class DBHelper extends SQLiteOpenHelper {
             cv.put(SUMMARY, summary);
             cv.put(CREATOR_NAME, creator_name);
             cv.put(CREATOR_EMAIL, creator_email);
-            Matcher telLogMatch = Utils.telLogPattern.matcher(description);
-            String telegramGroup, telegramLogin = "";
-            if (telLogMatch.find()) {
-                telegramLogin = telLogMatch.group();
-                cv.put(TELEGRAM_CONTACT, telegramLogin);
-                description = description.replace(telegramLogin, "");
-            } else {
-                cv.put(TELEGRAM_CONTACT, NULL);
-            }
-            Matcher telGroupMatch = Utils.telGroupPattern.matcher(description);
-            if (telGroupMatch.find()) {
-                telegramGroup = telGroupMatch.group();
-                cv.put(TELEGRAM_GROUP, telegramGroup);
-                description = description.replace(telegramGroup, "");
-            } else {
-                cv.put(TELEGRAM_GROUP, NULL);
-            }
             cv.put(DESCRIPTION, description);
             database.insert(EVENT_TYPE, null, cv);
         }

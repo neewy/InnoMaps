@@ -59,4 +59,5 @@ dependencies {
     }
     apply plugin: 'com.google.gms.google-services'
     compile 'com.google.android.gms:play-services-appindexing:8.3.0'
+    compile 'com.apradanas.simplelinkabletext:library:1.0.3@aar'
 }

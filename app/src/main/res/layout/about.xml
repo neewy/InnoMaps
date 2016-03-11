@@ -5,17 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/t1"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentTop="true">
 
         <TextView
             android:id="@+id/t2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:layout_gravity="center"
             android:gravity="left"
             android:maxEms="39"
@@ -24,7 +18,10 @@
             android:scrollbars="vertical"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:typeface="sans"
-            android:autoLink="web" />
-    </LinearLayout>
+            android:autoLink="web"
+            android:layout_marginRight="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="48dp" />
+
 
 </RelativeLayout>

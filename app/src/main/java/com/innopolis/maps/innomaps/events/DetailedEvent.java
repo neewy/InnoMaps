@@ -14,7 +14,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.text.SpannableString;
@@ -29,6 +28,8 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import com.apradanas.simplelinkabletext.Link;
+import com.apradanas.simplelinkabletext.LinkableTextView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -44,8 +45,11 @@ import com.innopolis.maps.innomaps.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import xyz.hanks.library.SmallBang;
 
@@ -62,8 +66,7 @@ public class DetailedEvent extends Fragment {
     TextView timeLeft;
     TextView location;
     TextView dateTime;
-    TextView description;
-    TextView organizer;
+    LinkableTextView description;
     TextView duration;
 
 
@@ -74,15 +77,15 @@ public class DetailedEvent extends Fragment {
 
     final private String NULL = "";
 
-    String contactChecked, linkChecked, summary, htmlLink, start, end, descriptionStr, creator,
-            telegram, telegramContact, eventID, building, floor, room, latitude, longitude, checked;
+    String summary, htmlLink, start, end, descriptionStr, creator,
+            eventID, building, floor, room, latitude, longitude, checked;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
-
 
 
     @Override
@@ -94,10 +97,11 @@ public class DetailedEvent extends Fragment {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
         //Consider changing content for relevant share information
-        shareIntent.putExtra(Intent.EXTRA_TEXT, (eventName.getText() + " begins in " + dateTime.getText()+". Join us!"));
+        shareIntent.putExtra(Intent.EXTRA_TEXT, (eventName.getText() + " begins in " + dateTime.getText() + ". Join us!"));
         shareAction.setShareIntent(shareIntent);
         super.onCreateOptionsMenu(menu, inflater);
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
@@ -111,9 +115,8 @@ public class DetailedEvent extends Fragment {
         timeLeft = (TextView) view.findViewById(R.id.timeLeft);
         location = (TextView) view.findViewById(R.id.location);
         dateTime = (TextView) view.findViewById(R.id.dateTime);
-        description = (TextView) view.findViewById(R.id.description);
+        description = (LinkableTextView) view.findViewById(R.id.description);
         description.setMovementMethod(new ScrollingMovementMethod());
-        organizer = (TextView) view.findViewById(R.id.organizer);
         duration = (TextView) view.findViewById(R.id.duration);
         final CheckBox favCheckBox = (CheckBox) view.findViewById(R.id.favCheckBox);
 
@@ -140,12 +143,8 @@ public class DetailedEvent extends Fragment {
             cursor1.moveToFirst();
             int description = cursor1.getColumnIndex("description");
             int creator_name = cursor1.getColumnIndex("creator_name");
-            int telegram = cursor1.getColumnIndex(TELEGRAM_GROUP);
-            int telegramContact = cursor1.getColumnIndex(TELEGRAM_CONTACT);
             this.descriptionStr = cursor1.getString(description);
             this.creator = cursor1.getString(creator_name);
-            this.telegram = cursor1.getString(telegram);
-            this.telegramContact = cursor1.getString(telegramContact);
 
             cursor1.close();
         } while (cursor.moveToNext());
@@ -160,6 +159,20 @@ public class DetailedEvent extends Fragment {
             longitude = locationC.getString(locationC.getColumnIndex(LONGITUDE));
         }
         database.close();
+
+        Link linkUsername = new Link(Pattern.compile("(@\\w+)"))
+                .setUnderlined(false)
+                .setTextColor(Color.parseColor("#D00000"))
+                .setTextStyle(Link.TextStyle.BOLD)
+                .setClickListener(new Link.OnClickListener() {
+                    @Override
+                    public void onClick(String text) {
+                        telegramTransfer(text, text);
+                    }
+                });
+
+        List<Link> links = new ArrayList<>();
+        links.add(linkUsername);
 
         eventName.setText(summary);
         Date startDate = null;
@@ -176,25 +189,11 @@ public class DetailedEvent extends Fragment {
         dateTime.setText(Utils.commonTime.format(startDate));
         Long durationTime = TimeUnit.MILLISECONDS.toMinutes(endDate.getTime() - startDate.getTime());
         duration.setText("Duration: " + String.valueOf(durationTime) + "min");
-        description.setText(descriptionStr);
 
-        if (!telegramContact.equals(NULL) || !telegram.equals(NULL)) {
-            organizer.setTextColor(Color.BLUE);
+        description.setText(descriptionStr)
+                .addLinks(links)
+                .build();
 
-            if (telegram.equals(NULL) && !telegramContact.equals(NULL)) {
-                contactChecked = checkContact(telegramContact);
-                SpannableString content = new SpannableString(contactChecked);
-                telegramTransfer(content, contactChecked, contactChecked);
-
-            } else if (!telegram.equals(NULL)) {
-                SpannableString content = new SpannableString("Group link");
-                content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
-                final String chatLink = "group of event";
-                linkChecked = checkLink(telegram);
-                organizer.setText(content);
-                telegramTransfer(content, chatLink, linkChecked);
-            }
-        }
 
         if (checked.equals("1")) {
             favCheckBox.setChecked(true);
@@ -232,36 +231,16 @@ public class DetailedEvent extends Fragment {
             }
         });
         initializeMap(latitude, longitude);
+
+
         return view;
+
     }
 
 
-    private static String cutter(String string, int checkIndex) {
-        String link = string.substring(0, checkIndex);
-        return link;
-    }
+    private void telegramTransfer(final String dialogText, final String telegramLink) {
 
-
-    private static String checkLink(String string) {
-        int spaceIndex = string.indexOf(" ", 12); //except "Group chat: "
-        int paragraphIndex = string.indexOf("\n");
-        int commaIndex = string.indexOf(",");
-        if (spaceIndex != -1) return cutter(string, spaceIndex);
-        else if (paragraphIndex != -1) return cutter(string, paragraphIndex);
-        else if (commaIndex != -1) return cutter(string, commaIndex);
-        else return string;
-    }
-
-
-    private static String checkContact(String string) {
-        String checkContact = string.substring(9);
-        return checkContact;  //except "Contact: "
-    }
-
-    private void telegramTransfer(SpannableString content, final String dialogText, final String telegramLink) {
-        content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
-        organizer.setText(content);
-        organizer.setOnClickListener(new View.OnClickListener() {
+        description.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DialogFragment newFragment = new TelegramOpenDialog();
@@ -273,6 +252,7 @@ public class DetailedEvent extends Fragment {
             }
         });
     }
+
 
     public void initializeMap(final String latitude, final String longitude) {
         mSupportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapDesc);
@@ -313,7 +293,6 @@ public class DetailedEvent extends Fragment {
             });
         }
     }
-
 
 
 }

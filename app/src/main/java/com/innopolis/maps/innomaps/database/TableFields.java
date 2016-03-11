@@ -17,8 +17,6 @@ public final class TableFields {
     public static final String DESCRIPTION = "description"; //detailed description
     public static final String CREATOR_NAME = "creator_name"; //the person, who created the event
     public static final String CREATOR_EMAIL = "creator_email"; //his or her gmail
-    public static final String TELEGRAM_CONTACT = "telegram_login"; //telegram link available
-    public static final String TELEGRAM_GROUP = "telegram_group"; //telegram link available
 
     /* Location table */
     public static final String BUILDING = "building";
