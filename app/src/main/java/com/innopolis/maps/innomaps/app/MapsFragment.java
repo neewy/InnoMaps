@@ -105,6 +105,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                     map = mapView.getMap();
                     map.setMyLocationEnabled(true);
                     mSettings = map.getUiSettings();
+                    mSettings.setMapToolbarEnabled(false);
                     mSettings.setMyLocationButtonEnabled(true);
                     mSettings.setZoomControlsEnabled(true);
                     final LatLng university = new LatLng(55.752321, 48.744674);

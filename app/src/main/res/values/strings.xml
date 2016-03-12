@@ -201,4 +201,5 @@
     <string name="search_title">Search</string>
     <string name="share">Share</string>
     <string name="empty_search">No events or locations found</string>
+    <string name="crash_toast_text">The report on the crash was sent to us. We will fix it!</string>
 </resources>

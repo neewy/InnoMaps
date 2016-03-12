@@ -268,8 +268,8 @@ public class DetailedEvent extends Fragment {
                 @Override
                 public void onMapReady(GoogleMap googleMap) {
                     mMap = googleMap;
-                    mMap.getUiSettings().setMapToolbarEnabled(false);
                     mSettings = mMap.getUiSettings();
+                    mSettings.setMapToolbarEnabled(false);
                     mSettings.setMyLocationButtonEnabled(false);
                     mMap.setMyLocationEnabled(true);
                     if (latitude != null && longitude != null) {

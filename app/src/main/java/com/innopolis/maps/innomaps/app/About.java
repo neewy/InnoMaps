@@ -12,7 +12,6 @@ import android.widget.TextView;
 import com.innopolis.maps.innomaps.R;
 
 public class About extends Fragment {
-    Context context;
     TextView about;
 
     @Override
@@ -23,7 +22,6 @@ public class About extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        context = getActivity().getApplicationContext();
         View view = inflater.inflate(R.layout.about, container, false);
 
         about = (TextView) view.findViewById(R.id.t2);
