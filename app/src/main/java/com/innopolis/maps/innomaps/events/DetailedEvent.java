@@ -16,9 +16,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
-import android.text.SpannableString;
 import android.text.method.ScrollingMovementMethod;
-import android.text.style.UnderlineSpan;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -53,7 +51,19 @@ import java.util.regex.Pattern;
 
 import xyz.hanks.library.SmallBang;
 
-import static com.innopolis.maps.innomaps.database.TableFields.*;
+import static com.innopolis.maps.innomaps.database.TableFields.BUILDING;
+import static com.innopolis.maps.innomaps.database.TableFields.END;
+import static com.innopolis.maps.innomaps.database.TableFields.EVENTS;
+import static com.innopolis.maps.innomaps.database.TableFields.EVENT_TYPE;
+import static com.innopolis.maps.innomaps.database.TableFields.FAV;
+import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
+import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
+import static com.innopolis.maps.innomaps.database.TableFields.LINK;
+import static com.innopolis.maps.innomaps.database.TableFields.LOCATION;
+import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
+import static com.innopolis.maps.innomaps.database.TableFields.ROOM;
+import static com.innopolis.maps.innomaps.database.TableFields.START;
+import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY;
 
 
 public class DetailedEvent extends Fragment {
@@ -99,6 +109,7 @@ public class DetailedEvent extends Fragment {
         //Consider changing content for relevant share information
         shareIntent.putExtra(Intent.EXTRA_TEXT, (eventName.getText() + " begins in " + dateTime.getText() + ". Join us!"));
         shareAction.setShareIntent(shareIntent);
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -122,7 +133,7 @@ public class DetailedEvent extends Fragment {
 
         Bundle bundle = this.getArguments();
         if (bundle != null) {
-            eventID = bundle.getString("eventID", "");
+            eventID = bundle.getString("eventID", NULL);
         }
         final Cursor cursor = database.query(EVENTS, null, "eventID=?", new String[]{eventID}, null, null, null);
         cursor.moveToFirst();

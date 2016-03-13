@@ -6,10 +6,16 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColor">@color/textColorGray</item>
+        <item name="listPopupWindowStyle">@style/PopupListStyle</item>
     </style>
 
     <style name="spinnerDropDownItemStyle">
         <item name="android:background">@color/cardview_light_background</item>
+    </style>
+
+    <style name="PopupListStyle" parent="@style/Widget.AppCompat.Light.ListPopupWindow">
+        <item name="android:popupBackground">@color/cardview_light_background</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
