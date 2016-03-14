@@ -198,8 +198,6 @@ public class JGraphTWrapper {
             Log.e("Graph lib exception", "File write failed: " + e.toString());
         }
 
-
-
         File file = new File(context.getFilesDir(), filename);
         StringBuilder text = new StringBuilder();
         try {
@@ -225,8 +223,6 @@ public class JGraphTWrapper {
      * @param inputStream - stream to read.
      */
     public void importGraphML(InputStream inputStream) throws XmlPullParserException, FileNotFoundException {
-        //File file = new File(context.getFilesDir(), filename);
-        //BufferedReader br = new BufferedReader(new FileReader(file));
         BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
 
         XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
