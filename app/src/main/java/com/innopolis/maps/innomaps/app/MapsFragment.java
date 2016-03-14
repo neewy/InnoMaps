@@ -249,8 +249,8 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
             } catch (XmlPullParserException | IOException e) {
                 e.printStackTrace();
             }
-            LatLng start = new LatLng(55.7535822464872, 48.74364696443081);
-            LatLng finish = new LatLng(55.7542861967414, 48.743378072977066);
+            LatLng start = new LatLng(55.75351526583595, 48.74356482177973);
+            LatLng finish = new LatLng(55.75421676452847, 48.74331135302782);
 
             ArrayList<LatLng> path = graphWrapper.shortestPath(start, finish);
             map.addPolyline(new PolylineOptions()
