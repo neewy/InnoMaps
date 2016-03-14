@@ -5,12 +5,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.innopolis.maps.innomaps.events.Event;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -43,6 +45,8 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(DBTables.createTable(DBTables.TableColumns.TABLE_EVENTS_CREATE));
         db.execSQL(DBTables.createTable(DBTables.TableColumns.TABLE_EVENT_TYPE_CREATE));
         db.execSQL(DBTables.createTable(DBTables.TableColumns.TABLE_LOCATION_CREATE));
+        db.execSQL(DBTables.createTable(DBTables.TableColumns.TABLE_EVENT_POI_CREATE));
+        db.execSQL(DBTables.createTable(DBTables.TableColumns.TABLE_POI_CREATE));
     }
 
     @Override
@@ -50,6 +54,8 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(DROP + EVENTS);
         db.execSQL(DROP + EVENT_TYPE);
         db.execSQL(DROP + LOCATION);
+        db.execSQL(DROP + EVENT_POI);
+        db.execSQL(DROP + POI);
         onCreate(db);
     }
 
@@ -213,5 +219,43 @@ public class DBHelper extends SQLiteOpenHelper {
             cv.put(LONGITUDE, longitude.toString());
             database.insert(LOCATION, null, cv);
         }
+    }
+
+    public static boolean insertPois(SQLiteDatabase database, List<HashMap<String, String>> pois) {
+        if (pois.size() == 0) return false;
+        for (int i = 0; i < pois.size(); i++) {
+            HashMap<String,String> poi = pois.get(i);
+            ContentValues cv = new ContentValues();
+            cv.put(POI_NAME, poi.get(POI_NAME));
+            cv.put(BUILDING, poi.get(BUILDING));
+            cv.put(FLOOR, poi.get(FLOOR));
+            cv.put(ROOM, poi.get("number"));
+            cv.put(LATITUDE, poi.get(LATITUDE));
+            cv.put(LONGITUDE, poi.get(LONGITUDE));
+            cv.put(TYPE, poi.get(TYPE));
+            cv.put(ATTR, poi.get(ATTR));
+            Log.d("Entry " + i + ": ", cv.toString());
+            database.insert(POI, null, cv);
+        }
+        return true;
+    }
+
+    public static List<HashMap<String, String>> readPois(SQLiteDatabase database) {
+        List<HashMap<String,String>> pois = new ArrayList<>();
+        Cursor cursor = database.rawQuery("SELECT * FROM " + POI + " where room IS NOT NULL", null);
+        if (cursor.moveToFirst()) {
+            do {
+                HashMap<String,String> poi = new HashMap<>();
+                for (int i = 0; i < cursor.getColumnCount(); i++) {
+                    poi.put(cursor.getColumnName(i), cursor.getString(i));
+                }
+                pois.add(poi);
+            } while (cursor.moveToNext());
+        }
+        return pois;
+    }
+
+    public void insertPoiEvent(){
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

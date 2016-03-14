@@ -8,10 +8,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-
-import android.os.AsyncTask;
 import android.location.LocationManager;
-
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
@@ -61,6 +59,7 @@ import java.util.List;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LOCATION;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
+import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY;
 
 public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -105,11 +104,10 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                     map = mapView.getMap();
                     map.setMyLocationEnabled(true);
                     mSettings = map.getUiSettings();
-                    mSettings.setMapToolbarEnabled(false);
                     mSettings.setMyLocationButtonEnabled(true);
                     mSettings.setZoomControlsEnabled(true);
                     final LatLng university = new LatLng(55.752321, 48.744674);
-                    Cursor cursor = database.query(LOCATION,null,null,null,null,null,null);
+                    Cursor cursor = database.query(LOCATION, null, null, null, null, null, null);
                     if (cursor.moveToFirst()) {
                         do {
                             String latitude = cursor.getString(cursor.getColumnIndex(LATITUDE));
@@ -117,15 +115,16 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                             MarkerOptions marker = new MarkerOptions().position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
                             map.addMarker(marker);
                         } while (cursor.moveToNext());
-                    };
+                    }
+                    ;
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(university, 15));
                     map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
                     markerList = new ArrayList<>();
                     map.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
                         @Override
                         public boolean onMyLocationButtonClick() {
-                            locationManager = (LocationManager)getContext().getSystemService(Context.LOCATION_SERVICE);
-                            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+                            locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+                            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                                 displayPromptForEnablingGPS(getActivity());
                             }
                             return false;
@@ -173,8 +172,8 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         }
 
         BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.raw.ai6_floor1);
-        LatLng southWest = new LatLng(55.752533,48.742492);
-        LatLng northEast = new LatLng(55.754656,48.744589);
+        LatLng southWest = new LatLng(55.752533, 48.742492);
+        LatLng northEast = new LatLng(55.754656, 48.744589);
         LatLngBounds latLngBounds = new LatLngBounds(southWest, northEast);
         GroundOverlayOptions groundOverlayOptions = new GroundOverlayOptions();
         groundOverlayOptions.positionFromBounds(latLngBounds);
@@ -193,18 +192,19 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String latitude = null;
                 String longitude = null;
+                String eventName = null;
                 CheckedTextView text = (CheckedTextView) view.findViewById(R.id.name);
                 String sqlQuery = "SELECT * FROM location inner join events on events.eventID=location.eventID WHERE events.summary=?";
                 Cursor cursor = database.rawQuery(sqlQuery, new String[]{String.valueOf(text.getText())});
                 if (cursor.moveToFirst()) {
-                    do {
-                        latitude = cursor.getString(cursor.getColumnIndex(LATITUDE));
-                        longitude = cursor.getString(cursor.getColumnIndex(LONGITUDE));
-                        map.clear();
-                        map.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude))));
-                    } while (cursor.moveToNext());
+                    latitude = cursor.getString(cursor.getColumnIndex(LATITUDE));
+                    longitude = cursor.getString(cursor.getColumnIndex(LONGITUDE));
+                    eventName = cursor.getString(cursor.getColumnIndex(SUMMARY));
+                    map.clear();
+                    map.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude))));
                 }
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)), 17));
+                Utils.hideKeyboard(getActivity());
             }
         });
     }
@@ -262,8 +262,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         }
     }
 
-    private void displayPromptForEnablingGPS(Activity activity)
-    {
+    private void displayPromptForEnablingGPS(Activity activity) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         final String action = Settings.ACTION_LOCATION_SOURCE_SETTINGS;
         final String message = "Enable either GPS or any other location"

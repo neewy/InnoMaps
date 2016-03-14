@@ -25,7 +25,13 @@ public final class TableFields {
     public static final String LATITUDE = "latitude";
     public static final String LONGITUDE = "longitude";
 
-/*for Json*/
+    /* POI (points of interest) table
+    * same as above plus below */
+    public static final String POI_NAME = "name";
+    public static final String TYPE = "type";
+    public static final String ATTR = "attr";
+
+    /*for Json*/
     public static final String NULL = "";
     public static final String DATETIME = "dateTime";
     public static final String CREATOR = "creator";
@@ -38,11 +44,11 @@ public final class TableFields {
 
 
 
-
-
     /*table names*/
     public static final String EVENTS = "events";
     public static final String EVENT_TYPE = "event_type";
     public static final String LOCATION = "location";
+    public static final String EVENT_POI = "event_poi";
+    public static final String POI = "poi";
 
 }

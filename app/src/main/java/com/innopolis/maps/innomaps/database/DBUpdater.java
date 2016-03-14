@@ -22,6 +22,7 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
@@ -41,6 +42,11 @@ public class DBUpdater {
         database = dbHelper.getWritableDatabase();
         sPref = PreferenceManager.getDefaultSharedPreferences(context);
         new ParseTask().execute();
+        HandleXML handleXML = new HandleXML(context);
+        DBHelper.insertPois(database, handleXML.parseXml("coordinates.xml"));
+        for (HashMap<String,String> hashMap : DBHelper.readPois(database)){
+            System.out.println(hashMap.toString());
+        }
     }
 
     private class ParseTask extends AsyncTask<Void, Void, String> {
@@ -76,7 +82,7 @@ public class DBUpdater {
             removeTable(EVENTS);
             removeTable(EVENT_TYPE);
             removeTable(LOCATION);
-
+            //TODO: add tables
         }
 
         private void removeTable(String tableName) {

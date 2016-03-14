@@ -1,10 +1,11 @@
 package com.innopolis.maps.innomaps.app;
 
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -21,7 +22,6 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.gms.analytics.Tracker;
-import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.innopolis.maps.innomaps.R;
@@ -29,8 +29,6 @@ import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.events.Event;
 import com.innopolis.maps.innomaps.events.EventsFragment;
 import com.innopolis.maps.innomaps.events.FavouriteFragment;
-import com.innopolis.maps.innomaps.utils.AnalyticsApplication;
-import com.innopolis.maps.innomaps.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,7 +100,7 @@ public class MainActivity extends AppCompatActivity
                 }
 
                 this.doubleBackToExitPressedOnce = true;
-                Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+                Snackbar.make(findViewById(android.R.id.content), "Please click BACK again to exit", Snackbar.LENGTH_LONG).setActionTextColor(Color.WHITE).show();
 
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -171,7 +169,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onQueryTextSubmit(String query) {
                 if (eventsAdapter.size() == 0) {
-                    Toast.makeText(MainActivity.this, R.string.empty_search, Toast.LENGTH_LONG).show();
+                    Snackbar.make(findViewById(android.R.id.content), R.string.empty_search, Snackbar.LENGTH_LONG).show();
                 }
                 return true;
             }
@@ -202,7 +200,7 @@ public class MainActivity extends AppCompatActivity
             } else if (id == R.id.nav_event) {
                 fragment = new EventsFragment();
                 title = EVENTS;
-            }else if (id == R.id.nav_about) {
+            } else if (id == R.id.nav_about) {
                 fragment = new About();
                 title = ABOUT;
             }
@@ -230,7 +228,7 @@ public class MainActivity extends AppCompatActivity
                     fragment = new EventsFragment();
                 }
 
-            }else if (id == R.id.nav_about) {
+            } else if (id == R.id.nav_about) {
                 title = ABOUT;
                 if (getSupportFragmentManager().findFragmentByTag(ABOUT) != null) {
                     getSupportFragmentManager().popBackStackImmediate(ABOUT, 0);

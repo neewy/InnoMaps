@@ -18,6 +18,10 @@ public final class TableTypeFields {
     public static final String ROOM_TEXT = "room TEXT, ";
     public static final String LATITUDE_TEXT = "latitude TEXT, ";
     public static final String LONGITUDE_TEXT = "longitude TEXT, ";
+    public static final String TYPE_TEXT = "type TEXT, ";
+    public static final String ATTRIBUTE_TEXT = "attr TEXT, ";
+    public static final String POI_ID_TEXT = "poi_id TEXT, ";
+    public static final String POI_NAME_TEXT = "name TEXT, ";
     public static final String CREATE_TABLE = "CREATE TABLE ";
 
 
