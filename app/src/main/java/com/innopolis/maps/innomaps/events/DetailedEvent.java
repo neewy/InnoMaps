@@ -37,6 +37,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.utils.Utils;
 
@@ -303,6 +304,14 @@ public class DetailedEvent extends Fragment {
                 }
             });
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Tracking the screen view
+        MainActivity.getInstance().trackScreenView("Detailed Events Fragment");
     }
 
 

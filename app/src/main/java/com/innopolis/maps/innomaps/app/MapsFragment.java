@@ -214,6 +214,8 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     public void onResume() {
         mapView.onResume();
         super.onResume();
+
+        MainActivity.getInstance().trackScreenView("Maps Fragment");
     }
 
     @Override
@@ -286,5 +288,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                         });
         builder.create().show();
     }
+
+
 }
 
