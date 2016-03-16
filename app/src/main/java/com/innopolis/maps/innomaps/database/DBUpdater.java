@@ -121,17 +121,17 @@ public class DBUpdater {
             try {
                 dataJsonObj = new JSONObject(strJson);
                 if (jsonUpdated(md5) | weekUpdated()) {
-                    populateDB(dataJsonObj, database);
+                    populateDB(dataJsonObj);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            database.close();
         }
     }
 
 
-    public boolean populateDB(JSONObject dataJsonObj, SQLiteDatabase db) throws JSONException {
+    public int populateDB(JSONObject dataJsonObj) throws JSONException {
+        int eventsInserted = 0;
         JSONArray events = dataJsonObj.getJSONArray("items");
         for (int i = 0; i < events.length(); i++) {
             JSONObject jsonEvent = events.getJSONObject(i);
@@ -177,16 +177,17 @@ public class DBUpdater {
             }
 
             DateTime currentDate = new DateTime(new Date().getTime());
-            RecurrenceRule rule = null;
+            RecurrenceRule rule;
             try {
                 rule = new RecurrenceRule(recurrence);
             } catch (InvalidRecurrenceRuleException e) {
                 e.printStackTrace();
+                continue;
             }
 
-            DateTime startDate = null;
+            DateTime startDate;
             DateTime endDate;
-            Long durationTime = null;
+            Long durationTime;
 
             try {
                 startDate = new DateTime(Utils.googleTimeFormat.parse(start).getTime());
@@ -194,7 +195,9 @@ public class DBUpdater {
                 durationTime = TimeUnit.MILLISECONDS.toMinutes(endDate.getTimestamp() - startDate.getTimestamp());
             } catch (ParseException e) {
                 e.printStackTrace();
+                continue;
             }
+
 
             RecurrenceRuleIterator it = rule.iterator(startDate);
             it.fastForward(currentDate);
@@ -205,12 +208,13 @@ public class DBUpdater {
                 if (nextInstance.after(currentDate)) {
                     String finalStartDate = Utils.googleTimeFormat.format(new Date(nextInstance.getTimestamp()));
                     String finalEndDate = Utils.googleTimeFormat.format(new Date(nextInstance.addDuration(new Duration(1, 0, 0, durationTime.intValue(), 0)).getTimestamp()));
-                    DBHelper.insertEvent(db, summary, htmlLink, finalStartDate, finalEndDate, eventID + "_" + maxInstances, checked);
-                    DBHelper.insertEventType(db, summary, description, creator_name, creator_email);
-                    DBHelper.insertLocation(db, location, eventID + "_" + maxInstances);
+                    DBHelper.insertEvent(database, summary, htmlLink, finalStartDate, finalEndDate, eventID + "_" + maxInstances, checked);
+                    DBHelper.insertEventType(database, summary, description, creator_name, creator_email);
+                    DBHelper.insertLocation(database, location, eventID + "_" + maxInstances);
+                    ++eventsInserted;
                 }
             }
         }
-        return true;
+        return eventsInserted;
     }
 }
