@@ -17,6 +17,7 @@ import android.widget.ListView;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.app.SuggestionAdapter;
 import com.innopolis.maps.innomaps.database.DBHelper;
 
@@ -119,5 +120,13 @@ public class FavouriteFragment extends EventsFragment {
         adapter.notifyDataSetChanged();
         database.close();
         swipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Tracking the screen view
+        MainActivity.getInstance().trackScreenView("Favourite Fragment");
     }
 }

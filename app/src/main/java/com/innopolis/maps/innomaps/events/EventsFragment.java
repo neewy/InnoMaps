@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.utils.Utils;
 
@@ -190,5 +191,13 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
         adapter.notifyDataSetChanged();
         list = new ArrayList<>(origin);
         return true;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Tracking the screen view
+        MainActivity.getInstance().trackScreenView("Events Fragment");
     }
 }

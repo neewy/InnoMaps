@@ -202,4 +202,11 @@
     <string name="share">Share</string>
     <string name="empty_search">No events or locations found</string>
     <string name="crash_toast_text">The report on the crash was sent to us. We will fix it!</string>
+
+
+        <string name="analytics">Google Analytics</string>
+        <string name="toast_track_exception">Exception is recorded. Check the Crashes and Exceptions on Google Dashboard!</string>
+        <string name="toast_app_crash">The app will crash now! Check the Crashes and Exceptions on Google Dashboard!</string>
+
 </resources>
+
