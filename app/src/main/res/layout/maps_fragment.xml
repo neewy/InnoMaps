@@ -70,4 +70,11 @@
             android:text="1"
             style="@style/RadioButton" />
     </info.hoang8f.android.segmented.SegmentedGroup>
+    <LinearLayout
+        android:id="@+id/mapBottomWrapper"
+        android:layout_width="fill_parent"
+        android:layout_height="180dp"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true">
+        </LinearLayout>
 </RelativeLayout>

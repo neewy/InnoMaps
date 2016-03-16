@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckedTextView;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
@@ -45,6 +46,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.bottomview.MapBottomView;
 import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.pathfinding.JGraphTWrapper;
 import com.innopolis.maps.innomaps.utils.Utils;
@@ -69,6 +71,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     private LocationManager locationManager;
     DBHelper dbHelper;
     SQLiteDatabase database;
+    MapBottomView mapBottomView;
 
     SearchView searchView;
     SearchView.SearchAutoComplete searchBox;
@@ -76,6 +79,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     RadioGroup floorPicker;
     List<Marker> markerList;
     JGraphTWrapper graphWrapper;
+    LinearLayout mBottomWrapper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -88,7 +92,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         View v = inflater.inflate(R.layout.maps_fragment, container, false);
         dbHelper = new DBHelper(getContext());
         database = dbHelper.getReadableDatabase();
-
+        mBottomWrapper = (LinearLayout) v.findViewById(R.id.mapBottomWrapper);
         switch (GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity())) {
             case ConnectionResult.SUCCESS:
                 mapView = (MapView) v.findViewById(R.id.map);
@@ -203,7 +207,17 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                     map.clear();
                     map.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude))));
                 }
+                if (mapBottomView == null && mBottomWrapper.getChildCount() == 0) {
+                    mapBottomView = new MapBottomView(getContext());
+                } else if (mapBottomView != null && mBottomWrapper.getChildCount() == 1) {
+                    mapBottomView = (MapBottomView) mBottomWrapper.getChildAt(0);
+                }
+                mapBottomView.setTitleText(eventName);
+                mapBottomView.setDescText(latitude + " | " + longitude);
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)), 17));
+                if (mBottomWrapper.getChildCount() == 0) {
+                    mBottomWrapper.addView(mapBottomView);
+                }
                 Utils.hideKeyboard(getActivity());
             }
         });
@@ -228,6 +242,12 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     public void onLowMemory() {
         super.onLowMemory();
         mapView.onLowMemory();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mBottomWrapper.removeView(mapBottomView);
     }
 
     private Marker addMarker(LatLng point) {

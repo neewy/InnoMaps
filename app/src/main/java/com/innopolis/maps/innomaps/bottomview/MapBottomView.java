@@ -1,35 +1,53 @@
 package com.innopolis.maps.innomaps.bottomview;
 
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.widget.Toast;
 
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.utils.Utils;
 
 /**
  * Created by Nikolay on 13.03.2016.
  */
 public class MapBottomView extends View {
 
+    public boolean isShown = false;
     private int titleColor;
     private int counter;
     private int alpha;
+    private Context context;
     private String titleText;
     private String descText;
     private Paint paint;
-    Handler mHandler;
+    private Canvas canvas;
+    private Handler mHandler;
+    private Bitmap closeIcon;
+
+    public MapBottomView(Context context) {
+        super(context);
+        this.context = context;
+        paint = new Paint();
+        mHandler = new Handler();
+        counter = 0;
+        alpha = 0;
+        titleText = "";
+        descText = "";
+        titleColor = 0;
+        Drawable drawable = getResources().getDrawable(R.drawable.ic_clear_24dp);
+        closeIcon = Utils.drawableToBitmap(drawable);
+    }
 
     public MapBottomView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -46,6 +64,8 @@ public class MapBottomView extends View {
         } finally {
             array.recycle();
         }
+        Drawable drawable = getResources().getDrawable(R.drawable.ic_clear_24dp);
+        closeIcon = Utils.drawableToBitmap(drawable);
     }
 
 
@@ -66,16 +86,19 @@ public class MapBottomView extends View {
         paint.setTextAlign(Paint.Align.LEFT);
         paint.setTextSize(20);
         canvas.drawText(descText, 20, endY + 120, paint);
+        canvas.drawBitmap(closeIcon, bounds.right - 70, endY + 35, paint);
         if (counter < bounds.bottom) {
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    counter+=10;
-                    if (alpha < 245) alpha +=10;
+                    counter += 10;
+                    if (alpha < 245) alpha += 10;
                     invalidate();
                 }
             }, 1L);
         } else {
+            this.canvas = canvas;
+            isShown = true;
             alpha = 255;
             invalidate();
         }
@@ -110,4 +133,26 @@ public class MapBottomView extends View {
         invalidate();
         requestLayout();
     }
+
+    private String TAG = MapBottomView.class.getSimpleName();
+    float initialX, initialY;
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        //mGestureDetector.onTouchEvent(event);
+
+        int action = event.getActionMasked();
+
+        if (action == MotionEvent.ACTION_DOWN) {
+            Rect bounds = new Rect(canvas.getClipBounds());
+            initialX = event.getX();
+            initialY = event.getY();
+            if (initialX > bounds.right - 100 && initialX < bounds.right && initialY > bounds.top && initialY < bounds.top + 100) {
+                Toast.makeText(context, "Close!", Toast.LENGTH_LONG).show();
+            }
+        }
+        return super.onTouchEvent(event);
+    }
+
+
 }
