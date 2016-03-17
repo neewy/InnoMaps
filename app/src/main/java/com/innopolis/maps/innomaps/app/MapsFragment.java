@@ -39,6 +39,7 @@ import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -67,6 +68,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
 
     MapView mapView; //an element of the layout
     private GoogleMap map;
+    private GroundOverlay imageOverlay;
     private UiSettings mSettings;
     private LocationManager locationManager;
     DBHelper dbHelper;
@@ -173,15 +175,6 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
             default:
                 Toast.makeText(getActivity(), GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity()), Toast.LENGTH_SHORT).show();
         }
-
-        BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.raw.ai6_floor1);
-        LatLng southWest = new LatLng(55.752533, 48.742492);
-        LatLng northEast = new LatLng(55.754656, 48.744589);
-        LatLngBounds latLngBounds = new LatLngBounds(southWest, northEast);
-        GroundOverlayOptions groundOverlayOptions = new GroundOverlayOptions();
-        groundOverlayOptions.positionFromBounds(latLngBounds);
-        groundOverlayOptions.image(bitmapDescriptor);
-        map.addGroundOverlay(groundOverlayOptions);
         return v;
     }
 
@@ -312,6 +305,54 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         builder.create().show();
     }
 
+    private void initializeOverlay(){
+        putOverlayToMap(new LatLng(55.752533,48.742492), new LatLng(55.754656,48.744589), BitmapDescriptorFactory.fromResource(R.raw.ai6_floor1));
+        floorPicker.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                LatLng southWest, northEast;
+                switch (checkedId){
+                    case R.id.button1: default:
+                        southWest = new LatLng(55.752533,48.742492);
+                        northEast = new LatLng(55.754656,48.744589);
+                        putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor1));
+                        break;
+                    case R.id.button2:
+                        southWest = new LatLng(55.752828,48.742661);
+                        northEast = new LatLng(55.754597,48.744469);
+                        putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor2));
+                        break;
+                    case R.id.button3:
+                        southWest = new LatLng(55.752875,48.742739);
+                        northEast = new LatLng(55.754572,48.744467);
+                        putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor3));
+                        break;
+                    case R.id.button4:
+                        southWest = new LatLng(55.752789,48.742711);
+                        northEast = new LatLng(55.754578,48.744569);
+                        putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor4));
+                        break;
+                    case R.id.button5:
+                        southWest = new LatLng(55.752808,48.743497);
+                        northEast = new LatLng(55.753383,48.744519);
+                        putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor5));
+                        break;
+                }
+            }
+        });
 
+    }
+    private void putOverlayToMap(LatLng southWest, LatLng northEast, BitmapDescriptor bitmapDescriptor){
+        if(imageOverlay!=null){
+            imageOverlay.remove();
+        }
+        LatLngBounds latLngBounds;
+        GroundOverlayOptions groundOverlayOptions;
+        latLngBounds = new LatLngBounds(southWest, northEast);
+        groundOverlayOptions = new GroundOverlayOptions();
+        groundOverlayOptions.positionFromBounds(latLngBounds);
+        groundOverlayOptions.image(bitmapDescriptor);
+        imageOverlay = map.addGroundOverlay(groundOverlayOptions);
+    }
 }
 
