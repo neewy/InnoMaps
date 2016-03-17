@@ -120,7 +120,6 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                             map.addMarker(marker);
                         } while (cursor.moveToNext());
                     }
-                    ;
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(university, 15));
                     map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
                     markerList = new ArrayList<>();
@@ -187,7 +186,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(final Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchBox = (SearchView.SearchAutoComplete) searchView.findViewById(R.id.search_src_text);
@@ -211,6 +210,9 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                     mapBottomView = new MapBottomView(getContext());
                 } else if (mapBottomView != null && mBottomWrapper.getChildCount() == 1) {
                     mapBottomView = (MapBottomView) mBottomWrapper.getChildAt(0);
+                }
+                if (mapBottomView.getVisibility() == View.INVISIBLE || mapBottomView.getVisibility() == View.GONE) {
+                    mapBottomView.setVisibility(View.VISIBLE);
                 }
                 mapBottomView.setTitleText(eventName);
                 mapBottomView.setDescText(latitude + " | " + longitude);
@@ -248,6 +250,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     public void onDestroyView() {
         super.onDestroyView();
         mBottomWrapper.removeView(mapBottomView);
+        mapBottomView = null;
     }
 
     private Marker addMarker(LatLng point) {

@@ -22,11 +22,27 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
-import static com.innopolis.maps.innomaps.database.TableFields.*;
+import static com.innopolis.maps.innomaps.database.TableFields.CREATOR;
+import static com.innopolis.maps.innomaps.database.TableFields.DATETIME;
+import static com.innopolis.maps.innomaps.database.TableFields.DESCRIPTION;
+import static com.innopolis.maps.innomaps.database.TableFields.DISPLAY_NAME;
+import static com.innopolis.maps.innomaps.database.TableFields.EMAIL;
+import static com.innopolis.maps.innomaps.database.TableFields.END;
+import static com.innopolis.maps.innomaps.database.TableFields.EVENTS;
+import static com.innopolis.maps.innomaps.database.TableFields.EVENT_TYPE;
+import static com.innopolis.maps.innomaps.database.TableFields.HASH;
+import static com.innopolis.maps.innomaps.database.TableFields.ID;
+import static com.innopolis.maps.innomaps.database.TableFields.LAST_UPDATE;
+import static com.innopolis.maps.innomaps.database.TableFields.LINK;
+import static com.innopolis.maps.innomaps.database.TableFields.LOCATION;
+import static com.innopolis.maps.innomaps.database.TableFields.NULL;
+import static com.innopolis.maps.innomaps.database.TableFields.RECURRENCE;
+import static com.innopolis.maps.innomaps.database.TableFields.RRULE;
+import static com.innopolis.maps.innomaps.database.TableFields.START;
+import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY;
 
 public class DBUpdater {
 
@@ -44,9 +60,6 @@ public class DBUpdater {
         new ParseTask().execute();
         HandleXML handleXML = new HandleXML(context);
         DBHelper.insertPois(database, handleXML.parseXml("coordinates.xml"));
-        for (HashMap<String,String> hashMap : DBHelper.readPois(database)){
-            System.out.println(hashMap.toString());
-        }
     }
 
     private class ParseTask extends AsyncTask<Void, Void, String> {

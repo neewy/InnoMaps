@@ -13,7 +13,8 @@ import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.utils.Utils;
@@ -139,20 +140,29 @@ public class MapBottomView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        //mGestureDetector.onTouchEvent(event);
-
         int action = event.getActionMasked();
-
         if (action == MotionEvent.ACTION_DOWN) {
             Rect bounds = new Rect(canvas.getClipBounds());
             initialX = event.getX();
             initialY = event.getY();
             if (initialX > bounds.right - 100 && initialX < bounds.right && initialY > bounds.top && initialY < bounds.top + 100) {
-                Toast.makeText(context, "Close!", Toast.LENGTH_LONG).show();
+                this.setVisibility(GONE);
             }
         }
         return super.onTouchEvent(event);
     }
 
-
+    @Override
+    public void setVisibility(int visibility) {
+        AlphaAnimation anim;
+        if (visibility == INVISIBLE || visibility == GONE) {
+            anim = new AlphaAnimation(1.0f, 0.0f);
+        } else {
+            anim = new AlphaAnimation(0.0f, 1.0f);
+        }
+        anim.setDuration(500);
+        anim.setRepeatMode(Animation.REVERSE);
+        this.startAnimation(anim);
+        super.setVisibility(visibility);
+    }
 }

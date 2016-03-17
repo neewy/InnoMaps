@@ -19,7 +19,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
@@ -27,7 +26,6 @@ import com.google.android.gms.analytics.StandardExceptionParser;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.innopolis.maps.innomaps.InnoMapsApp;
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.events.Event;
@@ -206,12 +204,12 @@ public class MainActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.main, menu);
         searchView = (SearchView) menu.findItem(R.id.search).getActionView();
 
-        final List<Event> eventsAdapter = DBHelper.readUniqueEvents(this, false);
-        final List<Event> eventsDB = new ArrayList<>(eventsAdapter);
+        final List<Event> eventList = DBHelper.readUniqueEvents(this, false);
+        final List<Event> eventsDB = new ArrayList<>(eventList);
 
         final SearchView.SearchAutoComplete searchBox = (SearchView.SearchAutoComplete) searchView.findViewById(R.id.search_src_text);
-        searchBox.setAdapter(new SuggestionAdapter(this, R.layout.complete_row, eventsAdapter));
-        searchBox.setThreshold(1);
+        searchBox.setAdapter(new SuggestionAdapter(this, R.layout.complete_row, eventList));
+        searchBox.setThreshold(0);
         searchBox.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -219,16 +217,17 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                eventsAdapter.clear();
+                eventList.clear();
                 for (Event event : eventsDB) {
                     if (event.getSummary().toLowerCase().contains(s.toString().toLowerCase()) ||
                             event.getBuilding().toLowerCase().contains(s.toString().toLowerCase()) ||
                             event.getFloor().toLowerCase().contains(s.toString().toLowerCase()) ||
                             event.getRoom().toLowerCase().contains(s.toString().toLowerCase())) {
-                        eventsAdapter.add(event);
+                        eventList.add(event);
                     }
                 }
-                ((SuggestionAdapter) searchBox.getAdapter()).refresh(eventsAdapter);
+                DBHelper.readPois(database);
+                ((SuggestionAdapter) searchBox.getAdapter()).refresh(eventList);
             }
 
             @Override
@@ -238,7 +237,7 @@ public class MainActivity extends AppCompatActivity
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                if (eventsAdapter.size() == 0) {
+                if (eventList.size() == 0) {
                     Snackbar.make(findViewById(android.R.id.content), R.string.empty_search, Snackbar.LENGTH_LONG).show();
                 }
                 return true;
@@ -249,7 +248,6 @@ public class MainActivity extends AppCompatActivity
                 return false;
             }
         });
-        ;
         return true;
     }
 
