@@ -175,6 +175,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
             default:
                 Toast.makeText(getActivity(), GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity()), Toast.LENGTH_SHORT).show();
         }
+        initializeOverlay();
         return v;
     }
 
