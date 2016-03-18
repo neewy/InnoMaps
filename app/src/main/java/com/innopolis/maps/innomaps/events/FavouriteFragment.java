@@ -18,11 +18,9 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.app.MainActivity;
-import com.innopolis.maps.innomaps.app.SuggestionAdapter;
 import com.innopolis.maps.innomaps.database.DBHelper;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class FavouriteFragment extends EventsFragment {
@@ -57,21 +55,21 @@ public class FavouriteFragment extends EventsFragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.events_menu, menu);
         searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-        final List<Event> favouriteNames = new ArrayList<>(list);
+        //final List<Event> favouriteNames = new ArrayList<>(list);
 
         searchBox = (SearchView.SearchAutoComplete) searchView.findViewById(R.id.search_src_text);
-        searchBox.setAdapter(new SuggestionAdapter(getContext(), R.layout.complete_row, favouriteNames));
+        //searchBox.setAdapter(new SuggestionAdapter(getContext(), R.layout.complete_row, favouriteNames));
 
         searchBox.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                favouriteNames.clear();
+               // favouriteNames.clear();
                 for (Event event : adapter.events) {
                     if (event.getSummary().toLowerCase().contains(s.toString().toLowerCase())) {
-                        favouriteNames.add(event);
+                        //favouriteNames.add(event);
                     }
                 }
-                ((SuggestionAdapter) searchBox.getAdapter()).refresh(favouriteNames);
+                //((SuggestionAdapter) searchBox.getAdapter()).refresh(favouriteNames);
             }
 
             @Override

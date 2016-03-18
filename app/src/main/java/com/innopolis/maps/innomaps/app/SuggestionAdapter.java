@@ -12,7 +12,6 @@ import android.widget.Filter;
 import android.widget.TextView;
 
 import com.innopolis.maps.innomaps.R;
-import com.innopolis.maps.innomaps.events.Event;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -20,27 +19,27 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SuggestionAdapter extends ArrayAdapter<Event> {
+public class SuggestionAdapter extends ArrayAdapter<SearchableItem> {
 
-    private List<Event> items;
+    private List<SearchableItem> items;
     private ArrayFilter mFilter;
 
-    public SuggestionAdapter(Context context, @LayoutRes int resource, @NonNull List<Event> objects) {
+    public SuggestionAdapter(Context context, @LayoutRes int resource, @NonNull List<SearchableItem> objects) {
         super(context, resource, objects);
         this.items = new ArrayList<>(objects);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Event event = getItem(position);
+        SearchableItem item = getItem(position);
 
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext())
                     .inflate(R.layout.complete_row, null);
         }
-        String[] locationText = {event.getBuilding(), event.getFloor(), event.getRoom()};
+        String[] locationText = {item.getBuilding(), item.getFloor(), item.getRoom()};
         ((CheckedTextView) convertView.findViewById(R.id.name))
-                .setText(event.getSummary());
+                .setText(item.getName());
         ((TextView) convertView.findViewById(R.id.location))
                 .setText(StringUtils.join(Utils.clean(locationText), ", "));
         return convertView;
@@ -52,8 +51,8 @@ public class SuggestionAdapter extends ArrayAdapter<Event> {
     }
 
     @Override
-    public Event getItem(int position) {
-        Event item = items.get(position);
+    public SearchableItem getItem(int position) {
+        SearchableItem item = items.get(position);
         return item;
     }
 
@@ -65,8 +64,8 @@ public class SuggestionAdapter extends ArrayAdapter<Event> {
         return mFilter;
     }
 
-    public void refresh(List<Event> newData) {
-        this.items = new ArrayList<Event>(newData);
+    public void refresh(List<SearchableItem> newData) {
+        this.items = new ArrayList<SearchableItem>(newData);
         notifyDataSetChanged();
     }
 
@@ -80,13 +79,13 @@ public class SuggestionAdapter extends ArrayAdapter<Event> {
         @Override
         protected FilterResults performFiltering(CharSequence prefix) {
             FilterResults results = new FilterResults();
-            List<Event> resList = new ArrayList<>();
-            for (Event event: items){
-                if (prefix != null && (event.getSummary().toLowerCase().contains(prefix.toString().toLowerCase()) ||
-                        event.getBuilding().toLowerCase().contains(prefix.toString().toLowerCase()) ||
-                        event.getFloor().toLowerCase().contains(prefix.toString().toLowerCase()) ||
-                        event.getRoom().toLowerCase().contains(prefix.toString().toLowerCase()))) {
-                    resList.add(event);
+            List<SearchableItem> resList = new ArrayList<>();
+            for (SearchableItem item: items){
+                if (prefix != null && (item.getName().toLowerCase().contains(prefix.toString().toLowerCase()) ||
+                        item.getBuilding().toLowerCase().contains(prefix.toString().toLowerCase()) ||
+                        item.getFloor().toLowerCase().contains(prefix.toString().toLowerCase()) ||
+                        item.getRoom().toLowerCase().contains(prefix.toString().toLowerCase()))) {
+                    resList.add(item);
                 }
             }
             results.values = resList;

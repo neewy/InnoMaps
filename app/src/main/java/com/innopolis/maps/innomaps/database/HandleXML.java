@@ -1,15 +1,16 @@
 package com.innopolis.maps.innomaps.database;
 
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.util.Log;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,13 +34,13 @@ public class HandleXML {
         }
     }
 
-    public List<HashMap<String, String>> parseXml(String filename) {
+    public List<HashMap<String, String>> parseXml(InputStream inputStream) {
         List<HashMap<String, String>> res = new ArrayList<>();
-        AssetManager manager = context.getResources().getAssets();
+        BufferedReader br = null;
         int type = 0;
         try {
-            InputStream input = manager.open(filename);
-            parser.setInput(input, null);
+            br = new BufferedReader(new InputStreamReader(inputStream));
+            parser.setInput(br);
             type = parser.getEventType();
             HashMap<String, String> poi = new HashMap<>();
             while (type != XmlPullParser.END_DOCUMENT) {
@@ -79,6 +80,12 @@ public class HandleXML {
                 type = parser.next();
             }
         } catch (IOException | XmlPullParserException e) {
+            e.printStackTrace();
+        }
+        try {
+            br.close();
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
         return res;

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.innopolis.maps.innomaps.events.Event;
 import com.innopolis.maps.innomaps.utils.Utils;
@@ -17,9 +16,30 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.regex.Matcher;
 
-import static com.innopolis.maps.innomaps.database.TableFields.*;
+import static com.innopolis.maps.innomaps.database.TableFields.ATTR;
+import static com.innopolis.maps.innomaps.database.TableFields.BUILDING;
+import static com.innopolis.maps.innomaps.database.TableFields.CREATOR_EMAIL;
+import static com.innopolis.maps.innomaps.database.TableFields.CREATOR_NAME;
+import static com.innopolis.maps.innomaps.database.TableFields.DESCRIPTION;
+import static com.innopolis.maps.innomaps.database.TableFields.END;
+import static com.innopolis.maps.innomaps.database.TableFields.EVENTS;
+import static com.innopolis.maps.innomaps.database.TableFields.EVENT_ID;
+import static com.innopolis.maps.innomaps.database.TableFields.EVENT_POI;
+import static com.innopolis.maps.innomaps.database.TableFields.EVENT_TYPE;
+import static com.innopolis.maps.innomaps.database.TableFields.FAV;
+import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
+import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
+import static com.innopolis.maps.innomaps.database.TableFields.LINK;
+import static com.innopolis.maps.innomaps.database.TableFields.LOCATION;
+import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
+import static com.innopolis.maps.innomaps.database.TableFields.NULL;
+import static com.innopolis.maps.innomaps.database.TableFields.POI;
+import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
+import static com.innopolis.maps.innomaps.database.TableFields.ROOM;
+import static com.innopolis.maps.innomaps.database.TableFields.START;
+import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY;
+import static com.innopolis.maps.innomaps.database.TableFields.TYPE;
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -234,7 +254,6 @@ public class DBHelper extends SQLiteOpenHelper {
             cv.put(LONGITUDE, poi.get(LONGITUDE));
             cv.put(TYPE, poi.get(TYPE));
             cv.put(ATTR, poi.get(ATTR));
-            Log.d("Entry " + i + ": ", cv.toString());
             database.insert(POI, null, cv);
         }
         return true;
@@ -243,6 +262,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static List<HashMap<String, String>> readPois(SQLiteDatabase database) {
         List<HashMap<String,String>> pois = new ArrayList<>();
         Cursor cursor = database.rawQuery("SELECT * FROM " + POI + " where room IS NOT NULL", null);
+        //TODO: check the query
         if (cursor.moveToFirst()) {
             do {
                 HashMap<String,String> poi = new HashMap<>();

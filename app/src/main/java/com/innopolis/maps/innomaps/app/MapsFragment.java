@@ -62,6 +62,7 @@ import java.util.List;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LOCATION;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
+import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
 import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY;
 
 public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPermissionsResultCallback {
@@ -187,16 +188,24 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         searchBox.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                SearchableItem item = (SearchableItem) parent.getAdapter().getItem(position);
+                String sqlQuery = null;
+                if (item.getType() == "event") {
+                    sqlQuery = "SELECT * FROM location inner join events on events.eventID=location.eventID WHERE events.summary=?";
+                } else {
+                    sqlQuery = "SELECT * FROM poi WHERE name=?";
+                }
+
                 String latitude = null;
                 String longitude = null;
-                String eventName = null;
+                String name = null;
                 CheckedTextView text = (CheckedTextView) view.findViewById(R.id.name);
-                String sqlQuery = "SELECT * FROM location inner join events on events.eventID=location.eventID WHERE events.summary=?";
+
                 Cursor cursor = database.rawQuery(sqlQuery, new String[]{String.valueOf(text.getText())});
                 if (cursor.moveToFirst()) {
                     latitude = cursor.getString(cursor.getColumnIndex(LATITUDE));
                     longitude = cursor.getString(cursor.getColumnIndex(LONGITUDE));
-                    eventName = cursor.getString(cursor.getColumnIndex(SUMMARY));
+                    name = (cursor.getColumnIndex(SUMMARY) != -1) ? cursor.getString(cursor.getColumnIndex(SUMMARY)) : cursor.getString(cursor.getColumnIndex(POI_NAME));
                     map.clear();
                     map.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude))));
                 }
@@ -208,7 +217,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                 if (mapBottomView.getVisibility() == View.INVISIBLE || mapBottomView.getVisibility() == View.GONE) {
                     mapBottomView.setVisibility(View.VISIBLE);
                 }
-                mapBottomView.setTitleText(eventName);
+                mapBottomView.setTitleText(name);
                 mapBottomView.setDescText(latitude + " | " + longitude);
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)), 17));
                 if (mBottomWrapper.getChildCount() == 0) {
