@@ -146,7 +146,7 @@ public class JGraphTWrapper {
         LatLngGraphVertex vTemp1 = new LatLngGraphVertex(v1, vertices.get(v1));
         LatLngGraphVertex vTemp2 = new LatLngGraphVertex(v2, vertices.get(v2));
         List<LatLngGraphEdge> foundPath = DijkstraShortestPath.findPathBetween(g, vTemp1, vTemp2);
-        if (foundPath == null) {
+        if (foundPath == null || foundPath.size() == 0) {
             return null;
         }
         ArrayList<LatLng> pointsList = new ArrayList<>();
