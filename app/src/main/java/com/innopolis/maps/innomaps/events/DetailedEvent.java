@@ -16,7 +16,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
-import android.text.method.ScrollingMovementMethod;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -128,7 +128,7 @@ public class DetailedEvent extends Fragment {
         location = (TextView) view.findViewById(R.id.location);
         dateTime = (TextView) view.findViewById(R.id.dateTime);
         description = (LinkableTextView) view.findViewById(R.id.description);
-        description.setMovementMethod(new ScrollingMovementMethod());
+        description.setMovementMethod(LinkMovementMethod.getInstance());
         duration = (TextView) view.findViewById(R.id.duration);
         final CheckBox favCheckBox = (CheckBox) view.findViewById(R.id.favCheckBox);
 
