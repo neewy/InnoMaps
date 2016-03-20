@@ -34,7 +34,7 @@ public class HandleXML {
         }
     }
 
-    public List<HashMap<String, String>> parseXml(InputStream inputStream) {
+    public List<HashMap<String, String>> parseXml(InputStream inputStream, String building, String floor) {
         List<HashMap<String, String>> res = new ArrayList<>();
         BufferedReader br = null;
         int type = 0;
@@ -58,8 +58,8 @@ public class HandleXML {
                 } else if (type == XmlPullParser.END_TAG) {
                     if (parser.getName().equals("node")) {
                         //Consider deleting it!
-                        poi.put("building", "university");
-                        poi.put("floor", "1floor");
+                        poi.put("building", building);
+                        poi.put("floor", floor + "floor");
 
                         res.add(poi);
                         poi = new HashMap<>();

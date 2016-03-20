@@ -261,8 +261,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public static List<HashMap<String, String>> readPois(SQLiteDatabase database) {
         List<HashMap<String,String>> pois = new ArrayList<>();
-        Cursor cursor = database.rawQuery("SELECT * FROM " + POI + " where room IS NOT NULL", null);
-        //TODO: check the query
+        Cursor cursor = database.rawQuery("SELECT * FROM " + POI + " where room IS NOT NULL and type like '%room%'", null);
         if (cursor.moveToFirst()) {
             do {
                 HashMap<String,String> poi = new HashMap<>();

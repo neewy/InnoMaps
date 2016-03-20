@@ -12,8 +12,11 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
@@ -24,10 +27,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckedTextView;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.apradanas.simplelinkabletext.Link;
+import com.apradanas.simplelinkabletext.LinkableTextView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -47,42 +54,51 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.innopolis.maps.innomaps.R;
-import com.innopolis.maps.innomaps.bottomview.MapBottomView;
 import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.pathfinding.JGraphTWrapper;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
+import static com.innopolis.maps.innomaps.database.TableFields.DESCRIPTION;
+import static com.innopolis.maps.innomaps.database.TableFields.EVENT_TYPE;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LOCATION;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
+import static com.innopolis.maps.innomaps.database.TableFields.START;
 import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY;
 
 public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPermissionsResultCallback {
 
-    MapView mapView; //an element of the layout
+    MapView mapView;
     private GoogleMap map;
     private GroundOverlay imageOverlay;
     private UiSettings mSettings;
     private LocationManager locationManager;
     DBHelper dbHelper;
     SQLiteDatabase database;
-    MapBottomView mapBottomView;
+    NestedScrollView scrollView;
 
     SearchView searchView;
     SearchView.SearchAutoComplete searchBox;
 
+    private BottomSheetBehavior mBottomSheetBehavior;
+
     RadioGroup floorPicker;
     List<Marker> markerList;
     JGraphTWrapper graphWrapper;
-    LinearLayout mBottomWrapper;
+
+    LinearLayout durationLayout, startLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -95,7 +111,12 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         View v = inflater.inflate(R.layout.maps_fragment, container, false);
         dbHelper = new DBHelper(getContext());
         database = dbHelper.getReadableDatabase();
-        mBottomWrapper = (LinearLayout) v.findViewById(R.id.mapBottomWrapper);
+
+        scrollView = (NestedScrollView) getActivity().findViewById(R.id.bottom_sheet);
+        durationLayout = (LinearLayout) scrollView.findViewById(R.id.durationLayout);
+        startLayout = (LinearLayout) scrollView.findViewById(R.id.startLayout);
+        mBottomSheetBehavior = BottomSheetBehavior.from(scrollView);
+
         switch (GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity())) {
             case ConnectionResult.SUCCESS:
                 mapView = (MapView) v.findViewById(R.id.map);
@@ -143,6 +164,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                                 markerList.get(0).remove();
                             markerList.clear();
                             Marker marker = map.addMarker(new MarkerOptions().position(latLng).title(latLng.toString()));
+                            System.out.println(latLng.toString());
                             markerList.add(marker);
                         }
                     });
@@ -188,42 +210,93 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         searchBox.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                SearchableItem item = (SearchableItem) parent.getAdapter().getItem(position);
-                String sqlQuery = null;
-                if (item.getType() == "event") {
-                    sqlQuery = "SELECT * FROM location inner join events on events.eventID=location.eventID WHERE events.summary=?";
-                } else {
-                    sqlQuery = "SELECT * FROM poi WHERE name=?";
+                if (scrollView.getVisibility() == View.GONE) {
+                    scrollView.setVisibility(View.VISIBLE);
                 }
 
-                String latitude = null;
-                String longitude = null;
-                String name = null;
+                SearchableItem item = (SearchableItem) parent.getAdapter().getItem(position);
+                String[] location = {item.getBuilding(), item.getFloor(), item.getRoom()};
                 CheckedTextView text = (CheckedTextView) view.findViewById(R.id.name);
 
-                Cursor cursor = database.rawQuery(sqlQuery, new String[]{String.valueOf(text.getText())});
-                if (cursor.moveToFirst()) {
-                    latitude = cursor.getString(cursor.getColumnIndex(LATITUDE));
-                    longitude = cursor.getString(cursor.getColumnIndex(LONGITUDE));
-                    name = (cursor.getColumnIndex(SUMMARY) != -1) ? cursor.getString(cursor.getColumnIndex(SUMMARY)) : cursor.getString(cursor.getColumnIndex(POI_NAME));
-                    map.clear();
-                    map.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude))));
+                TextView headerText = (TextView) scrollView.findViewById(R.id.headerText);
+                TextView locationText = (TextView) scrollView.findViewById(R.id.locationText);
+                TextView startText = (TextView) scrollView.findViewById(R.id.startText);
+                TextView durationText = (TextView) scrollView.findViewById(R.id.durationText);
+                FrameLayout relatedLayout = (FrameLayout) scrollView.findViewById(R.id.relatedLayout);
+                FloatingActionButton fab = (FloatingActionButton) scrollView.findViewById(R.id.goto_fab);
+
+                if (relatedLayout.getChildCount() != 0) {
+                    relatedLayout.removeView(relatedLayout.getChildAt(0));
                 }
-                if (mapBottomView == null && mBottomWrapper.getChildCount() == 0) {
-                    mapBottomView = new MapBottomView(getContext());
-                } else if (mapBottomView != null && mBottomWrapper.getChildCount() == 1) {
-                    mapBottomView = (MapBottomView) mBottomWrapper.getChildAt(0);
+
+                if (item.getType() == "event") {
+                    String sqlQuery = "SELECT * FROM location inner join events on events.eventID=location.eventID WHERE events.summary=?";
+
+                    String name = "", latitude = "", longitude = "", startDateText = "", description = "";
+                    Date startDate = null;
+
+                    Cursor cursor = database.rawQuery(sqlQuery, new String[]{String.valueOf(text.getText())});
+                    durationLayout.setVisibility(View.VISIBLE);
+                    startLayout.setVisibility(View.VISIBLE);
+                    if (cursor.moveToFirst()) {
+                        latitude = cursor.getString(cursor.getColumnIndex(LATITUDE));
+                        longitude = cursor.getString(cursor.getColumnIndex(LONGITUDE));
+                        startDateText = cursor.getString(cursor.getColumnIndex(START));
+                        name = cursor.getString(cursor.getColumnIndex(SUMMARY));
+
+                        Cursor cursor_type = database.query(EVENT_TYPE, null, "summary=?", new String[]{String.valueOf(text.getText())}, null, null, null);
+                        if (cursor_type.moveToFirst()) {
+                            description = cursor_type.getString(cursor_type.getColumnIndex(DESCRIPTION));
+                        }
+                        LinkableTextView descriptionText = new LinkableTextView(getContext());
+                        Link linkUsername = new Link(Pattern.compile("(@\\w+)"))
+                                .setUnderlined(false)
+                                .setTextColor(Color.parseColor("#D00000"))
+                                .setTextStyle(Link.TextStyle.BOLD)
+                                .setClickListener(new Link.OnClickListener() {
+                                    @Override
+                                    public void onClick(String text) {
+                                        System.out.println("Go to telegram");
+                                    }
+                                });
+                        descriptionText.setTextSize(16);
+                        descriptionText.setPadding(0,20,10,10);
+                        descriptionText.setText(description).addLink(linkUsername).build();
+                        relatedLayout.addView(descriptionText);
+                        try {
+                            startDate = Utils.googleTimeFormat.parse(startDateText);
+                        } catch (ParseException e) {
+                            Log.e("Maps", "Time parse exception", e);
+                        }
+                        map.clear();
+                        map.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude))));
+                    }
+
+                    headerText.setText(name);
+                    locationText.setText(StringUtils.join(Utils.clean(location), ", "));
+                    startText.setText(Utils.commonTime.format(startDate));
+                    durationText.setText(Utils.prettyTime.format(startDate));
+                    //relatedLayout;
+                    mBottomSheetBehavior.setPeekHeight(headerText.getLayout().getHeight() + fab.getHeight() + 42);
+
+                } else {
+                    String sqlQuery = "SELECT * FROM poi WHERE name=?";
+                    Cursor cursor = database.rawQuery(sqlQuery, new String[]{String.valueOf(text.getText())});
+                    String name = "";
+
+                    durationLayout.setVisibility(View.GONE);
+                    startLayout.setVisibility(View.GONE);
+
+                    if (cursor.moveToFirst()) {
+                        name = cursor.getString(cursor.getColumnIndex(POI_NAME));
+                        headerText.setText(name);
+                        locationText.setText(StringUtils.join(Utils.clean(location), ", "));
+                    }
+
                 }
-                if (mapBottomView.getVisibility() == View.INVISIBLE || mapBottomView.getVisibility() == View.GONE) {
-                    mapBottomView.setVisibility(View.VISIBLE);
-                }
-                mapBottomView.setTitleText(name);
-                mapBottomView.setDescText(latitude + " | " + longitude);
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)), 17));
-                if (mBottomWrapper.getChildCount() == 0) {
-                    mBottomWrapper.addView(mapBottomView);
-                }
+
                 Utils.hideKeyboard(getActivity());
+                menu.findItem(R.id.search).collapseActionView();
             }
         });
     }
@@ -252,8 +325,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mBottomWrapper.removeView(mapBottomView);
-        mapBottomView = null;
+        scrollView.setVisibility(View.GONE);
     }
 
     private Marker addMarker(LatLng point) {
@@ -294,14 +366,14 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         final String action = Settings.ACTION_LOCATION_SOURCE_SETTINGS;
         final String message = "Enable either GPS or any other location"
-                + " service to find current location.  Click OK to go to"
+                + " service to find current location. Click OK to go to"
                 + " location services settings to let you do so.";
 
         builder.setMessage(message)
                 .setPositiveButton("OK",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface d, int id) {
-                                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                Intent intent = new Intent(action);
                                 d.dismiss();
                                 startActivity(intent);
                             }
@@ -315,36 +387,37 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         builder.create().show();
     }
 
-    private void initializeOverlay(){
-        putOverlayToMap(new LatLng(55.752533,48.742492), new LatLng(55.754656,48.744589), BitmapDescriptorFactory.fromResource(R.raw.ai6_floor1));
+    private void initializeOverlay() {
+        putOverlayToMap(new LatLng(55.752533, 48.742492), new LatLng(55.754656, 48.744589), BitmapDescriptorFactory.fromResource(R.raw.ai6_floor1));
         floorPicker.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 LatLng southWest, northEast;
-                switch (checkedId){
-                    case R.id.button1: default:
-                        southWest = new LatLng(55.752533,48.742492);
-                        northEast = new LatLng(55.754656,48.744589);
+                switch (checkedId) {
+                    case R.id.button1:
+                    default:
+                        southWest = new LatLng(55.752533, 48.742492);
+                        northEast = new LatLng(55.754656, 48.744589);
                         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor1));
                         break;
                     case R.id.button2:
-                        southWest = new LatLng(55.752828,48.742661);
-                        northEast = new LatLng(55.754597,48.744469);
+                        southWest = new LatLng(55.752828, 48.742661);
+                        northEast = new LatLng(55.754597, 48.744469);
                         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor2));
                         break;
                     case R.id.button3:
-                        southWest = new LatLng(55.752875,48.742739);
-                        northEast = new LatLng(55.754572,48.744467);
+                        southWest = new LatLng(55.752875, 48.742739);
+                        northEast = new LatLng(55.754572, 48.744467);
                         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor3));
                         break;
                     case R.id.button4:
-                        southWest = new LatLng(55.752789,48.742711);
-                        northEast = new LatLng(55.754578,48.744569);
+                        southWest = new LatLng(55.752789, 48.742711);
+                        northEast = new LatLng(55.754578, 48.744569);
                         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor4));
                         break;
                     case R.id.button5:
-                        southWest = new LatLng(55.752808,48.743497);
-                        northEast = new LatLng(55.753383,48.744519);
+                        southWest = new LatLng(55.752808, 48.743497);
+                        northEast = new LatLng(55.753383, 48.744519);
                         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor5));
                         break;
                 }
@@ -352,8 +425,9 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         });
 
     }
-    private void putOverlayToMap(LatLng southWest, LatLng northEast, BitmapDescriptor bitmapDescriptor){
-        if(imageOverlay!=null){
+
+    private void putOverlayToMap(LatLng southWest, LatLng northEast, BitmapDescriptor bitmapDescriptor) {
+        if (imageOverlay != null) {
             imageOverlay.remove();
         }
         LatLngBounds latLngBounds;

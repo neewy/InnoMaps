@@ -62,7 +62,8 @@ public class DBUpdater {
         database = dbHelper.getWritableDatabase();
         sPref = PreferenceManager.getDefaultSharedPreferences(context);
         new JsonParseTask().execute();
-        new XMLParseTask().execute();
+        new XMLParseTask().execute("1");
+        new XMLParseTask().execute("5");
     }
 
     private class JsonParseTask extends AsyncTask<Void, Void, String> {
@@ -142,25 +143,28 @@ public class DBUpdater {
 
     }
 
-    private class XMLParseTask extends AsyncTask<Void, Void, String> {
+    private class XMLParseTask extends AsyncTask<String, Void, String> {
+
+        String xmlFloor = "";
 
         @Override
-        protected String doInBackground(Void... params) {
-            return Utils.doGetRequest(Utils.restServerUrl + "/innomaps/graphml/loadmap?floor=1");
+        protected String doInBackground(String... params) {
+            xmlFloor = params[0];
+            return Utils.doGetRequest(Utils.restServerUrl + "/innomaps/graphml/loadmap?floor=" + xmlFloor);
         }
 
         @Override
         protected void onPostExecute(String s) {
             HandleXML handleXML = new HandleXML(context);
             String md5 = new String(Hex.encodeHex(DigestUtils.md5(s)));
-            String savedText = sPref.getString("XmlUpdated", NULL);
+            String savedText = sPref.getString(xmlFloor + "XmlUpdated", NULL);
             if (!savedText.equals(md5)) {
                 SharedPreferences.Editor ed = sPref.edit();
-                ed.putString("XmlUpdated", md5);
-                removeTable(POI);
+                ed.putString(xmlFloor + "XmlUpdated", md5);
+                removeOldPoi(xmlFloor);
                 ed.apply();
                 try {
-                    DBHelper.insertPois(database, handleXML.parseXml(IOUtils.toInputStream(s, "UTF-8")));
+                    DBHelper.insertPois(database, handleXML.parseXml(IOUtils.toInputStream(s, "UTF-8"), "university", xmlFloor));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -170,6 +174,10 @@ public class DBUpdater {
 
     private void removeTable(String tableName) {
         database.execSQL(DELETE + tableName);
+    }
+
+    private void removeOldPoi(String floor) {
+        database.execSQL(DELETE + POI + " where floor like '%"+floor+"floor%'");
     }
 
     public int populateDB(JSONObject dataJsonObj) throws JSONException {
