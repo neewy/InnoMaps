@@ -18,7 +18,7 @@ import static org.junit.Assert.assertTrue;
  * Created by luckychess on 3/19/16.
  */
 
-public class JGraphTTest {
+public class GraphPathfindingTest {
 
     JGraphTWrapper graph;
 
