@@ -8,7 +8,7 @@ public final class TableTypeFields {
     public static final String LINK_TEXT = "htmlLink TEXT, ";
     public static final String START_TEXT = "start TEXT, ";
     public static final String END_TEXT = "end TEXT, ";
-    public static final String EVENTID_TEXT = "eventID TEXT, ";
+    public static final String EVENT_ID_INTEGER = "eventID INTEGER, ";
     public static final String CHECKED_TEXT = "checked TEXT, ";
     public static final String DESCRIPTION_TEXT = "description TEXT, ";
     public static final String CREATOR_NAME_TEXT = "creator_name TEXT, ";
@@ -20,9 +20,7 @@ public final class TableTypeFields {
     public static final String LONGITUDE_TEXT = "longitude TEXT, ";
     public static final String TYPE_TEXT = "type TEXT, ";
     public static final String ATTRIBUTE_TEXT = "attr TEXT, ";
-    public static final String POI_ID_TEXT = "poi_id TEXT, ";
+    public static final String POI_ID_INTEGER = "poi_id INTEGER, ";
     public static final String POI_NAME_TEXT = "name TEXT, ";
     public static final String CREATE_TABLE = "CREATE TABLE ";
-
-
 }
