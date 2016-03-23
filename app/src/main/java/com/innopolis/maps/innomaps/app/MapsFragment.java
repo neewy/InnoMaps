@@ -55,6 +55,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.database.DBHelper;
+import com.innopolis.maps.innomaps.events.Event;
 import com.innopolis.maps.innomaps.pathfinding.JGraphTWrapper;
 import com.innopolis.maps.innomaps.utils.Utils;
 
@@ -66,10 +67,12 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import static com.innopolis.maps.innomaps.database.TableFields.DESCRIPTION;
+import static com.innopolis.maps.innomaps.database.TableFields.EVENT_ID;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_TYPE;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LOCATION;
@@ -145,7 +148,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                         } while (cursor.moveToNext());
                     }
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(university, 15));
-                    map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                    map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                     markerList = new ArrayList<>();
                     map.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
                         @Override
@@ -276,11 +279,10 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                     locationText.setText(StringUtils.join(Utils.clean(location), ", "));
                     startText.setText(Utils.commonTime.format(startDate));
                     durationText.setText(Utils.prettyTime.format(startDate));
-                    //relatedLayout;
                     mBottomSheetBehavior.setPeekHeight(headerText.getLayout().getHeight() + fab.getHeight() + 42);
 
                 } else {
-                    String sqlQuery = "SELECT * FROM poi WHERE name=?";
+                    String sqlQuery = "SELECT * FROM poi LEFT OUTER JOIN event_poi on event_poi.poi_id = poi._id LEFT OUTER JOIN events on events.eventID = event_poi.eventID WHERE poi.name=? and poi.type LIKE '%room%'";
                     Cursor cursor = database.rawQuery(sqlQuery, new String[]{String.valueOf(text.getText())});
                     String name = "";
 
@@ -291,6 +293,30 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                         name = cursor.getString(cursor.getColumnIndex(POI_NAME));
                         headerText.setText(name);
                         locationText.setText(StringUtils.join(Utils.clean(location), ", "));
+                        List<Event> events = new LinkedList<Event>();
+                        do {
+                            Event event = new Event();
+                            event.setSummary(cursor.getString(cursor.getColumnIndex(SUMMARY)));
+                            try {
+                                if (cursor.getString(cursor.getColumnIndex(START)) != null) {
+                                    event.setStart(Utils.googleTimeFormat.parse(cursor.getString(cursor.getColumnIndex(START))));
+                                }
+                            } catch (ParseException e) {
+                                Log.e("Maps", "Date parse exception", e);
+                            }
+                            event.setEventID(cursor.getString(cursor.getColumnIndex(EVENT_ID)));
+                            if (event.getEventID() != null) {
+                                events.add(event);
+                            }
+                        } while (cursor.moveToNext());
+                        if (events.size() == 0) {
+                            TextView noEvents = new TextView(getContext());
+                            noEvents.setText("There are no events");
+                            relatedLayout.addView(noEvents);
+                        } else {
+                            //there are events - put them in corresponding list
+                        }
+                        mBottomSheetBehavior.setPeekHeight(headerText.getLayout().getHeight() + fab.getHeight() + 42);
                     }
 
                 }
