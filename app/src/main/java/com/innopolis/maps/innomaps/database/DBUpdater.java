@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 
 import com.innopolis.maps.innomaps.utils.Utils;
@@ -56,13 +58,16 @@ public class DBUpdater {
     SharedPreferences sPref;
     String DELETE = "delete from ";
 
+    private volatile int counter = 0;
+
     public DBUpdater(Context context) {
         this.context = context;
         dbHelper = new DBHelper(context);
         database = dbHelper.getWritableDatabase();
         sPref = PreferenceManager.getDefaultSharedPreferences(context);
-        new JsonParseTask().execute();
         new XMLParseTask().execute("1");
+        new XMLParseTask().execute("2");
+        //new XMLParseTask().execute("3");
         new XMLParseTask().execute("5");
     }
 
@@ -143,33 +148,53 @@ public class DBUpdater {
 
     }
 
-    private class XMLParseTask extends AsyncTask<String, Void, String> {
+    private class XMLParseTask extends AsyncTask<String, Void, Boolean> {
 
         String xmlFloor = "";
+        String s;
 
         @Override
-        protected String doInBackground(String... params) {
+        protected Boolean doInBackground(String... params) {
             xmlFloor = params[0];
-            return Utils.doGetRequest(Utils.restServerUrl + "/innomaps/graphml/loadmap?floor=" + xmlFloor);
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            HandleXML handleXML = new HandleXML(context);
-            String md5 = new String(Hex.encodeHex(DigestUtils.md5(s)));
+            String md5 = Utils.doGetRequest(Utils.restServerUrl + "/innomaps/graphml/md5?floor=" + xmlFloor);
             String savedText = sPref.getString(xmlFloor + "XmlUpdated", NULL);
             if (!savedText.equals(md5)) {
                 SharedPreferences.Editor ed = sPref.edit();
                 ed.putString(xmlFloor + "XmlUpdated", md5);
                 removeOldPoi(xmlFloor);
                 ed.apply();
+                s = Utils.doGetRequest(Utils.restServerUrl + "/innomaps/graphml/loadmap?floor=" + xmlFloor);
+                return true;
+            } else {
+                return false;
+            }
+
+        }
+
+
+        @Override
+        protected void onPostExecute(Boolean updated) {
+            if (updated) {
+                HandleXML handleXML = new HandleXML(context);
                 try {
                     DBHelper.insertPois(database, handleXML.parseXml(IOUtils.toInputStream(s, "UTF-8"), "university", xmlFloor));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
+            counter++;
+            if (counter == 2) {
+                myHandler.sendEmptyMessage(0);
+            }
         }
+
+        Handler myHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                if (msg.what == 0)
+                new JsonParseTask().execute();
+            }
+        };
     }
 
     private void removeTable(String tableName) {
