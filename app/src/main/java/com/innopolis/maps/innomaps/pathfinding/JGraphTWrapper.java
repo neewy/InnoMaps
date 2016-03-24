@@ -301,4 +301,8 @@ public class JGraphTWrapper {
             e.printStackTrace();
         }
     }
+
+    public HashMap<Integer, LatLng> getVerticesMap() {
+        return verticesMap;
+    }
 }
