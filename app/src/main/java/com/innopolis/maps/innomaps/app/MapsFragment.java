@@ -14,8 +14,10 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
@@ -23,6 +25,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -35,6 +38,8 @@ import android.widget.Toast;
 
 import com.apradanas.simplelinkabletext.Link;
 import com.apradanas.simplelinkabletext.LinkableTextView;
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -53,6 +58,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.common.collect.Collections2;
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.events.Event;
@@ -66,6 +72,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -75,7 +82,6 @@ import static com.innopolis.maps.innomaps.database.TableFields.DESCRIPTION;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_ID;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_TYPE;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
-import static com.innopolis.maps.innomaps.database.TableFields.LOCATION;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
 import static com.innopolis.maps.innomaps.database.TableFields.START;
@@ -94,6 +100,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
 
     SearchView searchView;
     SearchView.SearchAutoComplete searchBox;
+    AHBottomNavigation topNavigation;
 
     private BottomSheetBehavior mBottomSheetBehavior;
 
@@ -119,7 +126,6 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         durationLayout = (LinearLayout) scrollView.findViewById(R.id.durationLayout);
         startLayout = (LinearLayout) scrollView.findViewById(R.id.startLayout);
         mBottomSheetBehavior = BottomSheetBehavior.from(scrollView);
-
         switch (GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity())) {
             case ConnectionResult.SUCCESS:
                 mapView = (MapView) v.findViewById(R.id.map);
@@ -137,17 +143,8 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                     mSettings = map.getUiSettings();
                     mSettings.setMyLocationButtonEnabled(true);
                     mSettings.setZoomControlsEnabled(true);
-                    final LatLng university = new LatLng(55.752321, 48.744674);
-                    Cursor cursor = database.query(LOCATION, null, null, null, null, null, null);
-                    if (cursor.moveToFirst()) {
-                        do {
-                            String latitude = cursor.getString(cursor.getColumnIndex(LATITUDE));
-                            String longitude = cursor.getString(cursor.getColumnIndex(LONGITUDE));
-                            MarkerOptions marker = new MarkerOptions().position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
-                            map.addMarker(marker);
-                        } while (cursor.moveToNext());
-                    }
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(university, 15));
+                    final LatLng university = new LatLng(55.752116019, 48.7448166297);
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(university, 17));
                     map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                     markerList = new ArrayList<>();
                     map.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
@@ -163,12 +160,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                     map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                         @Override
                         public void onMapClick(LatLng latLng) {
-                            if (markerList != null && markerList.size() > 0)
-                                markerList.get(0).remove();
-                            markerList.clear();
-                            Marker marker = map.addMarker(new MarkerOptions().position(latLng).title(latLng.toString()));
-                            System.out.println(latLng.toString());
-                            markerList.add(marker);
+                            pinMarker(latLng);
                         }
                     });
                     map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
@@ -206,10 +198,109 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     }
 
     @Override
-    public void onCreateOptionsMenu(final Menu menu, MenuInflater inflater) {
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        topNavigation = (AHBottomNavigation) view.findViewById(R.id.bottom_navigation);
+        AHBottomNavigationItem item1 = new AHBottomNavigationItem("WC", R.drawable.wc);
+        AHBottomNavigationItem item2 = new AHBottomNavigationItem("Food", R.drawable.food_fork_drink);
+        AHBottomNavigationItem item3 = new AHBottomNavigationItem("All", R.drawable.all_pack);
+        AHBottomNavigationItem item4 = new AHBottomNavigationItem("Events", R.drawable.calendar_mult);
+        AHBottomNavigationItem item5 = new AHBottomNavigationItem("Other", R.drawable.duck);
+        topNavigation.addItem(item1);
+        topNavigation.addItem(item2);
+        topNavigation.addItem(item3);
+        topNavigation.addItem(item4);
+        topNavigation.addItem(item5);
+        topNavigation.setDefaultBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        topNavigation.setBehaviorTranslationEnabled(false);
+        topNavigation.setInactiveColor(Color.WHITE);
+        topNavigation.setAccentColor(getResources().getColor(R.color.colorAccent));
+        topNavigation.setVisibility(View.GONE);
+        topNavigation.setForceTitlesDisplay(true);
+        topNavigation.setCurrentItem(2);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchBox = (SearchView.SearchAutoComplete) searchView.findViewById(R.id.search_src_text);
+        searchBox.setThreshold(1);
+        MenuItemCompat.setOnActionExpandListener((MenuItem) menu.findItem(R.id.search), new MenuItemCompat.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                if (topNavigation.getVisibility() == View.GONE) {
+                    topNavigation.setVisibility(View.VISIBLE);
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                if (topNavigation.getVisibility() == View.VISIBLE) {
+                    topNavigation.setVisibility(View.GONE);
+                    return true;
+                }
+                return false;
+            }
+        });
+        topNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
+            List<SearchableItem> allItems = new LinkedList<SearchableItem>(((SuggestionAdapter)searchBox.getAdapter()).items);
+            @Override
+            public void onTabSelected(int position, boolean wasSelected) {
+                List<SearchableItem> items = ((MainActivity)getActivity()).searchItems;
+                if (!wasSelected) {
+                    switch (position) {
+                        case 0:
+                            Collection<SearchableItem> wc = Collections2.filter(allItems, SearchableItem.isWc);
+                            if (wc.isEmpty()) {
+                                Snackbar.make(getView(), "There are no WC", Snackbar.LENGTH_SHORT);
+                            } else {
+                                items.clear();
+                                for (SearchableItem item : wc)
+                                    items.add(item);
+                            }
+                            break;
+                        case 1:
+                            Collection<SearchableItem> food = Collections2.filter(allItems, SearchableItem.isFood);
+                            if (food.isEmpty()) {
+                                Snackbar.make(getView(), "There are no food POI", Snackbar.LENGTH_SHORT);
+                            } else {
+                                items.clear();
+                                for (SearchableItem item : food)
+                                    items.add(item);
+                            }
+                            break;
+                        case 2:
+                            items.clear();
+                            for (SearchableItem item : allItems)
+                                items.add(item);
+                            break;
+                        case 3:
+                            Collection<SearchableItem> events = Collections2.filter(allItems, SearchableItem.isEvent);
+                            if (events.isEmpty()) {
+                                Snackbar.make(getView(), "There are no events", Snackbar.LENGTH_SHORT);
+                            } else {
+                                items.clear();
+                                for (SearchableItem item : events)
+                                    items.add(item);
+                            }
+                            break;
+                        case 4:
+                            Collection<SearchableItem> other = Collections2.filter(allItems, SearchableItem.isOther);
+                            if (other.isEmpty()) {
+                                Snackbar.make(getView(), "There are no other POI", Snackbar.LENGTH_SHORT);
+                            } else {
+                                items.clear();
+                                for (SearchableItem item : other)
+                                    items.add(item);
+                            }
+                            break;
+                    }
+                }
+            }
+        });
         searchBox.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -218,7 +309,13 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                 }
 
                 SearchableItem item = (SearchableItem) parent.getAdapter().getItem(position);
-                String[] location = {item.getBuilding(), item.getFloor(), item.getRoom()};
+
+                List<String> location = new LinkedList<>();
+                if (item.getBuilding() != null) location.add(item.getBuilding());
+                if (item.getFloor() != null) location.add(item.getFloor());
+                if (item.getRoom() != null) location.add(item.getRoom());
+                String[] locationArray  = new String[location.size()];
+
                 CheckedTextView text = (CheckedTextView) view.findViewById(R.id.name);
 
                 TextView headerText = (TextView) scrollView.findViewById(R.id.headerText);
@@ -232,15 +329,17 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                     relatedLayout.removeView(relatedLayout.getChildAt(0));
                 }
 
-                if (item.getType() == "event") {
+                if (item.getType().equals("event")) {
                     String sqlQuery = "SELECT * FROM location inner join events on events.eventID=location.eventID WHERE events.summary=?";
 
                     String name = "", latitude = "", longitude = "", startDateText = "", description = "";
                     Date startDate = null;
 
                     Cursor cursor = database.rawQuery(sqlQuery, new String[]{String.valueOf(text.getText())});
+
                     durationLayout.setVisibility(View.VISIBLE);
                     startLayout.setVisibility(View.VISIBLE);
+
                     if (cursor.moveToFirst()) {
                         latitude = cursor.getString(cursor.getColumnIndex(LATITUDE));
                         longitude = cursor.getString(cursor.getColumnIndex(LONGITUDE));
@@ -263,7 +362,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                                     }
                                 });
                         descriptionText.setTextSize(16);
-                        descriptionText.setPadding(0,20,10,10);
+                        descriptionText.setPadding(0, 20, 10, 10);
                         descriptionText.setText(description).addLink(linkUsername).build();
                         relatedLayout.addView(descriptionText);
                         try {
@@ -271,18 +370,17 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                         } catch (ParseException e) {
                             Log.e("Maps", "Time parse exception", e);
                         }
-                        map.clear();
-                        map.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude))));
+                        pinMarker(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
                     }
 
                     headerText.setText(name);
-                    locationText.setText(StringUtils.join(Utils.clean(location), ", "));
+                    locationText.setText(StringUtils.join(locationArray, ", "));
                     startText.setText(Utils.commonTime.format(startDate));
                     durationText.setText(Utils.prettyTime.format(startDate));
                     mBottomSheetBehavior.setPeekHeight(headerText.getLayout().getHeight() + fab.getHeight() + 42);
 
                 } else {
-                    String sqlQuery = "SELECT * FROM poi LEFT OUTER JOIN event_poi on event_poi.poi_id = poi._id LEFT OUTER JOIN events on events.eventID = event_poi.eventID WHERE poi.name=? and poi.type LIKE '%room%'";
+                    String sqlQuery = "SELECT * FROM poi LEFT OUTER JOIN event_poi on event_poi.poi_id = poi._id LEFT OUTER JOIN events on events.eventID = event_poi.eventID WHERE poi.name=?";
                     Cursor cursor = database.rawQuery(sqlQuery, new String[]{String.valueOf(text.getText())});
                     String name = "";
 
@@ -292,7 +390,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                     if (cursor.moveToFirst()) {
                         name = cursor.getString(cursor.getColumnIndex(POI_NAME));
                         headerText.setText(name);
-                        locationText.setText(StringUtils.join(Utils.clean(location), ", "));
+                        locationText.setText(StringUtils.join(locationArray, ", "));
                         List<Event> events = new LinkedList<Event>();
                         do {
                             Event event = new Event();
@@ -315,10 +413,10 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                             relatedLayout.addView(noEvents);
                         } else {
                             //there are events - put them in corresponding list
+                            //pinMarker(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
                         }
                         mBottomSheetBehavior.setPeekHeight(headerText.getLayout().getHeight() + fab.getHeight() + 42);
                     }
-
                 }
 
                 Utils.hideKeyboard(getActivity());
@@ -463,6 +561,14 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         groundOverlayOptions.positionFromBounds(latLngBounds);
         groundOverlayOptions.image(bitmapDescriptor);
         imageOverlay = map.addGroundOverlay(groundOverlayOptions);
+    }
+
+    public void pinMarker(LatLng latLng) {
+        if (markerList != null && markerList.size() > 0)
+            markerList.get(0).remove();
+        markerList.clear();
+        Marker marker = map.addMarker(new MarkerOptions().position(latLng).title(latLng.toString()));
+        markerList.add(marker);
     }
 }
 

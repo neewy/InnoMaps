@@ -33,9 +33,9 @@ import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.events.EventsFragment;
 import com.innopolis.maps.innomaps.events.FavouriteFragment;
 import com.innopolis.maps.innomaps.utils.AnalyticsTrackers;
+import com.innopolis.maps.innomaps.utils.Utils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity
     private Tracker mTracker;
 
     private boolean doubleBackToExitPressedOnce = false;
+    protected final List<SearchableItem> searchItems = new LinkedList<>();
 
     DBHelper dbHelper;
     SQLiteDatabase database;
@@ -212,11 +213,10 @@ public class MainActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.main, menu);
         searchView = (SearchView) menu.findItem(R.id.search).getActionView();
 
-        final List<SearchableItem> searchItems = new ArrayList();
         SearchableItem.addEvents(searchItems, DBHelper.readUniqueEvents(this, false));
-        List<HashMap<String,String>> pois = DBHelper.readPois(database);
+        SearchableItem.addPois(searchItems, DBHelper.readRoomPois(database));
         SearchableItem.addPois(searchItems, DBHelper.readPois(database));
-        final List<SearchableItem> adapterList = new ArrayList<>(searchItems);
+        final List<SearchableItem> adapterList = new LinkedList<>(searchItems);
 
         final SearchView.SearchAutoComplete searchBox = (SearchView.SearchAutoComplete) searchView.findViewById(R.id.search_src_text);
         searchBox.setAdapter(new SuggestionAdapter(this, R.layout.complete_row, adapterList));
@@ -230,10 +230,14 @@ public class MainActivity extends AppCompatActivity
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 adapterList.clear();
                 for (SearchableItem item : searchItems) {
-                    if (item.getName().toLowerCase().contains(s.toString().toLowerCase()) ||
+                    if (item.getType().equals("room") && (item.getName().toLowerCase().contains(s.toString().toLowerCase()) ||
                             item.getBuilding().toLowerCase().contains(s.toString().toLowerCase()) ||
                             item.getFloor().toLowerCase().contains(s.toString().toLowerCase()) ||
-                            item.getRoom().toLowerCase().contains(s.toString().toLowerCase())) {
+                            item.getRoom().toLowerCase().contains(s.toString().toLowerCase()))) {
+                        adapterList.add(item);
+                    } else if (item.getName().toLowerCase().contains(s.toString().toLowerCase()) ||
+                            item.getBuilding().toLowerCase().contains(s.toString().toLowerCase()) ||
+                            item.getFloor().toLowerCase().contains(s.toString().toLowerCase())) {
                         adapterList.add(item);
                     }
                 }
@@ -248,6 +252,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onQueryTextSubmit(String query) {
                 if (adapterList.size() == 0) {
+                    Utils.hideKeyboard(MainActivity.this);
                     Snackbar.make(findViewById(android.R.id.content), R.string.empty_search, Snackbar.LENGTH_LONG).show();
                 }
                 return true;
