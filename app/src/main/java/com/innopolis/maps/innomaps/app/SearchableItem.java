@@ -1,5 +1,6 @@
 package com.innopolis.maps.innomaps.app;
 
+import com.google.common.base.Predicate;
 import com.innopolis.maps.innomaps.events.Event;
 
 import java.util.HashMap;
@@ -105,4 +106,35 @@ public class SearchableItem implements Comparable<SearchableItem> {
             items.add(searchableItem);
         }
     }
+
+    public static Predicate<SearchableItem> isWc = new Predicate<SearchableItem>() {
+        @Override
+        public boolean apply(SearchableItem input) {
+            return input.getType().toLowerCase().equals("wc");
+        }
+    };
+
+    public static Predicate<SearchableItem> isFood = new Predicate<SearchableItem>() {
+        @Override
+        public boolean apply(SearchableItem input) {
+            return input.getType().toLowerCase().equals("canteen");
+        }
+    };
+
+    public static Predicate<SearchableItem> isEvent = new Predicate<SearchableItem>() {
+        @Override
+        public boolean apply(SearchableItem input) {
+            return input.getType().toLowerCase().equals("event");
+        }
+    };
+
+    public static Predicate<SearchableItem> isOther = new Predicate<SearchableItem>() {
+        @Override
+        public boolean apply(SearchableItem input) {
+            Boolean res;
+            res = !(input.getType().toLowerCase().equals("event") || input.getType().toLowerCase().equals("canteen") || input.getType().toLowerCase().equals("wc"));
+            return res;
+        }
+    };
+
 }

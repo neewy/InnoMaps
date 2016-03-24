@@ -261,6 +261,21 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public static List<HashMap<String, String>> readPois(SQLiteDatabase database) {
         List<HashMap<String,String>> pois = new ArrayList<>();
+        Cursor cursor = database.rawQuery("SELECT * FROM " + POI + " where type IS NOT NULL and attr IS NOT NULL and type NOT LIKE '%door%' and type NOT LIKE '%room%'", null);
+        if (cursor.moveToFirst()) {
+            do {
+                HashMap<String,String> poi = new HashMap<>();
+                for (int i = 0; i < cursor.getColumnCount(); i++) {
+                    poi.put(cursor.getColumnName(i), cursor.getString(i));
+                }
+                pois.add(poi);
+            } while (cursor.moveToNext());
+        }
+        return pois;
+    }
+
+    public static List<HashMap<String, String>> readRoomPois(SQLiteDatabase database) {
+        List<HashMap<String,String>> pois = new ArrayList<>();
         Cursor cursor = database.rawQuery("SELECT * FROM " + POI + " where room IS NOT NULL and type like '%room%'", null);
         if (cursor.moveToFirst()) {
             do {

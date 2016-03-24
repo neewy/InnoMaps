@@ -178,7 +178,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
                     adapter.events.add(event);
                 break;
             case R.id.action_this_week:
-                Collection<Event> thisWeek = Collections2.filter(filteredList, Event.isTomorrow);
+                Collection<Event> thisWeek = Collections2.filter(filteredList, Event.isThisWeek);
                 if (thisWeek.isEmpty()) {
                     Toast.makeText(getContext(), "No events this week", Toast.LENGTH_LONG).show();
                     return true;
