@@ -53,8 +53,11 @@ import java.util.regex.Pattern;
 import xyz.hanks.library.SmallBang;
 
 import static com.innopolis.maps.innomaps.database.TableFields.BUILDING;
+import static com.innopolis.maps.innomaps.database.TableFields.CREATOR_NAME;
+import static com.innopolis.maps.innomaps.database.TableFields.DESCRIPTION;
 import static com.innopolis.maps.innomaps.database.TableFields.END;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENTS;
+import static com.innopolis.maps.innomaps.database.TableFields.EVENT_ID;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_TYPE;
 import static com.innopolis.maps.innomaps.database.TableFields.FAV;
 import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
@@ -120,7 +123,7 @@ public class DetailedEvent extends Fragment {
         ((DrawerLayout) getActivity().findViewById(R.id.drawer_layout)).setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         context = getActivity().getApplicationContext();
-        View view = inflater.inflate(R.layout.event_desc, container, false);
+        View view = inflater.inflate(R.layout.detailed_event, container, false);
         dbHelper = new DBHelper(context);
         database = dbHelper.getWritableDatabase();
         eventName = (TextView) view.findViewById(R.id.eventName);
@@ -134,7 +137,7 @@ public class DetailedEvent extends Fragment {
 
         Bundle bundle = this.getArguments();
         if (bundle != null) {
-            eventID = bundle.getString("eventID", NULL);
+            eventID = bundle.getString(EVENT_ID, NULL);
         }
         final Cursor cursor = database.query(EVENTS, null, "eventID=?", new String[]{eventID}, null, null, null);
         cursor.moveToFirst();
@@ -153,8 +156,8 @@ public class DetailedEvent extends Fragment {
             String[] summaryArgs = new String[]{cursor.getString(summary)};
             Cursor cursor1 = database.query(EVENT_TYPE, null, "summary=?", summaryArgs, null, null, null);
             cursor1.moveToFirst();
-            int description = cursor1.getColumnIndex("description");
-            int creator_name = cursor1.getColumnIndex("creator_name");
+            int description = cursor1.getColumnIndex(DESCRIPTION);
+            int creator_name = cursor1.getColumnIndex(CREATOR_NAME);
             this.descriptionStr = cursor1.getString(description);
             this.creator = cursor1.getString(creator_name);
 
@@ -174,12 +177,12 @@ public class DetailedEvent extends Fragment {
 
         Link linkUsername = new Link(Pattern.compile("(@\\w+)"))
                 .setUnderlined(false)
-                .setTextColor(Color.parseColor("#D00000"))
+                .setTextColor(Color.RED)
                 .setTextStyle(Link.TextStyle.BOLD)
                 .setClickListener(new Link.OnClickListener() {
                     @Override
                     public void onClick(String text) {
-                        telegramTransfer(text, text);
+                        telegramTransfer(text);
                     }
                 });
 
@@ -236,7 +239,7 @@ public class DetailedEvent extends Fragment {
             public void onClick(View v) {
                 DialogFragment newFragment = new MapFragmentAskForRouteDialog();
                 Bundle bundle = new Bundle();
-                bundle.putString("summary", summary);
+                bundle.putString(SUMMARY, summary);
                 newFragment.setArguments(bundle);
                 newFragment.show(getActivity().getSupportFragmentManager(), "FindRoute");
 
@@ -250,7 +253,7 @@ public class DetailedEvent extends Fragment {
     }
 
 
-    private void telegramTransfer(final String dialogText, final String telegramLink) {
+    private void telegramTransfer(final String dialogText) {
 
         description.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -258,7 +261,7 @@ public class DetailedEvent extends Fragment {
                 DialogFragment newFragment = new TelegramOpenDialog();
                 Bundle bundle = new Bundle();
                 bundle.putString("dialogText", dialogText);
-                bundle.putString("dialogUrl", telegramLink);
+                bundle.putString("dialogUrl", dialogText);
                 newFragment.setArguments(bundle);
                 newFragment.show(getActivity().getSupportFragmentManager(), "Telegram");
             }
@@ -296,7 +299,7 @@ public class DetailedEvent extends Fragment {
                         public void onInfoWindowClick(Marker marker) {
                             DialogFragment newFragment = new MapFragmentAskForRouteDialog();
                             Bundle bundle = new Bundle();
-                            bundle.putString("summary", summary);
+                            bundle.putString(SUMMARY, summary);
                             newFragment.setArguments(bundle);
                             newFragment.show(getActivity().getSupportFragmentManager(), "FindRoute");
                         }

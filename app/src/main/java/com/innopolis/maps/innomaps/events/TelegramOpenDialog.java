@@ -17,7 +17,6 @@ public class TelegramOpenDialog extends DialogFragment {
     String message;
     String link;
     String url;
-    private static final String GROUP_URL = "tg://join?invite=";
     private static final String CONTACT_URL = "https://telegram.me/";
 
     @NonNull
@@ -25,19 +24,15 @@ public class TelegramOpenDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         message = "Get in touch with " + getArguments().getString("dialogText") + " via telegram";
         String nickURL = getArguments().getString("dialogUrl").toString();
-        if (nickURL.indexOf("/") < 0) {
-            if (nickURL.indexOf("@") != -1) {
-                link = nickURL.substring(nickURL.indexOf("@") + 1);
-                url = CONTACT_URL + link;
-            } else {
-                link = getArguments().getString(nickURL);
-                url = CONTACT_URL + link;
-            }
+        if (nickURL.indexOf("@") != -1) {
+            link = nickURL.substring(nickURL.indexOf("@") + 1);
+            url = CONTACT_URL + link;
         } else {
-            String[] dialogUrl = getArguments().getString("dialogUrl").split("/");
-            link = dialogUrl[dialogUrl.length - 1];
-            url = GROUP_URL + link;
+            link = getArguments().getString(nickURL);
+            url = CONTACT_URL + link;
         }
+
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(message)
                 .setPositiveButton("Open in Telegram", new DialogInterface.OnClickListener() {

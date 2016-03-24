@@ -52,6 +52,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
     SearchView.SearchAutoComplete searchBox;
 
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
