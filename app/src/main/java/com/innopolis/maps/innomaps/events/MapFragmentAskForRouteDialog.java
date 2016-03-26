@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.database.DBHelper;
 
 import java.util.ArrayList;
@@ -63,14 +64,15 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
 
         Spinner floorSpinner = new AppCompatSpinner(getContext());
         final Spinner roomSpinner = new AppCompatSpinner(getContext());
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, floors);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_row, floors);
+        adapter.setDropDownViewResource(R.layout.spinner_row);
         floorSpinner.setAdapter(adapter);
         floorSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                TextView textView = (TextView) view.findViewById(android.R.id.text1);
-                ArrayAdapter<String> roomAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, roomsMap.get(textView.getText()));
+                TextView textView = (TextView) view.findViewById(R.id.row);
+                ArrayAdapter<String> roomAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_row, roomsMap.get(textView.getText()));
+                roomAdapter.setDropDownViewResource(R.layout.spinner_row);
                 roomSpinner.setAdapter(roomAdapter);
             }
 
@@ -82,6 +84,7 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
         LinearLayout linearLayout = new LinearLayout(getContext());
         linearLayout.addView(floorSpinner);
         linearLayout.addView(roomSpinner);
+        linearLayout.setPadding(25, 25, 25, 25);
         return new AlertDialog.Builder(getContext())
                 .setTitle("Find route")
                 .setMessage("Please specify your location")
