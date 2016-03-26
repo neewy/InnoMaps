@@ -13,7 +13,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -33,8 +32,8 @@ import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LINK;
 import static com.innopolis.maps.innomaps.database.TableFields.LOCATION;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
-import static com.innopolis.maps.innomaps.database.TableFields.NULL;
 import static com.innopolis.maps.innomaps.database.TableFields.POI;
+import static com.innopolis.maps.innomaps.database.TableFields.POI_ID;
 import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
 import static com.innopolis.maps.innomaps.database.TableFields.ROOM;
 import static com.innopolis.maps.innomaps.database.TableFields.START;
@@ -50,8 +49,6 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String DROP = "DROP TABLE IF EXISTS ";
 
 
-
-
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -64,7 +61,6 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(DBTables.createTable(DBTables.TableColumns.TABLE_EVENTS_CREATE));
         db.execSQL(DBTables.createTable(DBTables.TableColumns.TABLE_EVENT_TYPE_CREATE));
-        db.execSQL(DBTables.createTable(DBTables.TableColumns.TABLE_LOCATION_CREATE));
         db.execSQL(DBTables.createTable(DBTables.TableColumns.TABLE_EVENT_POI_CREATE));
         db.execSQL(DBTables.createTable(DBTables.TableColumns.TABLE_POI_CREATE));
     }
@@ -82,6 +78,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     /**
      * Returns the list with events
+     *
      * @param areFavourite - whether to put marked events or all of them
      */
     public static List<Event> readEvents(Context context, boolean areFavourite) {
@@ -93,8 +90,9 @@ public class DBHelper extends SQLiteOpenHelper {
                 + " description,creator_name,creator_email, checked,"
                 + " building,floor,room,latitude,longitude"
                 + " from events "
-                + "inner join event_type on events.summary=event_type.summary  "
-                + "inner join location on events.eventID=location.eventID";
+                + "inner join event_type on events.summary=event_type.summary "
+                + "inner join event_poi on events.eventID=event_poi.eventID "
+                + "inner join poi on event_poi.poi_id = poi._id ";
         if (areFavourite) selectQuery += " WHERE checked=1 ";
         cursor = database.rawQuery(selectQuery, null);
         if (cursor.moveToFirst()) {
@@ -149,6 +147,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     /**
      * Returns list of unique events (based on their names)
+     *
      * @param areFavourite - whether to put marked events or all of them
      */
     public static List<Event> readUniqueEvents(Context context, boolean areFavourite) {
@@ -203,48 +202,10 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
-    /**
-     * Inserts location of a single event, both geographic position and relative one (building/floor/room)
-     *
-     * @param database - the name of database to put data
-     * @param location - location JSON field
-     * @param eventID  - unique number to identify single event
-     */
-    public static void insertLocation(SQLiteDatabase database, String location, String eventID) {
-        String[] whereArgs = new String[]{eventID};
-        Cursor cursor = database.query(LOCATION, null, "eventID=?", whereArgs, null, null, null);
-        ContentValues cv = new ContentValues();
-        if (cursor.getCount() == 0) {
-            String locationMass[] = location.split("/");
-            cv.put(EVENT_ID, eventID);
-            if (locationMass.length > 0) {
-                cv.put(BUILDING, locationMass[0]);
-            } else {
-                cv.put(BUILDING, NULL);
-            }
-            if (locationMass.length > 1) {
-                cv.put(FLOOR, locationMass[1]);
-            } else {
-                cv.put(FLOOR, NULL);
-            }
-            if (locationMass.length > 2) {
-                cv.put(ROOM, locationMass[2]);
-            } else {
-                cv.put(ROOM, NULL);
-            }
-            Random random = new Random();
-            Double latitude = 55.7520 + random.nextDouble() * 0.01;
-            Double longitude = 48.7418 + random.nextDouble() * 0.01;
-            cv.put(LATITUDE, latitude.toString());
-            cv.put(LONGITUDE, longitude.toString());
-            database.insert(LOCATION, null, cv);
-        }
-    }
-
     public static boolean insertPois(SQLiteDatabase database, List<HashMap<String, String>> pois) {
         if (pois.size() == 0) return false;
         for (int i = 0; i < pois.size(); i++) {
-            HashMap<String,String> poi = pois.get(i);
+            HashMap<String, String> poi = pois.get(i);
             ContentValues cv = new ContentValues();
             cv.put(POI_NAME, poi.get(POI_NAME));
             cv.put(BUILDING, poi.get(BUILDING));
@@ -259,12 +220,21 @@ public class DBHelper extends SQLiteOpenHelper {
         return true;
     }
 
+    public static boolean insertEventPoi(SQLiteDatabase database, String eventID, String poiID) {
+        ContentValues cv = new ContentValues();
+        cv.put(EVENT_ID, eventID);
+        cv.put(POI_ID, poiID);
+        database.insert(EVENT_POI, null, cv);
+        return true;
+    }
+
+
     public static List<HashMap<String, String>> readPois(SQLiteDatabase database) {
-        List<HashMap<String,String>> pois = new ArrayList<>();
+        List<HashMap<String, String>> pois = new ArrayList<>();
         Cursor cursor = database.rawQuery("SELECT * FROM " + POI + " where type IS NOT NULL and attr IS NOT NULL and type NOT LIKE '%door%' and type NOT LIKE '%room%'", null);
         if (cursor.moveToFirst()) {
             do {
-                HashMap<String,String> poi = new HashMap<>();
+                HashMap<String, String> poi = new HashMap<>();
                 for (int i = 0; i < cursor.getColumnCount(); i++) {
                     poi.put(cursor.getColumnName(i), cursor.getString(i));
                 }
@@ -275,11 +245,11 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public static List<HashMap<String, String>> readRoomPois(SQLiteDatabase database) {
-        List<HashMap<String,String>> pois = new ArrayList<>();
+        List<HashMap<String, String>> pois = new ArrayList<>();
         Cursor cursor = database.rawQuery("SELECT * FROM " + POI + " where room IS NOT NULL and type like '%room%'", null);
         if (cursor.moveToFirst()) {
             do {
-                HashMap<String,String> poi = new HashMap<>();
+                HashMap<String, String> poi = new HashMap<>();
                 for (int i = 0; i < cursor.getColumnCount(); i++) {
                     poi.put(cursor.getColumnName(i), cursor.getString(i));
                 }
@@ -287,9 +257,5 @@ public class DBHelper extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
         return pois;
-    }
-
-    public void insertPoiEvent(){
-        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

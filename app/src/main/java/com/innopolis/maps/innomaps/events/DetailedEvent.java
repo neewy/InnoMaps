@@ -63,7 +63,6 @@ import static com.innopolis.maps.innomaps.database.TableFields.FAV;
 import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LINK;
-import static com.innopolis.maps.innomaps.database.TableFields.LOCATION;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.ROOM;
 import static com.innopolis.maps.innomaps.database.TableFields.START;
@@ -120,6 +119,7 @@ public class DetailedEvent extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
+        Utils.hideKeyboardInView(getContext(), container);
         ((DrawerLayout) getActivity().findViewById(R.id.drawer_layout)).setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         context = getActivity().getApplicationContext();
@@ -164,8 +164,7 @@ public class DetailedEvent extends Fragment {
             cursor1.close();
         } while (cursor.moveToNext());
         cursor.close();
-        final String[] eventIDArgs = new String[]{eventID};
-        Cursor locationC = database.query(LOCATION, null, "eventID=?", eventIDArgs, null, null, null);
+        Cursor locationC = database.rawQuery("SELECT * FROM poi INNER JOIN event_poi on event_poi.poi_id = poi._id WHERE event_poi.eventID LIKE '%" + eventID +"%'", null);
         if (locationC.moveToFirst()) {
             building = locationC.getString(locationC.getColumnIndex(BUILDING));
             floor = locationC.getString(locationC.getColumnIndex(FLOOR));

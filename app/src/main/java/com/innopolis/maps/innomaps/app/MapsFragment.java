@@ -32,6 +32,7 @@ import android.widget.AdapterView;
 import android.widget.CheckedTextView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,6 +63,7 @@ import com.google.common.collect.Collections2;
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.events.Event;
+import com.innopolis.maps.innomaps.events.MapBottomEventListAdapter;
 import com.innopolis.maps.innomaps.pathfinding.JGraphTWrapper;
 import com.innopolis.maps.innomaps.utils.Utils;
 
@@ -315,6 +317,9 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                 if (item.getFloor() != null) location.add(item.getFloor());
                 if (item.getRoom() != null) location.add(item.getRoom());
                 String[] locationArray  = new String[location.size()];
+                for (int i = 0; i < location.size(); i++) {
+                    locationArray[i] = location.get(i);
+                }
 
                 CheckedTextView text = (CheckedTextView) view.findViewById(R.id.name);
 
@@ -330,7 +335,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                 }
 
                 if (item.getType().equals("event")) {
-                    String sqlQuery = "SELECT * FROM location inner join events on events.eventID=location.eventID WHERE events.summary=?";
+                    String sqlQuery = "SELECT * FROM events INNER JOIN event_poi ON events.eventID = event_poi.eventID INNER JOIN poi ON event_poi.poi_id = poi._id WHERE events.summary=?";
 
                     String name = "", latitude = "", longitude = "", startDateText = "", description = "";
                     Date startDate = null;
@@ -382,13 +387,15 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                 } else {
                     String sqlQuery = "SELECT * FROM poi LEFT OUTER JOIN event_poi on event_poi.poi_id = poi._id LEFT OUTER JOIN events on events.eventID = event_poi.eventID WHERE poi.name=?";
                     Cursor cursor = database.rawQuery(sqlQuery, new String[]{String.valueOf(text.getText())});
-                    String name = "";
+                    String name = "", latitude = "", longitude = "";
 
                     durationLayout.setVisibility(View.GONE);
                     startLayout.setVisibility(View.GONE);
 
                     if (cursor.moveToFirst()) {
                         name = cursor.getString(cursor.getColumnIndex(POI_NAME));
+                        latitude = cursor.getString(cursor.getColumnIndex(LATITUDE));
+                        longitude = cursor.getString(cursor.getColumnIndex(LONGITUDE));
                         headerText.setText(name);
                         locationText.setText(StringUtils.join(locationArray, ", "));
                         List<Event> events = new LinkedList<Event>();
@@ -412,9 +419,11 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                             noEvents.setText("There are no events");
                             relatedLayout.addView(noEvents);
                         } else {
-                            //there are events - put them in corresponding list
-                            //pinMarker(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
+                            ListView eventList = new ListView(getContext());
+                            eventList.setAdapter(new MapBottomEventListAdapter(getContext(), events));
+                            relatedLayout.addView(eventList);
                         }
+                        pinMarker(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
                         mBottomSheetBehavior.setPeekHeight(headerText.getLayout().getHeight() + fab.getHeight() + 42);
                     }
                 }

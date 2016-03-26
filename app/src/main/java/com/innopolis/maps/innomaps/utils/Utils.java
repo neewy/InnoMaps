@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import org.ocpsoft.prettytime.PrettyTime;
@@ -156,5 +157,11 @@ public class Utils {
         drawable.draw(canvas);
 
         return bitmap;
+    }
+
+    public static void hideKeyboardInView(Context context, View view) {
+
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
     }
 }

@@ -34,12 +34,6 @@ public class DBTables{
                 + ID_INTEGER + SUMMARY_TEXT + DESCRIPTION_TEXT + CREATOR_NAME_TEXT
                 + CREATOR_EMAIL_TEXT;
 
-       /* Consider eliminating table location when locations of
-        * events in google calendar will be fixed*/
-        public static String TABLE_LOCATION_CREATE = CREATE_TABLE + TableFields.LOCATION + " ("
-                + ID_INTEGER + EVENT_ID_INTEGER + BUILDING_TEXT + FLOOR_TEXT + ROOM_TEXT
-                + LATITUDE_TEXT + LONGITUDE_TEXT;
-
         public static String TABLE_EVENT_POI_CREATE = CREATE_TABLE + TableFields.EVENT_POI + " ("
                 + ID_INTEGER + EVENT_ID_INTEGER + POI_ID_INTEGER;
 

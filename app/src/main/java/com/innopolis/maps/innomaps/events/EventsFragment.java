@@ -31,12 +31,13 @@ import com.innopolis.maps.innomaps.utils.Utils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     Context context;
     ListView listView;
-    List<Event> list = new ArrayList<>(); //for storing entries
+    List<Event> list = new LinkedList<>(); //for storing entries
     EventsAdapter adapter; //to populate list above
     SwipeRefreshLayout swipeRefreshLayout;
 

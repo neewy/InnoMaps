@@ -2,6 +2,7 @@ package com.innopolis.maps.innomaps.database;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -36,6 +37,7 @@ import static com.innopolis.maps.innomaps.database.TableFields.DISPLAY_NAME;
 import static com.innopolis.maps.innomaps.database.TableFields.EMAIL;
 import static com.innopolis.maps.innomaps.database.TableFields.END;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENTS;
+import static com.innopolis.maps.innomaps.database.TableFields.EVENT_POI;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_TYPE;
 import static com.innopolis.maps.innomaps.database.TableFields.HASH;
 import static com.innopolis.maps.innomaps.database.TableFields.ID;
@@ -67,7 +69,7 @@ public class DBUpdater {
         sPref = PreferenceManager.getDefaultSharedPreferences(context);
         new XMLParseTask().execute("1");
         new XMLParseTask().execute("2");
-        //new XMLParseTask().execute("3");
+        new XMLParseTask().execute("3");
         new XMLParseTask().execute("5");
     }
 
@@ -102,8 +104,7 @@ public class DBUpdater {
         private void removeEventTables() {
             removeTable(EVENTS);
             removeTable(EVENT_TYPE);
-            removeTable(LOCATION);
-            //TODO: add tables
+            removeTable(EVENT_POI);
         }
 
         protected boolean weekUpdated() {
@@ -183,7 +184,7 @@ public class DBUpdater {
                 }
             }
             counter++;
-            if (counter == 2) {
+            if (counter == 4) {
                 myHandler.sendEmptyMessage(0);
             }
         }
@@ -218,7 +219,6 @@ public class DBUpdater {
             while (iter.hasNext()) {
                 String key = iter.next();
                 switch (key) {
-
                     case SUMMARY:
                         summary = jsonEvent.getString(SUMMARY);
                         break;
@@ -234,8 +234,8 @@ public class DBUpdater {
                     case LOCATION:
                         location = jsonEvent.getString(LOCATION);
                         break;
-                    case ID:
-                        eventID = jsonEvent.getString(ID);
+                    case "id":
+                        eventID = jsonEvent.getString("id");
                         break;
                     case DESCRIPTION:
                         description = jsonEvent.getString(DESCRIPTION);
@@ -283,10 +283,25 @@ public class DBUpdater {
                 if (nextInstance.after(currentDate)) {
                     String finalStartDate = Utils.googleTimeFormat.format(new Date(nextInstance.getTimestamp()));
                     String finalEndDate = Utils.googleTimeFormat.format(new Date(nextInstance.addDuration(new Duration(1, 0, 0, durationTime.intValue(), 0)).getTimestamp()));
-                    DBHelper.insertEvent(database, summary, htmlLink, finalStartDate, finalEndDate, eventID + "_" + maxInstances, checked);
-                    DBHelper.insertEventType(database, summary, description, creator_name, creator_email);
-                    DBHelper.insertLocation(database, location, eventID + "_" + maxInstances);
-                    ++eventsInserted;
+                    String locationMass[] = location.split("/");
+                    Cursor poiCursor = null;
+                    switch (locationMass.length){
+                        case 1:
+                            poiCursor = database.rawQuery("SELECT * FROM POI WHERE building LIKE '%"+ locationMass[0]+ "%'", null);
+                            break;
+                        case 2:
+                            poiCursor = database.rawQuery("SELECT * FROM POI WHERE building LIKE '%"+ locationMass[0]+ "%' AND floor LIKE '%" +locationMass[1]+ "%'", null);
+                            break;
+                        case 3:
+                            poiCursor  = database.rawQuery("SELECT * FROM POI WHERE building LIKE '%"+ locationMass[0]+ "%' AND floor LIKE '%" +locationMass[1]+ "%' AND room LIKE '%" +locationMass[2]+ "%'", null);
+                    }
+                    if (poiCursor.moveToFirst()) {
+                        String poiID = poiCursor.getString(poiCursor.getColumnIndex(ID));
+                        DBHelper.insertEventPoi(database, eventID + "_" + maxInstances, poiID);
+                        DBHelper.insertEvent(database, summary, htmlLink, finalStartDate, finalEndDate, eventID + "_" + maxInstances, checked);
+                        DBHelper.insertEventType(database, summary, description, creator_name, creator_email);
+                        ++eventsInserted;
+                    }
                 }
             }
         }

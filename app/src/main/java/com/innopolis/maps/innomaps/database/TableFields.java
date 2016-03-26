@@ -3,7 +3,7 @@ package com.innopolis.maps.innomaps.database;
 
 public final class TableFields {
 
-    public static final String ID = "id"; //Primary key (as stated in Android guidelines)
+    public static final String ID = "_id"; //Primary key (as stated in Android guidelines)
 
     /* Events table */
     public static final String SUMMARY = "summary"; //just a title
@@ -18,7 +18,7 @@ public final class TableFields {
     public static final String CREATOR_NAME = "creator_name"; //the person, who created the event
     public static final String CREATOR_EMAIL = "creator_email"; //his or her gmail
 
-    /* Location table */
+    public static final String LOCATION = "location";
     public static final String BUILDING = "building";
     public static final String FLOOR = "floor";
     public static final String ROOM = "room";
@@ -30,6 +30,7 @@ public final class TableFields {
     public static final String POI_NAME = "name";
     public static final String TYPE = "type";
     public static final String ATTR = "attr";
+    public static final String POI_ID = "poi_id";
 
     /*for Json*/
     public static final String NULL = "";
@@ -47,7 +48,6 @@ public final class TableFields {
     /*table names*/
     public static final String EVENTS = "events";
     public static final String EVENT_TYPE = "event_type";
-    public static final String LOCATION = "location";
     public static final String EVENT_POI = "event_poi";
     public static final String POI = "poi";
 
