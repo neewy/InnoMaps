@@ -262,6 +262,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                                 items.clear();
                                 for (SearchableItem item : wc)
                                     items.add(item);
+                                ((SuggestionAdapter)searchBox.getAdapter()).notifyDataSetChanged();
                             }
                             break;
                         case 1:
@@ -272,6 +273,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                                 items.clear();
                                 for (SearchableItem item : food)
                                     items.add(item);
+                                ((SuggestionAdapter)searchBox.getAdapter()).notifyDataSetChanged();
                             }
                             break;
                         case 2:
@@ -287,6 +289,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                                 items.clear();
                                 for (SearchableItem item : events)
                                     items.add(item);
+                                ((SuggestionAdapter)searchBox.getAdapter()).notifyDataSetChanged();
                             }
                             break;
                         case 4:
@@ -297,6 +300,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                                 items.clear();
                                 for (SearchableItem item : other)
                                     items.add(item);
+                                ((SuggestionAdapter)searchBox.getAdapter()).notifyDataSetChanged();
                             }
                             break;
                     }

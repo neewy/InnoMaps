@@ -2,71 +2,32 @@ package com.innopolis.maps.innomaps.events;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.ShareActionProvider;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.support.v7.widget.AppCompatSpinner;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
-import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.EditText;
 
-import com.innopolis.maps.innomaps.R;
-import com.innopolis.maps.innomaps.app.MainActivity;
-import com.innopolis.maps.innomaps.app.SearchableItem;
-import com.innopolis.maps.innomaps.app.SuggestionAdapter;
 import com.innopolis.maps.innomaps.database.DBHelper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 
+import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
+import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
+
 public class MapFragmentAskForRouteDialog extends DialogFragment {
-
-    Context context;
-    ListView listView;
-    List<Event> list = new ArrayList<>(); //for storing entries
-    EventsAdapter adapter; //to populate list above
-    SwipeRefreshLayout swipeRefreshLayout;
-
-    DBHelper dbHelper;
-    SQLiteDatabase database;
-    SharedPreferences sPref; //to store md5 hash of loaded file
-
-    String hashPref;
-    String updatedPref;
-
-    ActionBar mActionBar;
-    SearchView searchView;
-    SearchView.SearchAutoComplete searchBox;
-    Menu menu;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,32 +36,56 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
     }
 
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        DBHelper dbHelper = new DBHelper(getContext());
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+        List<String> floors = new LinkedList<>();
+        final HashMap<String, List<String>> roomsMap = new LinkedHashMap<>();
+        Cursor floorCursor = database.rawQuery("SELECT DISTINCT floor FROM poi", null);
+        if (floorCursor.moveToFirst()) {
+            do {
+                String floor = floorCursor.getString(floorCursor.getColumnIndex(FLOOR));
+                floors.add(floor);
+            } while(floorCursor.moveToNext());
+        }
+        for (String floor: floors) {
+            Cursor roomCursor = database.rawQuery("SELECT * FROM poi WHERE type like '%room%' and floor like '%" + floor + "%'", null);
+            List<String> rooms = new ArrayList<>();
+            if (roomCursor.moveToFirst()) {
+                do {
+                    String room = roomCursor.getString(roomCursor.getColumnIndex(POI_NAME));
+                    rooms.add(room);
+                } while(roomCursor.moveToNext());
+            }
+            Collections.sort(rooms);
+            roomsMap.put(floor, rooms);
+        }
 
-        final List<SearchableItem> searchItems = new ArrayList();
-        final List<SearchableItem> adapterList = new ArrayList<>(searchItems);
-        final EditText editText = new EditText(getContext());
 
-        searchView = (SearchView) editText.findViewById(R.id.search_location);
-        editText.setSingleLine(true);
-        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        Spinner floorSpinner = new AppCompatSpinner(getContext());
+        final Spinner roomSpinner = new AppCompatSpinner(getContext());
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, floors);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        floorSpinner.setAdapter(adapter);
+        floorSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                TextView textView = (TextView) view.findViewById(android.R.id.text1);
+                ArrayAdapter<String> roomAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, roomsMap.get(textView.getText()));
+                roomSpinner.setAdapter(roomAdapter);
+            }
 
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-
-                SearchableItem.addPois(searchItems, DBHelper.readPois(database));
-                final SearchView.SearchAutoComplete searchBox = (SearchView.SearchAutoComplete) searchView.findViewById(R.id.search_src_text);
-                searchBox.setAdapter(new SuggestionAdapter(context, R.layout.single_route, adapterList));
-                searchBox.setThreshold(0);
-
-                dismiss();
-                return true;
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                //not yet implemented
             }
         });
-
-
+        LinearLayout linearLayout = new LinearLayout(getContext());
+        linearLayout.addView(floorSpinner);
+        linearLayout.addView(roomSpinner);
         return new AlertDialog.Builder(getContext())
                 .setTitle("Find route")
                 .setMessage("Please specify your location")
-                .setView(editText)
+                .setView(linearLayout)
                 .setPositiveButton("Route", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         //// TODO
