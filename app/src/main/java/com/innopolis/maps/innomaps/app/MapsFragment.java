@@ -76,15 +76,20 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import static com.innopolis.maps.innomaps.database.TableFields.DESCRIPTION;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_ID;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_TYPE;
+import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
+import static com.innopolis.maps.innomaps.database.TableFields.POI;
 import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
 import static com.innopolis.maps.innomaps.database.TableFields.START;
 import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY;
@@ -107,6 +112,8 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     private BottomSheetBehavior mBottomSheetBehavior;
 
     RadioGroup floorPicker;
+    private HashMap<String, String> latLngMap;
+    private LatLng closest=null;
     List<Marker> markerList;
     JGraphTWrapper graphWrapper;
 
@@ -248,10 +255,11 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
             }
         });
         topNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
-            List<SearchableItem> allItems = new LinkedList<SearchableItem>(((SuggestionAdapter)searchBox.getAdapter()).items);
+            List<SearchableItem> allItems = new LinkedList<SearchableItem>(((SuggestionAdapter) searchBox.getAdapter()).items);
+
             @Override
             public void onTabSelected(int position, boolean wasSelected) {
-                List<SearchableItem> items = ((MainActivity)getActivity()).searchItems;
+                List<SearchableItem> items = ((MainActivity) getActivity()).searchItems;
                 if (!wasSelected) {
                     switch (position) {
                         case 0:
@@ -262,7 +270,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                                 items.clear();
                                 for (SearchableItem item : wc)
                                     items.add(item);
-                                ((SuggestionAdapter)searchBox.getAdapter()).notifyDataSetChanged();
+                                ((SuggestionAdapter) searchBox.getAdapter()).notifyDataSetChanged();
                             }
                             break;
                         case 1:
@@ -273,7 +281,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                                 items.clear();
                                 for (SearchableItem item : food)
                                     items.add(item);
-                                ((SuggestionAdapter)searchBox.getAdapter()).notifyDataSetChanged();
+                                ((SuggestionAdapter) searchBox.getAdapter()).notifyDataSetChanged();
                             }
                             break;
                         case 2:
@@ -289,7 +297,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                                 items.clear();
                                 for (SearchableItem item : events)
                                     items.add(item);
-                                ((SuggestionAdapter)searchBox.getAdapter()).notifyDataSetChanged();
+                                ((SuggestionAdapter) searchBox.getAdapter()).notifyDataSetChanged();
                             }
                             break;
                         case 4:
@@ -300,7 +308,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                                 items.clear();
                                 for (SearchableItem item : other)
                                     items.add(item);
-                                ((SuggestionAdapter)searchBox.getAdapter()).notifyDataSetChanged();
+                                ((SuggestionAdapter) searchBox.getAdapter()).notifyDataSetChanged();
                             }
                             break;
                     }
@@ -320,7 +328,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                 if (item.getBuilding() != null) location.add(item.getBuilding());
                 if (item.getFloor() != null) location.add(item.getFloor());
                 if (item.getRoom() != null) location.add(item.getRoom());
-                String[] locationArray  = new String[location.size()];
+                String[] locationArray = new String[location.size()];
                 for (int i = 0; i < location.size(); i++) {
                     locationArray[i] = location.get(i);
                 }
@@ -526,6 +534,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
 
     private void initializeOverlay() {
         putOverlayToMap(new LatLng(55.752533, 48.742492), new LatLng(55.754656, 48.744589), BitmapDescriptorFactory.fromResource(R.raw.ai6_floor1));
+        setFloorPOIHashMap(1);
         floorPicker.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -533,29 +542,49 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                 switch (checkedId) {
                     case R.id.button1:
                     default:
+                        if (markerList != null && markerList.size() > 0)
+                            markerList.get(0).remove();
+                        markerList.clear();
                         southWest = new LatLng(55.752533, 48.742492);
                         northEast = new LatLng(55.754656, 48.744589);
                         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor1));
+                        setFloorPOIHashMap(1);
                         break;
                     case R.id.button2:
+                        if (markerList != null && markerList.size() > 0)
+                            markerList.get(0).remove();
+                        markerList.clear();
                         southWest = new LatLng(55.752828, 48.742661);
                         northEast = new LatLng(55.754597, 48.744469);
                         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor2));
+                        setFloorPOIHashMap(2);
                         break;
                     case R.id.button3:
+                        if (markerList != null && markerList.size() > 0)
+                            markerList.get(0).remove();
+                        markerList.clear();
                         southWest = new LatLng(55.752875, 48.742739);
                         northEast = new LatLng(55.754572, 48.744467);
                         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor3));
+                        setFloorPOIHashMap(3);
                         break;
                     case R.id.button4:
+                        if (markerList != null && markerList.size() > 0)
+                            markerList.get(0).remove();
+                        markerList.clear();
                         southWest = new LatLng(55.752789, 48.742711);
                         northEast = new LatLng(55.754578, 48.744569);
                         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor4));
+                        setFloorPOIHashMap(4);
                         break;
                     case R.id.button5:
+                        if (markerList != null && markerList.size() > 0)
+                            markerList.get(0).remove();
+                        markerList.clear();
                         southWest = new LatLng(55.752808, 48.743497);
                         northEast = new LatLng(55.753383, 48.744519);
                         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor5));
+                        setFloorPOIHashMap(5);
                         break;
                 }
             }
@@ -580,8 +609,58 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         if (markerList != null && markerList.size() > 0)
             markerList.get(0).remove();
         markerList.clear();
-        Marker marker = map.addMarker(new MarkerOptions().position(latLng).title(latLng.toString()));
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.title(findClosestPOI(latLng));
+        markerOptions.position(closest==null? latLng:closest);
+        Marker marker = map.addMarker(markerOptions);
+        marker.showInfoWindow();
         markerList.add(marker);
+    }
+
+    private void setFloorPOIHashMap(Integer floor){
+        latLngMap = new HashMap<>();
+        String sqlQuery = "SELECT " + LATITUDE + "," + LONGITUDE + ","+ FLOOR +" FROM " + POI + " WHERE " + FLOOR + "=?";
+        Cursor cursor = database.rawQuery(sqlQuery, new String[]{floor+"floor"});
+        if (cursor.moveToFirst()) {
+            do {
+                latLngMap.put(cursor.getString(cursor.getColumnIndex(LATITUDE)), cursor.getString(cursor.getColumnIndex(LONGITUDE)));
+//                Log.d("HAHA", "LATITUDE: " + cursor.getString(cursor.getColumnIndex(LATITUDE)) +", LONGITUDE: "+ cursor.getString(cursor.getColumnIndex(LONGITUDE))+ ", FLOOR: " + cursor.getString(cursor.getColumnIndex(FLOOR)));
+            } while (cursor.moveToNext());
+        } else {latLngMap = null;}
+    }
+
+    private String findClosestPOI(LatLng latLng){
+        if (latLngMap!=null){
+            Iterator iterator = latLngMap.entrySet().iterator();
+            double distance, closestDistance = Double.MAX_VALUE;
+            String lat="", lng="";
+            while (iterator.hasNext()) {
+                Map.Entry pair = (Map.Entry)iterator.next();
+                distance = haversine(latLng.latitude, latLng.longitude, Double.parseDouble(pair.getKey().toString()), Double.parseDouble(pair.getValue().toString()));
+                if (distance<closestDistance){
+                    closestDistance = distance;
+                    lat = pair.getKey().toString();
+                    lng = pair.getValue().toString();
+                }
+            }
+            closest = new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
+            String sqlQuery = "SELECT " + POI_NAME + " FROM " + POI + " WHERE " + LATITUDE + "=?" + " AND " + LONGITUDE + "=?";
+            Cursor cursor = database.rawQuery(sqlQuery, new String[]{lat, lng});
+            cursor.moveToFirst();
+            return cursor.getString(cursor.getColumnIndex(POI_NAME));
+        } else {
+            closest=null;
+            return "";
+        }
+    }
+    private double haversine(double lat1, double lon1, double lat2, double lon2) {
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        lat1 = Math.toRadians(lat1);
+        lat2 = Math.toRadians(lat2);
+        double a = Math.pow(Math.sin(dLat / 2),2) + Math.pow(Math.sin(dLon / 2),2) * Math.cos(lat1) * Math.cos(lat2);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        return 6372.8 * c;
     }
 }
 
