@@ -129,7 +129,13 @@ public class JGraphTWrapper {
     private void addEdgeByIds(LatLngGraphEdge.EdgeType edgeType, int from, int to) {
         LatLngGraphVertex vTemp1 = new LatLngGraphVertex(verticesMap.get(from), from);
         LatLngGraphVertex vTemp2 = new LatLngGraphVertex(verticesMap.get(to), to);
-        graph.addEdge(vTemp1, vTemp2, new LatLngGraphEdge(edgeType));
+        try {
+            graph.addEdge(vTemp1, vTemp2, new LatLngGraphEdge(edgeType));
+        }
+        catch (IllegalArgumentException e) {
+            Log.d("Graph", from + " " + to + " " + verticesMap.get(from) + " " + verticesMap.get(to));
+            throw new IllegalArgumentException(e);
+        }
     }
 
     /**
