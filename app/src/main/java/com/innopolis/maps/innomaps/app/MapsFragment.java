@@ -170,6 +170,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                         @Override
                         public void onMapClick(LatLng latLng) {
                             pinMarker(latLng);
+                            scrollView.setVisibility(View.GONE);
                         }
                     });
                     map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
