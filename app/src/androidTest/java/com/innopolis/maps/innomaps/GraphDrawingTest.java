@@ -53,7 +53,7 @@ public class GraphDrawingTest extends ActivityInstrumentationTestCase2<MainActiv
 
     public void testAllFloors() throws Exception {
         ZoomTask zoomTask = new ZoomTask();
-        zoomTask.execute(5);
+        zoomTask.execute();
         Thread.sleep(2000);
         int floor;
         for (floor = 1; floor <= 5; ++floor) {
@@ -64,7 +64,7 @@ public class GraphDrawingTest extends ActivityInstrumentationTestCase2<MainActiv
             Collection<LatLng> c = graph.getVerticesMap().values();
             LatLng[] vTo = new LatLng[c.size()];
             vTo = c.toArray(vTo);
-            int testVertexCount = 5;
+            int testVertexCount = 3;
             Random rnd = new Random();
             LatLng[] vFrom = new LatLng[testVertexCount];
             for (int i = 0; i < testVertexCount; ++i) {
@@ -110,27 +110,29 @@ public class GraphDrawingTest extends ActivityInstrumentationTestCase2<MainActiv
             LatLng[] vTo = data[1];
             for (LatLng start: vFrom) {
                 for (LatLng finish: vTo) {
-                    ArrayList<LatLng> path = graph.shortestPath(start, finish);
-                    if (path != null) {
-                        routes.add(map.addPolyline(new PolylineOptions()
-                                .addAll(path)
-                                .width(4)
-                                .color(Color.GREEN)
-                                .geodesic(true)));
+                    if (start.equals(finish)) {
+                        continue;
                     }
+                    ArrayList<LatLng> path = graph.shortestPath(start, finish);
+                    assertNotNull(path);
+                    routes.add(map.addPolyline(new PolylineOptions()
+                            .addAll(path)
+                            .width(4)
+                            .color(Color.GREEN)
+                            .geodesic(true)));
                 }
             }
         }
     }
 
-    class ZoomTask extends AsyncTask<Integer, Void, Integer> {
+    class ZoomTask extends AsyncTask<Void, Void, Void> {
         @Override
-        protected Integer doInBackground(Integer... params) {
-            return params[0];
+        protected Void doInBackground(Void... params) {
+            return null;
         }
 
         @Override
-        protected void onPostExecute(Integer floor) {
+        protected void onPostExecute(Void v) {
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(center, 18.0f));
         }
     }
