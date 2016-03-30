@@ -733,7 +733,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     private void makeFoodMarkers(int floor) {
         String numFloor = String.valueOf(floor) + "floor";
 
-        String sqlQuery = "SELECT * FROM " + POI + " WHERE " + FLOOR + "=?" + " AND " + TYPE + " like 'cafe'";
+        String sqlQuery = "SELECT * FROM " + POI + " WHERE " + FLOOR + "=?" + " AND " + TYPE + " like 'food'";
         Cursor cursor = database.rawQuery(sqlQuery, new String[]{numFloor});
         refreshMarkers(cursor);
 
@@ -742,7 +742,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     private void makeAllMakrers(int floor) {
         String numFloor = String.valueOf(floor) + "floor";
 
-        String sqlQuery = "SELECT * FROM " + POI + " WHERE " + FLOOR + "=?" + " AND " + TYPE + " like 'room' or " + TYPE + " like 'wc' or " + TYPE + " like 'cafe'";
+        String sqlQuery = "SELECT * FROM " + POI + " WHERE " + FLOOR + "=?" + " AND " + TYPE + " like 'room' or " + TYPE + " like 'wc' or " + TYPE + " like 'food'";
         Cursor cursor = database.rawQuery(sqlQuery, new String[]{numFloor});
         refreshMarkers(cursor);
 
@@ -804,7 +804,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         } else if (type.equals("wc")) {
             src = BitmapFactory.decodeResource(getResources(), R.drawable.room_icon_wc);
 
-        } else if (type.equals("cafe")) {
+        } else if (type.equals("food")) {
             src = BitmapFactory.decodeResource(getResources(), R.drawable.room_icon_food);
 
         } else {
