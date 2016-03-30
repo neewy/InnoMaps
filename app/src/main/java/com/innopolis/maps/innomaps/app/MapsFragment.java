@@ -9,9 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -66,9 +64,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.common.collect.Collections2;
-import com.google.maps.android.ui.IconGenerator;
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.database.DBHelper;
+import com.innopolis.maps.innomaps.database.TableFields;
 import com.innopolis.maps.innomaps.events.Event;
 import com.innopolis.maps.innomaps.events.MapBottomEventListAdapter;
 import com.innopolis.maps.innomaps.pathfinding.JGraphTWrapper;
@@ -95,10 +93,12 @@ import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_NORMAL;
 import static com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import static com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import static com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
+import static com.innopolis.maps.innomaps.database.TableFields.BUILDING;
 import static com.innopolis.maps.innomaps.database.TableFields.DESCRIPTION;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_ID;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_TYPE;
 import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
+import static com.innopolis.maps.innomaps.database.TableFields.ID;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.POI;
@@ -772,7 +772,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
 
     private void setMarkersRoom(String room, String type, String latitude, String longitude) {
 
-        Marker markersRoom = map.addMarker(new MarkerOptions()
+        final Marker markersRoom = map.addMarker(new MarkerOptions()
                         .position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)))
                         .icon(BitmapDescriptorFactory.fromBitmap(bitmapAdapter(type)))
                         .title(room)
@@ -781,11 +781,8 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         map.setOnMarkerClickListener(new OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                if (marker.equals(markers)) {
-                    searchMarker();
-                    //TODO
-
-
+                if (markers.contains(marker)) {
+                    searchMarker(marker);
                 }
                 return false;
             }
@@ -817,30 +814,26 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     }
 
 
-    private void searchMarker() {
-
-        String sqlQuery = "SELECT * FROM " + POI + " WHERE " + FLOOR + "=?" + " AND " + TYPE + " like 'room'";
+    private void searchMarker(Marker marker) {
+        String room = marker.getTitle();
+        String sqlQuery = "SELECT * FROM " + POI + " WHERE " + TableFields.POI_NAME + " like '" + room + "';";
         Cursor cursor = database.rawQuery(sqlQuery, new String[]{});
 
-
-        //CheckedTextView text = (CheckedTextView) view.findViewById(R.id.name);
-
-
         if (cursor.moveToFirst()) {
-            do {
-                String room = cursor.getString(cursor.getColumnIndex(POI_NAME));
-                String type = cursor.getString(cursor.getColumnIndex(TYPE));
-                String building = cursor.getString(cursor.getColumnIndex(TYPE));
-                String floor = cursor.getString(cursor.getColumnIndex(FLOOR));
-                String latitude = cursor.getString(cursor.getColumnIndex(LATITUDE));
-                String longitude = cursor.getString(cursor.getColumnIndex(LONGITUDE));
-                String[] locationArray = new String[]{building, floor, room};
+            String id = cursor.getString(cursor.getColumnIndex(ID));
+            String type = cursor.getString(cursor.getColumnIndex(TYPE));
+            String building = cursor.getString(cursor.getColumnIndex(BUILDING));
+            String floor = cursor.getString(cursor.getColumnIndex(FLOOR));
 
-
-                // inSearchBottomList(locationArray, view, );
-                setMarkersRoom(room, type, latitude, longitude);
-            } while (cursor.moveToNext());
+            SearchableItem item = new SearchableItem();
+            item.setBuilding(building);
+            item.setType(type);
+            item.setFloor(floor);
+            item.setRoom(room);
+            item.setId(id);
+            inSearchBottomList(item, mapView);
         }
+        cursor.close();
     }
 
 
