@@ -287,7 +287,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                     int radioId = floorPicker.indexOfChild(radioButton);
                     RadioButton btn = (RadioButton) floorPicker.getChildAt(radioId);
                     String selection = (String) btn.getText();
-                    floor = Integer.parseInt(selection) + 1;
+                    floor = Integer.parseInt(selection);
                 } else {
                     floor = 1;
                 }
