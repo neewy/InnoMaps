@@ -178,7 +178,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                     mSettings.setZoomControlsEnabled(true);
                     final LatLng university = new LatLng(55.752116019, 48.7448166297);
                     markers = new ArrayList<>();
-                    makeAllMakrers(1);
+                    makeAllMarkers(1);
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(university, 17));
                     map.setMapType(MAP_TYPE_NORMAL);
                     markerList = new ArrayList<>();
@@ -287,7 +287,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                     int radioId = floorPicker.indexOfChild(radioButton);
                     RadioButton btn = (RadioButton) floorPicker.getChildAt(radioId);
                     String selection = (String) btn.getText();
-                    floor = Integer.parseInt(selection) + 1;
+                    floor = Integer.parseInt(selection);
                 } else {
                     floor = 1;
                 }
@@ -324,7 +324,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                             items.clear();
                             for (SearchableItem item : allItems)
                                 items.add(item);
-                            makeAllMakrers(floor);
+                            makeAllMarkers(floor);
                             break;
                         case 3:
                             Collection<SearchableItem> events = Collections2.filter(allItems, SearchableItem.isEvent);
@@ -540,7 +540,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         protected String doInBackground(LatLng... params) {
             source = params[0];
             destination = params[1];
-            return Utils.doGetRequest(Utils.restServerUrl + "/innomaps/graphml/loadmap?floor=1");
+            return Utils.doGetRequest(Utils.restServerUrl + "/innomaps/graphml/loadmap?floor=9");
         }
 
         @Override
@@ -606,7 +606,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                         markerList.clear();
                         southWest = new LatLng(55.752533, 48.742492);
                         northEast = new LatLng(55.754656, 48.744589);
-                        makeAllMakrers(1);
+                        makeAllMarkers(1);
                         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor1));
                         setFloorPOIHashMap(1);
                         break;
@@ -616,7 +616,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                         markerList.clear();
                         southWest = new LatLng(55.752828, 48.742661);
                         northEast = new LatLng(55.754597, 48.744469);
-                        makeAllMakrers(2);
+                        makeAllMarkers(2);
                         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor2));
                         setFloorPOIHashMap(2);
                         break;
@@ -626,7 +626,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                         markerList.clear();
                         southWest = new LatLng(55.752875, 48.742739);
                         northEast = new LatLng(55.754572, 48.744467);
-                        makeAllMakrers(3);
+                        makeAllMarkers(3);
                         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor3));
                         setFloorPOIHashMap(3);
                         break;
@@ -636,7 +636,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                         markerList.clear();
                         southWest = new LatLng(55.752789, 48.742711);
                         northEast = new LatLng(55.754578, 48.744569);
-                        makeAllMakrers(4);
+                        makeAllMarkers(4);
                         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor4));
                         setFloorPOIHashMap(4);
                         break;
@@ -646,7 +646,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                         markerList.clear();
                         southWest = new LatLng(55.752808, 48.743497);
                         northEast = new LatLng(55.753383, 48.744519);
-                        makeAllMakrers(5);
+                        makeAllMarkers(5);
                         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor5));
                         setFloorPOIHashMap(5);
                         break;
@@ -733,26 +733,23 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     private void makeFoodMarkers(int floor) {
         String numFloor = String.valueOf(floor) + "floor";
 
-        String sqlQuery = "SELECT * FROM " + POI + " WHERE " + FLOOR + "=?" + " AND " + TYPE + " like 'food'";
+        String sqlQuery = "SELECT * FROM " + POI + " WHERE " + FLOOR + "= ?" + " AND " + TYPE + " = 'food'";
         Cursor cursor = database.rawQuery(sqlQuery, new String[]{numFloor});
         refreshMarkers(cursor);
 
     }
 
-    private void makeAllMakrers(int floor) {
-        String numFloor = String.valueOf(floor) + "floor";
-
-        String sqlQuery = "SELECT * FROM " + POI + " WHERE " + FLOOR + "=?" + " AND " + TYPE + " like 'room' or " + TYPE + " like 'wc' or " + TYPE + " like 'food'";
-        Cursor cursor = database.rawQuery(sqlQuery, new String[]{numFloor});
+    private void makeAllMarkers(int floor) {
+        String selection = FLOOR + " = ? AND (" + TYPE + " = ? or " + TYPE + " = ? or " + TYPE + " = ?)";
+        String[] selectionArgs = {floor + "floor", "room", "wc", "food"};
+        Cursor cursor = database.query(POI, null, selection, selectionArgs, null, null, null);
         refreshMarkers(cursor);
 
     }
 
     private void refreshMarkers(Cursor cursor) {
-
-        if (markers != null && markers.size() > 0) {
-            for (int i = 0; i < markers.size(); i++) {
-                Marker marker = markers.get(i);
+        if (markers != null) {
+            for (Marker marker : markers) {
                 marker.remove();
             }
         }
@@ -768,6 +765,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                 setMarkersRoom(room, type, latitude, longitude);
             } while (cursor.moveToNext());
         }
+        cursor.close();
     }
 
     private void setMarkersRoom(String room, String type, String latitude, String longitude) {
@@ -777,6 +775,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                         .icon(BitmapDescriptorFactory.fromBitmap(bitmapAdapter(type)))
                         .title(room)
         );
+
         markers.add(markersRoom);
         map.setOnMarkerClickListener(new OnMarkerClickListener() {
             @Override

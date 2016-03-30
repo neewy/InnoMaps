@@ -49,14 +49,12 @@ public class About extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
         super.onCreateOptionsMenu(menu, inflater);
-        searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-        searchView.setVisibility(View.GONE);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        searchView.setVisibility(View.VISIBLE);
     }
 }

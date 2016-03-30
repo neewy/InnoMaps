@@ -117,7 +117,7 @@ public class SearchableItem implements Comparable<SearchableItem> {
     public static Predicate<SearchableItem> isFood = new Predicate<SearchableItem>() {
         @Override
         public boolean apply(SearchableItem input) {
-            return input.getType().toLowerCase().equals("canteen");
+            return input.getType().toLowerCase().equals("food");
         }
     };
 
@@ -132,7 +132,7 @@ public class SearchableItem implements Comparable<SearchableItem> {
         @Override
         public boolean apply(SearchableItem input) {
             Boolean res;
-            res = !(input.getType().toLowerCase().equals("event") || input.getType().toLowerCase().equals("canteen") || input.getType().toLowerCase().equals("wc"));
+            res = !(input.getType().toLowerCase().equals("event") || input.getType().toLowerCase().equals("food") || input.getType().toLowerCase().equals("wc"));
             return res;
         }
     };
