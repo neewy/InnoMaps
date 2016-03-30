@@ -805,13 +805,17 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
 
     private void setMarkersRoom(String room, String type, String latitude, String longitude) {
 
+        float center = (float) 0.5;
         final Marker markersRoom = map.addMarker(new MarkerOptions()
                         .position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)))
                         .icon(BitmapDescriptorFactory.fromBitmap(bitmapAdapter(type)))
                         .title(room)
+                        .anchor(center,center)
+
         );
 
         markers.add(markersRoom);
+
         map.setOnMarkerClickListener(new OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
