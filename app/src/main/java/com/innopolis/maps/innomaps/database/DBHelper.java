@@ -30,7 +30,6 @@ import static com.innopolis.maps.innomaps.database.TableFields.FAV;
 import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LINK;
-import static com.innopolis.maps.innomaps.database.TableFields.LOCATION;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.POI;
 import static com.innopolis.maps.innomaps.database.TableFields.POI_ID;
@@ -42,7 +41,7 @@ import static com.innopolis.maps.innomaps.database.TableFields.TYPE;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 7; //in order to execute onUpdate() the number should be increased
+    private static final int DATABASE_VERSION = 8; //in order to execute onUpdate() the number should be increased
 
     private static final String DATABASE_NAME = "eventsDB";
 
@@ -69,7 +68,6 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL(DROP + EVENTS);
         db.execSQL(DROP + EVENT_TYPE);
-        db.execSQL(DROP + LOCATION);
         db.execSQL(DROP + EVENT_POI);
         db.execSQL(DROP + POI);
         onCreate(db);
@@ -202,11 +200,18 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
+    /**
+     * Inserts points of interest into database
+     * @param database
+     * @param pois
+     * @return is the operation successful or not
+     */
     public static boolean insertPois(SQLiteDatabase database, List<HashMap<String, String>> pois) {
         if (pois.size() == 0) return false;
         for (int i = 0; i < pois.size(); i++) {
             HashMap<String, String> poi = pois.get(i);
             ContentValues cv = new ContentValues();
+            cv.put("_id", poi.get("id"));
             cv.put(POI_NAME, poi.get(POI_NAME));
             cv.put(BUILDING, poi.get(BUILDING));
             cv.put(FLOOR, poi.get(FLOOR));
@@ -220,6 +225,13 @@ public class DBHelper extends SQLiteOpenHelper {
         return true;
     }
 
+    /**
+     * Inserts new record into Event_Poi table
+     * @param database
+     * @param eventID
+     * @param poiID
+     * @return
+     */
     public static boolean insertEventPoi(SQLiteDatabase database, String eventID, String poiID) {
         ContentValues cv = new ContentValues();
         cv.put(EVENT_ID, eventID);
@@ -228,7 +240,11 @@ public class DBHelper extends SQLiteOpenHelper {
         return true;
     }
 
-
+    /**
+     * Returns the list of all POI that are not like a room
+     * @param database
+     * @return
+     */
     public static List<HashMap<String, String>> readPois(SQLiteDatabase database) {
         List<HashMap<String, String>> pois = new ArrayList<>();
         Cursor cursor = database.rawQuery("SELECT * FROM " + POI + " where type IS NOT NULL and attr IS NOT NULL and type NOT LIKE '%door%' and type NOT LIKE '%room%'", null);
@@ -244,6 +260,11 @@ public class DBHelper extends SQLiteOpenHelper {
         return pois;
     }
 
+    /**
+     * Returns the list of all rooms POI
+     * @param database
+     * @return
+     */
     public static List<HashMap<String, String>> readRoomPois(SQLiteDatabase database) {
         List<HashMap<String, String>> pois = new ArrayList<>();
         Cursor cursor = database.rawQuery("SELECT * FROM " + POI + " where room IS NOT NULL and type like '%room%'", null);

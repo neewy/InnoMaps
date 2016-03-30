@@ -99,7 +99,7 @@ public class SearchableItem implements Comparable<SearchableItem> {
             if (poi.get("number") != null) searchableItem.setName(poi.get("number"));
             else searchableItem.setName(poi.get(POI_NAME));
             searchableItem.setType(poi.get(TYPE));
-            searchableItem.setId(poi.get("id"));
+            searchableItem.setId(poi.get("_id"));
             searchableItem.setBuilding(poi.get(BUILDING));
             searchableItem.setFloor(poi.get(FLOOR));
             searchableItem.setRoom(poi.get(ROOM));

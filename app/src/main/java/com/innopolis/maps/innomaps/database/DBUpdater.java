@@ -70,6 +70,7 @@ public class DBUpdater {
         new XMLParseTask().execute("1");
         new XMLParseTask().execute("2");
         new XMLParseTask().execute("3");
+        new XMLParseTask().execute("4");
         new XMLParseTask().execute("5");
     }
 
@@ -184,7 +185,7 @@ public class DBUpdater {
                 }
             }
             counter++;
-            if (counter == 4) {
+            if (counter == 5) {
                 myHandler.sendEmptyMessage(0);
             }
         }
@@ -214,7 +215,7 @@ public class DBUpdater {
             String summary = NULL, htmlLink = NULL, start = NULL, end = NULL,
                     location = NULL, eventID = NULL, description = NULL,
                     creator_name = NULL, creator_email = NULL, checked = "0",
-                    recurrence = NULL; //initializing db fields
+                    recurrence = NULL;
             Iterator<String> iter = jsonEvent.keys();
             while (iter.hasNext()) {
                 String key = iter.next();
@@ -244,7 +245,6 @@ public class DBUpdater {
                         creator_name = jsonEvent.getJSONObject(CREATOR).getString(DISPLAY_NAME);
                         creator_email = jsonEvent.getJSONObject(CREATOR).getString(EMAIL);
                         break;
-                    /*Field that tells how often does the event repeats*/
                     case RECURRENCE:
                         recurrence = jsonEvent.getJSONArray(RECURRENCE).getString(0).replace(RRULE, NULL);
                         break;
@@ -283,17 +283,17 @@ public class DBUpdater {
                 if (nextInstance.after(currentDate)) {
                     String finalStartDate = Utils.googleTimeFormat.format(new Date(nextInstance.getTimestamp()));
                     String finalEndDate = Utils.googleTimeFormat.format(new Date(nextInstance.addDuration(new Duration(1, 0, 0, durationTime.intValue(), 0)).getTimestamp()));
-                    String locationMass[] = location.split("/");
+                    String locationArray[] = location.split("/");
                     Cursor poiCursor = null;
-                    switch (locationMass.length){
+                    switch (locationArray.length){
                         case 1:
-                            poiCursor = database.rawQuery("SELECT * FROM POI WHERE building LIKE '%"+ locationMass[0]+ "%'", null);
+                            poiCursor = database.rawQuery("SELECT * FROM POI WHERE building LIKE '%"+ locationArray[0]+ "%'", null);
                             break;
                         case 2:
-                            poiCursor = database.rawQuery("SELECT * FROM POI WHERE building LIKE '%"+ locationMass[0]+ "%' AND floor LIKE '%" +locationMass[1]+ "%'", null);
+                            poiCursor = database.rawQuery("SELECT * FROM POI WHERE building LIKE '%"+ locationArray[0]+ "%' AND floor LIKE '%" +locationArray[1]+ "%'", null);
                             break;
                         case 3:
-                            poiCursor  = database.rawQuery("SELECT * FROM POI WHERE building LIKE '%"+ locationMass[0]+ "%' AND floor LIKE '%" +locationMass[1]+ "%' AND room LIKE '%" +locationMass[2]+ "%'", null);
+                            poiCursor  = database.rawQuery("SELECT * FROM POI WHERE building LIKE '%"+ locationArray[0]+ "%' AND floor LIKE '%" +locationArray[1]+ "%' AND room LIKE '%" +locationArray[2]+ "%'", null);
                     }
                     if (poiCursor.moveToFirst()) {
                         String poiID = poiCursor.getString(poiCursor.getColumnIndex(ID));

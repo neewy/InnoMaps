@@ -4,8 +4,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -21,6 +23,7 @@ import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
@@ -32,6 +35,7 @@ import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.events.EventsFragment;
 import com.innopolis.maps.innomaps.events.FavouriteFragment;
+import com.innopolis.maps.innomaps.events.MapFragmentAskForRouteDialog;
 import com.innopolis.maps.innomaps.utils.AnalyticsTrackers;
 import com.innopolis.maps.innomaps.utils.Utils;
 
@@ -58,6 +62,7 @@ public class MainActivity extends AppCompatActivity
     SearchView searchView;
 
     NestedScrollView scrollView;
+    FloatingActionButton routeButton;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -72,6 +77,29 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         scrollView = (NestedScrollView) findViewById(R.id.bottom_sheet);
+        routeButton = (FloatingActionButton) findViewById(R.id.goto_fab);
+        final TextView locationText = (TextView) scrollView.findViewById(R.id.locationText);
+        final TextView idPoi = (TextView) scrollView.findViewById(R.id.idPoi);
+
+        routeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragment newFragment = new MapFragmentAskForRouteDialog();
+                Bundle bundle = new Bundle();
+                bundle.putString("dialogSource", "MapsFragment");
+                if (idPoi.getText().toString().equals("event")){
+                    bundle.putString("type", "event");
+                } else {
+                    bundle.putString("type", "poi");
+                    bundle.putString("id", idPoi.getText().toString());
+                }
+
+                bundle.putString("destination", locationText.getText().toString());
+                newFragment.setArguments(bundle);
+                newFragment.show(getSupportFragmentManager(), "FindRoute");
+            }
+        });
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         mInstance = this;

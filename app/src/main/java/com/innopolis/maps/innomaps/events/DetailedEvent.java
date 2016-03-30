@@ -238,7 +238,9 @@ public class DetailedEvent extends Fragment {
             public void onClick(View v) {
                 DialogFragment newFragment = new MapFragmentAskForRouteDialog();
                 Bundle bundle = new Bundle();
-                bundle.putString(SUMMARY, summary);
+                bundle.putString("dialogSource", "DetailedEvent");
+                bundle.putString("type", "event");
+                bundle.putString("destination", location.getText().toString());
                 newFragment.setArguments(bundle);
                 newFragment.show(getActivity().getSupportFragmentManager(), "FindRoute");
 

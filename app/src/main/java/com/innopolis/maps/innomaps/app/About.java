@@ -3,7 +3,10 @@ package com.innopolis.maps.innomaps.app;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -11,6 +14,8 @@ import android.widget.TextView;
 import com.innopolis.maps.innomaps.R;
 
 public class About extends Fragment {
+    SearchView searchView;
+
     TextView head;
     TextView ver;
     TextView creators;
@@ -39,7 +44,19 @@ public class About extends Fragment {
                 "Ekaterina Grishina\n" +
                 "Ziyoiddin Yusupov");
         about.setText("InnoMaps is created to help you to navigate through Innopolis University. With the help of this application you are able to find any room in UI building. Moreover, it helps to find events that are held in near future.");
-
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        searchView.setVisibility(View.VISIBLE);
     }
 }

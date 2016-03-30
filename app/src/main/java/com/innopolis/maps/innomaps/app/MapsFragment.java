@@ -62,6 +62,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.common.collect.Collections2;
 import com.google.maps.android.ui.IconGenerator;
@@ -88,8 +89,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import static android.widget.AdapterView.*;
-import static com.google.android.gms.maps.GoogleMap.*;
+import static android.widget.AdapterView.OnItemClickListener;
+import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_NORMAL;
+import static com.google.android.gms.maps.GoogleMap.OnMapClickListener;
+import static com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
+import static com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
 import static com.innopolis.maps.innomaps.database.TableFields.DESCRIPTION;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_ID;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_TYPE;
@@ -98,7 +102,6 @@ import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.POI;
 import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
-import static com.innopolis.maps.innomaps.database.TableFields.ROOM;
 import static com.innopolis.maps.innomaps.database.TableFields.START;
 import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY;
 import static com.innopolis.maps.innomaps.database.TableFields.TYPE;
@@ -125,8 +128,18 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     List<Marker> markerList;
     Marker markersRoom;
     JGraphTWrapper graphWrapper;
+    Polyline current;
+
     NestedScrollView scrollView;
 
+    /*These components are the part of scrollview elements*/
+    TextView headerText;
+    TextView locationText;
+    TextView startText;
+    TextView durationText;
+    FrameLayout relatedLayout;
+    FloatingActionButton fab;
+    TextView idPoi;
     LinearLayout durationLayout, startLayout;
 
     @Override
@@ -185,16 +198,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                             scrollView.setVisibility(View.GONE);
                         }
                     });
-                    map.setOnMapLongClickListener(new OnMapLongClickListener() {
-                        @Override
-                        public void onMapLongClick(LatLng latLng) {
-                            graphWrapper = new JGraphTWrapper(getContext());
-                            new RestRequest().execute();
-                        }
-                    });
-
-
-                    map.setOnCameraChangeListener(new OnCameraChangeListener() {
+                    map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
                         @Override
                         public void onCameraChange(CameraPosition cameraPosition) {
                             LatLng cameraTarget = cameraPosition.target;
@@ -358,41 +362,40 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         }
 
         CheckedTextView text = (CheckedTextView) view.findViewById(R.id.name);
-
-        TextView headerText = (TextView) scrollView.findViewById(R.id.headerText);
-        TextView locationText = (TextView) scrollView.findViewById(R.id.locationText);
-        TextView startText = (TextView) scrollView.findViewById(R.id.startText);
-        TextView durationText = (TextView) scrollView.findViewById(R.id.durationText);
-        FrameLayout relatedLayout = (FrameLayout) scrollView.findViewById(R.id.relatedLayout);
-        FloatingActionButton fab = (FloatingActionButton) scrollView.findViewById(R.id.goto_fab);
+        headerText = (TextView) scrollView.findViewById(R.id.headerText);
+        locationText = (TextView) scrollView.findViewById(R.id.locationText);
+        startText = (TextView) scrollView.findViewById(R.id.startText);
+        durationText = (TextView) scrollView.findViewById(R.id.durationText);
+        relatedLayout = (FrameLayout) scrollView.findViewById(R.id.relatedLayout);
+        idPoi = (TextView) scrollView.findViewById(R.id.idPoi);
 
         if (relatedLayout.getChildCount() != 0) {
             relatedLayout.removeView(relatedLayout.getChildAt(0));
         }
 
         if (item.getType().equals("event")) {
-            typeEvent(text, headerText, startText, durationText);
-            locationText.setText(StringUtils.join(locationArray, ", "));
+            typeEvent(text.getText().toString());
+            idPoi.setText("event");
         } else {
-            typeEventNon(locationArray, text, locationText,  headerText);
+            idPoi.setText(item.getId());
+            typeEventNon(item.getId());
         }
-
+        locationText.setText(StringUtils.join(locationArray, ", "));
 
         Utils.hideKeyboard(getActivity());
     }
 
-    private void typeEvent( CheckedTextView text, TextView headerText, TextView startText,  TextView durationText  ){
+    private void typeEvent(String summary) {
 
         FrameLayout relatedLayout = (FrameLayout) scrollView.findViewById(R.id.relatedLayout);
         FloatingActionButton fab = (FloatingActionButton) scrollView.findViewById(R.id.goto_fab);
-
 
         String sqlQuery = "SELECT * FROM events INNER JOIN event_poi ON events.eventID = event_poi.eventID INNER JOIN poi ON event_poi.poi_id = poi._id WHERE events.summary=?";
 
         String name = "", latitude = "", longitude = "", startDateText = "", description = "";
         Date startDate = null;
 
-        Cursor cursor = database.rawQuery(sqlQuery, new String[]{String.valueOf(text.getText())});
+        Cursor cursor = database.rawQuery(sqlQuery, new String[]{summary});
 
         durationLayout.setVisibility(View.VISIBLE);
         startLayout.setVisibility(View.VISIBLE);
@@ -403,7 +406,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
             startDateText = cursor.getString(cursor.getColumnIndex(START));
             name = cursor.getString(cursor.getColumnIndex(SUMMARY));
 
-            Cursor cursor_type = database.query(EVENT_TYPE, null, "summary=?", new String[]{String.valueOf(text.getText())}, null, null, null);
+            Cursor cursor_type = database.query(EVENT_TYPE, null, "summary=?", new String[]{summary}, null, null, null);
             if (cursor_type.moveToFirst()) {
                 description = cursor_type.getString(cursor_type.getColumnIndex(DESCRIPTION));
             }
@@ -437,25 +440,24 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
 
     }
 
-    public void typeEventNon(String[] locationArray, CheckedTextView text, TextView locationText, TextView headerText){
+    public void typeEventNon(String poi_id) {
 
         FrameLayout relatedLayout = (FrameLayout) scrollView.findViewById(R.id.relatedLayout);
         FloatingActionButton fab = (FloatingActionButton) scrollView.findViewById(R.id.goto_fab);
 
-        String sqlQuery = "SELECT * FROM poi LEFT OUTER JOIN event_poi on event_poi.poi_id = poi._id LEFT OUTER JOIN events on events.eventID = event_poi.eventID WHERE poi.name=?";
+        String sqlQuery = "SELECT * FROM poi LEFT OUTER JOIN event_poi on event_poi.poi_id = poi._id LEFT OUTER JOIN events on events.eventID = event_poi.eventID WHERE poi._id=?";
 
-        Cursor cursor = database.rawQuery(sqlQuery, new String[]{String.valueOf(text.getText())});
-        String name = "", latitude = "", longitude = "";
+        Cursor cursor = database.rawQuery(sqlQuery, new String[]{poi_id});
+        String poi_name = "", latitude = "", longitude = "";
 
         durationLayout.setVisibility(View.GONE);
         startLayout.setVisibility(View.GONE);
 
         if (cursor.moveToFirst()) {
-            name = cursor.getString(cursor.getColumnIndex(POI_NAME));
+            poi_name = cursor.getString(cursor.getColumnIndex(POI_NAME));
             latitude = cursor.getString(cursor.getColumnIndex(LATITUDE));
             longitude = cursor.getString(cursor.getColumnIndex(LONGITUDE));
-            headerText.setText(name);
-            locationText.setText(StringUtils.join(locationArray, ", "));
+            headerText.setText(poi_name);
             List<Event> events = new LinkedList<>();
             do {
                 Event event = new Event();
@@ -486,7 +488,6 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         }
     }
 
-
     @Override
     public void onResume() {
         mapView.onResume();
@@ -513,9 +514,15 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         scrollView.setVisibility(View.GONE);
     }
 
-    private class RestRequest extends AsyncTask<Void, Void, String> {
+    private class RestRequest extends AsyncTask<LatLng, Void, String> {
+
+        LatLng source;
+        LatLng destination;
+
         @Override
-        protected String doInBackground(Void... params) {
+        protected String doInBackground(LatLng... params) {
+            source = params[0];
+            destination = params[1];
             return Utils.doGetRequest(Utils.restServerUrl + "/innomaps/graphml/loadmap?floor=1");
         }
 
@@ -530,11 +537,10 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
             } catch (XmlPullParserException | IOException e) {
                 e.printStackTrace();
             }
-            LatLng start = new LatLng(55.75351526583595, 48.74356482177973);
-            LatLng finish = new LatLng(55.75421676452847, 48.74331135302782);
 
-            ArrayList<LatLng> path = graphWrapper.shortestPath(start, finish);
-            map.addPolyline(new PolylineOptions()
+            ArrayList<LatLng> path = graphWrapper.shortestPath(source, destination);
+            if (current != null) current.remove();
+            current = map.addPolyline(new PolylineOptions()
                     .addAll(path)
                     .width(4)
                     .color(Color.GREEN)
@@ -647,9 +653,10 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     }
 
     public void pinMarker(LatLng latLng) {
-        if (markerList != null && markerList.size() > 0)
+        if (markerList != null && markerList.size() > 0) {
             markerList.get(0).remove();
-        markerList.clear();
+            markerList.clear();
+        }
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.title(findClosestPOI(latLng));
         markerOptions.position(closest == null ? latLng : closest);
@@ -665,7 +672,6 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         if (cursor.moveToFirst()) {
             do {
                 latLngMap.put(cursor.getString(cursor.getColumnIndex(LATITUDE)), cursor.getString(cursor.getColumnIndex(LONGITUDE)));
-//                Log.d("HAHA", "LATITUDE: " + cursor.getString(cursor.getColumnIndex(LATITUDE)) +", LONGITUDE: "+ cursor.getString(cursor.getColumnIndex(LONGITUDE))+ ", FLOOR: " + cursor.getString(cursor.getColumnIndex(FLOOR)));
             } while (cursor.moveToNext());
         } else {
             latLngMap = null;
@@ -733,8 +739,6 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
             public boolean onMarkerClick(Marker marker) {
                 if (marker.equals(markersRoom)) {
                     scrollView.setNestedScrollingEnabled(true);
-
-
                 }
                 return false;
             }
@@ -748,7 +752,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         Bitmap bmOverlay = Bitmap.createBitmap(41, 25, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bmOverlay);
         Bitmap roomIcon =
-                Bitmap.createBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.index11111111));
+                Bitmap.createBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.index11111111)); //КЕК ЭТО ЧТО ТАКОЕ?
         Bitmap bitmapText = iconGenerator.makeIcon(text);
         Matrix matrix = new Matrix();
         canvas.drawBitmap(roomIcon, matrix, null);
@@ -758,8 +762,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     }
 
 
-    private void searchMarker(){
-
+    private void searchMarker() {
         String sqlQuery = "SELECT * FROM " + POI + " WHERE " + FLOOR + "=?" + " AND " + TYPE + " like 'room'";
         Cursor cursor = database.rawQuery(sqlQuery, new String[]{});
 
@@ -782,6 +785,11 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         double a = Math.pow(Math.sin(dLat / 2), 2) + Math.pow(Math.sin(dLon / 2), 2) * Math.cos(lat1) * Math.cos(lat2);
         double c = 2 * Math.asin(Math.sqrt(a));
         return 6372.8 * c;
+    }
+
+    public void showRoute(LatLng source, LatLng destination) {
+        graphWrapper = new JGraphTWrapper(getContext());
+        new RestRequest().execute(source, destination);
     }
 }
 
