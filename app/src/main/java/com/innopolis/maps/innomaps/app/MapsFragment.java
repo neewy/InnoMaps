@@ -37,6 +37,7 @@ import android.widget.CheckedTextView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -126,7 +127,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     private HashMap<String, String> latLngMap;
     private LatLng closest = null;
     List<Marker> markerList;
-    Marker markersRoom;
+    List<Marker> markers;
     JGraphTWrapper graphWrapper;
     Polyline current;
 
@@ -176,8 +177,8 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                     mSettings.setMyLocationButtonEnabled(true);
                     mSettings.setZoomControlsEnabled(true);
                     final LatLng university = new LatLng(55.752116019, 48.7448166297);
-
-                    refreshMarkers(1);
+                    markers = new ArrayList<>();
+                    makeAllMakrers(1);
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(university, 17));
                     map.setMapType(MAP_TYPE_NORMAL);
                     markerList = new ArrayList<>();
@@ -279,6 +280,18 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
 
             @Override
             public void onTabSelected(int position, boolean wasSelected) {
+                int floor;
+                if (floorPicker.getCheckedRadioButtonId() != -1) {
+                    int id = floorPicker.getCheckedRadioButtonId();
+                    View radioButton = floorPicker.findViewById(id);
+                    int radioId = floorPicker.indexOfChild(radioButton);
+                    RadioButton btn = (RadioButton) floorPicker.getChildAt(radioId);
+                    String selection = (String) btn.getText();
+                    floor = Integer.parseInt(selection) + 1;
+                } else {
+                    floor = 1;
+                }
+
                 List<SearchableItem> items = ((MainActivity) getActivity()).searchItems;
                 if (!wasSelected) {
                     switch (position) {
@@ -290,7 +303,9 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                                 items.clear();
                                 for (SearchableItem item : wc)
                                     items.add(item);
+                                makeWcMarkers(floor);
                                 ((SuggestionAdapter) searchBox.getAdapter()).notifyDataSetChanged();
+
                             }
                             break;
                         case 1:
@@ -301,6 +316,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                                 items.clear();
                                 for (SearchableItem item : food)
                                     items.add(item);
+                                makeFoodMarkers(floor);
                                 ((SuggestionAdapter) searchBox.getAdapter()).notifyDataSetChanged();
                             }
                             break;
@@ -308,6 +324,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                             items.clear();
                             for (SearchableItem item : allItems)
                                 items.add(item);
+                            makeAllMakrers(floor);
                             break;
                         case 3:
                             Collection<SearchableItem> events = Collections2.filter(allItems, SearchableItem.isEvent);
@@ -448,7 +465,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         String sqlQuery = "SELECT * FROM poi LEFT OUTER JOIN event_poi on event_poi.poi_id = poi._id LEFT OUTER JOIN events on events.eventID = event_poi.eventID WHERE poi._id=?";
 
         Cursor cursor = database.rawQuery(sqlQuery, new String[]{poi_id});
-        String poi_name = "", latitude = "", longitude = "";
+        String poi_name, latitude, longitude;
 
         durationLayout.setVisibility(View.GONE);
         startLayout.setVisibility(View.GONE);
@@ -589,7 +606,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                         markerList.clear();
                         southWest = new LatLng(55.752533, 48.742492);
                         northEast = new LatLng(55.754656, 48.744589);
-                        refreshMarkers(1);
+                        makeAllMakrers(1);
                         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor1));
                         setFloorPOIHashMap(1);
                         break;
@@ -599,7 +616,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                         markerList.clear();
                         southWest = new LatLng(55.752828, 48.742661);
                         northEast = new LatLng(55.754597, 48.744469);
-                        refreshMarkers(2);
+                        makeAllMakrers(2);
                         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor2));
                         setFloorPOIHashMap(2);
                         break;
@@ -609,7 +626,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                         markerList.clear();
                         southWest = new LatLng(55.752875, 48.742739);
                         northEast = new LatLng(55.754572, 48.744467);
-                        refreshMarkers(3);
+                        makeAllMakrers(3);
                         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor3));
                         setFloorPOIHashMap(3);
                         break;
@@ -619,7 +636,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                         markerList.clear();
                         southWest = new LatLng(55.752789, 48.742711);
                         northEast = new LatLng(55.754578, 48.744569);
-                        refreshMarkers(4);
+                        makeAllMakrers(4);
                         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor4));
                         setFloorPOIHashMap(4);
                         break;
@@ -629,7 +646,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                         markerList.clear();
                         southWest = new LatLng(55.752808, 48.743497);
                         northEast = new LatLng(55.753383, 48.744519);
-                        refreshMarkers(5);
+                        makeAllMakrers(5);
                         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor5));
                         setFloorPOIHashMap(5);
                         break;
@@ -703,42 +720,72 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         }
     }
 
-    private void refreshMarkers(int num) {
-        dbHelper = new DBHelper(getContext());
-        database = dbHelper.getWritableDatabase();
 
-        if (num == (-1)) {
-            return;
-        }
+    private void makeWcMarkers(int floor) {
+        String numFloor = String.valueOf(floor) + "floor";
 
-        map.clear();
-
-        String numFloor = String.valueOf(num) + "floor";
-
-        String sqlQuery = "SELECT * FROM " + POI + " WHERE " + FLOOR + "=?" + " AND " + TYPE + " like 'room'";
+        String sqlQuery = "SELECT * FROM " + POI + " WHERE " + FLOOR + "=?" + " AND " + TYPE + " like 'wc'";
         Cursor cursor = database.rawQuery(sqlQuery, new String[]{numFloor});
+        refreshMarkers(cursor);
+
+    }
+
+    private void makeFoodMarkers(int floor) {
+        String numFloor = String.valueOf(floor) + "floor";
+
+        String sqlQuery = "SELECT * FROM " + POI + " WHERE " + FLOOR + "=?" + " AND " + TYPE + " like 'cafe'";
+        Cursor cursor = database.rawQuery(sqlQuery, new String[]{numFloor});
+        refreshMarkers(cursor);
+
+    }
+
+    private void makeAllMakrers(int floor) {
+        String numFloor = String.valueOf(floor) + "floor";
+
+        String sqlQuery = "SELECT * FROM " + POI + " WHERE " + FLOOR + "=?" + " AND " + TYPE + " like 'room' or " + TYPE + " like 'wc' or " + TYPE + " like 'cafe'";
+        Cursor cursor = database.rawQuery(sqlQuery, new String[]{numFloor});
+        refreshMarkers(cursor);
+
+    }
+
+    private void refreshMarkers(Cursor cursor) {
+
+        if (markers != null && markers.size() > 0) {
+            for (int i = 0; i < markers.size(); i++) {
+                Marker marker = markers.get(i);
+                marker.remove();
+            }
+        }
+        markers.clear();
+
 
         if (cursor.moveToFirst()) {
             do {
                 String room = cursor.getString(cursor.getColumnIndex(POI_NAME));
+                String type = cursor.getString(cursor.getColumnIndex(TYPE));
                 String latitude = cursor.getString(cursor.getColumnIndex(LATITUDE));
                 String longitude = cursor.getString(cursor.getColumnIndex(LONGITUDE));
-                setMarkersRoom(room, latitude, longitude);
+                setMarkersRoom(room, type, latitude, longitude);
             } while (cursor.moveToNext());
         }
     }
 
-    private void setMarkersRoom(String room, String latitude, String longitude) {
-        markersRoom = map.addMarker(new MarkerOptions()
-                .position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)))
-                .icon(BitmapDescriptorFactory.fromBitmap(bitmapAdapter(room)))
-                .flat(true));
+    private void setMarkersRoom(String room, String type, String latitude, String longitude) {
 
+        Marker markersRoom = map.addMarker(new MarkerOptions()
+                        .position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)))
+                        .icon(BitmapDescriptorFactory.fromBitmap(bitmapAdapter(type)))
+                        .title(room)
+        );
+        markers.add(markersRoom);
         map.setOnMarkerClickListener(new OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                if (marker.equals(markersRoom)) {
-                    scrollView.setNestedScrollingEnabled(true);
+                if (marker.equals(markers)) {
+                    searchMarker();
+                    //TODO
+
+
                 }
                 return false;
             }
@@ -746,32 +793,52 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     }
 
 
-    public Bitmap bitmapAdapter(String text) {
+    public Bitmap bitmapAdapter(String type) {
+        Bitmap src;
 
-        IconGenerator iconGenerator = new IconGenerator(getContext());
-        Bitmap bmOverlay = Bitmap.createBitmap(41, 25, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bmOverlay);
-        Bitmap roomIcon =
-                Bitmap.createBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.index11111111)); //КЕК ЭТО ЧТО ТАКОЕ?
-        Bitmap bitmapText = iconGenerator.makeIcon(text);
-        Matrix matrix = new Matrix();
-        canvas.drawBitmap(roomIcon, matrix, null);
-        canvas.drawBitmap(bitmapText, matrix, null);
-        return bitmapText;
+        Bitmap icon;
+
+        if (type.equals("room")) {
+            src = BitmapFactory.decodeResource(getResources(), R.drawable.room_icon);
+
+        } else if (type.equals("wc")) {
+            src = BitmapFactory.decodeResource(getResources(), R.drawable.room_icon_wc);
+
+        } else if (type.equals("cafe")) {
+            src = BitmapFactory.decodeResource(getResources(), R.drawable.room_icon_food);
+
+        } else {
+            src = BitmapFactory.decodeResource(getResources(), R.drawable.duck_map);
+        }
+
+        icon = Bitmap.createBitmap(src);
+        return icon;
 
     }
 
 
     private void searchMarker() {
+
         String sqlQuery = "SELECT * FROM " + POI + " WHERE " + FLOOR + "=?" + " AND " + TYPE + " like 'room'";
         Cursor cursor = database.rawQuery(sqlQuery, new String[]{});
+
+
+        //CheckedTextView text = (CheckedTextView) view.findViewById(R.id.name);
+
 
         if (cursor.moveToFirst()) {
             do {
                 String room = cursor.getString(cursor.getColumnIndex(POI_NAME));
+                String type = cursor.getString(cursor.getColumnIndex(TYPE));
+                String building = cursor.getString(cursor.getColumnIndex(TYPE));
+                String floor = cursor.getString(cursor.getColumnIndex(FLOOR));
                 String latitude = cursor.getString(cursor.getColumnIndex(LATITUDE));
                 String longitude = cursor.getString(cursor.getColumnIndex(LONGITUDE));
-                setMarkersRoom(room, latitude, longitude);
+                String[] locationArray = new String[]{building, floor, room};
+
+
+                // inSearchBottomList(locationArray, view, );
+                setMarkersRoom(room, type, latitude, longitude);
             } while (cursor.moveToNext());
         }
     }
