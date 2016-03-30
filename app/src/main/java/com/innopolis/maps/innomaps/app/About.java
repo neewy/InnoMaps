@@ -43,7 +43,7 @@ public class About extends Fragment {
                 "Konstantin Munichev\n" +
                 "Ekaterina Grishina\n" +
                 "Ziyoiddin Yusupov");
-        about.setText("InnoMaps is created to help you to navigate through Innopolis University. With the help of this application you are able to find any room in UI building. Moreover, it helps to find events that are held in near future.");
+        about.setText("InnoMaps is designed to help you with navigation through Innopolis University. With this application you will easily find any room in the building as well as find out about all events that take place in the University.");
         return view;
     }
 
