@@ -128,6 +128,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     private LatLng closest = null;
     List<Marker> markerList;
     List<Marker> markers;
+    List<Integer> sort;
     JGraphTWrapper graphWrapper;
     Polyline current;
 
@@ -178,6 +179,8 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                     mSettings.setZoomControlsEnabled(true);
                     final LatLng university = new LatLng(55.752116019, 48.7448166297);
                     markers = new ArrayList<>();
+                    sort = new ArrayList<>();
+                    sort.add(2);
                     makeAllMarkers(1);
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(university, 17));
                     map.setMapType(MAP_TYPE_NORMAL);
@@ -281,6 +284,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
             @Override
             public void onTabSelected(int position, boolean wasSelected) {
                 int floor;
+                int sorter;
                 if (floorPicker.getCheckedRadioButtonId() != -1) {
                     int id = floorPicker.getCheckedRadioButtonId();
                     View radioButton = floorPicker.findViewById(id);
@@ -300,10 +304,11 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                             if (wc.isEmpty()) {
                                 Snackbar.make(getView(), "There are no WC", Snackbar.LENGTH_SHORT);
                             } else {
+                                sortClearAdd(0);
                                 items.clear();
                                 for (SearchableItem item : wc)
                                     items.add(item);
-                                makeWcMarkers(floor);
+                                isMarkerSorted(floor);
                                 ((SuggestionAdapter) searchBox.getAdapter()).notifyDataSetChanged();
 
                             }
@@ -313,24 +318,28 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                             if (food.isEmpty()) {
                                 Snackbar.make(getView(), "There are no food POI", Snackbar.LENGTH_SHORT);
                             } else {
+                                sortClearAdd(1);
                                 items.clear();
                                 for (SearchableItem item : food)
                                     items.add(item);
-                                makeFoodMarkers(floor);
+                                isMarkerSorted(floor);
                                 ((SuggestionAdapter) searchBox.getAdapter()).notifyDataSetChanged();
                             }
                             break;
                         case 2:
+                            sortClearAdd(2);
                             items.clear();
                             for (SearchableItem item : allItems)
                                 items.add(item);
-                            makeAllMarkers(floor);
+                            isMarkerSorted(floor);
                             break;
                         case 3:
+                            sortClearAdd(3);
                             Collection<SearchableItem> events = Collections2.filter(allItems, SearchableItem.isEvent);
                             if (events.isEmpty()) {
                                 Snackbar.make(getView(), "There are no events", Snackbar.LENGTH_SHORT);
                             } else {
+                                sortClearAdd(3);
                                 items.clear();
                                 for (SearchableItem item : events)
                                     items.add(item);
@@ -338,13 +347,16 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                             }
                             break;
                         case 4:
+                            sortClearAdd(4);
                             Collection<SearchableItem> other = Collections2.filter(allItems, SearchableItem.isOther);
                             if (other.isEmpty()) {
                                 Snackbar.make(getView(), "There are no other POI", Snackbar.LENGTH_SHORT);
                             } else {
+                                sortClearAdd(4);
                                 items.clear();
                                 for (SearchableItem item : other)
                                     items.add(item);
+                                isMarkerSorted(floor);
                                 ((SuggestionAdapter) searchBox.getAdapter()).notifyDataSetChanged();
                             }
                             break;
@@ -606,7 +618,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                         markerList.clear();
                         southWest = new LatLng(55.752533, 48.742492);
                         northEast = new LatLng(55.754656, 48.744589);
-                        makeAllMarkers(1);
+                        isMarkerSorted(1);
                         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor1));
                         setFloorPOIHashMap(1);
                         break;
@@ -616,7 +628,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                         markerList.clear();
                         southWest = new LatLng(55.752828, 48.742661);
                         northEast = new LatLng(55.754597, 48.744469);
-                        makeAllMarkers(2);
+                        isMarkerSorted(2);
                         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor2));
                         setFloorPOIHashMap(2);
                         break;
@@ -626,7 +638,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                         markerList.clear();
                         southWest = new LatLng(55.752875, 48.742739);
                         northEast = new LatLng(55.754572, 48.744467);
-                        makeAllMarkers(3);
+                        isMarkerSorted(3);
                         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor3));
                         setFloorPOIHashMap(3);
                         break;
@@ -636,7 +648,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                         markerList.clear();
                         southWest = new LatLng(55.752789, 48.742711);
                         northEast = new LatLng(55.754578, 48.744569);
-                        makeAllMarkers(4);
+                        isMarkerSorted(4);
                         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor4));
                         setFloorPOIHashMap(4);
                         break;
@@ -646,7 +658,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                         markerList.clear();
                         southWest = new LatLng(55.752808, 48.743497);
                         northEast = new LatLng(55.753383, 48.744519);
-                        makeAllMarkers(5);
+                        isMarkerSorted(5);
                         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(R.raw.ai6_floor5));
                         setFloorPOIHashMap(5);
                         break;
@@ -720,6 +732,21 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
         }
     }
 
+    private void isMarkerSorted(int floor) {
+        int filter = sort.get(0);
+        if (filter == 0) {
+            makeWcMarkers(floor);
+        } else if (filter == 1) {
+            makeFoodMarkers(floor);
+        } else if (filter == 2) {
+            makeAllMarkers(floor);
+        } else if (filter == 3) {
+            makeAllMarkers(floor);
+        } else if (filter == 4) {
+            makeOtherMarkers(floor);
+        }
+    }
+
 
     private void makeWcMarkers(int floor) {
         String numFloor = String.valueOf(floor) + "floor";
@@ -735,6 +762,14 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
 
         String sqlQuery = "SELECT * FROM " + POI + " WHERE " + FLOOR + "= ?" + " AND " + TYPE + " = 'food'";
         Cursor cursor = database.rawQuery(sqlQuery, new String[]{numFloor});
+        refreshMarkers(cursor);
+
+    }
+
+    private void makeOtherMarkers(int floor) {
+        String selection = FLOOR + " = ? AND (" + TYPE + " = ? or " + TYPE + " = ?)";
+        String[] selectionArgs = {floor + "floor", "wc", "food"};
+        Cursor cursor = database.query(POI, null, selection, selectionArgs, null, null, null);
         refreshMarkers(cursor);
 
     }
@@ -849,6 +884,11 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     public void showRoute(LatLng source, LatLng destination) {
         graphWrapper = new JGraphTWrapper(getContext());
         new RestRequest().execute(source, destination);
+    }
+
+    private void sortClearAdd(int num) {
+        sort.clear();
+        sort.add(num);
     }
 }
 
