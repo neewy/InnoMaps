@@ -854,7 +854,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
 
     private void searchMarker(Marker marker) {
         String room = marker.getTitle();
-        String sqlQuery = "SELECT * FROM " + POI + " WHERE " + TableFields.POI_NAME + " like '" + room + "';";
+        String sqlQuery = "SELECT * FROM " + POI + " WHERE " + TableFields.POI_NAME + " like '" + room.replaceAll("'", "''") + "';";
         Cursor cursor = database.rawQuery(sqlQuery, new String[]{});
 
         if (cursor.moveToFirst()) {
