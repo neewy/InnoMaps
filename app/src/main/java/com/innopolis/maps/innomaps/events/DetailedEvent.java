@@ -33,7 +33,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.GroundOverlay;
+import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.innopolis.maps.innomaps.R;
@@ -86,6 +91,7 @@ public class DetailedEvent extends Fragment {
     private static GoogleMap mMap;
     private static UiSettings mSettings;
     static SupportMapFragment mSupportMapFragment;
+    private GroundOverlay imageOverlay;
 
 
     final private String NULL = "";
@@ -271,6 +277,8 @@ public class DetailedEvent extends Fragment {
 
 
     public void initializeMap(final String latitude, final String longitude) {
+        final LatLng[] southWest = new LatLng[1];
+        final LatLng[] northEast = new LatLng[1];
         mSupportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapDesc);
         if (mSupportMapFragment == null) {
             FragmentManager fragmentManager = getFragmentManager();
@@ -292,6 +300,33 @@ public class DetailedEvent extends Fragment {
                         LatLng position = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
                         mMap.addMarker(new MarkerOptions().position(position).title(summary));
+                        switch (floor) {
+                            case "1floor":
+                                southWest[0] = new LatLng(55.752533, 48.742492);
+                                northEast[0] = new LatLng(55.754656, 48.744589);
+                                putOverlayToMap(southWest[0], northEast[0], BitmapDescriptorFactory.fromResource(R.raw.ai6_floor1));
+                                break;
+                            case "2floor":
+                                southWest[0] = new LatLng(55.752828, 48.742661);
+                                northEast[0] = new LatLng(55.754597, 48.744469);
+                                putOverlayToMap(southWest[0], northEast[0], BitmapDescriptorFactory.fromResource(R.raw.ai6_floor2));
+                                break;
+                            case "3floor":
+                                southWest[0] = new LatLng(55.752875, 48.742739);
+                                northEast[0] = new LatLng(55.754572, 48.744467);
+                                putOverlayToMap(southWest[0], northEast[0], BitmapDescriptorFactory.fromResource(R.raw.ai6_floor3));
+                                break;
+                            case "4floor":
+                                southWest[0] = new LatLng(55.752789, 48.742711);
+                                northEast[0] = new LatLng(55.754578, 48.744569);
+                                putOverlayToMap(southWest[0], northEast[0], BitmapDescriptorFactory.fromResource(R.raw.ai6_floor4));
+                                break;
+                            case "5floor":
+                                southWest[0] = new LatLng(55.752808, 48.743497);
+                                northEast[0] = new LatLng(55.753383, 48.744519);
+                                putOverlayToMap(southWest[0], northEast[0], BitmapDescriptorFactory.fromResource(R.raw.ai6_floor5));
+                                break;
+                        }
                     }
 
                     mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
@@ -316,6 +351,19 @@ public class DetailedEvent extends Fragment {
 
         // Tracking the screen view
         MainActivity.getInstance().trackScreenView("Detailed Events Fragment");
+    }
+
+    private void putOverlayToMap(LatLng southWest, LatLng northEast, BitmapDescriptor bitmapDescriptor) {
+        if (imageOverlay != null) {
+            imageOverlay.remove();
+        }
+        LatLngBounds latLngBounds;
+        GroundOverlayOptions groundOverlayOptions;
+        latLngBounds = new LatLngBounds(southWest, northEast);
+        groundOverlayOptions = new GroundOverlayOptions();
+        groundOverlayOptions.positionFromBounds(latLngBounds);
+        groundOverlayOptions.image(bitmapDescriptor);
+        imageOverlay = mMap.addGroundOverlay(groundOverlayOptions);
     }
 
 
