@@ -39,7 +39,7 @@ public class Utils {
     public static SimpleDateFormat googleTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
     public static PrettyTime prettyTime = new PrettyTime(new Locale("en"));
 
-    public static final String restServerUrl = "http://185.121.178.11:8000";
+    public static final String restServerUrl = "http://10.90.137.2:8000";
 
     public static String GOOGLE_MAP_API_FIRST_PART = "https://www.googleapis.com/calendar/v3/calendars/hvtusnfmqbg9u2p5rnc1rvhdfg@group.calendar.google.com/events?timeMin=";
     public static String GOOGLE_MAP_API_SECOND_PART = "T10%3A00%3A00-07%3A00&orderby=updated&sortorder=descending&futureevents=true&alt=json&key=AIzaSyDli8qeotu4TGaEs5VKSWy15CDyl4cgZ-o";
@@ -120,6 +120,16 @@ public class Utils {
         final String[] c = new String[n -= w];
         System.arraycopy(v, w, c, 0, n);
         return c;
+    }
+
+    public static double haversine(double lat1, double lon1, double lat2, double lon2) {
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        lat1 = Math.toRadians(lat1);
+        lat2 = Math.toRadians(lat2);
+        double a = Math.pow(Math.sin(dLat / 2), 2) + Math.pow(Math.sin(dLon / 2), 2) * Math.cos(lat1) * Math.cos(lat2);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        return 6372.8 * c;
     }
 
     public static boolean isAppAvailable(Context context, String appName) {

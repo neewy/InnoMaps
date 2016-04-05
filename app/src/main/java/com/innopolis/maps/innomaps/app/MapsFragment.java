@@ -714,7 +714,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
             String lat = "", lng = "";
             while (iterator.hasNext()) {
                 Map.Entry pair = (Map.Entry) iterator.next();
-                distance = haversine(latLng.latitude, latLng.longitude, Double.parseDouble(pair.getKey().toString()), Double.parseDouble(pair.getValue().toString()));
+                distance = Utils.haversine(latLng.latitude, latLng.longitude, Double.parseDouble(pair.getKey().toString()), Double.parseDouble(pair.getValue().toString()));
                 if (distance < closestDistance) {
                     closestDistance = distance;
                     lat = pair.getKey().toString();
@@ -872,17 +872,6 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
             inSearchBottomList(item, mapView);
         }
         cursor.close();
-    }
-
-
-    private double haversine(double lat1, double lon1, double lat2, double lon2) {
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLon = Math.toRadians(lon2 - lon1);
-        lat1 = Math.toRadians(lat1);
-        lat2 = Math.toRadians(lat2);
-        double a = Math.pow(Math.sin(dLat / 2), 2) + Math.pow(Math.sin(dLon / 2), 2) * Math.cos(lat1) * Math.cos(lat2);
-        double c = 2 * Math.asin(Math.sqrt(a));
-        return 6372.8 * c;
     }
 
     public void showRoute(LatLng source, LatLng destination) {
