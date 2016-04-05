@@ -12,9 +12,6 @@ import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
 import static com.innopolis.maps.innomaps.database.TableFields.ROOM;
 import static com.innopolis.maps.innomaps.database.TableFields.TYPE;
 
-/**
- * Created by neewy on 17.03.16.
- */
 public class SearchableItem implements Comparable<SearchableItem> {
     public String name;
     public String type;
