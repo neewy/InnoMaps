@@ -26,11 +26,11 @@ public class LatLngGraphVertex {
 
     @Override
     public boolean equals(Object o) {
-        return getClass() == o.getClass() && ((LatLngGraphVertex) o).getVertexId() == vertexId;
+        return getClass() == o.getClass() && ((LatLngGraphVertex)o).getVertex().equals(getVertex());
     }
 
     @Override
     public int hashCode() {
-        return vertexId;
+        return vertex.hashCode();
     }
 }

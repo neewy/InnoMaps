@@ -3,6 +3,7 @@ package com.innopolis.maps.innomaps;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.test.ActivityInstrumentationTestCase2;
+import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -12,12 +13,12 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.pathfinding.JGraphTWrapper;
+import com.innopolis.maps.innomaps.pathfinding.LatLngGraphVertex;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.io.IOUtils;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Random;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -42,7 +43,7 @@ public class GraphDrawingTest extends ActivityInstrumentationTestCase2<MainActiv
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        graph = new JGraphTWrapper(null);
+        graph = new JGraphTWrapper();
         assertNotNull(graph);
         mapView = (MapView) getActivity().findViewById(R.id.map);
         assertNotNull(mapView);
@@ -59,14 +60,13 @@ public class GraphDrawingTest extends ActivityInstrumentationTestCase2<MainActiv
         for (floor = 1; floor <= 5; ++floor) {
             String result = Utils.doGetRequest(Utils.restServerUrl + "/innomaps/graphml/loadmap?floor=" + floor);
             assertNotNull(result);
-
             graph.importGraphML(IOUtils.toInputStream(result, "UTF-8"));
-            Collection<LatLng> c = graph.getVerticesMap().values();
-            LatLng[] vTo = new LatLng[c.size()];
-            vTo = c.toArray(vTo);
+
             int testVertexCount = 3;
+            LatLngGraphVertex[] vTo = graph.getVertices();
+            LatLngGraphVertex[] vFrom = new LatLngGraphVertex[testVertexCount];
             Random rnd = new Random();
-            LatLng[] vFrom = new LatLng[testVertexCount];
+
             for (int i = 0; i < testVertexCount; ++i) {
                 vFrom[i] = vTo[rnd.nextInt(vTo.length)];
             }
@@ -94,32 +94,39 @@ public class GraphDrawingTest extends ActivityInstrumentationTestCase2<MainActiv
         }
     }
 
-    class DrawTask extends AsyncTask<LatLng[], Void, LatLng[][]> {
+    class DrawTask extends AsyncTask<LatLngGraphVertex[], Void, LatLngGraphVertex[][]> {
         @Override
-        protected LatLng[][] doInBackground(LatLng[]... params) {
+        protected LatLngGraphVertex[][] doInBackground(LatLngGraphVertex[]... params) {
             return params;
         }
 
         @Override
-        protected void onPostExecute(LatLng[][] data) {
+        protected void onPostExecute(LatLngGraphVertex[][] data) {
             for (Polyline route: routes) {
                 route.remove();
             }
             routes.clear();
-            LatLng[] vFrom = data[0];
-            LatLng[] vTo = data[1];
-            for (LatLng start: vFrom) {
-                for (LatLng finish: vTo) {
+            LatLngGraphVertex[] vFrom = data[0];
+            LatLngGraphVertex[] vTo = data[1];
+            for (LatLngGraphVertex start: vFrom) {
+                for (LatLngGraphVertex finish: vTo) {
                     if (start.equals(finish)) {
                         continue;
                     }
-                    ArrayList<LatLng> path = graph.shortestPath(start, finish);
-                    assertNotNull(path);
-                    routes.add(map.addPolyline(new PolylineOptions()
-                            .addAll(path)
-                            .width(4)
-                            .color(Color.GREEN)
-                            .geodesic(true)));
+                    ArrayList<LatLngGraphVertex> path = graph.shortestPath(start.getVertex(), finish.getVertex());
+                    if (path == null) {
+                        Log.d("graph", "Path not found between " + start.getVertexId() + " and " + finish.getVertexId());
+                        assertTrue(false);
+                    }
+
+                    PolylineOptions polylineOptions = new PolylineOptions();
+                    polylineOptions.width(4);
+                    polylineOptions.color(Color.GREEN);
+                    polylineOptions.geodesic(true);
+                    for (LatLngGraphVertex v: path) {
+                        polylineOptions.add(v.getVertex());
+                    }
+                    routes.add(map.addPolyline(polylineOptions));
                 }
             }
         }

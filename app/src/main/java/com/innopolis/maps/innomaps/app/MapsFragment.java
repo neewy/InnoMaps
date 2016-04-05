@@ -70,6 +70,7 @@ import com.innopolis.maps.innomaps.database.TableFields;
 import com.innopolis.maps.innomaps.events.Event;
 import com.innopolis.maps.innomaps.events.MapBottomEventListAdapter;
 import com.innopolis.maps.innomaps.pathfinding.JGraphTWrapper;
+import com.innopolis.maps.innomaps.pathfinding.LatLngGraphVertex;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.io.IOUtils;
@@ -567,14 +568,17 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
                 e.printStackTrace();
             }
 
-            ArrayList<LatLng> path = graphWrapper.shortestPath(source, destination);
+            ArrayList<LatLngGraphVertex> path = graphWrapper.shortestPath(source, destination);
             if (current != null) current.remove();
-            current = map.addPolyline(new PolylineOptions()
-                    .addAll(path)
-                    .width(4)
-                    .color(Color.GREEN)
-                    .geodesic(true));
 
+            PolylineOptions polylineOptions = new PolylineOptions();
+            polylineOptions.width(4);
+            polylineOptions.color(Color.GREEN);
+            polylineOptions.geodesic(true);
+            for (LatLngGraphVertex v: path) {
+                polylineOptions.add(v.getVertex());
+            }
+            current = map.addPolyline(polylineOptions);
         }
     }
 
@@ -875,7 +879,7 @@ public class MapsFragment extends Fragment implements ActivityCompat.OnRequestPe
     }
 
     public void showRoute(LatLng source, LatLng destination) {
-        graphWrapper = new JGraphTWrapper(getContext());
+        graphWrapper = new JGraphTWrapper();
         new RestRequest().execute(source, destination);
     }
 
