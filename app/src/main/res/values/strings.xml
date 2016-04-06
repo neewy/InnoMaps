@@ -207,6 +207,13 @@
         <string name="analytics">Google Analytics</string>
         <string name="toast_track_exception">Exception is recorded. Check the Crashes and Exceptions on Google Dashboard!</string>
         <string name="toast_app_crash">The app will crash now! Check the Crashes and Exceptions on Google Dashboard!</string>
+    <string name="collapsed">collapsed</string>
+    <string name="dragging">dragging</string>
+    <string name="expanded">expanded</string>
+    <string name="hidden">hidden</string>
+    <string name="settling">settling</string>
+    <string name="undefined">undefined</string>
+    <string name="offset">offset</string>
 
 </resources>
 

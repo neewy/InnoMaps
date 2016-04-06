@@ -1,6 +1,8 @@
 package com.innopolis.maps.innomaps.app;
 
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,6 +13,7 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -19,6 +22,8 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
+import android.transition.TransitionInflater;
+import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,6 +31,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -89,7 +96,6 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     AHBottomNavigation topNavigation;
 
 
-    RadioGroup floorPicker;
     JGraphTWrapper graphWrapper;
     Polyline current;
 
@@ -110,6 +116,38 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         durationLayout = (LinearLayout) scrollView.findViewById(R.id.durationLayout);
         startLayout = (LinearLayout) scrollView.findViewById(R.id.startLayout);
         mBottomSheetBehavior = BottomSheetBehavior.from(scrollView);
+        if (mBottomSheetBehavior != null) {
+            mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+                @Override
+                public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                    if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                        floorPicker.animate()
+                                .alpha(0f)
+                                .setDuration(200)
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        floorPicker.setVisibility(View.INVISIBLE);
+                                    }
+                                });
+                    } else if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                        floorPicker.setAlpha(0f);
+                        floorPicker.setVisibility(View.VISIBLE);
+                        floorPicker.animate()
+                                .alpha(1f)
+                                .setDuration(200)
+                                .setListener(null);
+                    }
+                }
+
+                @Override
+                public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+
+                }
+            });
+        }
+
         switch (GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity())) {
             case ConnectionResult.SUCCESS:
                 mapView = (MapView) v.findViewById(R.id.map);
@@ -158,6 +196,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                             LatLng cameraTarget = cameraPosition.target;
                             if ((cameraTarget.latitude > 55.752116019 && cameraTarget.latitude < 55.754923377) &&
                                     (cameraTarget.longitude < 48.7448166297 && cameraTarget.longitude > 48.742106790) && cameraPosition.zoom > 17.50) {
+
                                 floorPicker.setVisibility(View.VISIBLE);
 
                             } else {

@@ -12,6 +12,7 @@ import android.widget.CheckedTextView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.apradanas.simplelinkabletext.Link;
@@ -53,15 +54,19 @@ public class BottomSheet extends Fragment {
     protected GoogleMap map;
     protected HashMap<String, String> latLngMap;
     NestedScrollView scrollView;
+    private TextView mStateText;
+    private TextView mOffsetText;
     /*These components are the part of scrollview elements*/
     TextView headerText;
     TextView locationText;
     TextView startText;
     TextView durationText;
     FrameLayout relatedLayout;
-    TextView idPoi;LinearLayout durationLayout;
+    TextView idPoi;
+    LinearLayout durationLayout;
     LinearLayout startLayout;
     List<Marker> markerList;
+    RadioGroup floorPicker;
     private LatLng closest = null;
 
     public void inSearchBottomList(SearchableItem item, View view) {
@@ -150,16 +155,21 @@ public class BottomSheet extends Fragment {
             } catch (ParseException e) {
                 Log.e("Maps", "Time parse exception", e);
             }
-             pinMarker(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
+            pinMarker(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
         }
 
         headerText.setText(name);
         startText.setText(Utils.commonTime.format(startDate));
         durationText.setText(Utils.prettyTime.format(startDate));
         mBottomSheetBehavior.setPeekHeight(headerText.getLayout().getHeight() + fab.getHeight() + 42);
-        //floorPicker.setY((float) 0.2);
 
     }
+
+
+
+
+
+
 
 
     public void typeEventNon(String poi_id) {
@@ -211,7 +221,7 @@ public class BottomSheet extends Fragment {
     }
 
 
-    protected void clearMarkerList(){
+    protected void clearMarkerList() {
         if (markerList != null && markerList.size() > 0)
             markerList.get(0).remove();
         markerList.clear();
