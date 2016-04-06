@@ -41,9 +41,11 @@ public class JGraphTWrapper {
     /**
      * Adds new vertex.
      * @param v - vertex to add
+     * @return id of vertex added
      */
-    public void addVertex(LatLng v) {
-        addVertexWithId(v, currentVertexId++);
+    public int addVertex(LatLng v) {
+        addVertexWithId(v, currentVertexId);
+        return currentVertexId++;
     }
 
     private void addVertexWithId(LatLng v, int id) {
@@ -55,29 +57,19 @@ public class JGraphTWrapper {
      * Adds new edge of given type.
      * @param v1 - vertex edge begins
      * @param v2 - vertex edge ends
+     * @param v1Index - v1 vertex index
+     * @param v2Index - v2 vertex index
      * @param edgeType - edge type (see LatLngGraphEdge.EdgeType)
      */
-    public void addEdge(LatLng v1, LatLng v2, LatLngGraphEdge.EdgeType edgeType) {
-        LatLngGraphVertex gv1 = new LatLngGraphVertex(v1, 0);
-        LatLngGraphVertex gv2 = new LatLngGraphVertex(v2, 0);
+    public void addEdge(LatLng v1, LatLng v2, int v1Index, int v2Index, LatLngGraphEdge.EdgeType edgeType) {
+        LatLngGraphVertex gv1 = new LatLngGraphVertex(v1, v1Index);
+        LatLngGraphVertex gv2 = new LatLngGraphVertex(v2, v2Index);
 
-        if (graph.vertexSet().contains(gv1) && graph.vertexSet().contains(gv2)) {
-            LatLngGraphVertex exV1 = new LatLngGraphVertex(gv1.getVertex(), 0);
-            LatLngGraphVertex exV2 = new LatLngGraphVertex(gv2.getVertex(), 0);
-            for (LatLngGraphVertex v : graph.vertexSet()) {
-                if (v.equals(gv1)) {
-                    exV1 = v;
-                } else if (v.equals(gv2)) {
-                    exV2 = v;
-                }
-            }
-
-            graph.addEdge(exV1, exV2, new LatLngGraphEdge(edgeType));
-            LatLngGraphEdge e = graph.getEdge(gv1, gv2);
-            double penaltyWeight = (edgeType == LatLngGraphEdge.EdgeType.DEFAULT) ? 0.0 : 1.0;
-            graph.setEdgeWeight(e, Utils.haversine(gv1.getVertex().latitude, gv1.getVertex().longitude,
-                    gv2.getVertex().latitude, gv2.getVertex().longitude) + penaltyWeight);
-        }
+        graph.addEdge(gv1, gv2, new LatLngGraphEdge(edgeType));
+        LatLngGraphEdge e = graph.getEdge(gv1, gv2);
+        double penaltyWeight = (edgeType == LatLngGraphEdge.EdgeType.DEFAULT) ? 0.0 : 1.0;
+        graph.setEdgeWeight(e, Utils.haversine(gv1.getVertex().latitude, gv1.getVertex().longitude,
+                gv2.getVertex().latitude, gv2.getVertex().longitude) + penaltyWeight);
     }
 
     /**
@@ -183,7 +175,7 @@ public class JGraphTWrapper {
                                 edgeType = LatLngGraphEdge.EdgeType.DEFAULT;
                                 break;
                         }
-                        addEdge(verticesMap.get(from), verticesMap.get(to), edgeType);
+                        addEdge(verticesMap.get(from), verticesMap.get(to), from, to, edgeType);
                         break;
                     case "data":
                         if (id != -1) {
@@ -218,6 +210,10 @@ public class JGraphTWrapper {
         }
     }
 
+    /**
+     * Returns all graph vertices as array (warning - this method complexity is O(n))
+     * @return array of graph vertices
+     */
     public LatLngGraphVertex[] getVertices() {
         LatLngGraphVertex[] v = new LatLngGraphVertex[graph.vertexSet().size()];
         v = graph.vertexSet().toArray(v);
