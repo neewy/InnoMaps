@@ -51,4 +51,7 @@ public final class TableFields {
     public static final String EVENT_POI = "event_poi";
     public static final String POI = "poi";
 
+
+    /*misc*/
+    public static final String EVENT = "event";
 }

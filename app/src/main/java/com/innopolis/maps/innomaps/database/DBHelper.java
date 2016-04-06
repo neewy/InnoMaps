@@ -6,6 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+/*import com.innopolis.maps.innomaps.ORM.Event_POI;
+import com.innopolis.maps.innomaps.ORM.Event_type;
+import com.innopolis.maps.innomaps.ORM.Events;
+import com.innopolis.maps.innomaps.ORM.Poi;*/
 import com.innopolis.maps.innomaps.events.Event;
 import com.innopolis.maps.innomaps.utils.Utils;
 
@@ -66,6 +70,16 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        /*List<Event_POI> event_poi = Event_POI.listAll(Event_POI.class);
+        List<Events> events_orm = Events.listAll(Events.class);
+        List<Event_type> event_type = Event_type.listAll(Event_type.class);
+        List<Poi> poi = Poi.listAll(Poi.class);
+
+        Event_POI.deleteAll(Event_POI.class);
+        Events.deleteAll(Events.class);
+        Event_type.deleteAll(Event_type.class);
+        Poi.deleteAll(Poi.class);
+*/
         db.execSQL(DROP + EVENTS);
         db.execSQL(DROP + EVENT_TYPE);
         db.execSQL(DROP + EVENT_POI);
