@@ -15,11 +15,9 @@ import java.util.List;
 public class MapBottomEventListAdapter extends BaseAdapter {
 
     public List<Event> events;
-    private Context context;
     private LayoutInflater lInflater;
 
     public MapBottomEventListAdapter(Context context, List<Event> events) {
-        this.context = context;
         lInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.events = events;
     }

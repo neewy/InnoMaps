@@ -22,8 +22,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
-import android.transition.TransitionInflater;
-import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,8 +29,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -70,10 +66,13 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static android.widget.AdapterView.OnItemClickListener;
 import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_NORMAL;
@@ -98,8 +97,9 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
 
     JGraphTWrapper graphWrapper;
     Polyline current;
+    TreeMap<String, ArrayList<LatLngGraphVertex>> currentNavPath;
 
-
+    FloatingActionButton routeStep;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,6 +115,8 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         scrollView = (NestedScrollView) getActivity().findViewById(R.id.bottom_sheet);
         durationLayout = (LinearLayout) scrollView.findViewById(R.id.durationLayout);
         startLayout = (LinearLayout) scrollView.findViewById(R.id.startLayout);
+
+        routeStep = (FloatingActionButton) v.findViewById(R.id.route_step);
         mBottomSheetBehavior = BottomSheetBehavior.from(scrollView);
         if (mBottomSheetBehavior != null) {
             mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -152,6 +154,8 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             case ConnectionResult.SUCCESS:
                 mapView = (MapView) v.findViewById(R.id.map);
                 floorPicker = (RadioGroup) v.findViewById(R.id.floorPicker);
+                ((RadioButton)floorPicker.getChildAt(0+4)).setChecked(true);
+                currentNavPath = new TreeMap<>();
                 mapView.getMapAsync(new OnMapReadyCallback() {
                     @Override
                     public void onMapReady(GoogleMap googleMap) {
@@ -165,6 +169,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                     mSettings = map.getUiSettings();
                     mSettings.setMyLocationButtonEnabled(true);
                     mSettings.setZoomControlsEnabled(true);
+                    mSettings.setMapToolbarEnabled(false);
                     final LatLng university = new LatLng(55.752116019, 48.7448166297);
                     markers = new ArrayList<>();
                     filterList = new ArrayList<>();
@@ -196,11 +201,31 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                             LatLng cameraTarget = cameraPosition.target;
                             if ((cameraTarget.latitude > 55.752116019 && cameraTarget.latitude < 55.754923377) &&
                                     (cameraTarget.longitude < 48.7448166297 && cameraTarget.longitude > 48.742106790) && cameraPosition.zoom > 17.50) {
-
                                 floorPicker.setVisibility(View.VISIBLE);
-
                             } else {
                                 floorPicker.setVisibility(View.INVISIBLE);
+                            }
+                        }
+                    });
+                    routeStep.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            String radioId = String.valueOf(5 - floorPicker.indexOfChild(floorPicker.findViewById(floorPicker.getCheckedRadioButtonId())));
+
+                            List<String> pathFloors = Arrays.asList(currentNavPath.keySet().toArray(new String[currentNavPath.size()]));
+                            for (int i = 0; i < pathFloors.size(); i++) {
+                                if (pathFloors.get(i).equals(radioId)) {
+                                    String floor;
+                                    if(i + 1 >= pathFloors.size()) {
+                                        drawPathOnMap(map, currentNavPath.get(pathFloors.get(0)));
+                                        floor = pathFloors.get(0);
+                                    } else {
+                                        drawPathOnMap(map, currentNavPath.get(pathFloors.get(i + 1)));
+                                        floor = pathFloors.get(i + 1);
+                                    }
+                                    ((RadioButton)floorPicker.getChildAt(5 - Integer.parseInt(floor))).setChecked(true);
+                                    break;
+                                }
                             }
                         }
                     });
@@ -253,6 +278,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             public boolean onMenuItemActionExpand(MenuItem item) {
                 if (topNavigation.getVisibility() == View.GONE) {
                     topNavigation.setVisibility(View.VISIBLE);
+                    routeStep.setVisibility(View.GONE);
                     return true;
                 }
                 return false;
@@ -396,18 +422,12 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             } catch (XmlPullParserException | IOException e) {
                 e.printStackTrace();
             }
-
             ArrayList<LatLngGraphVertex> path = graphWrapper.shortestPath(source, destination);
-            if (current != null) current.remove();
-
-            PolylineOptions polylineOptions = new PolylineOptions();
-            polylineOptions.width(4);
-            polylineOptions.color(Color.GREEN);
-            polylineOptions.geodesic(true);
-            for (LatLngGraphVertex v : path) {
-                polylineOptions.add(v.getVertex());
-            }
-            current = map.addPolyline(polylineOptions);
+            splitPathtoFloors(currentNavPath, path);
+            ((RadioButton)floorPicker.getChildAt(5 - Integer.parseInt(currentNavPath.firstEntry().getKey()))).setChecked(true);
+            scrollView.setVisibility(View.GONE);
+            routeStep.setVisibility(View.VISIBLE);
+            drawPathOnMap(map, currentNavPath.firstEntry().getValue());
         }
     }
 
@@ -513,13 +533,58 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
 
 
     public void showRoute(LatLng source, LatLng destination) {
-        graphWrapper = new JGraphTWrapper();
+        graphWrapper = new JGraphTWrapper(); //TODO: is there a need to re-initialize the graphWrapper?
         new RestRequest().execute(source, destination);
+        routeStep.setVisibility(View.VISIBLE);
     }
 
     private void sortClearAdd(int num) {
         filterList.clear();
         filterList.add(num);
+    }
+
+    public void splitPathtoFloors(Map<String, ArrayList<LatLngGraphVertex>> currentNavPath, ArrayList<LatLngGraphVertex> path){
+        ArrayList<LatLngGraphVertex> pathPart = new ArrayList<>();
+        LatLngGraphVertex vertexTemp = new LatLngGraphVertex(path.get(0));
+        for (LatLngGraphVertex vertex: path) {
+            String vertexTempID = String.valueOf(vertexTemp.getVertexId());
+            String vertexID = String.valueOf(vertex.getVertexId());
+            if (vertexID.length() < 4) {
+                pathPart.add(vertex);
+                vertexTemp = vertex;
+            } else {
+                if (vertexTempID.length() < 4 && vertexID.length() == 4) {
+                    currentNavPath.put("1", pathPart);
+                    pathPart = new ArrayList<>();
+                    vertexTemp = vertex;
+                } else {
+                    if (vertexTempID.substring(0,1).equals(vertexID.substring(0,1))) {
+                        pathPart.add(vertexTemp);
+                        vertexTemp = vertex;
+                    } else {
+                        currentNavPath.put(vertexID.substring(0,1), pathPart);
+                        pathPart = new ArrayList<>();
+                        vertexTemp = vertex;
+                    }
+                }
+            }
+        }
+        if (pathPart.size() != 0) {
+            String lastFloor = String.valueOf(path.get(path.size() - 1).getVertexId()).substring(0,1);
+            currentNavPath.put(lastFloor, pathPart);
+        }
+    }
+
+    public void drawPathOnMap(GoogleMap map, ArrayList<LatLngGraphVertex> path){
+        if (current != null) current.remove();
+        PolylineOptions polylineOptions = new PolylineOptions();
+        polylineOptions.width(4);
+        polylineOptions.color(Color.parseColor("#FF66BB6A"));
+        polylineOptions.geodesic(true);
+        for (LatLngGraphVertex v : path) {
+            polylineOptions.add(v.getVertex());
+        }
+        current = map.addPolyline(polylineOptions);
     }
 }
 

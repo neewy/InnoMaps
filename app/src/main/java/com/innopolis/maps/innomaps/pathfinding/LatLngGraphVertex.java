@@ -16,6 +16,11 @@ public class LatLngGraphVertex {
         this.vertexId = vertexId;
     }
 
+    public LatLngGraphVertex(LatLngGraphVertex vertex) {
+        this.vertex = vertex.getVertex();
+        this.vertexId = vertex.getVertexId();
+    }
+
     public LatLng getVertex() {
         return vertex;
     }
