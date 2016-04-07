@@ -426,7 +426,8 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             splitPathtoFloors(currentNavPath, path);
             ((RadioButton)floorPicker.getChildAt(5 - Integer.parseInt(currentNavPath.firstEntry().getKey()))).setChecked(true);
             scrollView.setVisibility(View.GONE);
-            routeStep.setVisibility(View.VISIBLE);
+            if (currentNavPath.size() > 1)
+                routeStep.setVisibility(View.VISIBLE);
             drawPathOnMap(map, currentNavPath.firstEntry().getValue());
         }
     }
@@ -535,7 +536,6 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     public void showRoute(LatLng source, LatLng destination) {
         graphWrapper = new JGraphTWrapper(); //TODO: is there a need to re-initialize the graphWrapper?
         new RestRequest().execute(source, destination);
-        routeStep.setVisibility(View.VISIBLE);
     }
 
     private void sortClearAdd(int num) {
@@ -544,34 +544,27 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     }
 
     public void splitPathtoFloors(Map<String, ArrayList<LatLngGraphVertex>> currentNavPath, ArrayList<LatLngGraphVertex> path){
+        currentNavPath.clear();
+        if (path == null) return;
         ArrayList<LatLngGraphVertex> pathPart = new ArrayList<>();
         LatLngGraphVertex vertexTemp = new LatLngGraphVertex(path.get(0));
         for (LatLngGraphVertex vertex: path) {
             String vertexTempID = String.valueOf(vertexTemp.getVertexId());
             String vertexID = String.valueOf(vertex.getVertexId());
-            if (vertexID.length() < 4) {
-                pathPart.add(vertex);
+            if (vertexTempID.substring(0,1).equals(vertexID.substring(0,1))) {
+                pathPart.add(vertexTemp);
                 vertexTemp = vertex;
             } else {
-                if (vertexTempID.length() < 4 && vertexID.length() == 4) {
-                    currentNavPath.put("1", pathPart);
-                    pathPart = new ArrayList<>();
-                    vertexTemp = vertex;
-                } else {
-                    if (vertexTempID.substring(0,1).equals(vertexID.substring(0,1))) {
-                        pathPart.add(vertexTemp);
-                        vertexTemp = vertex;
-                    } else {
-                        currentNavPath.put(vertexID.substring(0,1), pathPart);
-                        pathPart = new ArrayList<>();
-                        vertexTemp = vertex;
-                    }
-                }
+                pathPart.add(vertexTemp);
+                currentNavPath.put(vertexTempID.substring(0,1), pathPart);
+                pathPart = new ArrayList<>();
+                vertexTemp = vertex;
             }
         }
         if (pathPart.size() != 0) {
-            String lastFloor = String.valueOf(path.get(path.size() - 1).getVertexId()).substring(0,1);
-            currentNavPath.put(lastFloor, pathPart);
+            pathPart.add(vertexTemp);
+            String lastVerticeId = String.valueOf(path.get(path.size() - 1).getVertexId());
+                currentNavPath.put(lastVerticeId.substring(0,1), pathPart);
         }
     }
 
