@@ -214,6 +214,8 @@
     <string name="settling">settling</string>
     <string name="undefined">undefined</string>
     <string name="offset">offset</string>
+    <string name="desc_no_fav">empty fav list</string>
+    <string name="there_are_no_fav">There are no favourites yet</string>
 
 </resources>
 

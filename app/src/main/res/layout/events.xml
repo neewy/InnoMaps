@@ -15,4 +15,7 @@
         android:clickable="true"
         tools:listitem="@layout/single_event" />
 
+
+
+
 </android.support.v4.widget.SwipeRefreshLayout>

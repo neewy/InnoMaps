@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity
     private final String ABOUT = "About";
     private final String DETAILED = "Detailed";
 
-    private Tracker mTracker;
 
     private boolean doubleBackToExitPressedOnce = false;
     protected final List<SearchableItem> searchItems = new LinkedList<>();

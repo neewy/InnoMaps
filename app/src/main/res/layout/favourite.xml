@@ -3,16 +3,48 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
+    android:layout_height="fill_parent"
+    android:elevation="0dp"
+    android:fitsSystemWindows="false"
     tools:context="ru.innopolis.crawler.MainActivity">
 
+
     <ListView
+        android:id="@+id/eventListFav"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/eventList"
-        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" />
+
+    <RelativeLayout
+        android:id="@+id/empty_fav"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <ImageView
+
+            android:id="@+id/no_fav"
+            android:layout_width="170dp"
+            android:layout_height="152dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="90dp"
+            android:contentDescription="@string/desc_no_fav"
+            android:elevation="5dp"
+            android:src="@drawable/nofav" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/no_fav"
+            android:layout_centerHorizontal="true"
+            android:text="@string/there_are_no_fav"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/textColorGray"
+            android:typeface="sans" />
+    </RelativeLayout>
+
 
 </android.support.design.widget.CoordinatorLayout>

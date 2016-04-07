@@ -137,7 +137,6 @@ public class DetailedEvent extends Fragment {
         location = (TextView) view.findViewById(R.id.location);
         dateTime = (TextView) view.findViewById(R.id.dateTime);
         description = (LinkableTextView) view.findViewById(R.id.description);
-        description.setMovementMethod(LinkMovementMethod.getInstance());
         duration = (TextView) view.findViewById(R.id.duration);
         final CheckBox favCheckBox = (CheckBox) view.findViewById(R.id.favCheckBox);
 
@@ -210,8 +209,9 @@ public class DetailedEvent extends Fragment {
         Long durationTime = TimeUnit.MILLISECONDS.toMinutes(endDate.getTime() - startDate.getTime());
         duration.setText("Duration: " + String.valueOf(durationTime) + "min");
 
-        description.setText(descriptionStr)
+        description
                 .addLinks(links)
+                .setText(descriptionStr)
                 .build();
 
 

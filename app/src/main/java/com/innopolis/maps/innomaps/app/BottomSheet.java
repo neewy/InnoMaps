@@ -54,8 +54,6 @@ public class BottomSheet extends Fragment {
     protected GoogleMap map;
     protected HashMap<String, String> latLngMap;
     NestedScrollView scrollView;
-    private TextView mStateText;
-    private TextView mOffsetText;
     /*These components are the part of scrollview elements*/
     TextView headerText;
     TextView locationText;
@@ -164,12 +162,6 @@ public class BottomSheet extends Fragment {
         mBottomSheetBehavior.setPeekHeight(headerText.getLayout().getHeight() + fab.getHeight() + 42);
 
     }
-
-
-
-
-
-
 
 
     public void typeEventNon(String poi_id) {
