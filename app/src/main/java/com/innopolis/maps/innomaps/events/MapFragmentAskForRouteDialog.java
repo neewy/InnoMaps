@@ -3,9 +3,11 @@ package com.innopolis.maps.innomaps.events;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
@@ -31,18 +33,26 @@ import java.util.List;
 import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
+import static com.innopolis.maps.innomaps.database.TableFields.NULL;
 import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
+import static com.innopolis.maps.innomaps.database.TableFields.ROOM;
 
 public class MapFragmentAskForRouteDialog extends DialogFragment {
 
     String sourceFloor;
     String sourceRoom;
+    SharedPreferences sPref;
+    String currentLocation;
+    String currentLocationType;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sPref = PreferenceManager.getDefaultSharedPreferences(getContext());
         setHasOptionsMenu(true);
+        currentLocation = sPref.getString("currentLocation", NULL);
+        currentLocationType = sPref.getString("currentLocationType", NULL);
     }
 
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -105,6 +115,37 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
                 //not yet implemented
             }
         });
+
+        if (currentLocationType.equals(NULL)) {
+            SharedPreferences.Editor ed = sPref.edit();
+            ed.putString("currentLocationType", type);
+            if (type.equals("event")) {
+                ed.putString("currentLocation", arguments.getString("destination"));
+            } else {
+                ed.putString("currentLocation", arguments.getString("id"));
+            }
+            ed.apply();
+        } else {
+            if (currentLocationType.equals("event")) {
+                String[] currentLocationArray = currentLocation.split(", ");
+                /*Utils.selectSpinnerItemByValue(floorSpinner, currentLocationArray[1]);
+                Utils.selectSpinnerItemByValue(roomSpinner, currentLocationArray[2]);*/
+            } else {
+                Cursor cursor = database.rawQuery("SELECT * FROM poi WHERE _id LIKE '" + currentLocation + "'", null);
+                String floor = null;
+                String room = null;
+                if (cursor.moveToFirst()) {
+                    floor = cursor.getString(cursor.getColumnIndex(FLOOR));
+                    room = cursor.getString(cursor.getColumnIndex(ROOM));
+                }
+                /*if (floor != null) Utils.selectSpinnerItemByValue(floorSpinner, floor);
+                if (room != null) Utils.selectSpinnerItemByValue(floorSpinner, room);*/
+
+                cursor.close();
+            }
+
+        }
+
         LinearLayout linearLayout = new LinearLayout(getContext());
         linearLayout.addView(floorSpinner);
         linearLayout.addView(roomSpinner);
@@ -120,7 +161,7 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
                             String latitudeDest = "", longitudeDest = "";
                             Cursor cursorDest;
                             if (type.equals("event")) {
-                                String[] destination = arguments.get("destination").toString().split(", ");
+                                String[] destination = arguments.getString("destination").split(", ");
                                 cursorDest = database.rawQuery("SELECT * FROM poi WHERE building LIKE '%" + destination[0] + "%' and floor LIKE '%" + destination[1] + "%' and room LIKE '%" + destination[2] + "%'", null);
                             } else {
                                 String idPoi = arguments.getString("id");
@@ -144,7 +185,7 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
                         } else if (source.equals("DetailedEvent")) {
                             String latitudeDest = "", longitudeDest = "";
                             Cursor cursorDest;
-                            String[] destination = arguments.get("destination").toString().split(", ");
+                            String[] destination = arguments.getString("destination").split(", ");
                             cursorDest = database.rawQuery("SELECT * FROM poi WHERE building LIKE '%" + destination[0] + "%' and floor LIKE '%" + destination[1] + "%' and room LIKE '%" + destination[2] + "%'", null);
                             if (cursorDest.moveToFirst()) {
                                 latitudeDest = cursorDest.getString(cursorDest.getColumnIndex(LATITUDE));
@@ -174,5 +215,7 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
                 })
                 .create();
     }
+
+
 
 }

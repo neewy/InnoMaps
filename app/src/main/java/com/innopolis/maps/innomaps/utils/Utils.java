@@ -12,6 +12,8 @@ import android.net.NetworkInfo;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
@@ -173,5 +175,15 @@ public class Utils {
 
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
+    }
+
+    public static void selectSpinnerItemByValue(Spinner spnr, String value) {
+        ArrayAdapter<String> adapter = (ArrayAdapter<String>) spnr.getAdapter();
+        for (int position = 0; position < adapter.getCount(); position++) {
+            if(adapter.getItem(position).equals(value)) {
+                spnr.setSelection(position, true);
+                return;
+            }
+        }
     }
 }
