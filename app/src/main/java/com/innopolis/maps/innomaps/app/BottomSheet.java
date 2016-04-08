@@ -12,6 +12,7 @@ import android.widget.CheckedTextView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
@@ -53,7 +54,10 @@ public class BottomSheet extends Fragment {
     protected BottomSheetBehavior mBottomSheetBehavior;
     protected GoogleMap map;
     protected HashMap<String, String> latLngMap;
+
+    /*Bottom element, that is shown when search item is clicked*/
     NestedScrollView scrollView;
+
     /*These components are the part of scrollview elements*/
     TextView headerText;
     TextView locationText;
@@ -63,12 +67,14 @@ public class BottomSheet extends Fragment {
     TextView idPoi;
     LinearLayout durationLayout;
     LinearLayout startLayout;
-    List<Marker> markerList;
+
+    List<Marker> markerList; //to store markers on map
     RadioGroup floorPicker;
+
     private LatLng closest = null;
 
     public void inSearchBottomList(SearchableItem item, View view) {
-
+        ((RadioButton)floorPicker.getChildAt(5 - Integer.parseInt(item.getFloor().substring(0,1)))).setChecked(true);
         if (scrollView.getVisibility() == View.GONE) {
             scrollView.setVisibility(View.VISIBLE);
         }
@@ -103,7 +109,6 @@ public class BottomSheet extends Fragment {
             typeEventNon(item.getId());
         }
         locationText.setText(StringUtils.join(locationArray, ", "));
-
         Utils.hideKeyboard(getActivity());
     }
 

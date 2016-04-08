@@ -85,21 +85,26 @@ import static com.innopolis.maps.innomaps.database.TableFields.POI;
 
 public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnRequestPermissionsResultCallback {
 
-    private GroundOverlay imageOverlay;
+    private GroundOverlay imageOverlay; //current floor plan overlay
     private UiSettings mSettings;
     private LocationManager locationManager;
     DBHelper dbHelper;
 
     SearchView searchView;
     SearchView.SearchAutoComplete searchBox;
+
+    /*Don't be confused by class name - it is the element, which is shown during search, with 5 categories*/
     AHBottomNavigation topNavigation;
 
-
     JGraphTWrapper graphWrapper;
-    Polyline current;
-    TreeMap<String, ArrayList<LatLngGraphVertex>> currentNavPath;
 
+    /*This map structure stores shortest path, divided into floors (keys)*/
+    TreeMap<String, ArrayList<LatLngGraphVertex>> currentNavPath;
+    Polyline current; // current path, that is displayed
+
+    /*This button changes the path displayed on GoogleMap widget*/
     FloatingActionButton routeStep;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -178,6 +183,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(university, 17));
                     map.setMapType(MAP_TYPE_NORMAL);
                     markerList = new ArrayList<>();
+                    /*Invokes when location button is triggered – checks whether user has GPS turned on*/
                     map.setOnMyLocationButtonClickListener(new OnMyLocationButtonClickListener() {
                         @Override
                         public boolean onMyLocationButtonClick() {
@@ -195,6 +201,8 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                             scrollView.setVisibility(View.GONE);
                         }
                     });
+                    /* This listener checks current camera position in order to show custom
+                    * level picker over the university building */
                     map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
                         @Override
                         public void onCameraChange(CameraPosition cameraPosition) {
@@ -207,6 +215,9 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                             }
                         }
                     });
+                    /*This listener waits for button press event, routeStep button divides shortest path
+                    * on different floor segments, showing each in cyclic way: user clicks and then the next floor
+                    * with next path is shown */
                     routeStep.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
