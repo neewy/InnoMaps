@@ -166,7 +166,7 @@ public class BottomSheet extends Fragment {
         headerText.setText(name);
         startText.setText(Utils.commonTime.format(startDate));
         durationText.setText(Utils.prettyTime.format(startDate));
-        mBottomSheetBehavior.setPeekHeight(headerText.getLayout().getHeight() + fab.getHeight() + 42);
+        mBottomSheetBehavior.setPeekHeight(headerText.getLayout().getHeight() + fab.getHeight() + (int) getResources().getDisplayMetrics().density * 42);
 
     }
 
