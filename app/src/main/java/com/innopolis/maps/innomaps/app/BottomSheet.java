@@ -2,6 +2,7 @@ package com.innopolis.maps.innomaps.app;
 
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.PixelFormat;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -36,6 +37,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 import static com.innopolis.maps.innomaps.database.TableFields.DESCRIPTION;
@@ -71,10 +73,10 @@ public class BottomSheet extends Fragment {
     List<Marker> markerList; //to store markers on map
     RadioGroup floorPicker;
 
-    private LatLng closest = null;
+    protected LatLng closest = null;
 
     public void inSearchBottomList(SearchableItem item, View view) {
-        ((RadioButton)floorPicker.getChildAt(5 - Integer.parseInt(item.getFloor().substring(0,1)))).setChecked(true);
+        ((RadioButton) floorPicker.getChildAt(5 - Integer.parseInt(item.getFloor().substring(0, 1)))).setChecked(true);
         if (scrollView.getVisibility() == View.GONE) {
             scrollView.setVisibility(View.VISIBLE);
         }
@@ -213,29 +215,31 @@ public class BottomSheet extends Fragment {
                 relatedLayout.addView(eventList);
             }
             pinMarker(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
-            mBottomSheetBehavior.setPeekHeight(headerText.getLayout().getHeight() + fab.getHeight() + 42);
+            mBottomSheetBehavior.setPeekHeight(headerText.getLayout().getHeight() + fab.getHeight() + (int) getResources().getDisplayMetrics().density * 42);
         }
     }
 
 
     protected void clearMarkerList() {
-        if (markerList != null && markerList.size() > 0)
+        if (markerList != null && markerList.size() > 0) {
             markerList.get(0).remove();
-        markerList.clear();
+            markerList.clear();
+        }
     }
 
 
     public void pinMarker(LatLng latLng) {
         clearMarkerList();
         MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.title(findClosestPOI(latLng));
+        markerOptions.title(findClosestPOI(latLng).firstKey());
         markerOptions.position(closest == null ? latLng : closest);
         Marker marker = map.addMarker(markerOptions);
         marker.showInfoWindow();
         markerList.add(marker);
     }
 
-    private String findClosestPOI(LatLng latLng) {
+    private TreeMap<String, LatLng> findClosestPOI(LatLng latLng) {
+        TreeMap<String, LatLng> result = new TreeMap<>();
         if (latLngMap != null) {
             Iterator iterator = latLngMap.entrySet().iterator();
             double distance, closestDistance = Double.MAX_VALUE;
@@ -253,10 +257,11 @@ public class BottomSheet extends Fragment {
             String sqlQuery = "SELECT " + POI_NAME + " FROM " + POI + " WHERE " + LATITUDE + "=?" + " AND " + LONGITUDE + "=?";
             Cursor cursor = MarkersAdapter.database.rawQuery(sqlQuery, new String[]{lat, lng});
             cursor.moveToFirst();
-            return cursor.getString(cursor.getColumnIndex(POI_NAME));
+            result.put(cursor.getString(cursor.getColumnIndex(POI_NAME)), closest);
         } else {
             closest = null;
-            return "";
+            result.put("", null);
         }
+        return result;
     }
 }

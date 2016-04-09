@@ -93,9 +93,8 @@ public class MarkersAdapter extends BottomSheet {
             for (Marker marker : markers) {
                 marker.remove();
             }
+            markers.clear();
         }
-        markers.clear();
-
 
         if (cursor.moveToFirst()) {
             do {
@@ -111,7 +110,7 @@ public class MarkersAdapter extends BottomSheet {
 
     private void setMarkersRoom(String room, String type, String latitude, String longitude) {
 
-        float center = (float) 0.5;
+        float center = 0.5f;
         final Marker markersRoom = map.addMarker(new MarkerOptions()
                         .position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)))
                         .icon(iconBitmapAdapter(type))
@@ -141,31 +140,37 @@ public class MarkersAdapter extends BottomSheet {
         int src;
         BitmapDescriptor icon;
         Drawable shape;
-
-
         int px;
 
-        if (type.equals("room")) {
-            src = R.drawable.ic_room;
-            px = 15;
+        switch (type) {
+            case "room":
+                src = R.drawable.ic_room;
+                px = 15;
+                break;
 
-        } else if (type.equals("wc")) {
-            src = R.drawable.wc;
-            px = 30;
+            case "wc":
+                src = R.drawable.wc;
+                px = 30;
+                break;
 
-        } else if (type.equals("food")) {
-            src = R.drawable.ic_food;
-            px = 30;
-        } else {
-            src = R.drawable.ic_duck;
-            px = 30;
+            case "food":
+                src = R.drawable.ic_food;
+                px = 30;
+                break;
+
+            default:
+                src = R.drawable.ic_duck;
+                px = 30;
+                break;
         }
 
         Bitmap markerBitmap = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(markerBitmap);
         shape = getResources().getDrawable(src);
-        shape.setBounds(0, 0, markerBitmap.getWidth(), markerBitmap.getHeight());
-        shape.draw(canvas);
+        if (shape != null) {
+            shape.setBounds(0, 0, markerBitmap.getWidth(), markerBitmap.getHeight());
+            shape.draw(canvas);
+        }
         icon = BitmapDescriptorFactory.fromBitmap(markerBitmap);
 
         return icon;

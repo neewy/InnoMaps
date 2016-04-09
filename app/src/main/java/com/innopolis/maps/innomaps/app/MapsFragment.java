@@ -1,12 +1,15 @@
 package com.innopolis.maps.innomaps.app;
 
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.location.LocationManager;
@@ -21,6 +24,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,6 +37,7 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
@@ -59,6 +64,7 @@ import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.pathfinding.JGraphTWrapper;
 import com.innopolis.maps.innomaps.pathfinding.LatLngGraphVertex;
+import com.innopolis.maps.innomaps.qr.Scanner;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.io.IOUtils;
@@ -104,6 +110,9 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
 
     /*This button changes the path displayed on GoogleMap widget*/
     FloatingActionButton routeStep;
+
+    /*Dialog, that asks user how to select his location */
+    public Dialog currentDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -170,7 +179,9 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                 mapView.onCreate(savedInstanceState);
                 if (mapView != null) {
                     map = mapView.getMap();
-                    map.setMyLocationEnabled(true);
+                    if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        map.setMyLocationEnabled(true);
+                    }
                     mSettings = map.getUiSettings();
                     mSettings.setMyLocationButtonEnabled(true);
                     mSettings.setZoomControlsEnabled(true);
@@ -183,6 +194,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(university, 17));
                     map.setMapType(MAP_TYPE_NORMAL);
                     markerList = new ArrayList<>();
+
                     /*Invokes when location button is triggered – checks whether user has GPS turned on*/
                     map.setOnMyLocationButtonClickListener(new OnMyLocationButtonClickListener() {
                         @Override
@@ -194,27 +206,14 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                             return false;
                         }
                     });
-                    map.setOnMapClickListener(new OnMapClickListener() {
-                        @Override
-                        public void onMapClick(LatLng latLng) {
-                            pinMarker(latLng);
-                            scrollView.setVisibility(View.GONE);
-                        }
-                    });
+
+                    /*This listener pins marker to nearest POI on map next to click LatLng coordinates */
+                    map.setOnMapClickListener(mapClickListener);
+
                     /* This listener checks current camera position in order to show custom
                     * level picker over the university building */
-                    map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
-                        @Override
-                        public void onCameraChange(CameraPosition cameraPosition) {
-                            LatLng cameraTarget = cameraPosition.target;
-                            if ((cameraTarget.latitude > 55.752116019 && cameraTarget.latitude < 55.754923377) &&
-                                    (cameraTarget.longitude < 48.7448166297 && cameraTarget.longitude > 48.742106790) && cameraPosition.zoom > 17.50) {
-                                floorPicker.setVisibility(View.VISIBLE);
-                            } else {
-                                floorPicker.setVisibility(View.INVISIBLE);
-                            }
-                        }
-                    });
+                    map.setOnCameraChangeListener(showUniversityPicker);
+
                     /*This listener waits for button press event, routeStep button divides shortest path
                     * on different floor segments, showing each in cyclic way: user clicks and then the next floor
                     * with next path is shown */
@@ -285,7 +284,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchBox = (SearchView.SearchAutoComplete) searchView.findViewById(R.id.search_src_text);
         searchBox.setThreshold(1);
-        MenuItemCompat.setOnActionExpandListener((MenuItem) menu.findItem(R.id.search), new MenuItemCompat.OnActionExpandListener() {
+        MenuItemCompat.setOnActionExpandListener(menu.findItem(R.id.search), new MenuItemCompat.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
                 if (topNavigation.getVisibility() == View.GONE) {
@@ -592,5 +591,78 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         }
         current = map.addPolyline(polylineOptions);
     }
+
+    public void allowSelection(final Dialog dialog, final LatLng destination) {
+        dialog.hide();
+
+        final LinearLayout buttons = new LinearLayout(getContext());
+        LinearLayout.LayoutParams buttonsLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+        LinearLayout.LayoutParams buttonsParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 0.5f);
+        buttons.setLayoutParams(buttonsLayoutParams);
+        AppCompatButton back = new AppCompatButton(getContext());
+        back.setLayoutParams(buttonsParams);
+        back.setText("BACK");
+        AppCompatButton select = new AppCompatButton(getContext());
+        select.setLayoutParams(buttonsParams);
+        select.setText("GO");
+        buttons.addView(back);
+        buttons.addView(select);
+
+        RelativeLayout.LayoutParams parentParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        parentParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        parentParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+
+        ((RelativeLayout)getView()).addView(buttons, parentParams);
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.show();
+                ((RelativeLayout) getView()).removeView(buttons);
+            }
+        });
+
+        select.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((RelativeLayout) getView()).removeView(buttons);
+                showRoute(closest, destination);
+                dialog.cancel();
+            }
+        });
+
+    }
+
+    public void openQrScanner(Dialog dialog, LatLng destination) {
+        currentDialog = dialog;
+        dialog.hide();
+        Intent intent = new Intent(getActivity(), Scanner.class);
+        Bundle bundle = new Bundle();
+        bundle.putDouble("latitude", closest.latitude);
+        bundle.putDouble("longitude", closest.longitude);
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
+
+    GoogleMap.OnCameraChangeListener showUniversityPicker = new GoogleMap.OnCameraChangeListener() {
+        @Override
+        public void onCameraChange(CameraPosition cameraPosition) {
+            LatLng cameraTarget = cameraPosition.target;
+            if ((cameraTarget.latitude > 55.752116019 && cameraTarget.latitude < 55.754923377) &&
+                    (cameraTarget.longitude < 48.7448166297 && cameraTarget.longitude > 48.742106790) && cameraPosition.zoom > 17.50) {
+                floorPicker.setVisibility(View.VISIBLE);
+            } else {
+                floorPicker.setVisibility(View.INVISIBLE);
+            }
+        }
+    };
+
+    OnMapClickListener mapClickListener = new OnMapClickListener() {
+        @Override
+        public void onMapClick(LatLng latLng) {
+            pinMarker(latLng);
+            scrollView.setVisibility(View.GONE);
+        }
+    };
 }
 
