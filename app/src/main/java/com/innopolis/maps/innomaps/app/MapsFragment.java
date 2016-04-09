@@ -159,7 +159,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             case ConnectionResult.SUCCESS:
                 mapView = (MapView) v.findViewById(R.id.map);
                 floorPicker = (RadioGroup) v.findViewById(R.id.floorPicker);
-                ((RadioButton)floorPicker.getChildAt(0+4)).setChecked(true);
+                ((RadioButton) floorPicker.getChildAt(0 + 4)).setChecked(true);
                 currentNavPath = new TreeMap<>();
                 mapView.getMapAsync(new OnMapReadyCallback() {
                     @Override
@@ -251,6 +251,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             default:
                 Toast.makeText(getActivity(), GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity()), Toast.LENGTH_SHORT).show();
         }
+        map.getUiSettings().setMapToolbarEnabled(false);
         initializeOverlay();
         return v;
     }
@@ -582,9 +583,10 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     public void drawPathOnMap(GoogleMap map, ArrayList<LatLngGraphVertex> path){
         if (current != null) current.remove();
         PolylineOptions polylineOptions = new PolylineOptions();
-        polylineOptions.width(4);
-        polylineOptions.color(Color.parseColor("#FF66BB6A"));
-        polylineOptions.geodesic(true);
+        polylineOptions
+                .width(7)
+                .color(getResources().getColor(R.color.pathColor))
+                .geodesic(true);
         for (LatLngGraphVertex v : path) {
             polylineOptions.add(v.getVertex());
         }

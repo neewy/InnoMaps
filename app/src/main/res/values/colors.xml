@@ -5,6 +5,7 @@
     <color name="colorAccent">#ff9800</color>
     <color name="textColor">#FFFAFAFA</color>
     <color name="borderColor">#e0e0e0</color>
+    <color name="pathColor">#b4f57c00</color>
 
 
     <color name="textColorGray">#676767</color>

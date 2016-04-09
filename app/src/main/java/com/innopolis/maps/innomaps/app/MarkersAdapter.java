@@ -154,7 +154,7 @@ public class MarkersAdapter extends BottomSheet {
             px = 30;
 
         } else if (type.equals("food")) {
-            src = R.drawable.drink;
+            src = R.drawable.ic_food;
             px = 30;
         } else {
             src = R.drawable.ic_duck;
