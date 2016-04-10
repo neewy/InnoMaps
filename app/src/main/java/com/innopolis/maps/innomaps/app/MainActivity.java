@@ -224,6 +224,7 @@ public class MainActivity extends AppCompatActivity
                     getSupportActionBar().setTitle(getSupportFragmentManager().getBackStackEntryAt(lastEntry - 1).getName());
                     getSupportFragmentManager().popBackStackImmediate();
                 } else {
+                    //TODO: handle back press to update events in EventsFragment
                     getSupportFragmentManager().popBackStackImmediate(MAPS, 0);
                     getSupportActionBar().setTitle(MAPS);
                 }

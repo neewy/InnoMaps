@@ -19,7 +19,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
-import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -131,6 +130,7 @@ public class DetailedEvent extends Fragment {
         Utils.hideKeyboardInView(getContext(), container);
         ((DrawerLayout) getActivity().findViewById(R.id.drawer_layout)).setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Event details");
         context = getActivity().getApplicationContext();
         View view = inflater.inflate(R.layout.detailed_event, container, false);
         dbHelper = new DBHelper(context);
@@ -288,7 +288,7 @@ public class DetailedEvent extends Fragment {
                     }
                     if (latitude != null && longitude != null) {
                         LatLng position = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 19));
                         mMap.addMarker(new MarkerOptions().position(position).title(summary));
                         switch (floor) {
                             case "1floor":

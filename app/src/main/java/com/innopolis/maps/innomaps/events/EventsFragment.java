@@ -156,8 +156,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        ArrayList<Event> filteredList = new ArrayList<Event>(list);
-        ArrayList<Event> origin = new ArrayList<Event>(list);
+        ArrayList<Event> filteredList = new ArrayList<Event>(adapter.events);
         switch (item.getItemId()) {
             case R.id.action_today:
                 Collection<Event> today = Collections2.filter(filteredList, Event.isToday);
@@ -191,7 +190,6 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
                 break;
         }
         adapter.notifyDataSetChanged();
-        list = new ArrayList<>(origin);
         return true;
     }
 
