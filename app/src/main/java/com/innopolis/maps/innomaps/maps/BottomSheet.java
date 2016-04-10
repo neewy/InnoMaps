@@ -62,6 +62,8 @@ public class BottomSheet extends Fragment {
     protected GoogleMap map;
     protected HashMap<String, String> latLngMap;
 
+    private double distance, closestDistance;
+
     /*Bottom element, that is shown when search item is clicked*/
     NestedScrollView scrollView;
 
@@ -248,7 +250,7 @@ public class BottomSheet extends Fragment {
         clearMarkerList();
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.title(findClosestPOI(latLng).firstKey());
-        markerOptions.position(closest == null ? latLng : closest);
+        markerOptions.position(closest == null || closestDistance > 0.012 ? latLng : closest);
         Marker marker = map.addMarker(markerOptions);
         marker.showInfoWindow();
         markerList.add(marker);
@@ -258,7 +260,7 @@ public class BottomSheet extends Fragment {
         TreeMap<String, LatLng> result = new TreeMap<>();
         if (latLngMap != null) {
             Iterator iterator = latLngMap.entrySet().iterator();
-            double distance, closestDistance = Double.MAX_VALUE;
+            closestDistance = Double.MAX_VALUE;
             String lat = "", lng = "";
             while (iterator.hasNext()) {
                 Map.Entry pair = (Map.Entry) iterator.next();
@@ -269,15 +271,18 @@ public class BottomSheet extends Fragment {
                     lng = pair.getValue().toString();
                 }
             }
-            closest = new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
-            String sqlQuery = "SELECT " + POI_NAME + " FROM " + POI + " WHERE " + LATITUDE + "=?" + " AND " + LONGITUDE + "=?";
-            Cursor cursor = MarkersAdapter.database.rawQuery(sqlQuery, new String[]{lat, lng});
-            cursor.moveToFirst();
-            result.put(cursor.getString(cursor.getColumnIndex(POI_NAME)), closest);
-        } else {
-            closest = null;
-            result.put("", null);
+            if (closestDistance < 0.012){
+                closest = new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
+                Log.d("DISTANCE: ", ""+closestDistance);
+                String sqlQuery = "SELECT " + POI_NAME + " FROM " + POI + " WHERE " + LATITUDE + "=?" + " AND " + LONGITUDE + "=?";
+                Cursor cursor = MarkersAdapter.database.rawQuery(sqlQuery, new String[]{lat, lng});
+                cursor.moveToFirst();
+                result.put(cursor.getString(cursor.getColumnIndex(POI_NAME)), closest);
+                return result;
+            }
         }
+        closest = null;
+        result.put("", null);
         return result;
     }
 }

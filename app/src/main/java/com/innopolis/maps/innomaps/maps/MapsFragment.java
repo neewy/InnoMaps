@@ -152,7 +152,8 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                                 });
                     } else if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                         floorPicker.setAlpha(0f);
-                        floorPicker.setVisibility(View.VISIBLE);
+                        if (checkIfZoomIsEnough(map.getCameraPosition()))
+                            floorPicker.setVisibility(View.VISIBLE);
                         floorPicker.animate()
                                 .alpha(1f)
                                 .setDuration(200)
@@ -266,7 +267,6 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             default:
                 Toast.makeText(getActivity(), GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity()), Toast.LENGTH_SHORT).show();
         }
-        initializeOverlay();
         return v;
     }
 
@@ -488,55 +488,52 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     }
 
     private void initializeOverlay() {
-        putOverlayToMap(new LatLng(55.752533, 48.742492), new LatLng(55.754656, 48.744589), BitmapDescriptorFactory.fromResource(R.raw.ai6_floor1));
-        setFloorPOIHashMap(1);
+        floorPickerGroundOverlaySwitch(floorPicker.getCheckedRadioButtonId());
         floorPicker.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (scrollView.getVisibility() == View.VISIBLE) {
                     scrollView.setVisibility(View.GONE);
                 }
-                LatLng southWest, northEast;
-                switch (checkedId) {
-                    case R.id.button1:
-                    default:
-                        addPolylineToMap("1");
-                        southWest = new LatLng(55.752533, 48.742492);
-                        northEast = new LatLng(55.754656, 48.744589);
-                        buttonClickFloorPicker(southWest, northEast, R.raw.ai6_floor1, 1);
-                        break;
-                    case R.id.button2:
-                            addPolylineToMap("2");
-                        southWest = new LatLng(55.752828, 48.742661);
-                        northEast = new LatLng(55.754597, 48.744469);
-                        buttonClickFloorPicker(southWest, northEast, R.raw.ai6_floor2, 2);
-                        break;
-                    case R.id.button3:
-                        addPolylineToMap("3");
-                        southWest = new LatLng(55.752875, 48.742739);
-                        northEast = new LatLng(55.754572, 48.744467);
-                        buttonClickFloorPicker(southWest, northEast, R.raw.ai6_floor3, 3);
-                        break;
-                    case R.id.button4:
-                        addPolylineToMap("4");
-                        southWest = new LatLng(55.752789, 48.742711);
-                        northEast = new LatLng(55.754578, 48.744569);
-                        buttonClickFloorPicker(southWest, northEast, R.raw.ai6_floor4, 4);
-                        break;
-                    case R.id.button5:
-                        addPolylineToMap("5");
-                        southWest = new LatLng(55.752808, 48.743497);
-                        northEast = new LatLng(55.753383, 48.744519);
-                        buttonClickFloorPicker(southWest, northEast, R.raw.ai6_floor5, 5);
-                        break;
-                }
+                floorPickerGroundOverlaySwitch(checkedId);
             }
         });
 
     }
 
+    private void floorPickerGroundOverlaySwitch(int checkedId){
+        LatLng southWest, northEast;
+        switch (checkedId) {
+            case R.id.button1:
+            default:
+                southWest = new LatLng(55.752533, 48.742492);
+                northEast = new LatLng(55.754656, 48.744589);
+                buttonClickFloorPicker(southWest, northEast, R.raw.ai6_floor1, 1);
+                break;
+            case R.id.button2:
+                southWest = new LatLng(55.752828, 48.742661);
+                northEast = new LatLng(55.754597, 48.744469);
+                buttonClickFloorPicker(southWest, northEast, R.raw.ai6_floor2, 2);
+                break;
+            case R.id.button3:
+                southWest = new LatLng(55.752875, 48.742739);
+                northEast = new LatLng(55.754572, 48.744467);
+                buttonClickFloorPicker(southWest, northEast, R.raw.ai6_floor3, 3);
+                break;
+            case R.id.button4:
+                southWest = new LatLng(55.752789, 48.742711);
+                northEast = new LatLng(55.754578, 48.744569);
+                buttonClickFloorPicker(southWest, northEast, R.raw.ai6_floor4, 4);
+                break;
+            case R.id.button5:
+                southWest = new LatLng(55.752808, 48.743497);
+                northEast = new LatLng(55.753383, 48.744519);
+                buttonClickFloorPicker(southWest, northEast, R.raw.ai6_floor5, 5);
+                break;
+        }
+    }
+
     private void buttonClickFloorPicker(LatLng southWest, LatLng northEast, int floorSource, int floor) {
-        clearMarkerList();
         isMarkerSorted(floor);
         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(floorSource));
         setFloorPOIHashMap(floor);
@@ -688,15 +685,28 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     GoogleMap.OnCameraChangeListener showUniversityPicker = new GoogleMap.OnCameraChangeListener() {
         @Override
         public void onCameraChange(CameraPosition cameraPosition) {
-            LatLng cameraTarget = cameraPosition.target;
-            if ((cameraTarget.latitude > 55.752116019 && cameraTarget.latitude < 55.754923377) &&
-                    (cameraTarget.longitude < 48.7448166297 && cameraTarget.longitude > 48.742106790) && cameraPosition.zoom > 17.50) {
+            if (checkIfZoomIsEnough(cameraPosition)) {
                 floorPicker.setVisibility(View.VISIBLE);
+                if (imageOverlay==null)
+                    initializeOverlay();
             } else {
                 floorPicker.setVisibility(View.INVISIBLE);
+                if (imageOverlay!=null) {
+                    imageOverlay.remove();
+                    imageOverlay = null;
+                }
             }
         }
     };
+
+    private boolean checkIfZoomIsEnough(CameraPosition cameraPosition){
+        LatLng cameraTarget = cameraPosition.target;
+        if ((cameraTarget.latitude > 55.752116019 && cameraTarget.latitude < 55.754923377) &&
+                (cameraTarget.longitude < 48.7448166297 && cameraTarget.longitude > 48.742106790) && cameraPosition.zoom > 17.50){
+            return true;
+        }
+        return false;
+    }
 
     OnMapClickListener mapClickListener = new OnMapClickListener() {
         @Override
