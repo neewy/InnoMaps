@@ -46,6 +46,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private DrawerLayout drawer;
+
     private final String MAPS = "Maps";
     private final String FAV = "Favourite";
     private final String EVENTS = "Events";
@@ -76,6 +78,7 @@ public class MainActivity extends AppCompatActivity
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         scrollView = (NestedScrollView) findViewById(R.id.bottom_sheet);
         routeButton = (FloatingActionButton) findViewById(R.id.goto_fab);
         final TextView locationText = (TextView) scrollView.findViewById(R.id.locationText);
@@ -191,7 +194,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -233,6 +235,16 @@ public class MainActivity extends AppCompatActivity
             toggle.setDrawerIndicatorEnabled(true);
             toggle.syncState();
         }
+    }
+
+    public void setToggle() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        invalidateOptionsMenu();
+        toggle.setDrawerIndicatorEnabled(true);
+        toggle.syncState();
     }
 
     @Override

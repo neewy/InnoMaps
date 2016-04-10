@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.maps.MapsFragment;
 import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.utils.Utils;
@@ -193,6 +194,7 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
                                     new LatLng(Double.parseDouble(latitudeDest), Double.parseDouble(longitudeDest)));
                             getActivity().getSupportFragmentManager().popBackStackImmediate("Maps", 0);
                             ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Maps");
+                            ((MainActivity) getActivity()).setToggle();
                         }
 
                         MapFragmentAskForRouteDialog.this.getDialog().cancel();
