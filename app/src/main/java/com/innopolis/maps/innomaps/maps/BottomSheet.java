@@ -2,6 +2,7 @@ package com.innopolis.maps.innomaps.maps;
 
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
@@ -20,7 +21,6 @@ import android.widget.TextView;
 
 import com.apradanas.simplelinkabletext.Link;
 import com.apradanas.simplelinkabletext.LinkableTextView;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
@@ -126,8 +126,6 @@ public class BottomSheet extends Fragment {
 
 
     protected void typeEvent(String summary) {
-
-        FrameLayout relatedLayout = (FrameLayout) scrollView.findViewById(R.id.relatedLayout);
         FloatingActionButton fab = (FloatingActionButton) scrollView.findViewById(R.id.goto_fab);
 
         String sqlQuery = "SELECT * FROM events INNER JOIN event_poi ON events.eventID = event_poi.eventID INNER JOIN poi ON event_poi.poi_id = poi._id WHERE events.summary=?";
@@ -182,8 +180,7 @@ public class BottomSheet extends Fragment {
         headerText.setText(name);
         startText.setText(Utils.commonTime.format(startDate));
         durationText.setText(Utils.prettyTime.format(startDate));
-        mBottomSheetBehavior.setPeekHeight(headerText.getLayout().getHeight() + fab.getHeight() + (int) getResources().getDisplayMetrics().density * 42);
-
+        setPeekHeight();
     }
 
 
@@ -233,7 +230,7 @@ public class BottomSheet extends Fragment {
             LatLng place = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
             pinMarker(place);
             map.animateCamera(CameraUpdateFactory.newLatLng(place));
-            mBottomSheetBehavior.setPeekHeight(headerText.getLayout().getHeight() + fab.getHeight() + (int) getResources().getDisplayMetrics().density * 42);
+            setPeekHeight();
         }
     }
 
@@ -284,5 +281,20 @@ public class BottomSheet extends Fragment {
         closest = null;
         result.put("", null);
         return result;
+    }
+
+    private void setPeekHeight() {
+        Rect rect = new Rect();
+        scrollView.getLocalVisibleRect(rect);
+        Rect rect1 = new Rect();
+        Rect rect2 = new Rect();
+        Rect rect3 = new Rect();
+        Rect rect4 = new Rect();
+        relatedLayout.getLocalVisibleRect(rect1);
+        durationLayout.getLocalVisibleRect(rect2);
+        startLayout.getLocalVisibleRect(rect3);
+        locationText.getLocalVisibleRect(rect4);
+        int height = rect.height() - (rect1.height() + rect2.height() + rect3.height() + rect4.height() + (int) Utils.convertDpToPixel(32, getContext()));
+        mBottomSheetBehavior.setPeekHeight(height);
     }
 }
