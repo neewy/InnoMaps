@@ -37,8 +37,8 @@ public class MarkersAdapter extends BottomSheet {
     private static final int OTHER_FILTER = 4;
     static SQLiteDatabase database;
     MapView mapView;
-    List<Marker> markers;
-    List<Integer> filterList;
+    List<Marker> markers; //store all markers
+    List<Integer> filterList; //to store elements after choosing filter
 
     protected void isMarkerSorted(int floor) {
         int filter = filterList.get(0);
@@ -49,7 +49,7 @@ public class MarkersAdapter extends BottomSheet {
         } else if (filter == ALL_FILTER) {
             makeAllMarkers(floor);
         } else if (filter == EVENTS_FILTER) {
-            makeAllMarkers(floor);
+            makeEventsMarkers(floor);
         } else if (filter == OTHER_FILTER) {
             makeOtherMarkers(floor);
         }
@@ -75,7 +75,7 @@ public class MarkersAdapter extends BottomSheet {
 
     private void makeOtherMarkers(int floor) {
         String selection = FLOOR + " = ? AND (" + TYPE + " = ? or " + TYPE + " = ?)";
-        String[] selectionArgs = {floor + "floor", "wc", "food"};
+        String[] selectionArgs = {floor + "floor", "service", "misc"};
         Cursor cursor = database.query(POI, null, selection, selectionArgs, null, null, null);
         refreshMarkers(cursor);
 
@@ -85,6 +85,18 @@ public class MarkersAdapter extends BottomSheet {
         String selection = FLOOR + " = ? AND (" + TYPE + " = ? or " + TYPE + " = ? or " + TYPE + " = ?)";
         String[] selectionArgs = {floor + "floor", "room", "wc", "food"};
         Cursor cursor = database.query(POI, null, selection, selectionArgs, null, null, null);
+        refreshMarkers(cursor);
+
+    }
+
+    protected void makeEventsMarkers(int floor) {
+        String selection = "SELECT * FROM poi " +
+                "LEFT OUTER JOIN event_poi on event_poi.poi_id = poi._id " +
+                "LEFT OUTER JOIN events on events.eventID = event_poi.eventID " +
+                "INNER JOIN event_type on event_type._id = events._id " +
+                "WHERE poi.floor = ? AND poi.type LIKE 'room'";
+        String[] selectionArgs = {floor + "floor"};
+        Cursor cursor = database.rawQuery(selection, selectionArgs);
         refreshMarkers(cursor);
 
     }
@@ -121,6 +133,20 @@ public class MarkersAdapter extends BottomSheet {
         );
 
         markers.add(markersRoom);
+
+        map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng latLng) {
+                for (Marker marker : markers) {
+                    if (Math.abs(marker.getPosition().latitude - latLng.latitude) < 0.05 && Math.abs(marker.getPosition().longitude - latLng.longitude) < 0.05) {
+                        searchMarker(marker);
+                        break;
+                    }
+                }
+
+            }
+
+        });
     }
 
     public BitmapDescriptor iconBitmapAdapter(String type) {

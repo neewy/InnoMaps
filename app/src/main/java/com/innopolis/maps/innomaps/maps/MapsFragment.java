@@ -188,8 +188,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                         map.setMyLocationEnabled(true);
                     }
                     mSettings = map.getUiSettings();
-                    mSettings.setMyLocationButtonEnabled(true);
-                    mSettings.setZoomControlsEnabled(true);
+
                     mSettings.setMapToolbarEnabled(false);
                     final LatLng university = new LatLng(55.752116019, 48.7448166297);
                     markers = new ArrayList<>();
@@ -703,6 +702,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         public void onMapClick(LatLng latLng) {
             pinMarker(latLng);
             scrollView.setVisibility(View.GONE);
+            Log.d("location: ", latLng.toString());
         }
     };
 }
