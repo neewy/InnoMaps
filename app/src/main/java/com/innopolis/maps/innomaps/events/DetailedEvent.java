@@ -189,7 +189,12 @@ public class DetailedEvent extends Fragment {
                 .setClickListener(new Link.OnClickListener() {
                     @Override
                     public void onClick(String text) {
-                        telegramTransfer(text);
+                        DialogFragment newFragment = new TelegramOpenDialog();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("dialogText", text);
+                        bundle.putString("dialogUrl", text);
+                        newFragment.setArguments(bundle);
+                        newFragment.show(getActivity().getSupportFragmentManager(), "Telegram");
                     }
                 });
 
@@ -257,27 +262,8 @@ public class DetailedEvent extends Fragment {
         });
         initializeMap(latitude, longitude);
 
-
         return view;
-
     }
-
-
-    private void telegramTransfer(final String dialogText) {
-
-        description.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DialogFragment newFragment = new TelegramOpenDialog();
-                Bundle bundle = new Bundle();
-                bundle.putString("dialogText", dialogText);
-                bundle.putString("dialogUrl", dialogText);
-                newFragment.setArguments(bundle);
-                newFragment.show(getActivity().getSupportFragmentManager(), "Telegram");
-            }
-        });
-    }
-
 
     public void initializeMap(final String latitude, final String longitude) {
         final LatLng[] southWest = new LatLng[1];
