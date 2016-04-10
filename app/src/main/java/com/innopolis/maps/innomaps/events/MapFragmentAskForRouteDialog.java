@@ -22,8 +22,8 @@ import android.widget.TextView;
 import com.google.android.gms.maps.model.LatLng;
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.app.MainActivity;
-import com.innopolis.maps.innomaps.maps.MapsFragment;
 import com.innopolis.maps.innomaps.database.DBHelper;
+import com.innopolis.maps.innomaps.maps.MapsFragment;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import java.util.ArrayList;
@@ -73,7 +73,7 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
     }
 
     @NonNull
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(final Bundle savedInstanceState) {
 
         maps = (MapsFragment) getActivity().getSupportFragmentManager().findFragmentByTag("Maps");
 
@@ -159,6 +159,11 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
         mapSelect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (source.equals("DetailedEvent")) {
+                    getActivity().getSupportFragmentManager().popBackStackImmediate("Maps", 0);
+                    ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Maps");
+                    ((MainActivity) getActivity()).setToggle();
+                }
                 maps.allowSelection(MapFragmentAskForRouteDialog.this.getDialog(), new LatLng(Double.parseDouble(latitudeDest), Double.parseDouble(longitudeDest)));
             }
         });
@@ -177,8 +182,6 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
                 .setPositiveButton("Route", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
 
-                        String source = arguments.getString("dialogSource");
-
                         String latitudeSource = "", longitudeSource = "";
                         Cursor cursorSource = database.rawQuery("SELECT * FROM poi WHERE floor LIKE '%" + sourceFloor + "%' and name LIKE '%" + sourceRoom + "%'", null);
                         if (cursorSource.moveToFirst()) {
@@ -190,8 +193,6 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
                                 new LatLng(Double.parseDouble(latitudeDest), Double.parseDouble(longitudeDest)));
 
                         if (source.equals("DetailedEvent")) {
-                            maps.showRoute(new LatLng(Double.parseDouble(latitudeSource), Double.parseDouble(longitudeSource)),
-                                    new LatLng(Double.parseDouble(latitudeDest), Double.parseDouble(longitudeDest)));
                             getActivity().getSupportFragmentManager().popBackStackImmediate("Maps", 0);
                             ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Maps");
                             ((MainActivity) getActivity()).setToggle();
