@@ -1,8 +1,7 @@
-package com.innopolis.maps.innomaps.app;
+package com.innopolis.maps.innomaps.maps;
 
 import android.database.Cursor;
 import android.graphics.Color;
-import android.graphics.PixelFormat;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -24,6 +23,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.app.SearchableItem;
 import com.innopolis.maps.innomaps.events.Event;
 import com.innopolis.maps.innomaps.events.MapBottomEventListAdapter;
 import com.innopolis.maps.innomaps.utils.Utils;

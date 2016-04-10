@@ -36,6 +36,7 @@ import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.events.EventsFragment;
 import com.innopolis.maps.innomaps.events.FavouriteFragment;
 import com.innopolis.maps.innomaps.events.MapFragmentAskForRouteDialog;
+import com.innopolis.maps.innomaps.maps.MapsFragment;
 import com.innopolis.maps.innomaps.utils.AnalyticsTrackers;
 import com.innopolis.maps.innomaps.utils.Utils;
 
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity
 
 
     private boolean doubleBackToExitPressedOnce = false;
-    protected final List<SearchableItem> searchItems = new LinkedList<>();
+    public final List<SearchableItem> searchItems = new LinkedList<>();
 
     DBHelper dbHelper;
     SQLiteDatabase database;

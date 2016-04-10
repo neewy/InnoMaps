@@ -1,4 +1,4 @@
-package com.innopolis.maps.innomaps.app;
+package com.innopolis.maps.innomaps.maps;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -14,6 +14,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.app.SearchableItem;
 import com.innopolis.maps.innomaps.database.TableFields;
 
 import java.util.List;

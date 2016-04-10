@@ -1,13 +1,16 @@
 package com.innopolis.maps.innomaps.events;
 
+import android.Manifest;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -169,7 +172,7 @@ public class DetailedEvent extends Fragment {
             cursor1.close();
         } while (cursor.moveToNext());
         cursor.close();
-        Cursor locationC = database.rawQuery("SELECT * FROM poi INNER JOIN event_poi on event_poi.poi_id = poi._id WHERE event_poi.eventID LIKE '%" + eventID +"%'", null);
+        Cursor locationC = database.rawQuery("SELECT * FROM poi INNER JOIN event_poi on event_poi.poi_id = poi._id WHERE event_poi.eventID LIKE '%" + eventID + "%'", null);
         if (locationC.moveToFirst()) {
             building = locationC.getString(locationC.getColumnIndex(BUILDING));
             floor = locationC.getString(locationC.getColumnIndex(FLOOR));
@@ -295,7 +298,9 @@ public class DetailedEvent extends Fragment {
                     mSettings = mMap.getUiSettings();
                     mSettings.setMapToolbarEnabled(false);
                     mSettings.setMyLocationButtonEnabled(false);
-                    mMap.setMyLocationEnabled(true);
+                    if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        mMap.setMyLocationEnabled(true);
+                    }
                     if (latitude != null && longitude != null) {
                         LatLng position = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));

@@ -21,7 +21,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.innopolis.maps.innomaps.R;
-import com.innopolis.maps.innomaps.app.MapsFragment;
+import com.innopolis.maps.innomaps.maps.MapsFragment;
 import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.utils.Utils;
 

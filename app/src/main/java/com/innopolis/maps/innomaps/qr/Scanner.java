@@ -12,7 +12,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
 import com.innopolis.maps.innomaps.app.MainActivity;
-import com.innopolis.maps.innomaps.app.MapsFragment;
+import com.innopolis.maps.innomaps.maps.MapsFragment;
 import com.innopolis.maps.innomaps.database.DBHelper;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.innopolis.maps.innomaps.app;
+package com.innopolis.maps.innomaps.maps;
 
 
 import android.Manifest;
@@ -57,10 +57,12 @@ import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.common.collect.Collections2;
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.app.MainActivity;
+import com.innopolis.maps.innomaps.app.SearchableItem;
+import com.innopolis.maps.innomaps.app.SuggestionAdapter;
 import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.pathfinding.JGraphTWrapper;
 import com.innopolis.maps.innomaps.pathfinding.LatLngGraphVertex;
@@ -106,7 +108,8 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
 
     /*This map structure stores shortest path, divided into floors (keys)*/
     TreeMap<String, ArrayList<LatLngGraphVertex>> currentNavPath;
-    Polyline current; // current path, that is displayed
+
+    PolylineWrapper current; // current path, that is displayed
 
     /*This button changes the path displayed on GoogleMap widget*/
     FloatingActionButton routeStep;
@@ -168,8 +171,9 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             case ConnectionResult.SUCCESS:
                 mapView = (MapView) v.findViewById(R.id.map);
                 floorPicker = (RadioGroup) v.findViewById(R.id.floorPicker);
-                ((RadioButton) floorPicker.getChildAt(0 + 4)).setChecked(true);
+                ((RadioButton) floorPicker.getChildAt(4)).setChecked(true); //1st floor
                 currentNavPath = new TreeMap<>();
+                current = new PolylineWrapper();
                 mapView.getMapAsync(new OnMapReadyCallback() {
                     @Override
                     public void onMapReady(GoogleMap googleMap) {
@@ -227,10 +231,10 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                                 if (pathFloors.get(i).equals(radioId)) {
                                     String floor;
                                     if(i + 1 >= pathFloors.size()) {
-                                        drawPathOnMap(map, currentNavPath.get(pathFloors.get(0)));
+                                        drawPathOnMap(map, pathFloors.get(0), currentNavPath.get(pathFloors.get(0)));
                                         floor = pathFloors.get(0);
                                     } else {
-                                        drawPathOnMap(map, currentNavPath.get(pathFloors.get(i + 1)));
+                                        drawPathOnMap(map, pathFloors.get(i + 1), currentNavPath.get(pathFloors.get(i + 1)));
                                         floor = pathFloors.get(i + 1);
                                     }
                                     ((RadioButton)floorPicker.getChildAt(5 - Integer.parseInt(floor))).setChecked(true);
@@ -250,7 +254,6 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             default:
                 Toast.makeText(getActivity(), GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity()), Toast.LENGTH_SHORT).show();
         }
-        map.getUiSettings().setMapToolbarEnabled(false);
         initializeOverlay();
         return v;
     }
@@ -439,7 +442,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             scrollView.setVisibility(View.GONE);
             if (currentNavPath.size() > 1)
                 routeStep.setVisibility(View.VISIBLE);
-            drawPathOnMap(map, currentNavPath.firstEntry().getValue());
+            drawPathOnMap(map, currentNavPath.firstEntry().getKey(), currentNavPath.firstEntry().getValue());
         }
     }
 
@@ -478,26 +481,31 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                 switch (checkedId) {
                     case R.id.button1:
                     default:
+                        addPolylineToMap("1");
                         southWest = new LatLng(55.752533, 48.742492);
                         northEast = new LatLng(55.754656, 48.744589);
                         buttonClickFloorPicker(southWest, northEast, R.raw.ai6_floor1, 1);
                         break;
                     case R.id.button2:
+                            addPolylineToMap("2");
                         southWest = new LatLng(55.752828, 48.742661);
                         northEast = new LatLng(55.754597, 48.744469);
                         buttonClickFloorPicker(southWest, northEast, R.raw.ai6_floor2, 2);
                         break;
                     case R.id.button3:
+                        addPolylineToMap("3");
                         southWest = new LatLng(55.752875, 48.742739);
                         northEast = new LatLng(55.754572, 48.744467);
                         buttonClickFloorPicker(southWest, northEast, R.raw.ai6_floor3, 3);
                         break;
                     case R.id.button4:
+                        addPolylineToMap("4");
                         southWest = new LatLng(55.752789, 48.742711);
                         northEast = new LatLng(55.754578, 48.744569);
                         buttonClickFloorPicker(southWest, northEast, R.raw.ai6_floor4, 4);
                         break;
                     case R.id.button5:
+                        addPolylineToMap("5");
                         southWest = new LatLng(55.752808, 48.743497);
                         northEast = new LatLng(55.753383, 48.744519);
                         buttonClickFloorPicker(southWest, northEast, R.raw.ai6_floor5, 5);
@@ -579,8 +587,8 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         }
     }
 
-    public void drawPathOnMap(GoogleMap map, ArrayList<LatLngGraphVertex> path){
-        if (current != null) current.remove();
+    public void drawPathOnMap(GoogleMap map, String floor, ArrayList<LatLngGraphVertex> path){
+        if (!current.isEmpty()) current.deleteFromMap();
         PolylineOptions polylineOptions = new PolylineOptions();
         polylineOptions
                 .width(7)
@@ -589,7 +597,19 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         for (LatLngGraphVertex v : path) {
             polylineOptions.add(v.getVertex());
         }
-        current = map.addPolyline(polylineOptions);
+        current.setPolyline(map, polylineOptions);
+        current.setFloor(floor);
+    }
+
+    public void addPolylineToMap (String floor) {
+        if (current.getFloor().equals(floor)) {
+            PolylineOptions polylineOptions = current.getPolylineOptions();
+            current.deleteFromMap();
+            current.setPolyline(map, polylineOptions);
+            current.setFloor(floor);
+        } else {
+            current.deleteFromMap();
+        }
     }
 
     public void allowSelection(final Dialog dialog, final LatLng destination) {
