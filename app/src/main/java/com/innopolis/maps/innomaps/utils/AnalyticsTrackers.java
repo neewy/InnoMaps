@@ -28,10 +28,10 @@ public final class AnalyticsTrackers {
 
     public static synchronized void initialize(Context context) {
         if (sInstance != null) {
-            throw new IllegalStateException("Extra call to initialize analytics trackers");
+            //throw new IllegalStateException("Extra call to initialize analytics trackers");
+        } else {
+            sInstance = new AnalyticsTrackers(context);
         }
-
-        sInstance = new AnalyticsTrackers(context);
     }
 
     public static synchronized AnalyticsTrackers getInstance() {

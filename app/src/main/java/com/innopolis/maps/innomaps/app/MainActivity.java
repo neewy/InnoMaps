@@ -203,7 +203,8 @@ public class MainActivity extends AppCompatActivity
             if (getSupportFragmentManager().getBackStackEntryCount() == 1) {
 
                 if (doubleBackToExitPressedOnce) {
-                    finish();
+                    getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    super.onBackPressed();
                 }
 
                 this.doubleBackToExitPressedOnce = true;
