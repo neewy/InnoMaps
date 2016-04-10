@@ -165,7 +165,7 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
         qrSelect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                maps.openQrScanner(MapFragmentAskForRouteDialog.this.getDialog(), new LatLng(Double.parseDouble(latitudeDest), Double.parseDouble(longitudeDest)));
+                maps.openQrScanner(MapFragmentAskForRouteDialog.this.getDialog());
             }
         });
 

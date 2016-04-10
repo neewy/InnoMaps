@@ -57,4 +57,12 @@ public class PolylineWrapper {
             return false;
         }
     }
+
+    public boolean isNull() {
+        if (floor == null & polyline == null & polylineOptions == null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

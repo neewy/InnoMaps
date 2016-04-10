@@ -57,6 +57,7 @@ import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.common.collect.Collections2;
 import com.innopolis.maps.innomaps.R;
@@ -213,6 +214,17 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
 
                     /*This listener pins marker to nearest POI on map next to click LatLng coordinates */
                     map.setOnMapClickListener(mapClickListener);
+
+                    map.setOnMarkerClickListener(
+                            new GoogleMap.OnMarkerClickListener() {
+                                @Override
+                                public boolean onMarkerClick(Marker marker) {
+                                    pinMarker(marker.getPosition());
+                                    scrollView.setVisibility(View.GONE);
+                                    return true;
+                                }
+                            }
+                    );
 
                     /* This listener checks current camera position in order to show custom
                     * level picker over the university building */
@@ -437,12 +449,16 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                 e.printStackTrace();
             }
             ArrayList<LatLngGraphVertex> path = graphWrapper.shortestPath(source, destination);
-            splitPathtoFloors(currentNavPath, path);
-            ((RadioButton)floorPicker.getChildAt(5 - Integer.parseInt(currentNavPath.firstEntry().getKey()))).setChecked(true);
-            scrollView.setVisibility(View.GONE);
-            if (currentNavPath.size() > 1)
-                routeStep.setVisibility(View.VISIBLE);
-            drawPathOnMap(map, currentNavPath.firstEntry().getKey(), currentNavPath.firstEntry().getValue());
+            if (path != null) {
+                splitPathtoFloors(currentNavPath, path);
+                ((RadioButton)floorPicker.getChildAt(5 - Integer.parseInt(currentNavPath.firstEntry().getKey()))).setChecked(true);
+                scrollView.setVisibility(View.GONE);
+                if (currentNavPath.size() > 1)
+                    routeStep.setVisibility(View.VISIBLE);
+                drawPathOnMap(map, currentNavPath.firstEntry().getKey(), currentNavPath.firstEntry().getValue());
+            } else {
+                Toast.makeText(getContext(), "You are already there", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -602,13 +618,15 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     }
 
     public void addPolylineToMap (String floor) {
-        if (current.getFloor().equals(floor)) {
-            PolylineOptions polylineOptions = current.getPolylineOptions();
-            current.deleteFromMap();
-            current.setPolyline(map, polylineOptions);
-            current.setFloor(floor);
-        } else {
-            current.deleteFromMap();
+        if (!current.isNull()) {
+            if (current.getFloor().equals(floor)) {
+                PolylineOptions polylineOptions = current.getPolylineOptions();
+                current.deleteFromMap();
+                current.setPolyline(map, polylineOptions);
+                current.setFloor(floor);
+            } else {
+                current.deleteFromMap();
+            }
         }
     }
 
@@ -653,7 +671,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
 
     }
 
-    public void openQrScanner(Dialog dialog, LatLng destination) {
+    public void openQrScanner(Dialog dialog) {
         currentDialog = dialog;
         dialog.hide();
         Intent intent = new Intent(getActivity(), Scanner.class);
