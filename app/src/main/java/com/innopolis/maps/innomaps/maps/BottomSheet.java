@@ -82,8 +82,8 @@ public class BottomSheet extends Fragment {
 
     public void inSearchBottomList(SearchableItem item, View view) {
         ((RadioButton) floorPicker.getChildAt(5 - Integer.parseInt(item.getFloor().substring(0, 1)))).setChecked(true);
-        if (scrollView.getVisibility() == View.GONE) {
-            scrollView.setVisibility(View.VISIBLE);
+        if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         }
 
         List<String> location = new LinkedList<>();
@@ -116,6 +116,9 @@ public class BottomSheet extends Fragment {
             typeEventNon(item.getId());
         }
         locationText.setText(StringUtils.join(locationArray, ", "));
+        if (scrollView.getVisibility() == View.GONE) {
+            scrollView.setVisibility(View.VISIBLE);
+        }
         Utils.hideKeyboard(getActivity());
     }
 
