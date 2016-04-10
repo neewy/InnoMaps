@@ -121,20 +121,6 @@ public class MarkersAdapter extends BottomSheet {
         );
 
         markers.add(markersRoom);
-
-        map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-            @Override
-            public void onMapLongClick(LatLng latLng) {
-                for (Marker marker : markers) {
-                    if (Math.abs(marker.getPosition().latitude - latLng.latitude) < 0.05 && Math.abs(marker.getPosition().longitude - latLng.longitude) < 0.05) {
-                        searchMarker(marker);
-                        break;
-                    }
-                }
-
-            }
-
-        });
     }
 
     public BitmapDescriptor iconBitmapAdapter(String type) {
