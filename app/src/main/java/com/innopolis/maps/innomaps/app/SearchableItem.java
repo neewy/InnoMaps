@@ -6,6 +6,7 @@ import com.innopolis.maps.innomaps.events.Event;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.innopolis.maps.innomaps.database.TableFields.ATTR;
 import static com.innopolis.maps.innomaps.database.TableFields.BUILDING;
 import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
 import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
@@ -77,8 +78,8 @@ public class SearchableItem implements Comparable<SearchableItem> {
         return this.getName().compareTo(another.getName());
     }
 
-    public static void addEvents (List<SearchableItem> items, List<Event> events) {
-        for (Event event: events) {
+    public static void addEvents(List<SearchableItem> items, List<Event> events) {
+        for (Event event : events) {
             SearchableItem searchableItem = new SearchableItem();
             searchableItem.setName(event.getSummary());
             searchableItem.setType("event");
@@ -90,11 +91,18 @@ public class SearchableItem implements Comparable<SearchableItem> {
         }
     }
 
-    public static void addPois (List<SearchableItem> items, List<HashMap<String,String>> pois) {
+    public static void addPois(List<SearchableItem> items, List<HashMap<String, String>> pois) {
         for (HashMap<String, String> poi : pois) {
             SearchableItem searchableItem = new SearchableItem();
-            if (poi.get("number") != null) searchableItem.setName(poi.get("number"));
-            else searchableItem.setName(poi.get(POI_NAME));
+            if (poi.get("number") != null) {
+                searchableItem.setName(poi.get("number"));
+            } else {
+                if (poi.get(POI_NAME).toLowerCase().contains("wc")) {
+                    searchableItem.setName(poi.get(POI_NAME) + " | " + poi.get(ATTR));
+                } else {
+                    searchableItem.setName(poi.get(POI_NAME));
+                }
+            }
             searchableItem.setType(poi.get(TYPE));
             searchableItem.setId(poi.get("_id"));
             searchableItem.setBuilding(poi.get(BUILDING));
