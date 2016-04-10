@@ -18,6 +18,8 @@ import android.widget.TextView;
 
 import com.apradanas.simplelinkabletext.Link;
 import com.apradanas.simplelinkabletext.LinkableTextView;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -160,7 +162,9 @@ public class BottomSheet extends Fragment {
             } catch (ParseException e) {
                 Log.e("Maps", "Time parse exception", e);
             }
-            pinMarker(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
+            LatLng place = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
+            pinMarker(place);
+            map.animateCamera(CameraUpdateFactory.newLatLng(place));
         }
 
         headerText.setText(name);
@@ -214,7 +218,9 @@ public class BottomSheet extends Fragment {
                 eventList.setAdapter(new MapBottomEventListAdapter(getContext(), events));
                 relatedLayout.addView(eventList);
             }
-            pinMarker(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
+            LatLng place = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
+            pinMarker(place);
+            map.animateCamera(CameraUpdateFactory.newLatLng(place));
             mBottomSheetBehavior.setPeekHeight(headerText.getLayout().getHeight() + fab.getHeight() + (int) getResources().getDisplayMetrics().density * 42);
         }
     }
