@@ -493,6 +493,9 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         floorPicker.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (scrollView.getVisibility() == View.VISIBLE) {
+                    scrollView.setVisibility(View.GONE);
+                }
                 LatLng southWest, northEast;
                 switch (checkedId) {
                     case R.id.button1:
