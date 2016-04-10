@@ -2,8 +2,10 @@ package com.innopolis.maps.innomaps.maps;
 
 import android.database.Cursor;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
 import android.util.Log;
@@ -28,6 +30,7 @@ import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.app.SearchableItem;
 import com.innopolis.maps.innomaps.events.Event;
 import com.innopolis.maps.innomaps.events.MapBottomEventListAdapter;
+import com.innopolis.maps.innomaps.events.TelegramOpenDialog;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -150,7 +153,11 @@ public class BottomSheet extends Fragment {
                     .setClickListener(new Link.OnClickListener() {
                         @Override
                         public void onClick(String text) {
-                            System.out.println("Go to telegram");
+                                    DialogFragment newFragment = new TelegramOpenDialog();
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("dialogText", text);
+                                    newFragment.setArguments(bundle);
+                                    newFragment.show(getActivity().getSupportFragmentManager(), "Telegram");
                         }
                     });
             descriptionText.setTextSize(16);

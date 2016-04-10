@@ -192,7 +192,6 @@ public class DetailedEvent extends Fragment {
                         DialogFragment newFragment = new TelegramOpenDialog();
                         Bundle bundle = new Bundle();
                         bundle.putString("dialogText", text);
-                        bundle.putString("dialogUrl", text);
                         newFragment.setArguments(bundle);
                         newFragment.show(getActivity().getSupportFragmentManager(), "Telegram");
                     }

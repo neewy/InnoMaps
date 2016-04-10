@@ -12,7 +12,7 @@ import com.innopolis.maps.innomaps.utils.Utils;
 public class SplashScreenActivity extends Activity {
 
     // Set Duration of the Splash Screen
-    long DELAY = 2000;
+    long DELAY = 500;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

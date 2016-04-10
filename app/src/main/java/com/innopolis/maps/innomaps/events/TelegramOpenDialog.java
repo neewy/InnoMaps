@@ -23,7 +23,7 @@ public class TelegramOpenDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         message = "Get in touch with " + getArguments().getString("dialogText") + " via telegram";
-        String nickURL = getArguments().getString("dialogUrl").toString();
+        String nickURL = getArguments().getString("dialogText").toString();
         if (nickURL.indexOf("@") != -1) {
             link = nickURL.substring(nickURL.indexOf("@") + 1);
             url = CONTACT_URL + link;
