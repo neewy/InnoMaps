@@ -513,31 +513,31 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                 southWest = new LatLng(55.752533, 48.742492);
                 northEast = new LatLng(55.754656, 48.744589);
                 buttonClickFloorPicker(southWest, northEast, decodeSampledBitmapFromResource(getResources(), R.raw.ai6_floor1, 600, 600), 1);
-                makeAllMarkers(1);
+                isMarkerSorted(1);
                 break;
             case R.id.button2:
                 southWest = new LatLng(55.752828, 48.742661);
                 northEast = new LatLng(55.754597, 48.744469);
                 buttonClickFloorPicker(southWest, northEast, decodeSampledBitmapFromResource(getResources(), R.raw.ai6_floor2, 600, 600), 2);
-                makeAllMarkers(2);
+                isMarkerSorted(2);
                 break;
             case R.id.button3:
                 southWest = new LatLng(55.752875, 48.742739);
                 northEast = new LatLng(55.754572, 48.744467);
                 buttonClickFloorPicker(southWest, northEast, decodeSampledBitmapFromResource(getResources(), R.raw.ai6_floor3, 600, 600), 3);
-                makeAllMarkers(3);
+                isMarkerSorted(3);
                 break;
             case R.id.button4:
                 southWest = new LatLng(55.752789, 48.742711);
                 northEast = new LatLng(55.754578, 48.744569);
                 buttonClickFloorPicker(southWest, northEast, decodeSampledBitmapFromResource(getResources(), R.raw.ai6_floor4, 600, 600), 4);
-                makeAllMarkers(4);
+                isMarkerSorted(4);
                 break;
             case R.id.button5:
                 southWest = new LatLng(55.752808, 48.743497);
                 northEast = new LatLng(55.753383, 48.744519);
                 buttonClickFloorPicker(southWest, northEast, decodeSampledBitmapFromResource(getResources(), R.raw.ai6_floor5, 600, 600), 5);
-                makeAllMarkers(5);
+                isMarkerSorted(5);
                 break;
         }
     }
