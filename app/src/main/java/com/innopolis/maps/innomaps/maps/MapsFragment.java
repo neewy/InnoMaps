@@ -15,8 +15,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -63,7 +61,6 @@ import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.common.collect.Collections2;
 import com.innopolis.maps.innomaps.R;
@@ -84,23 +81,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static android.view.View.VISIBLE;
 import static android.widget.AdapterView.OnItemClickListener;
-import static com.google.android.gms.maps.GoogleMap.*;
 import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_NORMAL;
+import static com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import static com.google.android.gms.maps.GoogleMap.OnMapClickListener;
+import static com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import static com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
 import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.POI;
-import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
 
 public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -209,7 +204,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(university, 17));
                     map.setMapType(MAP_TYPE_NORMAL);
                     markerList = new ArrayList<>();
-
+                    makeUiOutline();
                     /*Invokes when location button is triggered – checks whether user has GPS turned on*/
                     map.setOnMyLocationButtonClickListener(new OnMyLocationButtonClickListener() {
                         @Override
@@ -547,7 +542,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         }
     }
 
-    private Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight){
+    private Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight) {
         // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -734,22 +729,17 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                     marker.setVisible(true);
                 }
                 floorPicker.setVisibility(View.VISIBLE);
-                if (imageOverlay == null)
-                    initializeOverlay();
-            } else {
+                initializeOverlay();
+            } else
+
+            {
                 for (Marker marker : markers) {
                     marker.setVisible(false);
                 }
                 floorPicker.setVisibility(View.INVISIBLE);
                 if (imageOverlay != null) {
                     imageOverlay.remove();
-                    imageOverlay = null;
-                    if (markers != null) {
-                        for (Marker marker : markers) {
-                            marker.remove();
-                        }
-                        markers.clear();
-                    }
+                    makeUiOutline();
                 }
             }
         }
@@ -772,6 +762,13 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         }
     };
 
+    private void makeUiOutline() {
+        LatLng southWest = new LatLng(55.752828, 48.742661);
+        LatLng northEast = new LatLng(55.754597, 48.744469);
+        int res = 600;
+        Bitmap bitmap = decodeSampledBitmapFromResource(getResources(), R.raw.ui_unzoomed, res, res);
+        putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromBitmap(bitmap));
+    }
 
 
 }

@@ -28,6 +28,7 @@ import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.POI;
 import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
+import static com.innopolis.maps.innomaps.database.TableFields.ROOM;
 import static com.innopolis.maps.innomaps.database.TableFields.TYPE;
 
 
@@ -99,8 +100,8 @@ public class MarkersAdapter extends BottomSheet {
                 "LEFT OUTER JOIN events on events.eventID = event_poi.eventID " +
                 "INNER JOIN event_type on event_type._id = events._id " +
                 "WHERE poi.floor = ? AND " +
-                "poi.type like 'room'";
-        String[] selectionArgs = {floor + "floor"};
+                "poi.type = ?";
+        String[] selectionArgs = {floor + "floor", ROOM};
         Cursor cursor = database.rawQuery(selection, selectionArgs);
         refreshMarkers(cursor);
 
