@@ -2,15 +2,14 @@ package com.innopolis.maps.innomaps.maps;
 
 import android.database.Cursor;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.CheckedTextView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -126,8 +125,6 @@ public class BottomSheet extends Fragment {
 
 
     protected void typeEvent(String summary) {
-        FloatingActionButton fab = (FloatingActionButton) scrollView.findViewById(R.id.goto_fab);
-
         String sqlQuery = "SELECT * FROM events INNER JOIN event_poi ON events.eventID = event_poi.eventID INNER JOIN poi ON event_poi.poi_id = poi._id WHERE events.summary=?";
 
         String name = "", latitude = "", longitude = "", startDateText = "", description = "";
@@ -180,14 +177,11 @@ public class BottomSheet extends Fragment {
         headerText.setText(name);
         startText.setText(Utils.commonTime.format(startDate));
         durationText.setText(Utils.prettyTime.format(startDate));
-        setPeekHeight();
+        setPeekHeight("event");
     }
 
 
     public void typeEventNon(String poi_id) {
-
-        FrameLayout relatedLayout = (FrameLayout) scrollView.findViewById(R.id.relatedLayout);
-        FloatingActionButton fab = (FloatingActionButton) scrollView.findViewById(R.id.goto_fab);
 
         String sqlQuery = "SELECT * FROM poi LEFT OUTER JOIN event_poi on event_poi.poi_id = poi._id LEFT OUTER JOIN events on events.eventID = event_poi.eventID WHERE poi._id=?";
 
@@ -201,7 +195,6 @@ public class BottomSheet extends Fragment {
             poi_name = cursor.getString(cursor.getColumnIndex(POI_NAME));
             latitude = cursor.getString(cursor.getColumnIndex(LATITUDE));
             longitude = cursor.getString(cursor.getColumnIndex(LONGITUDE));
-            headerText.setText(poi_name);
             List<Event> events = new LinkedList<>();
             do {
                 Event event = new Event();
@@ -223,14 +216,15 @@ public class BottomSheet extends Fragment {
                 noEvents.setText("There are no events");
                 relatedLayout.addView(noEvents);
             } else {
-                ListView eventList = new ListView(getContext());
+                final ListView eventList = new ListView(getContext());
                 eventList.setAdapter(new MapBottomEventListAdapter(getContext(), events));
                 relatedLayout.addView(eventList);
             }
+            headerText.setText(poi_name);
             LatLng place = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
             pinMarker(place);
             map.animateCamera(CameraUpdateFactory.newLatLng(place));
-            setPeekHeight();
+            setPeekHeight("poi");
         }
     }
 
@@ -283,18 +277,27 @@ public class BottomSheet extends Fragment {
         return result;
     }
 
-    private void setPeekHeight() {
-        Rect rect = new Rect();
-        scrollView.getLocalVisibleRect(rect);
-        Rect rect1 = new Rect();
-        Rect rect2 = new Rect();
-        Rect rect3 = new Rect();
-        Rect rect4 = new Rect();
-        relatedLayout.getLocalVisibleRect(rect1);
-        durationLayout.getLocalVisibleRect(rect2);
-        startLayout.getLocalVisibleRect(rect3);
-        locationText.getLocalVisibleRect(rect4);
-        int height = rect.height() - (rect1.height() + rect2.height() + rect3.height() + rect4.height() + (int) Utils.convertDpToPixel(32, getContext()));
-        mBottomSheetBehavior.setPeekHeight(height);
+    private void setPeekHeight(final String type) {
+        scrollView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @SuppressWarnings("deprecation")
+            @Override
+            public void onGlobalLayout() {
+                int height;
+                int relatedLayoutHeight = relatedLayout.getHeight();
+                int durationLayoutHeight = durationLayout.getHeight();
+                int startLayoutHeight = startLayout.getHeight();
+                int locationTextHeight = locationText.getHeight();
+                if (type.equals("event")) {
+                    height = scrollView.getHeight() - (relatedLayoutHeight + durationLayoutHeight + startLayoutHeight + locationTextHeight + (int) Utils.convertDpToPixel(32, getContext()));
+                } else {
+                    height = scrollView.getHeight() - (relatedLayoutHeight + locationTextHeight + (int) Utils.convertDpToPixel(32, getContext()));
+                }
+                mBottomSheetBehavior.setPeekHeight(height);
+                if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
+                    scrollView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                else
+                    scrollView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+            }
+        });
     }
 }
