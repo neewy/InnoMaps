@@ -15,6 +15,8 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -61,6 +63,7 @@ import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.common.collect.Collections2;
 import com.innopolis.maps.innomaps.R;
@@ -81,12 +84,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import static android.view.View.VISIBLE;
 import static android.widget.AdapterView.OnItemClickListener;
+import static com.google.android.gms.maps.GoogleMap.*;
 import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_NORMAL;
 import static com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import static com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
@@ -94,6 +100,7 @@ import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.POI;
+import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
 
 public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -219,7 +226,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                     map.setOnMapClickListener(mapClickListener);
 
                     map.setOnMarkerClickListener(
-                            new GoogleMap.OnMarkerClickListener() {
+                            new OnMarkerClickListener() {
                                 @Override
                                 public boolean onMarkerClick(Marker marker) {
                                     pinMarker(marker.getPosition());
@@ -245,14 +252,14 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                             for (int i = 0; i < pathFloors.size(); i++) {
                                 if (pathFloors.get(i).equals(radioId)) {
                                     String floor;
-                                    if(i + 1 >= pathFloors.size()) {
+                                    if (i + 1 >= pathFloors.size()) {
                                         drawPathOnMap(map, pathFloors.get(0), currentNavPath.get(pathFloors.get(0)));
                                         floor = pathFloors.get(0);
                                     } else {
                                         drawPathOnMap(map, pathFloors.get(i + 1), currentNavPath.get(pathFloors.get(i + 1)));
                                         floor = pathFloors.get(i + 1);
                                     }
-                                    ((RadioButton)floorPicker.getChildAt(5 - Integer.parseInt(floor))).setChecked(true);
+                                    ((RadioButton) floorPicker.getChildAt(5 - Integer.parseInt(floor))).setChecked(true);
                                     break;
                                 }
                             }
@@ -453,7 +460,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             ArrayList<LatLngGraphVertex> path = graphWrapper.shortestPath(source, destination);
             if (path != null) {
                 splitPathtoFloors(currentNavPath, path);
-                ((RadioButton)floorPicker.getChildAt(5 - Integer.parseInt(currentNavPath.firstEntry().getKey()))).setChecked(true);
+                ((RadioButton) floorPicker.getChildAt(5 - Integer.parseInt(currentNavPath.firstEntry().getKey()))).setChecked(true);
                 scrollView.setVisibility(View.GONE);
                 if (currentNavPath.size() > 1)
                     routeStep.setVisibility(View.VISIBLE);
@@ -503,7 +510,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
 
     }
 
-    private void floorPickerGroundOverlaySwitch(int checkedId){
+    private void floorPickerGroundOverlaySwitch(int checkedId) {
         LatLng southWest, northEast;
         switch (checkedId) {
             case R.id.button1:
@@ -615,20 +622,20 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         filterList.add(num);
     }
 
-    public void splitPathtoFloors(Map<String, ArrayList<LatLngGraphVertex>> currentNavPath, ArrayList<LatLngGraphVertex> path){
+    public void splitPathtoFloors(Map<String, ArrayList<LatLngGraphVertex>> currentNavPath, ArrayList<LatLngGraphVertex> path) {
         currentNavPath.clear();
         if (path == null) return;
         ArrayList<LatLngGraphVertex> pathPart = new ArrayList<>();
         LatLngGraphVertex vertexTemp = new LatLngGraphVertex(path.get(0));
-        for (LatLngGraphVertex vertex: path) {
+        for (LatLngGraphVertex vertex : path) {
             String vertexTempID = String.valueOf(vertexTemp.getVertexId());
             String vertexID = String.valueOf(vertex.getVertexId());
-            if (vertexTempID.substring(0,1).equals(vertexID.substring(0,1))) {
+            if (vertexTempID.substring(0, 1).equals(vertexID.substring(0, 1))) {
                 pathPart.add(vertexTemp);
                 vertexTemp = vertex;
             } else {
                 pathPart.add(vertexTemp);
-                currentNavPath.put(vertexTempID.substring(0,1), pathPart);
+                currentNavPath.put(vertexTempID.substring(0, 1), pathPart);
                 pathPart = new ArrayList<>();
                 vertexTemp = vertex;
             }
@@ -636,11 +643,11 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         if (pathPart.size() != 0) {
             pathPart.add(vertexTemp);
             String lastVerticeId = String.valueOf(path.get(path.size() - 1).getVertexId());
-                currentNavPath.put(lastVerticeId.substring(0,1), pathPart);
+            currentNavPath.put(lastVerticeId.substring(0, 1), pathPart);
         }
     }
 
-    public void drawPathOnMap(GoogleMap map, String floor, ArrayList<LatLngGraphVertex> path){
+    public void drawPathOnMap(GoogleMap map, String floor, ArrayList<LatLngGraphVertex> path) {
         if (!current.isEmpty()) current.deleteFromMap();
         PolylineOptions polylineOptions = new PolylineOptions();
         polylineOptions
@@ -654,7 +661,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         current.setFloor(floor);
     }
 
-    public void addPolylineToMap (String floor) {
+    public void addPolylineToMap(String floor) {
         if (!current.isNull()) {
             if (current.getFloor().equals(floor)) {
                 PolylineOptions polylineOptions = current.getPolylineOptions();
@@ -687,7 +694,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         parentParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         parentParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
 
-        ((RelativeLayout)getView()).addView(buttons, parentParams);
+        ((RelativeLayout) getView()).addView(buttons, parentParams);
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -719,16 +726,22 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         startActivity(intent);
     }
 
-    GoogleMap.OnCameraChangeListener showUniversityPicker = new GoogleMap.OnCameraChangeListener() {
+    OnCameraChangeListener showUniversityPicker = new OnCameraChangeListener() {
         @Override
         public void onCameraChange(CameraPosition cameraPosition) {
             if (checkIfZoomIsEnough(cameraPosition)) {
+                for (Marker marker : markers) {
+                    marker.setVisible(true);
+                }
                 floorPicker.setVisibility(View.VISIBLE);
-                if (imageOverlay==null)
+                if (imageOverlay == null)
                     initializeOverlay();
             } else {
+                for (Marker marker : markers) {
+                    marker.setVisible(false);
+                }
                 floorPicker.setVisibility(View.INVISIBLE);
-                if (imageOverlay!=null) {
+                if (imageOverlay != null) {
                     imageOverlay.remove();
                     imageOverlay = null;
                     if (markers != null) {
@@ -742,10 +755,10 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         }
     };
 
-    private boolean checkIfZoomIsEnough(CameraPosition cameraPosition){
+    private boolean checkIfZoomIsEnough(CameraPosition cameraPosition) {
         LatLng cameraTarget = cameraPosition.target;
         if ((cameraTarget.latitude > 55.752116019 && cameraTarget.latitude < 55.754923377) &&
-                (cameraTarget.longitude < 48.7448166297 && cameraTarget.longitude > 48.742106790) && cameraPosition.zoom > 17.50){
+                (cameraTarget.longitude < 48.7448166297 && cameraTarget.longitude > 48.742106790) && cameraPosition.zoom > 17.50) {
             return true;
         }
         return false;
@@ -756,8 +769,11 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         public void onMapClick(LatLng latLng) {
             pinMarker(latLng);
             scrollView.setVisibility(View.GONE);
-            Log.d("location: ", latLng.toString());
         }
     };
+
+
+
 }
+
 

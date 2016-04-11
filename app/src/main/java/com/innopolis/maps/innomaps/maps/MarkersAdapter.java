@@ -6,10 +6,12 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -74,8 +76,10 @@ public class MarkersAdapter extends BottomSheet {
     }
 
     private void makeOtherMarkers(int floor) {
-        String selection = FLOOR + " = ? AND (" + TYPE + " = ? or " + TYPE + " = ?)";
-        String[] selectionArgs = {floor + "floor", "service", "misc"};
+        String selection = FLOOR + " = ? AND (" + TYPE + " != ? and "
+                + TYPE + " != ? and " + TYPE + " != ? and " + TYPE + " != ? and " +
+                TYPE + " != ? and " + TYPE + " != ? and " + TYPE + " != ?)";
+        String[] selectionArgs = {floor + "floor", "room", "food", "stairs", "elevator", "wc door", "wc", "door"};
         Cursor cursor = database.query(POI, null, selection, selectionArgs, null, null, null);
         refreshMarkers(cursor);
 
@@ -94,7 +98,8 @@ public class MarkersAdapter extends BottomSheet {
                 "LEFT OUTER JOIN event_poi on event_poi.poi_id = poi._id " +
                 "LEFT OUTER JOIN events on events.eventID = event_poi.eventID " +
                 "INNER JOIN event_type on event_type._id = events._id " +
-                "WHERE poi.floor = ? AND poi.type LIKE 'room'";
+                "WHERE poi.floor = ? AND " +
+                "poi.type like 'room'";
         String[] selectionArgs = {floor + "floor"};
         Cursor cursor = database.rawQuery(selection, selectionArgs);
         refreshMarkers(cursor);
@@ -122,31 +127,29 @@ public class MarkersAdapter extends BottomSheet {
     }
 
     private void setMarkersRoom(String room, String type, String latitude, String longitude) {
-
+        double lat = Double.parseDouble(latitude);
+        double lon = Double.parseDouble(longitude);
         float center = 0.5f;
-        final Marker markersRoom = map.addMarker(new MarkerOptions()
-                        .position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)))
-                        .icon(iconBitmapAdapter(type))
-                        .title(room)
-                        .anchor(center, center)
+        final Marker markersRoom;
+        markersRoom = map.addMarker(new MarkerOptions()
+                .position(new LatLng(lat, lon))
+                .icon(iconBitmapAdapter(type))
+                .title(room)
+
+                .anchor(center, center)
 
         );
 
         markers.add(markersRoom);
+        map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
 
-        map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
-            public void onMapLongClick(LatLng latLng) {
-                for (Marker marker : markers) {
-                    if (Math.abs(marker.getPosition().latitude - latLng.latitude) < 0.05 && Math.abs(marker.getPosition().longitude - latLng.longitude) < 0.05) {
-                        searchMarker(marker);
-                        break;
-                    }
-                }
-
+            public void onCameraChange(CameraPosition cameraPosition) {
+                markersRoom.setVisible(cameraPosition.zoom > 17);
             }
-
         });
+
+
     }
 
     public BitmapDescriptor iconBitmapAdapter(String type) {
@@ -154,21 +157,33 @@ public class MarkersAdapter extends BottomSheet {
         BitmapDescriptor icon;
         Drawable shape;
         int px;
+        int px_large = 30;
+        int px_small = 15;
 
         switch (type) {
             case "room":
                 src = R.drawable.ic_room;
-                px = 15;
+                px = px_small;
                 break;
 
             case "wc":
                 src = R.drawable.wc;
-                px = 30;
+                px = px_large;
                 break;
 
             case "food":
                 src = R.drawable.ic_food;
-                px = 30;
+                px = px_large;
+                break;
+
+            case "clinic":
+                src = R.drawable.ic_clinic;
+                px = px_large;
+                break;
+
+            case "library":
+                src = R.drawable.ic_library;
+                px = px_large;
                 break;
 
             default:
@@ -190,7 +205,7 @@ public class MarkersAdapter extends BottomSheet {
 
     }
 
-    private void searchMarker(Marker marker) {
+    void searchMarker(Marker marker) {
         String room = marker.getTitle();
         String sqlQuery = "SELECT * FROM " + POI + " WHERE " + TableFields.POI_NAME + " like '" + room.replaceAll("'", "''") + "';";
         Cursor cursor = database.rawQuery(sqlQuery, new String[]{});

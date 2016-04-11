@@ -153,11 +153,11 @@ public class BottomSheet extends Fragment {
                     .setClickListener(new Link.OnClickListener() {
                         @Override
                         public void onClick(String text) {
-                                    DialogFragment newFragment = new TelegramOpenDialog();
-                                    Bundle bundle = new Bundle();
-                                    bundle.putString("dialogText", text);
-                                    newFragment.setArguments(bundle);
-                                    newFragment.show(getActivity().getSupportFragmentManager(), "Telegram");
+                            DialogFragment newFragment = new TelegramOpenDialog();
+                            Bundle bundle = new Bundle();
+                            bundle.putString("dialogText", text);
+                            newFragment.setArguments(bundle);
+                            newFragment.show(getActivity().getSupportFragmentManager(), "Telegram");
                         }
                     });
             descriptionText.setTextSize(16);
