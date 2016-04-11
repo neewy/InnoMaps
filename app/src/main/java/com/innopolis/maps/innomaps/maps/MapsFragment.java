@@ -10,7 +10,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.LocationManager;
 import android.os.AsyncTask;
@@ -507,34 +510,64 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             default:
                 southWest = new LatLng(55.752533, 48.742492);
                 northEast = new LatLng(55.754656, 48.744589);
-                buttonClickFloorPicker(southWest, northEast, R.raw.ai6_floor1, 1);
+                buttonClickFloorPicker(southWest, northEast, decodeSampledBitmapFromResource(getResources(), R.raw.ai6_floor1, 600, 600), 1);
                 break;
             case R.id.button2:
                 southWest = new LatLng(55.752828, 48.742661);
                 northEast = new LatLng(55.754597, 48.744469);
-                buttonClickFloorPicker(southWest, northEast, R.raw.ai6_floor2, 2);
+                buttonClickFloorPicker(southWest, northEast, decodeSampledBitmapFromResource(getResources(), R.raw.ai6_floor2, 600, 600), 2);
                 break;
             case R.id.button3:
                 southWest = new LatLng(55.752875, 48.742739);
                 northEast = new LatLng(55.754572, 48.744467);
-                buttonClickFloorPicker(southWest, northEast, R.raw.ai6_floor3, 3);
+                buttonClickFloorPicker(southWest, northEast, decodeSampledBitmapFromResource(getResources(), R.raw.ai6_floor3, 600, 600), 3);
                 break;
             case R.id.button4:
                 southWest = new LatLng(55.752789, 48.742711);
                 northEast = new LatLng(55.754578, 48.744569);
-                buttonClickFloorPicker(southWest, northEast, R.raw.ai6_floor4, 4);
+                buttonClickFloorPicker(southWest, northEast, decodeSampledBitmapFromResource(getResources(), R.raw.ai6_floor4, 600, 600), 4);
                 break;
             case R.id.button5:
                 southWest = new LatLng(55.752808, 48.743497);
                 northEast = new LatLng(55.753383, 48.744519);
-                buttonClickFloorPicker(southWest, northEast, R.raw.ai6_floor5, 5);
+                buttonClickFloorPicker(southWest, northEast, decodeSampledBitmapFromResource(getResources(), R.raw.ai6_floor5, 600, 600), 5);
                 break;
         }
     }
 
-    private void buttonClickFloorPicker(LatLng southWest, LatLng northEast, int floorSource, int floor) {
+    private Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight){
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(res, resId, options);
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeResource(res, resId, options);
+    }
+
+    private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+        if (height > reqHeight || width > reqWidth) {
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) > reqHeight && (halfWidth / inSampleSize) > reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+        return inSampleSize;
+    }
+
+    private void buttonClickFloorPicker(LatLng southWest, LatLng northEast, Bitmap bitmap, int floor) {
         isMarkerSorted(floor);
-        putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(floorSource));
+        putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromBitmap(bitmap));
+//        putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(floorSource));
         setFloorPOIHashMap(floor);
     }
 
