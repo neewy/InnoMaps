@@ -6,12 +6,9 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -128,30 +125,19 @@ public class MarkersAdapter extends BottomSheet {
     }
 
     private void setMarkersRoom(String room, String type, String latitude, String longitude) {
-        double lat = Double.parseDouble(latitude);
-        double lon = Double.parseDouble(longitude);
+
         float center = 0.5f;
-        final Marker markersRoom;
-        markersRoom = map.addMarker(new MarkerOptions()
-                .position(new LatLng(lat, lon))
+        final Marker markersRoom = map.addMarker(new MarkerOptions()
+                .position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)))
                 .icon(iconBitmapAdapter(type))
                 .title(room)
-
                 .anchor(center, center)
 
         );
 
         markers.add(markersRoom);
-        map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
-
-            @Override
-            public void onCameraChange(CameraPosition cameraPosition) {
-                markersRoom.setVisible(cameraPosition.zoom > 17);
-            }
-        });
-
-
     }
+
 
     public BitmapDescriptor iconBitmapAdapter(String type) {
         int src;
@@ -206,7 +192,7 @@ public class MarkersAdapter extends BottomSheet {
 
     }
 
-    void searchMarker(Marker marker) {
+    private void searchMarker(Marker marker) {
         String room = marker.getTitle();
         String sqlQuery = "SELECT * FROM " + POI + " WHERE " + TableFields.POI_NAME + " like '" + room.replaceAll("'", "''") + "';";
         Cursor cursor = database.rawQuery(sqlQuery, new String[]{});

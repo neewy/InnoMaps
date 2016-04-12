@@ -1,7 +1,6 @@
 package com.innopolis.maps.innomaps.maps;
 
 
-import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
@@ -9,7 +8,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -88,9 +86,7 @@ import java.util.TreeMap;
 
 import static android.widget.AdapterView.OnItemClickListener;
 import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_NORMAL;
-import static com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import static com.google.android.gms.maps.GoogleMap.OnMapClickListener;
-import static com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import static com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
 import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
@@ -99,7 +95,8 @@ import static com.innopolis.maps.innomaps.database.TableFields.POI;
 
 public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnRequestPermissionsResultCallback {
 
-    private GroundOverlay imageOverlay; //current floor plan overlay
+    private GroundOverlay imageOverlay;
+    private List imageOverlayCheck;//current floor plan overlay
     private UiSettings mSettings;
     private LocationManager locationManager;
     DBHelper dbHelper;
@@ -190,9 +187,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                 mapView.onCreate(savedInstanceState);
                 if (mapView != null) {
                     map = mapView.getMap();
-                    if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        map.setMyLocationEnabled(true);
-                    }
+
                     mSettings = map.getUiSettings();
 
                     mSettings.setMapToolbarEnabled(false);
@@ -204,7 +199,8 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(university, 17));
                     map.setMapType(MAP_TYPE_NORMAL);
                     markerList = new ArrayList<>();
-                    makeUiOutline();
+                    imageOverlayCheck = new ArrayList();
+
                     /*Invokes when location button is triggered – checks whether user has GPS turned on*/
                     map.setOnMyLocationButtonClickListener(new OnMyLocationButtonClickListener() {
                         @Override
@@ -221,7 +217,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                     map.setOnMapClickListener(mapClickListener);
 
                     map.setOnMarkerClickListener(
-                            new OnMarkerClickListener() {
+                            new GoogleMap.OnMarkerClickListener() {
                                 @Override
                                 public boolean onMarkerClick(Marker marker) {
                                     pinMarker(marker.getPosition());
@@ -721,29 +717,31 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         startActivity(intent);
     }
 
-    OnCameraChangeListener showUniversityPicker = new OnCameraChangeListener() {
+    GoogleMap.OnCameraChangeListener showUniversityPicker = new GoogleMap.OnCameraChangeListener() {
         @Override
         public void onCameraChange(CameraPosition cameraPosition) {
             if (checkIfZoomIsEnough(cameraPosition)) {
-                for (Marker marker : markers) {
-                    marker.setVisible(true);
-                }
                 floorPicker.setVisibility(View.VISIBLE);
-                initializeOverlay();
-            } else
-
-            {
-                for (Marker marker : markers) {
-                    marker.setVisible(false);
+                if (imageOverlayCheck != null) {
+                    imageOverlayCheck.clear();
+                    initializeOverlay();
                 }
+            } else {
                 floorPicker.setVisibility(View.INVISIBLE);
-                if (imageOverlay != null) {
-                    imageOverlay.remove();
+                if (imageOverlayCheck.size() < 1) {
+                    imageOverlayCheck.add(1);
                     makeUiOutline();
+                    if (markers != null) {
+                        for (Marker marker : markers) {
+                            marker.remove();
+                        }
+                        markers.clear();
+                    }
                 }
             }
         }
     };
+
 
     private boolean checkIfZoomIsEnough(CameraPosition cameraPosition) {
         LatLng cameraTarget = cameraPosition.target;
@@ -759,6 +757,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         public void onMapClick(LatLng latLng) {
             pinMarker(latLng);
             scrollView.setVisibility(View.GONE);
+            Log.d("location: ", latLng.toString());
         }
     };
 
@@ -769,8 +768,4 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         Bitmap bitmap = decodeSampledBitmapFromResource(getResources(), R.raw.ui_unzoomed, res, res);
         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromBitmap(bitmap));
     }
-
-
 }
-
-
