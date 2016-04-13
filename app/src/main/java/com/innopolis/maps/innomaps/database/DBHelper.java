@@ -205,6 +205,7 @@ public class DBHelper extends SQLiteOpenHelper {
         String[] whereArgs = new String[]{summary};
         Cursor cursor = database.query(EVENT_TYPE, null, "summary=?", whereArgs, null, null, null);
         if (cursor.getCount() == 0) {
+
             ContentValues cv = new ContentValues();
             cv.put(SUMMARY, summary);
             cv.put(CREATOR_NAME, creator_name);

@@ -84,8 +84,8 @@ public class MarkersAdapter extends BottomSheet {
     }
 
     protected void makeAllMarkers(int floor) {
-        String selection = FLOOR + " = ? AND (" + TYPE + " = ? or " + TYPE + " = ? or " + TYPE + " = ?)";
-        String[] selectionArgs = {floor + "floor", "room", "wc", "food"};
+        String selection = FLOOR + " = ? AND (" + TYPE + " = ? or " + TYPE  + " = ? or " + TYPE + " = ? or " + TYPE + " = ? or " + TYPE + " = ? or " + TYPE + " = ?)";
+        String[] selectionArgs = {floor + "floor", "room", "wc", "food", "library", "clinic", "reading"};
         Cursor cursor = database.query(POI, null, selection, selectionArgs, null, null, null);
         refreshMarkers(cursor);
 
@@ -169,7 +169,14 @@ public class MarkersAdapter extends BottomSheet {
                 break;
 
             case "library":
+
+            case "reading":
                 src = R.drawable.ic_library;
+                px = px_large;
+                break;
+
+            case "easter egg":
+                src = R.drawable.ic_egg;
                 px = px_large;
                 break;
 

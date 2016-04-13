@@ -20,7 +20,7 @@ import java.util.Map;
 public final class AnalyticsTrackers {
 
     public enum Target {
-        APP, EVENTS, DETAILED, FAVOURITE, MAPS,
+        APP
         // Add more trackers here if you need, and update the code in #get(Target) below
     }
 
