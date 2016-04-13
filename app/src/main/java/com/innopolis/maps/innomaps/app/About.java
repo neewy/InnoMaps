@@ -17,8 +17,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class About extends Fragment {
-    SearchView searchView;
-
     TextView creators;
     TextView about;
 
@@ -38,7 +36,7 @@ public class About extends Fragment {
         creators = (TextView) view.findViewById(R.id.t3_1);
         about = (TextView) view.findViewById(R.id.t4);
 
-        about.setText("InnoMaps is designed to help you with navigation through Innopolis University. With this application you will easily find any room in the building as well as find out about all events that take place in the University.");
+        about.setText(R.string.about_text);
         creators.setText(makeAuthors());
         return view;
     }

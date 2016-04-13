@@ -170,9 +170,8 @@ public class DetailedEvent extends Fragment {
             Cursor cursor1 = database.query(EVENT_TYPE, null, "summary=?", summaryArgs, null, null, null);
             cursor1.moveToFirst();
             int description = cursor1.getColumnIndex(DESCRIPTION);
-            int creator_name = cursor1.getColumnIndex(CREATOR_NAME);
             this.descriptionStr = cursor1.getString(description);
-            this.creator = cursor1.getString(creator_name);
+
 
             cursor1.close();
         } while (cursor.moveToNext());
@@ -187,23 +186,33 @@ public class DetailedEvent extends Fragment {
         }
         database.close();
 
+        Link.OnClickListener telegramLinkListener = new Link.OnClickListener() {
+            @Override
+            public void onClick(String text) {
+                DialogFragment newFragment = new TelegramOpenDialog();
+                Bundle bundle = new Bundle();
+                bundle.putString("dialogText", text);
+                newFragment.setArguments(bundle);
+                newFragment.show(getActivity().getSupportFragmentManager(), "Telegram");
+            }
+        };
+
         Link linkUsername = new Link(Pattern.compile("(@\\w+)"))
                 .setUnderlined(false)
                 .setTextColor(Color.RED)
                 .setTextStyle(Link.TextStyle.BOLD)
-                .setClickListener(new Link.OnClickListener() {
-                    @Override
-                    public void onClick(String text) {
-                        DialogFragment newFragment = new TelegramOpenDialog();
-                        Bundle bundle = new Bundle();
-                        bundle.putString("dialogText", text);
-                        newFragment.setArguments(bundle);
-                        newFragment.show(getActivity().getSupportFragmentManager(), "Telegram");
-                    }
-                });
+                .setClickListener(telegramLinkListener);
+        Link linkGroup = new Link(Pattern.compile("(https?://telegram\\.me/joinchat/[\\S]+)"))
+                .setUnderlined(false)
+                .setTextColor(Color.BLUE)
+                .setTextStyle(Link.TextStyle.BOLD)
+                .setClickListener(telegramLinkListener);
+
 
         List<Link> links = new ArrayList<>();
         links.add(linkUsername);
+        links.add(linkGroup);
+
 
         eventName.setText(summary);
         Date startDate = null;
@@ -221,10 +230,10 @@ public class DetailedEvent extends Fragment {
         Long durationTime = TimeUnit.MILLISECONDS.toMinutes(endDate.getTime() - startDate.getTime());
         duration.setText("Duration: " + String.valueOf(durationTime) + "min");
 
-        description
-                .addLinks(links)
-                .setText(descriptionStr)
-                .build();
+
+        description.setText(descriptionStr)
+                    .addLinks(links)
+                    .build();
 
 
         if (checked.equals("1")) {
