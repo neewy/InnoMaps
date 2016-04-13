@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -283,9 +284,8 @@ public class DetailedEvent extends Fragment {
                     mSettings = mMap.getUiSettings();
                     mSettings.setMapToolbarEnabled(false);
                     mSettings.setMyLocationButtonEnabled(false);
-                    if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        mMap.setMyLocationEnabled(true);
-                    }
+
+
                     if (latitude != null && longitude != null) {
                         LatLng position = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 19));

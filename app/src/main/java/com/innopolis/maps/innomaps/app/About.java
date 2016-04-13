@@ -13,13 +13,16 @@ import android.widget.TextView;
 
 import com.innopolis.maps.innomaps.R;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class About extends Fragment {
     SearchView searchView;
 
-    TextView head;
-    TextView ver;
     TextView creators;
     TextView about;
+
+    List<String> authorsList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -30,20 +33,13 @@ public class About extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.about, container, false);
+        authorsList = new LinkedList<>();
 
-        head = (TextView) view.findViewById(R.id.t1);
-        ver = (TextView) view.findViewById(R.id.t2);
         creators = (TextView) view.findViewById(R.id.t3_1);
         about = (TextView) view.findViewById(R.id.t4);
 
-        head.setText("InnoMaps");
-        ver.setText("ver 1.0");
-        creators.setText("Maksim Shalavin\n" +
-                "Nikolay Yushkevich\n" +
-                "Konstantin Munichev\n" +
-                "Ekaterina Grishina\n" +
-                "Ziyoiddin Yusupov");
         about.setText("InnoMaps is designed to help you with navigation through Innopolis University. With this application you will easily find any room in the building as well as find out about all events that take place in the University.");
+        creators.setText(makeAuthors());
         return view;
     }
 
@@ -56,5 +52,27 @@ public class About extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+    }
+
+    private String makeAuthors() {
+        String authors = "";
+        appendText();
+
+        for (String string : authorsList) {
+            if (authorsList.indexOf(string) < (authorsList.size() - 1)) {
+                authors += string + " • ";
+            } else {
+                authors += string;
+            }
+        }
+        return authors;
+    }
+
+    private void appendText() {
+        authorsList.add("Yushkevich N");
+        authorsList.add("Munichev K");
+        authorsList.add("Yusupov Z");
+        authorsList.add("Grishina E");
+        authorsList.add("Shalavin M");
     }
 }
