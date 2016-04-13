@@ -203,6 +203,7 @@
     <string name="empty_search">No events or locations found</string>
     <string name="crash_toast_text">The report on the crash was sent to us. We will fix it!</string>
 
+    <string name="about_text">InnoMaps is designed to help you with navigation through Innopolis University. With this application you will easily find any room in the building as well as find out about all events that take place in the University.</string>
 
         <string name="analytics">Google Analytics</string>
         <string name="toast_track_exception">Exception is recorded. Check the Crashes and Exceptions on Google Dashboard!</string>
