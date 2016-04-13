@@ -153,6 +153,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                                     }
                                 });
                     } else if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                        setFloorPickerMargin();
                         floorPicker.setAlpha(0f);
                         if (checkIfZoomIsEnough(map.getCameraPosition()))
                             floorPicker.setVisibility(View.VISIBLE);

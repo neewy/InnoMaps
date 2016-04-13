@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.apradanas.simplelinkabletext.Link;
@@ -293,11 +294,18 @@ public class BottomSheet extends Fragment {
                     height = scrollView.getHeight() - (relatedLayoutHeight + locationTextHeight + (int) Utils.convertDpToPixel(32, getContext()));
                 }
                 mBottomSheetBehavior.setPeekHeight(height);
+                setFloorPickerMargin();
                 if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
                     scrollView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 else
                     scrollView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
             }
         });
+    }
+
+    protected void setFloorPickerMargin() {
+        RelativeLayout.LayoutParams rp = (RelativeLayout.LayoutParams) floorPicker.getLayoutParams();
+        rp.setMargins((int) Utils.convertDpToPixel(10, getContext()), 0, 0, mBottomSheetBehavior.getPeekHeight() + (int) Utils.convertDpToPixel(20, getContext()));
+        floorPicker.setLayoutParams(rp);
     }
 }

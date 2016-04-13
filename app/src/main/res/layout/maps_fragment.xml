@@ -32,7 +32,7 @@
         android:background="#efebe9"
         android:animateLayoutChanges="true"
         android:layout_gravity="right"
-        android:layout_marginBottom="94dp"
+        android:layout_marginBottom="74dp"
         android:layout_marginLeft="10dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
