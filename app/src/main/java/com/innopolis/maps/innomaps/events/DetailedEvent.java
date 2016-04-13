@@ -1,17 +1,13 @@
 package com.innopolis.maps.innomaps.events;
 
-import android.Manifest;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -87,6 +83,7 @@ public class DetailedEvent extends Fragment {
     TextView timeLeft;
     TextView location;
     TextView dateTime;
+    TextView noEventText;
     LinkableTextView description;
     TextView duration;
 
@@ -142,6 +139,7 @@ public class DetailedEvent extends Fragment {
         dateTime = (TextView) view.findViewById(R.id.dateTime);
         description = (LinkableTextView) view.findViewById(R.id.description);
         duration = (TextView) view.findViewById(R.id.duration);
+        noEventText = (TextView) view.findViewById(R.id.noEventTextView);
         final CheckBox favCheckBox = (CheckBox) view.findViewById(R.id.favCheckBox);
 
         Bundle bundle = this.getArguments();
@@ -183,7 +181,7 @@ public class DetailedEvent extends Fragment {
         }
         database.close();
 
-        Link linkUsername = new Link(Pattern.compile("(@\\w+)"))
+        Link linkUsername = new Link(Pattern.compile("(@\\w+|https://\\w+)"))
                 .setUnderlined(false)
                 .setTextColor(Color.RED)
                 .setTextStyle(Link.TextStyle.BOLD)
@@ -216,13 +214,14 @@ public class DetailedEvent extends Fragment {
         dateTime.setText(Utils.commonTime.format(startDate));
         Long durationTime = TimeUnit.MILLISECONDS.toMinutes(endDate.getTime() - startDate.getTime());
         duration.setText("Duration: " + String.valueOf(durationTime) + "min");
-
-        description
-                .addLinks(links)
-                .setText(descriptionStr)
-                .build();
-
-
+        //this.descriptionStr="";
+        if (this.descriptionStr.length()!=0) {
+            description
+                    .addLinks(links)
+                    .setText(descriptionStr)
+                    .build();
+        }
+        else noEventText.setVisibility(View.VISIBLE);
         if (checked.equals("1")) {
             favCheckBox.setChecked(true);
         } else {
