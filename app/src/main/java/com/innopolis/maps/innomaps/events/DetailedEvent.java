@@ -12,10 +12,9 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.ShareActionProvider;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -57,7 +56,6 @@ import java.util.regex.Pattern;
 import xyz.hanks.library.SmallBang;
 
 import static com.innopolis.maps.innomaps.database.TableFields.BUILDING;
-import static com.innopolis.maps.innomaps.database.TableFields.CREATOR_NAME;
 import static com.innopolis.maps.innomaps.database.TableFields.DESCRIPTION;
 import static com.innopolis.maps.innomaps.database.TableFields.END;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENTS;
@@ -83,10 +81,9 @@ public class DetailedEvent extends Fragment {
     TextView timeLeft;
     TextView location;
     TextView dateTime;
-    TextView noEventText;
     LinkableTextView description;
     TextView duration;
-
+    TextView noEventText;
 
     private static GoogleMap mMap;
     private static UiSettings mSettings;
@@ -111,17 +108,27 @@ public class DetailedEvent extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
         inflater.inflate(R.menu.detailed_menu_toolbar, menu);
-        MenuItem item = menu.findItem(R.id.toolbar_share);
-        ShareActionProvider shareAction = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.setType("text/plain");
-        //Consider changing content for relevant share information
-        shareIntent.putExtra(Intent.EXTRA_TEXT, (eventName.getText() + " begins in " + dateTime.getText() + ". Join us!"));
-        shareAction.setShareIntent(shareIntent);
-
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.toolbar_share:
+                actionShare();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void actionShare() {
+        Intent i = new Intent(Intent.ACTION_SEND);
+        i.setType("text/plain");
+        i.putExtra(Intent.EXTRA_SUBJECT, eventName.getText());
+        i.putExtra(Intent.EXTRA_TEXT, (eventName.getText() + " begins in " + dateTime.getText() + ". Join us!"));
+        startActivity(i);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
@@ -138,8 +145,8 @@ public class DetailedEvent extends Fragment {
         location = (TextView) view.findViewById(R.id.location);
         dateTime = (TextView) view.findViewById(R.id.dateTime);
         description = (LinkableTextView) view.findViewById(R.id.description);
-        duration = (TextView) view.findViewById(R.id.duration);
         noEventText = (TextView) view.findViewById(R.id.noEventTextView);
+        duration = (TextView) view.findViewById(R.id.duration);
         final CheckBox favCheckBox = (CheckBox) view.findViewById(R.id.favCheckBox);
 
         Bundle bundle = this.getArguments();
@@ -164,9 +171,8 @@ public class DetailedEvent extends Fragment {
             Cursor cursor1 = database.query(EVENT_TYPE, null, "summary=?", summaryArgs, null, null, null);
             cursor1.moveToFirst();
             int description = cursor1.getColumnIndex(DESCRIPTION);
-            int creator_name = cursor1.getColumnIndex(CREATOR_NAME);
             this.descriptionStr = cursor1.getString(description);
-            this.creator = cursor1.getString(creator_name);
+
 
             cursor1.close();
         } while (cursor.moveToNext());
@@ -181,23 +187,33 @@ public class DetailedEvent extends Fragment {
         }
         database.close();
 
+        Link.OnClickListener telegramLinkListener = new Link.OnClickListener() {
+            @Override
+            public void onClick(String text) {
+                DialogFragment newFragment = new TelegramOpenDialog();
+                Bundle bundle = new Bundle();
+                bundle.putString("dialogText", text);
+                newFragment.setArguments(bundle);
+                newFragment.show(getActivity().getSupportFragmentManager(), "Telegram");
+            }
+        };
+
         Link linkUsername = new Link(Pattern.compile("(@\\w+|https://\\w+)"))
                 .setUnderlined(false)
                 .setTextColor(Color.RED)
                 .setTextStyle(Link.TextStyle.BOLD)
-                .setClickListener(new Link.OnClickListener() {
-                    @Override
-                    public void onClick(String text) {
-                        DialogFragment newFragment = new TelegramOpenDialog();
-                        Bundle bundle = new Bundle();
-                        bundle.putString("dialogText", text);
-                        newFragment.setArguments(bundle);
-                        newFragment.show(getActivity().getSupportFragmentManager(), "Telegram");
-                    }
-                });
+                .setClickListener(telegramLinkListener);
+        Link linkGroup = new Link(Pattern.compile("(https?://telegram\\.me/joinchat/[\\S]+)"))
+                .setUnderlined(false)
+                .setTextColor(Color.BLUE)
+                .setTextStyle(Link.TextStyle.BOLD)
+                .setClickListener(telegramLinkListener);
+
 
         List<Link> links = new ArrayList<>();
         links.add(linkUsername);
+        links.add(linkGroup);
+
 
         eventName.setText(summary);
         Date startDate = null;
@@ -214,7 +230,8 @@ public class DetailedEvent extends Fragment {
         dateTime.setText(Utils.commonTime.format(startDate));
         Long durationTime = TimeUnit.MILLISECONDS.toMinutes(endDate.getTime() - startDate.getTime());
         duration.setText("Duration: " + String.valueOf(durationTime) + "min");
-        //this.descriptionStr="";
+
+        Log.d("Mylog","this.descriptionStr"+this.descriptionStr);
         if (this.descriptionStr.length()!=0) {
             description
                     .addLinks(links)
@@ -222,6 +239,7 @@ public class DetailedEvent extends Fragment {
                     .build();
         }
         else noEventText.setVisibility(View.VISIBLE);
+
         if (checked.equals("1")) {
             favCheckBox.setChecked(true);
         } else {
