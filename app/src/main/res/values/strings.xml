@@ -219,6 +219,8 @@
     <string name="there_are_no_fav">There are no favourites yet</string>
     <string name="mapselect">Find on map</string>
     <string name="qrselect">Scan code</string>
+    <string name="no_event">No Event Description</string>
+
 
 </resources>
 

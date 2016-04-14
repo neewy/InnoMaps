@@ -113,7 +113,7 @@ public class DetailedEvent extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.toolbar_share:
                 actionShare();
                 return true;
@@ -203,7 +203,7 @@ public class DetailedEvent extends Fragment {
                 .setTextColor(Color.RED)
                 .setTextStyle(Link.TextStyle.BOLD)
                 .setClickListener(telegramLinkListener);
-        Link linkGroup = new Link(Pattern.compile("(https://\\w+)"))
+        Link linkGroup = new Link(Pattern.compile("(https?://telegram\\.[\\S]+)"))
                 .setUnderlined(false)
                 .setTextColor(Color.BLUE)
                 .setTextStyle(Link.TextStyle.BOLD)
@@ -231,14 +231,13 @@ public class DetailedEvent extends Fragment {
         Long durationTime = TimeUnit.MILLISECONDS.toMinutes(endDate.getTime() - startDate.getTime());
         duration.setText("Duration: " + String.valueOf(durationTime) + "min");
 
-        Log.d("Mylog","this.descriptionStr"+this.descriptionStr);
-        if (this.descriptionStr.length()!=0) {
+        Log.d("Mylog", "this.descriptionStr" + this.descriptionStr);
+        if (this.descriptionStr.length() != 0) {
             description
-                    .addLinks(links)
                     .setText(descriptionStr)
+                    .addLinks(links)
                     .build();
-        }
-        else noEventText.setVisibility(View.VISIBLE);
+        } else noEventText.setVisibility(View.VISIBLE);
 
         if (checked.equals("1")) {
             favCheckBox.setChecked(true);
@@ -263,6 +262,8 @@ public class DetailedEvent extends Fragment {
 
 
         FloatingActionButton fabButton = (FloatingActionButton) view.findViewById(R.id.fabButton);
+        fabButton.bringToFront();
+
         fabButton.setOnClickListener(new View.OnClickListener() {
 
             @Override

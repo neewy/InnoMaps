@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/topLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
-
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/upper_part">
 
     <LinearLayout
 
@@ -13,8 +16,7 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/main_text"
         android:background="@color/colorPrimary"
-
-        android:orientation="horizontal"></LinearLayout>
+        android:orientation="horizontal"/>
 
     <TextView
         android:id="@+id/eventName"
@@ -125,7 +127,7 @@
     </LinearLayout>
 
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/main_text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -159,32 +161,26 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="No Event Description"
+            android:text="@string/no_event"
+            android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:maxHeight="150dp"
             android:id="@+id/noEventTextView"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
             android:visibility="invisible"/>
-    </RelativeLayout>
-
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/main_text"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="-32dp"
-        android:layout_marginRight="20dp"
-        android:clickable="true"
-        android:src="@drawable/ic_directions_36" />
-
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_below="@+id/main_text"
-        android:background="@color/borderColor"></LinearLayout>
+        android:id="@+id/map_event_fragment"
+        android:background="@color/borderColor">
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -201,9 +197,21 @@
         android:layout_below="@+id/main_text"
         android:layout_marginTop="1dp"
         android:layout_weight="2"
-        android:elevation="1dp"
         android:minHeight="160dp"
         tools:context="com.innopolis.maps.innomaps.MapsActivity" />
-
+    </LinearLayout>
 
 </RelativeLayout>
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:layout_margin="@dimen/fab_margin"
+        app:layout_anchor="@id/mapDesc"
+        app:layout_anchorGravity="top|right|end"
+        android:src="@drawable/ic_directions_36" />
+
+</android.support.design.widget.CoordinatorLayout>
