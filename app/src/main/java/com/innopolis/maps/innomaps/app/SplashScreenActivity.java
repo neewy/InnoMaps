@@ -11,9 +11,6 @@ import com.innopolis.maps.innomaps.utils.Utils;
 
 public class SplashScreenActivity extends Activity {
 
-    // Set Duration of the Splash Screen
-    long DELAY = 500;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +24,7 @@ public class SplashScreenActivity extends Activity {
             new com.innopolis.maps.innomaps.database.DBUpdater(SplashScreenActivity.this);
         }
 
+        long delay = 500;
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -36,7 +34,7 @@ public class SplashScreenActivity extends Activity {
 
                 finish();
             }
-        }, DELAY);
+        }, delay);
 
     }
 }

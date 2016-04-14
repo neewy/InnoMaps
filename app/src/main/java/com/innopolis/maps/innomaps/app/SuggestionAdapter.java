@@ -55,8 +55,7 @@ public class SuggestionAdapter extends ArrayAdapter<SearchableItem> {
 
     @Override
     public SearchableItem getItem(int position) {
-        SearchableItem item = items.get(position);
-        return item;
+        return items.get(position);
     }
 
     @Override

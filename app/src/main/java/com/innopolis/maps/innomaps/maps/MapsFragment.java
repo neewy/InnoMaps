@@ -1,7 +1,6 @@
 package com.innopolis.maps.innomaps.maps;
 
 
-import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
@@ -9,7 +8,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -17,7 +15,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.LocationManager;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -156,6 +153,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                                     }
                                 });
                     } else if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                        setFloorPickerMargin();
                         floorPicker.setAlpha(0f);
                         if (checkIfZoomIsEnough(map.getCameraPosition()))
                             floorPicker.setVisibility(View.VISIBLE);
@@ -510,30 +508,35 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         switch (checkedId) {
             case R.id.button1:
             default:
+                addPolylineToMap("1");
                 southWest = new LatLng(55.752533, 48.742492);
                 northEast = new LatLng(55.754656, 48.744589);
                 buttonClickFloorPicker(southWest, northEast, decodeSampledBitmapFromResource(getResources(), R.raw.ai6_floor1, 600, 600), 1);
                 isMarkerSorted(1);
                 break;
             case R.id.button2:
+                addPolylineToMap("2");
                 southWest = new LatLng(55.752828, 48.742661);
                 northEast = new LatLng(55.754597, 48.744469);
                 buttonClickFloorPicker(southWest, northEast, decodeSampledBitmapFromResource(getResources(), R.raw.ai6_floor2, 600, 600), 2);
                 isMarkerSorted(2);
                 break;
             case R.id.button3:
+                addPolylineToMap("3");
                 southWest = new LatLng(55.752875, 48.742739);
                 northEast = new LatLng(55.754572, 48.744467);
                 buttonClickFloorPicker(southWest, northEast, decodeSampledBitmapFromResource(getResources(), R.raw.ai6_floor3, 600, 600), 3);
                 isMarkerSorted(3);
                 break;
             case R.id.button4:
+                addPolylineToMap("4");
                 southWest = new LatLng(55.752789, 48.742711);
                 northEast = new LatLng(55.754578, 48.744569);
                 buttonClickFloorPicker(southWest, northEast, decodeSampledBitmapFromResource(getResources(), R.raw.ai6_floor4, 600, 600), 4);
                 isMarkerSorted(4);
                 break;
             case R.id.button5:
+                addPolylineToMap("5");
                 southWest = new LatLng(55.752808, 48.743497);
                 northEast = new LatLng(55.753383, 48.744519);
                 buttonClickFloorPicker(southWest, northEast, decodeSampledBitmapFromResource(getResources(), R.raw.ai6_floor5, 600, 600), 5);

@@ -44,7 +44,7 @@ public class DBTables{
     }
 
     public static String createTable(String string) {
-        return string = removeLastChar(string) + ")";
+        return removeLastChar(string) + ")";
     }
 
 

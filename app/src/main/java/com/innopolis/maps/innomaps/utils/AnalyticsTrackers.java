@@ -20,16 +20,14 @@ import java.util.Map;
 public final class AnalyticsTrackers {
 
     public enum Target {
-        APP, EVENTS, DETAILED, FAVOURITE, MAPS,
+        APP
         // Add more trackers here if you need, and update the code in #get(Target) below
     }
 
     private static AnalyticsTrackers sInstance;
 
     public static synchronized void initialize(Context context) {
-        if (sInstance != null) {
-            //throw new IllegalStateException("Extra call to initialize analytics trackers");
-        } else {
+        if (sInstance == null) {
             sInstance = new AnalyticsTrackers(context);
         }
     }
@@ -57,18 +55,6 @@ public final class AnalyticsTrackers {
             Tracker tracker;
             switch (target) {
                 case APP:
-                    tracker = GoogleAnalytics.getInstance(mContext).newTracker(R.xml.app_tracker);
-                    break;
-                case EVENTS:
-                    tracker = GoogleAnalytics.getInstance(mContext).newTracker(R.xml.app_tracker);
-                    break;
-                case DETAILED:
-                    tracker = GoogleAnalytics.getInstance(mContext).newTracker(R.xml.app_tracker);
-                    break;
-                case FAVOURITE:
-                    tracker = GoogleAnalytics.getInstance(mContext).newTracker(R.xml.app_tracker);
-                    break;
-                case MAPS:
                     tracker = GoogleAnalytics.getInstance(mContext).newTracker(R.xml.app_tracker);
                     break;
                 default:
