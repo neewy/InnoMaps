@@ -191,14 +191,12 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
 
 
                     mSettings = map.getUiSettings();
-
+                    zoomToUniversityAlways();
                     mSettings.setMapToolbarEnabled(false);
-                    final LatLng university = new LatLng(55.752116019, 48.7448166297);
                     markers = new ArrayList<>();
                     filterList = new ArrayList<>();
                     filterList.add(ALL_FILTER);
 
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(university, 17));
                     map.setMapType(MAP_TYPE_NORMAL);
                     markerList = new ArrayList<>();
                     imageOverlayCheck = new ArrayList();
@@ -774,5 +772,9 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         int res = 600;
         Bitmap bitmap = decodeSampledBitmapFromResource(getResources(), R.raw.ui_unzoomed, res, res);
         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromBitmap(bitmap));
+    }
+
+    private void zoomToUniversityAlways(){
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(55.75360130293316,48.7435007840395), (float) 17.7));
     }
 }
