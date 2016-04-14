@@ -198,12 +198,12 @@ public class DetailedEvent extends Fragment {
             }
         };
 
-        Link linkUsername = new Link(Pattern.compile("(@\\w+|https://\\w+)"))
+        Link linkUsername = new Link(Pattern.compile("(@\\w+)"))
                 .setUnderlined(false)
                 .setTextColor(Color.RED)
                 .setTextStyle(Link.TextStyle.BOLD)
                 .setClickListener(telegramLinkListener);
-        Link linkGroup = new Link(Pattern.compile("(https?://telegram\\.me/joinchat/[\\S]+)"))
+        Link linkGroup = new Link(Pattern.compile("(https://\\w+)"))
                 .setUnderlined(false)
                 .setTextColor(Color.BLUE)
                 .setTextStyle(Link.TextStyle.BOLD)
