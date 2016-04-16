@@ -521,6 +521,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
 
     private void floorPickerGroundOverlaySwitch(int checkedId) {
         LatLng southWest, northEast;
+        clearMarkerList();
         switch (checkedId) {
             case R.id.button1:
             default:
