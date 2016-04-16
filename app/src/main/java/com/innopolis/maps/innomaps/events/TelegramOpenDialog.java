@@ -8,9 +8,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.widget.Toast;
-
-import com.innopolis.maps.innomaps.utils.Utils;
 
 
 public class TelegramOpenDialog extends DialogFragment {
@@ -51,14 +48,8 @@ public class TelegramOpenDialog extends DialogFragment {
 
 
     protected void intentMessageTelegram(String link) {
-        final String appName = "org.telegram.messenger";
-        final boolean isAppInstalled = Utils.isAppAvailable(getContext(), appName);
-        if (isAppInstalled) {
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(url));
             startActivity(i);
-        } else {
-            Toast.makeText(getActivity(), "Telegram not Installed", Toast.LENGTH_SHORT).show();
-        }
     }
 }
