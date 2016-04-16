@@ -58,6 +58,8 @@ public class MainActivity extends AppCompatActivity
     private boolean doubleBackToExitPressedOnce = false;
     public final List<SearchableItem> searchItems = new LinkedList<>();
 
+    private Toolbar toolbar;
+
     DBHelper dbHelper;
     SQLiteDatabase database;
 
@@ -103,16 +105,11 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         mInstance = this;
 
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
+        setToggle(toolbar);
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -229,18 +226,22 @@ public class MainActivity extends AppCompatActivity
                     getSupportActionBar().setTitle(MAPS);
                 }
             }
-            setToggle();
+            setToggle(toolbar);
         }
     }
 
-    public void setToggle() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+    public void setActivityDrawerToggle() {
+        setToggle(toolbar);
+    }
+
+    private void setToggle(Toolbar toolbar) {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         invalidateOptionsMenu();
         toggle.setDrawerIndicatorEnabled(true);
         toggle.syncState();
+        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
     }
 
     @Override

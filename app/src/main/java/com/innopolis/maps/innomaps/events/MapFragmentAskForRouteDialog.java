@@ -162,7 +162,7 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
                 if (source.equals("DetailedEvent")) {
                     getActivity().getSupportFragmentManager().popBackStackImmediate("Maps", 0);
                     ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Maps");
-                    ((MainActivity) getActivity()).setToggle();
+                    ((MainActivity) getActivity()).setActivityDrawerToggle();
                 }
                 maps.allowSelection(MapFragmentAskForRouteDialog.this.getDialog(), new LatLng(Double.parseDouble(latitudeDest), Double.parseDouble(longitudeDest)));
             }
@@ -195,7 +195,7 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
                         if (source.equals("DetailedEvent")) {
                             getActivity().getSupportFragmentManager().popBackStackImmediate("Maps", 0);
                             ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Maps");
-                            ((MainActivity) getActivity()).setToggle();
+                            ((MainActivity) getActivity()).setActivityDrawerToggle();
                         }
 
                         MapFragmentAskForRouteDialog.this.getDialog().cancel();
