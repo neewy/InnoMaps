@@ -11,9 +11,9 @@ import org.acra.annotation.ReportsCrashes;
  */
 
 @ReportsCrashes(
-        formUri = "https://collector.tracepot.com/95d77fd5",
-        reportType = org.acra.sender.HttpSender.Type.JSON,
-        httpMethod = org.acra.sender.HttpSender.Method.PUT,
+        formUri = "http://collector.tracepot.com/95d77fd5",
+        reportType = org.acra.sender.HttpSender.Type.FORM,
+        httpMethod = org.acra.sender.HttpSender.Method.POST,
         formUriBasicAuthLogin="reporter",
         formUriBasicAuthPassword="InnoMaps",
 

@@ -215,7 +215,7 @@ public class BottomSheet extends Fragment {
                 relatedLayout.addView(noEvents);
             } else {
                 final ListView eventList = new ListView(getContext());
-                eventList.setAdapter(new MapBottomEventListAdapter(getContext(), events));
+                eventList.setAdapter(new MapBottomEventListAdapter(getContext(), events, getActivity()));
                 relatedLayout.addView(eventList);
             }
             headerText.setText(poi_name);
