@@ -82,7 +82,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static android.widget.AdapterView.OnItemClickListener;
 import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_NORMAL;
@@ -110,7 +110,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     JGraphTWrapper graphWrapper;
 
     /*This map structure stores shortest path, divided into floors (keys)*/
-    TreeMap<String, ArrayList<LatLngGraphVertex>> currentNavPath;
+    Map<String, ArrayList<LatLngGraphVertex>> currentNavPath;
 
     PolylineWrapper current; // current path, that is displayed
 
@@ -177,7 +177,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                 mapView = (MapView) v.findViewById(R.id.map);
                 floorPicker = (RadioGroup) v.findViewById(R.id.floorPicker);
                 ((RadioButton) floorPicker.getChildAt(4)).setChecked(true); //1st floor
-                currentNavPath = new TreeMap<>();
+                currentNavPath = new ConcurrentHashMap<>();
                 current = new PolylineWrapper();
                 mapView.getMapAsync(new OnMapReadyCallback() {
                     @Override
@@ -451,11 +451,12 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             ArrayList<LatLngGraphVertex> path = graphWrapper.shortestPath(source, destination);
             if (path != null) {
                 splitPathtoFloors(currentNavPath, path);
-                ((RadioButton) floorPicker.getChildAt(5 - Integer.parseInt(currentNavPath.firstEntry().getKey()))).setChecked(true);
+                String firstKey = String.valueOf(path.get(0).getVertexId()).substring(0,1);
+                ((RadioButton) floorPicker.getChildAt(5 - Integer.parseInt(firstKey))).setChecked(true);
                 scrollView.setVisibility(View.GONE);
                 if (currentNavPath.size() > 1)
                     routeStep.setVisibility(View.VISIBLE);
-                drawPathOnMap(map, currentNavPath.firstEntry().getKey(), currentNavPath.firstEntry().getValue());
+                drawPathOnMap(map, firstKey, currentNavPath.get(firstKey));
             } else {
                 Toast.makeText(getContext(), "You are already there", Toast.LENGTH_SHORT).show();
             }
@@ -641,6 +642,14 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             String lastVerticeId = String.valueOf(path.get(path.size() - 1).getVertexId());
             currentNavPath.put(lastVerticeId.substring(0, 1), pathPart);
         }
+
+        int i = 0;
+        for (String floor : currentNavPath.keySet()){
+            i++;
+            if (i != currentNavPath.keySet().size() && currentNavPath.get(floor).size() == 1) {
+                currentNavPath.remove(floor);
+            }
+        }
     }
 
     public void drawPathOnMap(GoogleMap map, String floor, ArrayList<LatLngGraphVertex> path) {
@@ -750,11 +759,8 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
 
     private boolean checkIfZoomIsEnough(CameraPosition cameraPosition) {
         LatLng cameraTarget = cameraPosition.target;
-        if ((cameraTarget.latitude > 55.752116019 && cameraTarget.latitude < 55.754923377) &&
-                (cameraTarget.longitude < 48.7448166297 && cameraTarget.longitude > 48.742106790) && cameraPosition.zoom > 17.50) {
-            return true;
-        }
-        return false;
+        return (cameraTarget.latitude > 55.752116019 && cameraTarget.latitude < 55.754923377) &&
+                (cameraTarget.longitude < 48.7448166297 && cameraTarget.longitude > 48.742106790) && cameraPosition.zoom > 17.50;
     }
 
     OnMapClickListener mapClickListener = new OnMapClickListener() {
