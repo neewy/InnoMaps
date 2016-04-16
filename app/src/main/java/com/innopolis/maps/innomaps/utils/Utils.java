@@ -12,7 +12,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -171,12 +170,6 @@ public class Utils {
         drawable.draw(canvas);
 
         return bitmap;
-    }
-
-    public static void hideKeyboardInView(Context context, View view) {
-
-        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
     }
 
     public static void selectSpinnerItemByValue(Spinner spnr, String value) {

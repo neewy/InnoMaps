@@ -6,15 +6,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-/*import com.innopolis.maps.innomaps.ORM.Event_POI;
-import com.innopolis.maps.innomaps.ORM.Event_type;
-import com.innopolis.maps.innomaps.ORM.Events;
-import com.innopolis.maps.innomaps.ORM.Poi;*/
 import com.innopolis.maps.innomaps.events.Event;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -42,6 +39,11 @@ import static com.innopolis.maps.innomaps.database.TableFields.ROOM;
 import static com.innopolis.maps.innomaps.database.TableFields.START;
 import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY;
 import static com.innopolis.maps.innomaps.database.TableFields.TYPE;
+
+/*import com.innopolis.maps.innomaps.ORM.Event_POI;
+import com.innopolis.maps.innomaps.ORM.Event_type;
+import com.innopolis.maps.innomaps.ORM.Events;
+import com.innopolis.maps.innomaps.ORM.Poi;*/
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -149,7 +151,15 @@ public class DBHelper extends SQLiteOpenHelper {
                 event.setLatitude(cursor.getString(latitude));
                 event.setLongitude(cursor.getString(longitude));
 
-                events.add(event);
+                Date date = new Date();
+
+                //if the date exceeds current date – we don't store it
+                if (event.getStart().before(date)) {
+                    database.execSQL("DELETE FROM events where eventID like '" + eventID + "'");
+                } else {
+                    events.add(event);
+                }
+
             } while (cursor.moveToNext());
         }
         cursor.close();

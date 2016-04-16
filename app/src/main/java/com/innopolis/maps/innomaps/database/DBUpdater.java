@@ -307,4 +307,8 @@ public class DBUpdater {
         }
         return eventsInserted;
     }
+
+    public void updateEvents() {
+        new JsonParseTask().execute();
+    }
 }

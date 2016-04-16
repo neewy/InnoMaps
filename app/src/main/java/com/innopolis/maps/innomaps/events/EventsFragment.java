@@ -26,6 +26,7 @@ import com.google.common.collect.Collections2;
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.database.DBHelper;
+import com.innopolis.maps.innomaps.database.DBUpdater;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import java.util.ArrayList;
@@ -105,7 +106,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
         if (Utils.isNetworkAvailable(context)) {
             adapter.events.clear();
             swipeRefreshLayout.setRefreshing(true);
-            new com.innopolis.maps.innomaps.database.DBUpdater(context);
+            new DBUpdater(context).updateEvents();
             adapter.events = DBHelper.readEvents(getContext(), false);
             Collections.sort(adapter.events);
             adapter.notifyDataSetChanged();
@@ -150,6 +151,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
                 }
                 adapter.notifyDataSetChanged();
                 list = new ArrayList<>(origin);
+                Utils.hideKeyboard(getActivity());
             }
         });
     }

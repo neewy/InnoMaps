@@ -84,9 +84,6 @@ public class BottomSheet extends Fragment {
 
     public void inSearchBottomList(SearchableItem item, View view) {
         ((RadioButton) floorPicker.getChildAt(5 - Integer.parseInt(item.getFloor().substring(0, 1)))).setChecked(true);
-        if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        }
 
         List<String> location = new LinkedList<>();
         if (item.getBuilding() != null) location.add(item.getBuilding());

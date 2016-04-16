@@ -34,6 +34,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -84,6 +85,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static android.view.View.GONE;
+import static android.view.View.INVISIBLE;
 import static android.widget.AdapterView.OnItemClickListener;
 import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_NORMAL;
 import static com.google.android.gms.maps.GoogleMap.OnMapClickListener;
@@ -121,13 +124,8 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     public Dialog currentDialog;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         View v = inflater.inflate(R.layout.maps_fragment, container, false);
         dbHelper = new DBHelper(getContext());
         database = dbHelper.getReadableDatabase();
@@ -166,11 +164,30 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
 
                 @Override
                 public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
-
+                    //not yet implemented
                 }
             });
         }
+
+        /*The listener below is invoked on every UI change of scrollView
+        * and shows floorPicker if scrollView is hidden*/
+        scrollView.setTag(scrollView.getVisibility());
+        scrollView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                int newVis = scrollView.getVisibility();
+                if((int)scrollView.getTag() != newVis) {
+                    scrollView.setTag(scrollView.getVisibility());
+                    if (scrollView.getVisibility() == GONE || scrollView.getVisibility() == INVISIBLE) {
+                        floorPicker.setVisibility(View.VISIBLE);
+                        floorPicker.animate()
+                                .alpha(1f)
+                                .setDuration(200)
+                                .setListener(null);
+                    }
+                }
+            }
+        });
 
         switch (GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity())) {
             case ConnectionResult.SUCCESS:
