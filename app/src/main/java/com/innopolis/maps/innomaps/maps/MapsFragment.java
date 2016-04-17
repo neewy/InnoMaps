@@ -14,7 +14,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -70,11 +69,10 @@ import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.pathfinding.JGraphTWrapper;
 import com.innopolis.maps.innomaps.pathfinding.LatLngGraphVertex;
 import com.innopolis.maps.innomaps.qr.Scanner;
-import com.innopolis.maps.innomaps.utils.Utils;
 
-import org.apache.commons.io.IOUtils;
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -176,7 +174,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             @Override
             public void onGlobalLayout() {
                 int newVis = scrollView.getVisibility();
-                if((int)scrollView.getTag() != newVis) {
+                if ((int) scrollView.getTag() != newVis) {
                     scrollView.setTag(scrollView.getVisibility());
                     if (scrollView.getVisibility() == GONE || scrollView.getVisibility() == INVISIBLE) {
                         floorPicker.setVisibility(View.VISIBLE);
@@ -442,41 +440,35 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         scrollView.setVisibility(View.GONE);
     }
 
-    private class RestRequest extends AsyncTask<LatLng, Void, String> {
-
-        LatLng source;
-        LatLng destination;
-
-        @Override
-        protected String doInBackground(LatLng... params) {
-            source = params[0];
-            destination = params[1];
-            return Utils.doGetRequest(Utils.restServerUrl + "/innomaps/graphml/loadmap?floor=9");
+    private void getAndDrawPath(LatLng source, LatLng destination) {
+        FileInputStream inputStream = null;
+        try {
+            inputStream = getContext().openFileInput("9.xml");
         }
-
-        @Override
-        protected void onPostExecute(String str) {
-            Log.i("graph", str);
-            if (str.equals("")) {
-                return;
-            }
-            try {
-                graphWrapper.importGraphML(IOUtils.toInputStream(str, "UTF-8"));
-            } catch (XmlPullParserException | IOException e) {
-                e.printStackTrace();
-            }
-            ArrayList<LatLngGraphVertex> path = graphWrapper.shortestPath(source, destination);
-            if (path != null) {
-                splitPathtoFloors(currentNavPath, path);
-                String firstKey = String.valueOf(path.get(0).getVertexId()).substring(0,1);
-                ((RadioButton) floorPicker.getChildAt(5 - Integer.parseInt(firstKey))).setChecked(true);
-                scrollView.setVisibility(View.GONE);
-                if (currentNavPath.size() > 1)
-                    routeStep.setVisibility(View.VISIBLE);
-                drawPathOnMap(map, firstKey, currentNavPath.get(firstKey));
-            } else {
-                Toast.makeText(getContext(), "You are already there", Toast.LENGTH_SHORT).show();
-            }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (inputStream == null) {
+            return;
+        }
+        try {
+            graphWrapper = new JGraphTWrapper();
+            graphWrapper.importGraphML(inputStream);
+        } catch (XmlPullParserException | IOException e) {
+            e.printStackTrace();
+            return;
+        }
+        ArrayList<LatLngGraphVertex> path = graphWrapper.shortestPath(source, destination);
+        if (path != null) {
+            splitPathtoFloors(currentNavPath, path);
+            String firstKey = String.valueOf(path.get(0).getVertexId()).substring(0, 1);
+            ((RadioButton) floorPicker.getChildAt(5 - Integer.parseInt(firstKey))).setChecked(true);
+            scrollView.setVisibility(View.GONE);
+            if (currentNavPath.size() > 1)
+                routeStep.setVisibility(View.VISIBLE);
+            drawPathOnMap(map, firstKey, currentNavPath.get(firstKey));
+        } else {
+            Toast.makeText(getContext(), "You are already there", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -628,8 +620,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
 
 
     public void showRoute(LatLng source, LatLng destination) {
-        graphWrapper = new JGraphTWrapper(); //TODO: is there a need to re-initialize the graphWrapper?
-        new RestRequest().execute(source, destination);
+        getAndDrawPath(source, destination);
     }
 
     private void sortClearAdd(int num) {
@@ -662,7 +653,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         }
 
         int i = 0;
-        for (String floor : currentNavPath.keySet()){
+        for (String floor : currentNavPath.keySet()) {
             i++;
             if (i != currentNavPath.keySet().size() && currentNavPath.get(floor).size() == 1) {
                 currentNavPath.remove(floor);
@@ -798,7 +789,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromBitmap(bitmap));
     }
 
-    private void zoomToUniversityAlways(){
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(55.75360130293316,48.7435007840395), (float) 17.7));
+    private void zoomToUniversityAlways() {
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(55.75360130293316, 48.7435007840395), (float) 17.7));
     }
 }

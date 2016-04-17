@@ -104,6 +104,9 @@ public class JGraphTWrapper {
             testVertexTo = foundPath.get(i).getV2();
             pointsList.add(pointsList.get(pointsList.size()-1).equals(testVertexFrom) ? testVertexTo : testVertexFrom);
         }
+        for (LatLngGraphVertex point: pointsList) {
+            Log.d("graph", point.getVertexId() + " ");
+        }
         return pointsList;
     }
 

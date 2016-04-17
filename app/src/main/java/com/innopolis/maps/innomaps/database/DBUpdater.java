@@ -2,12 +2,15 @@ package com.innopolis.maps.innomaps.database;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.innopolis.maps.innomaps.utils.Utils;
 
@@ -23,6 +26,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Calendar;
@@ -54,11 +58,12 @@ import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY;
 public class DBUpdater {
 
 
-    Context context;
-    DBHelper dbHelper;
-    SQLiteDatabase database;
-    SharedPreferences sPref;
-    String DELETE = "delete from ";
+    private Context context;
+    private DBHelper dbHelper;
+    private SQLiteDatabase database;
+    private SharedPreferences sPref;
+    private String DELETE = "delete from ";
+    private GraphLoader graphLoader;
 
     private volatile int counter = 0;
 
@@ -72,6 +77,8 @@ public class DBUpdater {
         new XMLParseTask().execute("3");
         new XMLParseTask().execute("4");
         new XMLParseTask().execute("5");
+        graphLoader = new GraphLoader(context);
+        graphLoader.execute();
     }
 
     private class JsonParseTask extends AsyncTask<Void, Void, String> {
