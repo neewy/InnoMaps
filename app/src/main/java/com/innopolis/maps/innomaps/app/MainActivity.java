@@ -339,6 +339,12 @@ public class MainActivity extends AppCompatActivity
         String title = "";
         Fragment fragment = null;
 
+        final MapsFragment mapsFragment = (MapsFragment) getSupportFragmentManager().findFragmentByTag("Maps");
+
+        if (mapsFragment != null && mapsFragment.mapRoute != null && mapsFragment.mapRoute.hasCurrentPath) {
+            mapsFragment.mapRoute.finishRoute(false);
+        }
+
         if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
             if (id == R.id.nav_maps) {
                 fragment = new MapsFragment();

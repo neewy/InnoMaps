@@ -5,6 +5,7 @@ import com.google.common.base.Predicate;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class Event implements Comparable<Event> {
 
@@ -147,9 +148,11 @@ public class Event implements Comparable<Event> {
 
     public static Predicate<Event> isToday = new Predicate<Event>() {
         public boolean apply(Event event) {
-            Date today = new Date();
-            Calendar c = Calendar.getInstance();
-            c.setTime(today);
+            Calendar c = new GregorianCalendar();
+            c.set(Calendar.HOUR_OF_DAY, 0);
+            c.set(Calendar.MINUTE, 0);
+            c.set(Calendar.SECOND, 0);
+            Date today = c.getTime();
             c.add(Calendar.DATE, 1);
             Date tomorrow = c.getTime();
             return (event.getStart().after(today) && event.getEnd().before(tomorrow));
@@ -158,7 +161,10 @@ public class Event implements Comparable<Event> {
 
     public static Predicate<Event> isTomorrow = new Predicate<Event>() {
         public boolean apply(Event event) {
-            Calendar c = Calendar.getInstance();
+            Calendar c = new GregorianCalendar();
+            c.set(Calendar.HOUR_OF_DAY, 0);
+            c.set(Calendar.MINUTE, 0);
+            c.set(Calendar.SECOND, 0);
             c.add(Calendar.DATE, 1);
             Date tomorrow = c.getTime();
             c.add(Calendar.DATE, 1);

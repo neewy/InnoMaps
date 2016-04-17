@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * This class represents an object, responsible for handling shortest path parts
  * to different floors of the university building.
- *
+
  * Created by neewy on 16.04.16.
  */
 public class MapRoute {
