@@ -19,6 +19,8 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.pathfinding.LatLngGraphVertex;
 
+import org.acra.ACRA;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -350,6 +352,10 @@ public class MapRoute {
     public void redrawMarkers(Integer newZoom) {
         if (currentZoom == null) {
             setCurrentZoom(16);
+        }
+
+        if (markerEndpointsZoom.get(currentZoom) == null) {
+            ACRA.log.d("Crash on zoom :", currentZoom.toString());
         }
 
         for (Marker marker : markerEndpointsZoom.get(currentZoom)) {

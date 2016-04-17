@@ -19,22 +19,23 @@ public class TelegramOpenDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        message = "Get in touch with " + getArguments().getString("dialogText") + " via telegram";
         String nickURL = getArguments().getString("dialogText");
+
         if (nickURL.contains("@")) {
             link = nickURL.substring(nickURL.indexOf("@") + 1);
+            message = "Get in touch with " + link + " via telegram";
             url = CONTACT_URL + link;
         } else {
-            link = getArguments().getString(nickURL);
-            url = CONTACT_URL + link;
+            message = "Open link " + nickURL + " ?";
+            link = getArguments().getString("dialogText");
+            url = link;
         }
-
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(message)
-                .setPositiveButton("Open in Telegram", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Open", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        intentMessageTelegram(link);
+                        intentMessageTelegram();
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -47,7 +48,7 @@ public class TelegramOpenDialog extends DialogFragment {
     }
 
 
-    protected void intentMessageTelegram(String link) {
+    protected void intentMessageTelegram() {
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(url));
             startActivity(i);

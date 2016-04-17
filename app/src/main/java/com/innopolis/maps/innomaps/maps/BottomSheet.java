@@ -36,6 +36,7 @@ import com.innopolis.maps.innomaps.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -144,23 +145,37 @@ public class BottomSheet extends Fragment {
                 description = cursor_type.getString(cursor_type.getColumnIndex(DESCRIPTION));
             }
             LinkableTextView descriptionText = new LinkableTextView(getContext());
+
+            Link.OnClickListener telegramLinkListener = new Link.OnClickListener() {
+                @Override
+                public void onClick(String text) {
+                    DialogFragment newFragment = new TelegramOpenDialog();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("dialogText", text);
+                    newFragment.setArguments(bundle);
+                    newFragment.show(getActivity().getSupportFragmentManager(), "Telegram");
+                }
+            };
+
             Link linkUsername = new Link(Pattern.compile("(@\\w+)"))
                     .setUnderlined(false)
-                    .setTextColor(Color.parseColor("#D00000"))
+                    .setTextColor(Color.RED)
                     .setTextStyle(Link.TextStyle.BOLD)
-                    .setClickListener(new Link.OnClickListener() {
-                        @Override
-                        public void onClick(String text) {
-                            DialogFragment newFragment = new TelegramOpenDialog();
-                            Bundle bundle = new Bundle();
-                            bundle.putString("dialogText", text);
-                            newFragment.setArguments(bundle);
-                            newFragment.show(getActivity().getSupportFragmentManager(), "Telegram");
-                        }
-                    });
+                    .setClickListener(telegramLinkListener);
+            Link linkGroup = new Link(Pattern.compile("(https?://telegram\\.[\\S]+)"))
+                    .setUnderlined(false)
+                    .setTextColor(Color.BLUE)
+                    .setTextStyle(Link.TextStyle.BOLD)
+                    .setClickListener(telegramLinkListener);
+
+
+            List<Link> links = new ArrayList<>();
+            links.add(linkUsername);
+            links.add(linkGroup);
+
             descriptionText.setTextSize(16);
             descriptionText.setPadding(0, 20, 10, 10);
-            descriptionText.setText(description).addLink(linkUsername).build();
+            descriptionText.setText(description).addLinks(links).build();
             relatedLayout.addView(descriptionText);
             try {
                 startDate = Utils.googleTimeFormat.parse(startDateText);
