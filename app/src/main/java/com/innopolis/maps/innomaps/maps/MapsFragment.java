@@ -18,7 +18,6 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.MenuItemCompat;
@@ -59,7 +58,6 @@ import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.common.collect.Collections2;
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.app.MainActivity;
@@ -75,13 +73,11 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
@@ -110,16 +106,11 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
 
     JGraphTWrapper graphWrapper;
 
-    /*This map structure stores shortest path, divided into floors (keys)*/
-    Map<String, ArrayList<LatLngGraphVertex>> currentNavPath;
-
-    PolylineWrapper current; // current path, that is displayed
-
-    /*This button changes the path displayed on GoogleMap widget*/
-    FloatingActionButton routeStep;
-
     /*Dialog, that asks user how to select his location */
     public Dialog currentDialog;
+
+    /*Map route, that is build on map if user started a route*/
+    public MapRoute mapRoute;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -132,7 +123,6 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         durationLayout = (LinearLayout) scrollView.findViewById(R.id.durationLayout);
         startLayout = (LinearLayout) scrollView.findViewById(R.id.startLayout);
 
-        routeStep = (FloatingActionButton) v.findViewById(R.id.route_step);
         mBottomSheetBehavior = BottomSheetBehavior.from(scrollView);
         if (mBottomSheetBehavior != null) {
             mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -192,8 +182,6 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                 mapView = (MapView) v.findViewById(R.id.map);
                 floorPicker = (RadioGroup) v.findViewById(R.id.floorPicker);
                 ((RadioButton) floorPicker.getChildAt(4)).setChecked(true); //1st floor
-                currentNavPath = new ConcurrentHashMap<>();
-                current = new PolylineWrapper();
                 mapView.getMapAsync(new OnMapReadyCallback() {
                     @Override
                     public void onMapReady(GoogleMap googleMap) {
@@ -235,9 +223,23 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                             new GoogleMap.OnMarkerClickListener() {
                                 @Override
                                 public boolean onMarkerClick(Marker marker) {
-                                    pinMarker(marker.getPosition());
-                                    scrollView.setVisibility(View.GONE);
-                                    return true;
+                                    /*If the path has started and a path handling marker was clicked*/
+                                    if (mapRoute != null && mapRoute.hasCurrentPath && marker.getSnippet() != null) {
+                                        if (marker.getSnippet().equals("NEXT")) {
+                                            mapRoute.nextPath();
+                                        } else if (marker.getSnippet().equals("PREV")){
+                                            mapRoute.prevPath();
+                                        } else if (marker.getSnippet().equals("FINISH")) {
+                                            mapRoute.finishRoute(true);
+                                        }
+                                        marker.hideInfoWindow();
+                                        return true;
+
+                                    } else {
+                                        pinMarker(marker.getPosition());
+                                        scrollView.setVisibility(View.GONE);
+                                        return true;
+                                    }
                                 }
                             }
                     );
@@ -245,32 +247,6 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                     /* This listener checks current camera position in order to show custom
                     * level picker over the university building */
                     map.setOnCameraChangeListener(showUniversityPicker);
-
-                    /*This listener waits for button press event, routeStep button divides shortest path
-                    * on different floor segments, showing each in cyclic way: user clicks and then the next floor
-                    * with next path is shown */
-                    routeStep.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            String radioId = String.valueOf(5 - floorPicker.indexOfChild(floorPicker.findViewById(floorPicker.getCheckedRadioButtonId())));
-
-                            List<String> pathFloors = Arrays.asList(currentNavPath.keySet().toArray(new String[currentNavPath.size()]));
-                            for (int i = 0; i < pathFloors.size(); i++) {
-                                if (pathFloors.get(i).equals(radioId)) {
-                                    String floor;
-                                    if (i + 1 >= pathFloors.size()) {
-                                        drawPathOnMap(map, pathFloors.get(0), currentNavPath.get(pathFloors.get(0)));
-                                        floor = pathFloors.get(0);
-                                    } else {
-                                        drawPathOnMap(map, pathFloors.get(i + 1), currentNavPath.get(pathFloors.get(i + 1)));
-                                        floor = pathFloors.get(i + 1);
-                                    }
-                                    ((RadioButton) floorPicker.getChildAt(5 - Integer.parseInt(floor))).setChecked(true);
-                                    break;
-                                }
-                            }
-                        }
-                    });
                 }
                 break;
             case ConnectionResult.SERVICE_MISSING:
@@ -319,7 +295,6 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             public boolean onMenuItemActionExpand(MenuItem item) {
                 if (topNavigation.getVisibility() == View.GONE) {
                     topNavigation.setVisibility(View.VISIBLE);
-                    routeStep.setVisibility(View.GONE);
                     return true;
                 }
                 return false;
@@ -399,7 +374,6 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
 
 
     private void resetMarkers(int selectedButton, String snackbarText, List<SearchableItem> items, Collection<SearchableItem> input, int floor) {
-
         if (input.isEmpty()) {
             Snackbar.make(getView(), snackbarText, Snackbar.LENGTH_SHORT);
         } else {
@@ -459,14 +433,15 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             return;
         }
         ArrayList<LatLngGraphVertex> path = graphWrapper.shortestPath(source, destination);
+
+            /*Creation and start of a new route*/
         if (path != null) {
-            splitPathtoFloors(currentNavPath, path);
-            String firstKey = String.valueOf(path.get(0).getVertexId()).substring(0, 1);
-            ((RadioButton) floorPicker.getChildAt(5 - Integer.parseInt(firstKey))).setChecked(true);
             scrollView.setVisibility(View.GONE);
-            if (currentNavPath.size() > 1)
-                routeStep.setVisibility(View.VISIBLE);
-            drawPathOnMap(map, firstKey, currentNavPath.get(firstKey));
+            if (mapRoute != null && mapRoute.hasCurrentPath) {
+                mapRoute.finishRoute(false);
+            }
+            mapRoute = new MapRoute(map, path, getActivity(), floorPicker);
+            mapRoute.startRoute();
         } else {
             Toast.makeText(getContext(), "You are already there", Toast.LENGTH_SHORT).show();
         }
@@ -514,6 +489,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     private void floorPickerGroundOverlaySwitch(int checkedId) {
         LatLng southWest, northEast;
         clearMarkerList();
+        if (mapRoute != null && mapRoute.hasCurrentPath) mapRoute.addMarkerPolylineToMap(checkedId);
         switch (checkedId) {
             case R.id.button1:
             default:
@@ -545,7 +521,6 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     }
 
     private void changeOnFloorPickerClick(LatLng southWest, LatLng northEast, int id, int floor){
-        addPolylineToMap(String.valueOf(floor));
         buttonClickFloorPicker(southWest, northEast, decodeSampledBitmapFromResource(getResources(), id, 600, 600), floor);
         isMarkerSorted(floor);
         clearMarkerList();
@@ -658,33 +633,6 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         }
     }
 
-    public void drawPathOnMap(GoogleMap map, String floor, ArrayList<LatLngGraphVertex> path) {
-        if (!current.isEmpty()) current.deleteFromMap();
-        PolylineOptions polylineOptions = new PolylineOptions();
-        polylineOptions
-                .width(7)
-                .color(getResources().getColor(R.color.pathColor))
-                .geodesic(true);
-        for (LatLngGraphVertex v : path) {
-            polylineOptions.add(v.getVertex());
-        }
-        current.setPolyline(map, polylineOptions);
-        current.setFloor(floor);
-    }
-
-    public void addPolylineToMap(String floor) {
-        if (!current.isNull()) {
-            if (current.getFloor().equals(floor)) {
-                PolylineOptions polylineOptions = current.getPolylineOptions();
-                current.deleteFromMap();
-                current.setPolyline(map, polylineOptions);
-                current.setFloor(floor);
-            } else {
-                current.deleteFromMap();
-            }
-        }
-    }
-
     public void allowSelection(final Dialog dialog, final LatLng destination) {
         dialog.hide();
 
@@ -740,6 +688,9 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     GoogleMap.OnCameraChangeListener showUniversityPicker = new GoogleMap.OnCameraChangeListener() {
         @Override
         public void onCameraChange(CameraPosition cameraPosition) {
+            if (mapRoute != null && mapRoute.hasCurrentPath) {
+                mapRoute.redrawMarkers(Double.valueOf(Math.floor((double) cameraPosition.zoom)).intValue());
+            }
             if (checkIfZoomIsEnough(cameraPosition)) {
                 floorPicker.setVisibility(View.VISIBLE);
                 if (imageOverlayCheck != null) {

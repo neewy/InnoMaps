@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity
     private final String DETAILED = "Detailed";
 
     private boolean doubleBackToExitPressedOnce = false;
+    private boolean doubleBackToFinishRoute = false;
     public final List<SearchableItem> searchItems = new LinkedList<>();
 
     private Toolbar toolbar;
@@ -200,20 +201,46 @@ public class MainActivity extends AppCompatActivity
         } else {
             if (getSupportFragmentManager().getBackStackEntryCount() == 1) {
 
-                if (doubleBackToExitPressedOnce) {
-                    getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                    super.onBackPressed();
-                }
+                final MapsFragment mapsFragment = (MapsFragment) getSupportFragmentManager().findFragmentByTag("Maps");
 
-                this.doubleBackToExitPressedOnce = true;
-                Snackbar.make(findViewById(android.R.id.content), "Please click BACK again to exit", Snackbar.LENGTH_LONG).setActionTextColor(Color.WHITE).show();
+                if (mapsFragment.mapRoute != null && mapsFragment.mapRoute.hasCurrentPath) {
 
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        doubleBackToExitPressedOnce = false;
+                    if (doubleBackToFinishRoute) {
+                        mapsFragment.mapRoute.finishRoute(false);
                     }
-                }, 2000);
+
+                    this.doubleBackToFinishRoute = true;
+                    Snackbar.make(findViewById(android.R.id.content), "Please click BACK again to finish the route", Snackbar.LENGTH_LONG)
+                            .setAction("FINISH", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mapsFragment.mapRoute.finishRoute(false);
+                        }
+                    }).setActionTextColor(Color.WHITE).show();
+
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            doubleBackToFinishRoute = false;
+                        }
+                    }, 2000);
+
+                } else {
+                    if (doubleBackToExitPressedOnce) {
+                        getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                        super.onBackPressed();
+                    }
+
+                    this.doubleBackToExitPressedOnce = true;
+                    Snackbar.make(findViewById(android.R.id.content), "Please click BACK again to exit", Snackbar.LENGTH_LONG).setActionTextColor(Color.WHITE).show();
+
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            doubleBackToExitPressedOnce = false;
+                        }
+                    }, 2000);
+                }
 
             } else {
                 int lastEntry = getSupportFragmentManager().getBackStackEntryCount() - 1;
