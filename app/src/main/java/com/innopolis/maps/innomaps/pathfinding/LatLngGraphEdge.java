@@ -8,14 +8,10 @@ import org.jgrapht.graph.DefaultWeightedEdge;
  * Created by luckychess on 2/22/16.
  */
 public class LatLngGraphEdge extends DefaultWeightedEdge {
-    public enum EdgeType {
-        DEFAULT, ELEVATOR, STAIRS
-    }
+    private JGraphTWrapper.GraphElementType graphEdgeType;
 
-    EdgeType edgeType;
-
-    public LatLngGraphEdge(EdgeType edgeType) {
-        this.edgeType = edgeType;
+    public LatLngGraphEdge(JGraphTWrapper.GraphElementType graphEdgeType) {
+        this.graphEdgeType = graphEdgeType;
     }
 
     public LatLngGraphVertex getV1() {
@@ -26,14 +22,14 @@ public class LatLngGraphEdge extends DefaultWeightedEdge {
         return (LatLngGraphVertex) getTarget();
     }
 
-    public EdgeType getEdgeType() {
-        return edgeType;
+    public JGraphTWrapper.GraphElementType getGraphEdgeType() {
+        return graphEdgeType;
     }
 
     @Override
     public boolean equals(Object o) {
         return getClass() == o.getClass() &&
-                ((LatLngGraphEdge)o).getEdgeType().equals(edgeType) &&
+                ((LatLngGraphEdge)o).getGraphEdgeType().equals(graphEdgeType) &&
                 ((LatLngGraphEdge) o).getSource() == getSource() &&
                 ((LatLngGraphEdge) o).getTarget() == getTarget();
     }
