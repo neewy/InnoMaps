@@ -40,8 +40,10 @@ import com.innopolis.maps.innomaps.maps.MapsFragment;
 import com.innopolis.maps.innomaps.utils.AnalyticsTrackers;
 import com.innopolis.maps.innomaps.utils.Utils;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -54,7 +56,6 @@ public class MainActivity extends AppCompatActivity
     private final String ABOUT = "About";
     private final String DETAILED = "Detailed";
 
-
     private boolean doubleBackToExitPressedOnce = false;
     public final List<SearchableItem> searchItems = new LinkedList<>();
 
@@ -62,7 +63,7 @@ public class MainActivity extends AppCompatActivity
 
     DBHelper dbHelper;
     SQLiteDatabase database;
-
+    NavigationView navigationView;
     SearchView searchView;
 
     NestedScrollView scrollView;
@@ -92,7 +93,7 @@ public class MainActivity extends AppCompatActivity
                 DialogFragment newFragment = new MapFragmentAskForRouteDialog();
                 Bundle bundle = new Bundle();
                 bundle.putString("dialogSource", "MapsFragment");
-                if (idPoi.getText().toString().equals("event")){
+                if (idPoi.getText().toString().equals("event")) {
                     bundle.putString("type", "event");
                 } else {
                     bundle.putString("type", "poi");
@@ -111,9 +112,9 @@ public class MainActivity extends AppCompatActivity
 
         setToggle(toolbar);
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
+        navigationView.getMenu().getItem(0).setChecked(true);
         Fragment fragment = new MapsFragment();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.content_frame, fragment, MAPS).addToBackStack(MAPS);
@@ -227,6 +228,7 @@ public class MainActivity extends AppCompatActivity
                 }
             }
             setToggle(toolbar);
+            highlightItemDrawer( getSupportActionBar().getTitle().toString());
         }
     }
 
@@ -369,7 +371,15 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().setTitle(title);
         return true;
     }
-
+    private void highlightItemDrawer(String title){
+        Map<String, Integer> hashmap = new HashMap<String, Integer>();
+        String [] titles = {MAPS,FAV,EVENTS,ABOUT};
+        hashmap.put(MAPS,0);
+        hashmap.put(FAV,1);
+        hashmap.put(EVENTS,2);
+        hashmap.put(ABOUT,3);
+        navigationView.getMenu().getItem(hashmap.get(title)).setChecked(true);
+    }
     @Override
     public void onResume() {
         super.onResume();
