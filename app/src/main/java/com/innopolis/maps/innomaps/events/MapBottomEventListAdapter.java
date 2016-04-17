@@ -2,6 +2,7 @@ package com.innopolis.maps.innomaps.events;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -58,8 +59,13 @@ public class MapBottomEventListAdapter extends BaseAdapter {
         final Event event = events.get(position);
         TextView mapEventName = (TextView) view.findViewById(R.id.mapEventName);
         TextView mapEventStart = (TextView) view.findViewById(R.id.mapEventStart);
+
         mapEventName.setText(event.getSummary());
+        mapEventName.setPaintFlags(mapEventName.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+
         mapEventStart.setText(Utils.commonTime.format(event.getStart()));
+        mapEventStart.setPaintFlags(mapEventStart.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

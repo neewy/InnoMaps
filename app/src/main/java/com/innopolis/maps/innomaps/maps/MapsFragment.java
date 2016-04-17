@@ -77,7 +77,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
@@ -598,39 +597,6 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     private void sortClearAdd(int num) {
         filterList.clear();
         filterList.add(num);
-    }
-
-    public void splitPathtoFloors(Map<String, ArrayList<LatLngGraphVertex>> currentNavPath, ArrayList<LatLngGraphVertex> path) {
-        currentNavPath.clear();
-        if (path == null) return;
-        ArrayList<LatLngGraphVertex> pathPart = new ArrayList<>();
-        LatLngGraphVertex vertexTemp = new LatLngGraphVertex(path.get(0));
-        for (LatLngGraphVertex vertex : path) {
-            String vertexTempID = String.valueOf(vertexTemp.getVertexId());
-            String vertexID = String.valueOf(vertex.getVertexId());
-            if (vertexTempID.substring(0, 1).equals(vertexID.substring(0, 1))) {
-                pathPart.add(vertexTemp);
-                vertexTemp = vertex;
-            } else {
-                pathPart.add(vertexTemp);
-                currentNavPath.put(vertexTempID.substring(0, 1), pathPart);
-                pathPart = new ArrayList<>();
-                vertexTemp = vertex;
-            }
-        }
-        if (pathPart.size() != 0) {
-            pathPart.add(vertexTemp);
-            String lastVerticeId = String.valueOf(path.get(path.size() - 1).getVertexId());
-            currentNavPath.put(lastVerticeId.substring(0, 1), pathPart);
-        }
-
-        int i = 0;
-        for (String floor : currentNavPath.keySet()) {
-            i++;
-            if (i != currentNavPath.keySet().size() && currentNavPath.get(floor).size() == 1) {
-                currentNavPath.remove(floor);
-            }
-        }
     }
 
     public void allowSelection(final Dialog dialog, final LatLng destination) {
