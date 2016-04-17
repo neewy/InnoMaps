@@ -32,7 +32,7 @@ public class GraphPathfindingTest {
     @Test
     public void singleNodeGraphTest() {
         LatLng vertex = new LatLng(55.75351526583595, 48.74356482177973);
-        graph.addVertex(vertex);
+        graph.addVertex(vertex, JGraphTWrapper.GraphElementType.DEFAULT);
         ArrayList<LatLngGraphVertex> path = graph.shortestPath(vertex, vertex);
         assertTrue(path == null);
     }

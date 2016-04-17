@@ -8,12 +8,14 @@ import com.google.android.gms.maps.model.LatLng;
  * Created by luckychess on 2/28/16.
  */
 public class LatLngGraphVertex {
+    private JGraphTWrapper.GraphElementType graphVertexType;
     private LatLng vertex;
     private int vertexId;
 
-    public LatLngGraphVertex(LatLng vertex, int vertexId) {
+    public LatLngGraphVertex(LatLng vertex, int vertexId, JGraphTWrapper.GraphElementType graphVertexType) {
         this.vertex = vertex;
         this.vertexId = vertexId;
+        this.graphVertexType = graphVertexType;
     }
 
     public LatLngGraphVertex(LatLngGraphVertex vertex) {
@@ -27,6 +29,10 @@ public class LatLngGraphVertex {
 
     public int getVertexId() {
         return vertexId;
+    }
+
+    public JGraphTWrapper.GraphElementType getGraphVertexType() {
+        return graphVertexType;
     }
 
     @Override

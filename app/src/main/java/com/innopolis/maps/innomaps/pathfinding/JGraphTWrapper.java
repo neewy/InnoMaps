@@ -28,6 +28,9 @@ import java.util.Set;
  * the shortest paths and so on.
  */
 public class JGraphTWrapper {
+    public enum GraphElementType {
+        DEFAULT, ELEVATOR, STAIRS
+    }
 
     private SimpleWeightedGraph<LatLngGraphVertex, LatLngGraphEdge> graph;
     private int currentVertexId;
@@ -43,13 +46,13 @@ public class JGraphTWrapper {
      * @param v - vertex to add
      * @return id of vertex added
      */
-    public int addVertex(LatLng v) {
-        addVertexWithId(v, currentVertexId);
+    public int addVertex(LatLng v, GraphElementType graphVertexType) {
+        addVertexWithId(v, currentVertexId, graphVertexType);
         return currentVertexId++;
     }
 
-    private void addVertexWithId(LatLng v, int id) {
-        LatLngGraphVertex vTemp = new LatLngGraphVertex(v, id);
+    private void addVertexWithId(LatLng v, int id, GraphElementType graphVertexType) {
+        LatLngGraphVertex vTemp = new LatLngGraphVertex(v, id, graphVertexType);
         graph.addVertex(vTemp);
     }
 
@@ -59,15 +62,15 @@ public class JGraphTWrapper {
      * @param v2 - vertex edge ends
      * @param v1Index - v1 vertex index
      * @param v2Index - v2 vertex index
-     * @param edgeType - edge type (see LatLngGraphEdge.EdgeType)
+     * @param graphElementType - edge type (see LatLngGraphEdge.GraphElementType)
      */
-    public void addEdge(LatLng v1, LatLng v2, int v1Index, int v2Index, LatLngGraphEdge.EdgeType edgeType) {
-        LatLngGraphVertex gv1 = new LatLngGraphVertex(v1, v1Index);
-        LatLngGraphVertex gv2 = new LatLngGraphVertex(v2, v2Index);
+    public void addEdge(LatLng v1, LatLng v2, int v1Index, int v2Index, GraphElementType graphElementType) {
+        LatLngGraphVertex gv1 = new LatLngGraphVertex(v1, v1Index, graphElementType);
+        LatLngGraphVertex gv2 = new LatLngGraphVertex(v2, v2Index, graphElementType);
 
-        graph.addEdge(gv1, gv2, new LatLngGraphEdge(edgeType));
+        graph.addEdge(gv1, gv2, new LatLngGraphEdge(graphElementType));
         LatLngGraphEdge e = graph.getEdge(gv1, gv2);
-        double penaltyWeight = (edgeType == LatLngGraphEdge.EdgeType.DEFAULT) ? 0.0 : 1.0;
+        double penaltyWeight = (graphElementType == GraphElementType.DEFAULT) ? 0.0 : 1.0;
         graph.setEdgeWeight(e, Utils.haversine(gv1.getVertex().latitude, gv1.getVertex().longitude,
                 gv2.getVertex().latitude, gv2.getVertex().longitude) + penaltyWeight);
     }
@@ -83,8 +86,8 @@ public class JGraphTWrapper {
     }
 
     private ArrayList<LatLngGraphVertex> shortestPathForGraph(LatLng v1, LatLng v2, Graph<LatLngGraphVertex, LatLngGraphEdge> g) {
-        LatLngGraphVertex vTemp1 = new LatLngGraphVertex(v1, 0);
-        LatLngGraphVertex vTemp2 = new LatLngGraphVertex(v2, 0);
+        LatLngGraphVertex vTemp1 = new LatLngGraphVertex(v1, 0, GraphElementType.DEFAULT);
+        LatLngGraphVertex vTemp2 = new LatLngGraphVertex(v2, 0, GraphElementType.DEFAULT);
 
         DijkstraShortestPath<LatLngGraphVertex, LatLngGraphEdge> dijkstraPathFinder = new DijkstraShortestPath<>(g, vTemp1, vTemp2);
         List<LatLngGraphEdge> foundPath = dijkstraPathFinder.getPathEdgeList();
@@ -114,7 +117,7 @@ public class JGraphTWrapper {
         Set<LatLngGraphEdge> oldEdges = graph.edgeSet();
         Set<LatLngGraphEdge> defaultEdges = new HashSet<>();
         for (LatLngGraphEdge edge : oldEdges) {
-            if (edge.getEdgeType() == LatLngGraphEdge.EdgeType.DEFAULT) {
+            if (edge.getGraphEdgeType() == GraphElementType.DEFAULT) {
                 defaultEdges.add(edge);
             }
         }
@@ -149,6 +152,7 @@ public class JGraphTWrapper {
         currentVertexId = 0;
         HashMap<Integer, LatLng> verticesMap = new HashMap<>();
         int id = -1;
+        GraphElementType vertexType = GraphElementType.DEFAULT;
         boolean nodeDataFound = false;
 
         while (eventType != XmlPullParser.END_DOCUMENT) {
@@ -157,25 +161,31 @@ public class JGraphTWrapper {
                 switch (tagName) {
                     case "node":
                         id = Integer.valueOf(xpp.getAttributeValue(null, "id"));
+                        String vType = xpp.getAttributeValue(null, "type");
+                        if (vType == null) vertexType = GraphElementType.DEFAULT;
+                        else if (vType.equals("stairs")) vertexType = GraphElementType.STAIRS;
+                        else if (vType.equals("elevator")) vertexType = GraphElementType.ELEVATOR;
+                        else vertexType = GraphElementType.DEFAULT;
+                        Log.d("graph vertex", "type = " + vType + " id = " + id);
                         break;
                     case "edge":
                         int from = Integer.valueOf(xpp.getAttributeValue(null, "source"));
                         int to = Integer.valueOf(xpp.getAttributeValue(null, "target"));
-                        String type = xpp.getAttributeValue(null, "id");
-                        Log.d("graph edge", "type = " + type + " source = " + from + " target = " + to);
-                        LatLngGraphEdge.EdgeType edgeType = LatLngGraphEdge.EdgeType.DEFAULT;
-                        switch (type) {
+                        String eType = xpp.getAttributeValue(null, "id");
+                        GraphElementType graphEdgeType = GraphElementType.DEFAULT;
+                        switch (eType) {
                             case "ELEVATOR":
-                                edgeType = LatLngGraphEdge.EdgeType.ELEVATOR;
+                                graphEdgeType = GraphElementType.ELEVATOR;
                                 break;
                             case "STAIRS":
-                                edgeType = LatLngGraphEdge.EdgeType.STAIRS;
+                                graphEdgeType = GraphElementType.STAIRS;
                                 break;
                             case "DEFAULT":
-                                edgeType = LatLngGraphEdge.EdgeType.DEFAULT;
+                                graphEdgeType = GraphElementType.DEFAULT;
                                 break;
                         }
-                        addEdge(verticesMap.get(from), verticesMap.get(to), from, to, edgeType);
+                        addEdge(verticesMap.get(from), verticesMap.get(to), from, to, graphEdgeType);
+                        Log.d("graph edge", "type = " + eType + " source = " + from + " target = " + to);
                         break;
                     case "data":
                         if (id != -1) {
@@ -186,11 +196,11 @@ public class JGraphTWrapper {
             } else if(eventType == XmlPullParser.TEXT) {
                 if (id != -1 && nodeDataFound) {
                     String[] coords = xpp.getText().split(" ");
-                    Log.d("graph", "text: " + xpp.getText());
                     LatLng latLng = new LatLng(Double.valueOf(coords[0]), Double.valueOf(coords[1]));
-                    addVertexWithId(latLng, id);
+                    addVertexWithId(latLng, id, vertexType);
                     verticesMap.put(id, latLng);
                     id = -1;
+                    vertexType = GraphElementType.DEFAULT;
                     nodeDataFound = false;
                 }
             }
