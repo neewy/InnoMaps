@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -40,6 +41,13 @@ public class MarkersAdapter extends BottomSheet {
     List<Marker> markers; //store all markers
     List<Integer> filterList; //to store elements after choosing filter
 
+
+
+    /**
+     * Switch markers by id of optionMenu under toolbar
+     * @param floor
+     */
+
     protected void isMarkerSorted(int floor) {
         int filter = filterList.get(0);
         if (filter == WC_FILTER) {
@@ -55,6 +63,11 @@ public class MarkersAdapter extends BottomSheet {
         }
     }
 
+
+    /**
+     * Filters markers on map and shows wc
+     * @param floor
+     */
     private void makeWcMarkers(int floor) {
         String numFloor = String.valueOf(floor) + "floor";
 
@@ -64,6 +77,10 @@ public class MarkersAdapter extends BottomSheet {
 
     }
 
+    /**
+     * Filters markers on map and shows only food places
+     * @param floor
+     */
     private void makeFoodMarkers(int floor) {
         String numFloor = String.valueOf(floor) + "floor";
 
@@ -73,6 +90,10 @@ public class MarkersAdapter extends BottomSheet {
 
     }
 
+    /**
+     * Filters markers on map and shows markers like "library" or "clinic"
+     * @param floor
+     */
     private void makeOtherMarkers(int floor) {
         String selection = FLOOR + " = ? AND (" + TYPE + " != ? and "
                 + TYPE + " != ? and " + TYPE + " != ? and " + TYPE + " != ? and " +
@@ -83,14 +104,24 @@ public class MarkersAdapter extends BottomSheet {
 
     }
 
+
+    /**
+     * Filters markers on map and shows all markers
+     * @param floor
+     */
     protected void makeAllMarkers(int floor) {
-        String selection = FLOOR + " = ? AND (" + TYPE + " = ? or " + TYPE  + " = ? or " + TYPE + " = ? or " + TYPE + " = ? or " + TYPE + " = ? or " + TYPE + " = ?)";
+        String selection = FLOOR + " = ? AND (" + TYPE + " = ? or " + TYPE + " = ? or " + TYPE + " = ? or " + TYPE + " = ? or " + TYPE + " = ? or " + TYPE + " = ?)";
         String[] selectionArgs = {floor + "floor", "room", "wc", "food", "library", "clinic", "reading"};
         Cursor cursor = database.query(POI, null, selection, selectionArgs, null, null, null);
         refreshMarkers(cursor);
 
     }
 
+
+    /**
+     * Filters markers on map and shows only rooms with events
+     * @param floor
+     */
     protected void makeEventsMarkers(int floor) {
         String selection = "SELECT * FROM poi " +
                 "LEFT OUTER JOIN event_poi on event_poi.poi_id = poi._id " +
@@ -104,6 +135,11 @@ public class MarkersAdapter extends BottomSheet {
 
     }
 
+
+    /**
+     * Clears markers and finds new
+     * @param cursor - keep and search info in db table
+     */
     private void refreshMarkers(Cursor cursor) {
         if (markers != null) {
             for (Marker marker : markers) {
@@ -124,6 +160,15 @@ public class MarkersAdapter extends BottomSheet {
         cursor.close();
     }
 
+
+    /**
+     * Puts markers with custom icons on the map
+     * Params are info in db table
+     * @param room
+     * @param type
+     * @param latitude
+     * @param longitude
+     */
     private void setMarkersRoom(String room, String type, String latitude, String longitude) {
 
         float center = 0.5f;
@@ -139,10 +184,15 @@ public class MarkersAdapter extends BottomSheet {
     }
 
 
+
+    /**
+     * Switches icons by type
+     * @param type - type of room
+     * @return BitmapDescriptor
+     */
     public BitmapDescriptor iconBitmapAdapter(String type) {
         int src;
         BitmapDescriptor icon;
-        Drawable shape;
         int px;
         int px_large = 30;
         int px_small = 15;
@@ -186,17 +236,32 @@ public class MarkersAdapter extends BottomSheet {
                 break;
         }
 
-        Bitmap markerBitmap = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888);
+
+        icon = converterDrawable(src, px);
+        return icon;
+
+    }
+
+
+    /**
+     * Converts drawable to a bitmap resource
+     * @param src
+     * @param size - size in pixels
+     * @return bitmap object
+     */
+
+    public BitmapDescriptor converterDrawable(int src, int size) {
+        BitmapDescriptor icon;
+        Drawable shape;
+        Bitmap markerBitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(markerBitmap);
-        shape = getResources().getDrawable(src);
+        shape = ContextCompat.getDrawable(getActivity(), src);
         if (shape != null) {
             shape.setBounds(0, 0, markerBitmap.getWidth(), markerBitmap.getHeight());
             shape.draw(canvas);
         }
         icon = BitmapDescriptorFactory.fromBitmap(markerBitmap);
-
         return icon;
-
     }
 
     private void searchMarker(Marker marker) {

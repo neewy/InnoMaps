@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.util.SparseArray;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -445,7 +446,7 @@ public class MapRoute {
 
         Bitmap markerBitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(markerBitmap);
-        shape = activity.getResources().getDrawable(drawable);
+        shape = ContextCompat.getDrawable(activity, drawable);
         if (shape != null) {
             shape.setBounds(0, 0, markerBitmap.getWidth(), markerBitmap.getHeight());
             shape.draw(canvas);
