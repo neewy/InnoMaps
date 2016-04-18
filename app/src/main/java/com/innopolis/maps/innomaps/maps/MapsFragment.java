@@ -92,7 +92,6 @@ import static com.innopolis.maps.innomaps.database.TableFields.POI;
 public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     private GroundOverlay imageOverlay;
-    private List imageOverlayCheck;//current floor plan overlay
     private UiSettings mSettings;
     private LocationManager locationManager;
     DBHelper dbHelper;
@@ -201,7 +200,6 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
 
                     map.setMapType(MAP_TYPE_NORMAL);
                     markerList = new ArrayList<>();
-                    imageOverlayCheck = new ArrayList();
 
                     /*Invokes when location button is triggered – checks whether user has GPS turned on*/
                     map.setOnMyLocationButtonClickListener(new OnMyLocationButtonClickListener() {
@@ -246,6 +244,16 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                     /* This listener checks current camera position in order to show custom
                     * level picker over the university building */
                     map.setOnCameraChangeListener(showUniversityPicker);
+
+                    floorPicker.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(RadioGroup group, int checkedId) {
+                            if (scrollView.getVisibility() == View.VISIBLE) {
+                                scrollView.setVisibility(View.GONE);
+                            }
+                            floorPickerGroundOverlaySwitch(checkedId);
+                        }
+                    });
                 }
                 break;
             case ConnectionResult.SERVICE_MISSING:
@@ -473,16 +481,6 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
 
     private void initializeOverlay() {
         floorPickerGroundOverlaySwitch(floorPicker.getCheckedRadioButtonId());
-        floorPicker.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (scrollView.getVisibility() == View.VISIBLE) {
-                    scrollView.setVisibility(View.GONE);
-                }
-                floorPickerGroundOverlaySwitch(checkedId);
-            }
-        });
-
     }
 
     private void floorPickerGroundOverlaySwitch(int checkedId) {
@@ -652,21 +650,22 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     }
 
     GoogleMap.OnCameraChangeListener showUniversityPicker = new GoogleMap.OnCameraChangeListener() {
+        boolean overlay = false, outline = false;
         @Override
         public void onCameraChange(CameraPosition cameraPosition) {
+
             if (mapRoute != null && mapRoute.hasCurrentPath) {
                 mapRoute.redrawMarkers(Double.valueOf(Math.floor((double) cameraPosition.zoom)).intValue());
             }
             if (checkIfZoomIsEnough(cameraPosition)) {
                 floorPicker.setVisibility(View.VISIBLE);
-                if (imageOverlayCheck != null) {
-                    imageOverlayCheck.clear();
+                if (!overlay) {
                     initializeOverlay();
+                    overlay = true; outline = false;
                 }
             } else {
                 floorPicker.setVisibility(View.INVISIBLE);
-                if (imageOverlayCheck.size() < 1) {
-                    imageOverlayCheck.add(1);
+                if (!outline) {
                     makeUiOutline();
                     if (markers != null) {
                         for (Marker marker : markers) {
@@ -674,6 +673,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                         }
                         markers.clear();
                     }
+                    outline = true; overlay = false;
                 }
             }
         }
