@@ -44,7 +44,7 @@ public class SuggestionAdapter extends ArrayAdapter<SearchableItem> {
         ((CheckedTextView) convertView.findViewById(R.id.name))
                 .setText(item.getName());
         ((TextView) convertView.findViewById(R.id.location))
-                .setText(StringUtils.join((String[]) location.toArray(locationText), ", "));
+                .setText(StringUtils.join(location.toArray(locationText), ", "));
         return convertView;
     }
 

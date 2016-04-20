@@ -30,6 +30,13 @@ import static com.innopolis.maps.innomaps.database.TableFields.ROOM;
 import static com.innopolis.maps.innomaps.database.TableFields.TYPE;
 
 
+
+/**
+ * This class is responsible for drawing markers that show
+ * names and numbers of rooms. In addition it contains adapters for graphic
+ *
+ */
+
 public class MarkersAdapter extends BottomSheet {
     protected static final int ALL_FILTER = 2;
     private static final int WC_FILTER = 0;

@@ -2,15 +2,12 @@ package com.innopolis.maps.innomaps.database;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.innopolis.maps.innomaps.utils.Utils;
 
@@ -26,7 +23,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Calendar;
@@ -59,17 +55,15 @@ public class DBUpdater {
 
 
     private Context context;
-    private DBHelper dbHelper;
     private SQLiteDatabase database;
     private SharedPreferences sPref;
-    private String DELETE = "delete from ";
-    private GraphLoader graphLoader;
+    private final static String DELETE = "delete from ";
 
     private volatile int counter = 0;
 
     public DBUpdater(Context context) {
         this.context = context;
-        dbHelper = new DBHelper(context);
+        DBHelper dbHelper = new DBHelper(context);
         database = dbHelper.getWritableDatabase();
         sPref = PreferenceManager.getDefaultSharedPreferences(context);
         new XMLParseTask().execute("1");
@@ -77,13 +71,13 @@ public class DBUpdater {
         new XMLParseTask().execute("3");
         new XMLParseTask().execute("4");
         new XMLParseTask().execute("5");
-        graphLoader = new GraphLoader(context);
+        GraphLoader graphLoader = new GraphLoader(context);
         graphLoader.execute();
     }
 
     private class JsonParseTask extends AsyncTask<Void, Void, String> {
 
-        String resultJson = "";
+        private final String resultJson = "";
 
         @Override
         protected String doInBackground(Void... params) {
@@ -193,15 +187,20 @@ public class DBUpdater {
             }
             counter++;
             if (counter == 5) {
-                myHandler.sendEmptyMessage(0);
+                myHandler.get().sendEmptyMessage(0);
             }
         }
 
-        Handler myHandler = new Handler() {
+        final ThreadLocal<Handler> myHandler = new ThreadLocal<Handler>() {
             @Override
-            public void handleMessage(Message msg) {
-                if (msg.what == 0)
-                new JsonParseTask().execute();
+            protected Handler initialValue() {
+                return new Handler() {
+                    @Override
+                    public void handleMessage(Message msg) {
+                        if (msg.what == 0)
+                            new JsonParseTask().execute();
+                    }
+                };
             }
         };
     }
@@ -211,7 +210,7 @@ public class DBUpdater {
     }
 
     private void removeOldPoi(String floor) {
-        database.execSQL(DELETE + POI + " where floor like '%"+floor+"floor%'");
+        database.execSQL(DELETE + POI + " where floor like '%" + floor + "floor%'");
     }
 
     public int populateDB(JSONObject dataJsonObj) throws JSONException {
@@ -292,15 +291,15 @@ public class DBUpdater {
                     String finalEndDate = Utils.googleTimeFormat.format(new Date(nextInstance.addDuration(new Duration(1, 0, 0, durationTime.intValue(), 0)).getTimestamp()));
                     String locationArray[] = location.split("/");
                     Cursor poiCursor = null;
-                    switch (locationArray.length){
+                    switch (locationArray.length) {
                         case 1:
-                            poiCursor = database.rawQuery("SELECT * FROM POI WHERE building LIKE '%"+ locationArray[0]+ "%'", null);
+                            poiCursor = database.rawQuery("SELECT * FROM POI WHERE building LIKE '%" + locationArray[0] + "%'", null);
                             break;
                         case 2:
-                            poiCursor = database.rawQuery("SELECT * FROM POI WHERE building LIKE '%"+ locationArray[0]+ "%' AND floor LIKE '%" +locationArray[1]+ "%'", null);
+                            poiCursor = database.rawQuery("SELECT * FROM POI WHERE building LIKE '%" + locationArray[0] + "%' AND floor LIKE '%" + locationArray[1] + "%'", null);
                             break;
                         case 3:
-                            poiCursor  = database.rawQuery("SELECT * FROM POI WHERE building LIKE '%"+ locationArray[0]+ "%' AND floor LIKE '%" +locationArray[1]+ "%' AND room LIKE '%" +locationArray[2]+ "%'", null);
+                            poiCursor = database.rawQuery("SELECT * FROM POI WHERE building LIKE '%" + locationArray[0] + "%' AND floor LIKE '%" + locationArray[1] + "%' AND room LIKE '%" + locationArray[2] + "%'", null);
                     }
                     if (poiCursor.moveToFirst()) {
                         String poiID = poiCursor.getString(poiCursor.getColumnIndex(ID));
@@ -309,6 +308,7 @@ public class DBUpdater {
                         DBHelper.insertEventType(database, summary, description, creator_name, creator_email);
                         ++eventsInserted;
                     }
+                    poiCursor.close();
                 }
             }
         }

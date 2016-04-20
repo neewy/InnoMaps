@@ -63,7 +63,7 @@ public class BottomSheet extends Fragment {
     protected GoogleMap map;
     protected HashMap<String, String> latLngMap;
 
-    private double distance, closestDistance;
+    private double closestDistance;
 
     /*Bottom element, that is shown when search item is clicked*/
     NestedScrollView scrollView;
@@ -144,6 +144,7 @@ public class BottomSheet extends Fragment {
             if (cursor_type.moveToFirst()) {
                 description = cursor_type.getString(cursor_type.getColumnIndex(DESCRIPTION));
             }
+            cursor.close();
             LinkableTextView descriptionText = new LinkableTextView(getContext());
 
             Link.OnClickListener telegramLinkListener = new Link.OnClickListener() {
@@ -226,13 +227,14 @@ public class BottomSheet extends Fragment {
             } while (cursor.moveToNext());
             if (events.size() == 0) {
                 TextView noEvents = new TextView(getContext());
-                noEvents.setText("There are no events");
+                noEvents.setText(R.string.no_events);
                 relatedLayout.addView(noEvents);
             } else {
                 final ListView eventList = new ListView(getContext());
                 eventList.setAdapter(new MapBottomEventListAdapter(getContext(), events, getActivity()));
                 relatedLayout.addView(eventList);
             }
+            cursor.close();
             headerText.setText(poi_name);
             LatLng place = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
             pinMarker(place);
@@ -268,7 +270,7 @@ public class BottomSheet extends Fragment {
             String lat = "", lng = "";
             while (iterator.hasNext()) {
                 Map.Entry pair = (Map.Entry) iterator.next();
-                distance = Utils.haversine(latLng.latitude, latLng.longitude, Double.parseDouble(pair.getKey().toString()), Double.parseDouble(pair.getValue().toString()));
+                double distance = Utils.haversine(latLng.latitude, latLng.longitude, Double.parseDouble(pair.getKey().toString()), Double.parseDouble(pair.getValue().toString()));
                 if (distance < closestDistance) {
                     closestDistance = distance;
                     lat = pair.getKey().toString();
@@ -282,9 +284,11 @@ public class BottomSheet extends Fragment {
                 Cursor cursor = MarkersAdapter.database.rawQuery(sqlQuery, new String[]{lat, lng});
                 cursor.moveToFirst();
                 result.put(cursor.getString(cursor.getColumnIndex(POI_NAME)), closest);
+                cursor.close();
                 return result;
             }
         }
+
         closest = null;
         result.put("", null);
         return result;

@@ -22,9 +22,7 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 import static com.innopolis.maps.innomaps.database.TableFields.*;
 
-/**
- * Created by neewy on 09.04.16.
- */
+
 public class Scanner extends AppCompatActivity implements ZXingScannerView.ResultHandler  {
 
     private ZXingScannerView mScannerView;
@@ -43,7 +41,7 @@ public class Scanner extends AppCompatActivity implements ZXingScannerView.Resul
 
         super.onCreate(state);
         mScannerView = new ZXingScannerView(this);   // Programmatically initialize the scanner view
-        List<BarcodeFormat> formatList = new ArrayList<BarcodeFormat>();
+        List<BarcodeFormat> formatList = new ArrayList<>();
         formatList.add(BarcodeFormat.QR_CODE);
         mScannerView.setFormats(formatList);
         setContentView(mScannerView);                // Set the scanner view as the content view
@@ -81,5 +79,6 @@ public class Scanner extends AppCompatActivity implements ZXingScannerView.Resul
             Toast.makeText(this, "This QR code cannot be used", Toast.LENGTH_SHORT).show();
             mScannerView.resumeCameraPreview(this);
         }
+        cursor.close();
     }
 }

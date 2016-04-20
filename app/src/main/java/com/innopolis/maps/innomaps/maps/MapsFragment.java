@@ -20,6 +20,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
@@ -92,7 +93,6 @@ import static com.innopolis.maps.innomaps.database.TableFields.POI;
 public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     private GroundOverlay imageOverlay;
-    private UiSettings mSettings;
     private LocationManager locationManager;
     DBHelper dbHelper;
 
@@ -191,7 +191,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                     map = mapView.getMap();
 
 
-                    mSettings = map.getUiSettings();
+                    UiSettings mSettings = map.getUiSettings();
                     zoomToUniversityAlways();
                     mSettings.setMapToolbarEnabled(false);
                     markers = new ArrayList<>();
@@ -224,7 +224,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                                     if (mapRoute != null && mapRoute.hasCurrentPath && marker.getSnippet() != null) {
                                         if (marker.getSnippet().equals("NEXT")) {
                                             mapRoute.nextPath();
-                                        } else if (marker.getSnippet().equals("PREV")){
+                                        } else if (marker.getSnippet().equals("PREV")) {
                                             mapRoute.prevPath();
                                         } else if (marker.getSnippet().equals("FINISH")) {
                                             mapRoute.finishRoute(true);
@@ -282,14 +282,15 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         topNavigation.addItem(item3);
         topNavigation.addItem(item4);
         topNavigation.addItem(item5);
-        topNavigation.setDefaultBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        topNavigation.setDefaultBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
+        topNavigation.setAccentColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
         topNavigation.setBehaviorTranslationEnabled(false);
         topNavigation.setInactiveColor(Color.WHITE);
-        topNavigation.setAccentColor(getResources().getColor(R.color.colorAccent));
         topNavigation.setVisibility(View.GONE);
         topNavigation.setForceTitlesDisplay(true);
         topNavigation.setCurrentItem(2);
     }
+
 
     @Override
     public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
@@ -340,12 +341,12 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                     switch (position) {
                         case 0:
                             input = Collections2.filter(allItems, SearchableItem.isWc);
-                            snackbarText = "There are no WC";
+                            snackbarText = getString(R.string.no_wc);
                             resetMarkers(position, snackbarText, items, input, floor);
                             break;
                         case 1:
                             input = Collections2.filter(allItems, SearchableItem.isFood);
-                            snackbarText = "There are no food POI";
+                            snackbarText = getString(R.string.no_food_poi);
                             resetMarkers(position, snackbarText, items, input, floor);
                             break;
                         case 2:
@@ -357,12 +358,12 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                             break;
                         case 3:
                             input = Collections2.filter(allItems, SearchableItem.isEvent);
-                            snackbarText = "There are no events";
+                            snackbarText = getString(R.string.no_events);
                             resetMarkers(position, snackbarText, items, input, floor);
                             break;
                         case 4:
                             input = Collections2.filter(allItems, SearchableItem.isOther);
-                            snackbarText = "There are no other POI";
+                            snackbarText = getString(R.string.no_other_poi);
                             resetMarkers(position, snackbarText, items, input, floor);
                             break;
                     }
@@ -425,8 +426,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         FileInputStream inputStream = null;
         try {
             inputStream = getContext().openFileInput("9.xml");
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         if (inputStream == null) {
@@ -517,7 +517,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         }
     }
 
-    private void changeOnFloorPickerClick(LatLng southWest, LatLng northEast, int id, int floor){
+    private void changeOnFloorPickerClick(LatLng southWest, LatLng northEast, int id, int floor) {
         buttonClickFloorPicker(southWest, northEast, decodeSampledBitmapFromResource(getResources(), id, 600, 600), floor);
         isMarkerSorted(floor);
         clearMarkerList();
@@ -585,6 +585,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         } else {
             latLngMap = null;
         }
+        cursor.close();
     }
 
 
@@ -651,6 +652,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
 
     GoogleMap.OnCameraChangeListener showUniversityPicker = new GoogleMap.OnCameraChangeListener() {
         boolean overlay = false, outline = false;
+
         @Override
         public void onCameraChange(CameraPosition cameraPosition) {
 
@@ -661,7 +663,8 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                 floorPicker.setVisibility(View.VISIBLE);
                 if (!overlay) {
                     initializeOverlay();
-                    overlay = true; outline = false;
+                    overlay = true;
+                    outline = false;
                 }
             } else {
                 floorPicker.setVisibility(View.INVISIBLE);
@@ -673,7 +676,8 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                         }
                         markers.clear();
                     }
-                    outline = true; overlay = false;
+                    outline = true;
+                    overlay = false;
                 }
             }
         }

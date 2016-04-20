@@ -2,9 +2,7 @@ package com.innopolis.maps.innomaps.orm;
 
 import com.orm.SugarRecord;
 
-/**
- * Created by User on 13.04.2016.
- */
+
 
 public class Events extends SugarRecord {
 

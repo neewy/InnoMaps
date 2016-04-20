@@ -30,7 +30,7 @@
             android:id="@+id/t4"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:gravity="left"
+            android:gravity="start"
 
             android:textAlignment="center"
             android:textAppearance="?android:attr/textAppearanceMedium"
@@ -43,7 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/t4"
             android:layout_marginTop="32dp"
-            android:gravity="left"
+            android:gravity="start"
             android:textAlignment="center"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="#a6a6a6"

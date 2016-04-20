@@ -39,18 +39,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/timeLeft"
-        android:textSize="11sp"
+        android:textSize="12sp"
         android:layout_alignParentRight="false"
         android:layout_alignParentEnd="true"
         android:layout_alignBottom="@+id/nameEvent"
         android:layout_alignTop="@+id/nameEvent"
         android:textColor="@android:color/tertiary_text_dark"
         android:layout_toEndOf="@+id/location"
+        android:layout_toRightOf="@+id/location"
+
         android:textAlignment="textEnd"
+        android:layout_gravity="end"
         android:singleLine="true"
         android:layout_marginRight="10dp"
         android:layout_marginTop="7dp"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"/>
 
     <TextView
         android:layout_width="wrap_content"

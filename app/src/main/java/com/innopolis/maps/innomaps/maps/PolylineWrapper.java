@@ -4,9 +4,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-/**
- * Created by neewy on 10.04.16.
- */
+
 public class PolylineWrapper {
 
     String floor;
@@ -51,18 +49,10 @@ public class PolylineWrapper {
     }
 
     public boolean isEmpty() {
-        if (polyline == null) {
-            return true;
-        } else {
-            return false;
-        }
+        return polyline == null;
     }
 
     public boolean isNull() {
-        if (floor == null & polyline == null & polylineOptions == null) {
-            return true;
-        } else {
-            return false;
-        }
+        return floor == null & polyline == null & polylineOptions == null;
     }
 }

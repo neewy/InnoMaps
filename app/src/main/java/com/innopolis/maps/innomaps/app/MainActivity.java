@@ -1,7 +1,9 @@
 package com.innopolis.maps.innomaps.app;
 
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -70,11 +72,6 @@ public class MainActivity extends AppCompatActivity
     NestedScrollView scrollView;
     FloatingActionButton routeButton;
 
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
     private static MainActivity mInstance;
 
     @Override
@@ -82,6 +79,12 @@ public class MainActivity extends AppCompatActivity
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //for deep linking
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        Uri data = intent.getData();
+
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         scrollView = (NestedScrollView) findViewById(R.id.bottom_sheet);
         routeButton = (FloatingActionButton) findViewById(R.id.goto_fab);
@@ -125,7 +128,11 @@ public class MainActivity extends AppCompatActivity
         database = dbHelper.getReadableDatabase();
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+        /*
+      ATTENTION: This was auto-generated to implement the App Indexing API.
+      See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+        GoogleApiClient client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
 
         AnalyticsTrackers.initialize(this);
         AnalyticsTrackers.getInstance().get(AnalyticsTrackers.Target.APP);
@@ -279,9 +286,11 @@ public class MainActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.main_toolbar, menu);
         searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchItems.clear();
+        Integer roomPois = 0;
+        Integer pois = 1;
         SearchableItem.addEvents(searchItems, DBHelper.readUniqueEvents(this, false));
-        SearchableItem.addPois(searchItems, DBHelper.readRoomPois(database));
-        SearchableItem.addPois(searchItems, DBHelper.readPois(database));
+        SearchableItem.addPois(searchItems, DBHelper.readPois(database, roomPois));
+        SearchableItem.addPois(searchItems, DBHelper.readPois(database, pois));
         final List<SearchableItem> adapterList = new LinkedList<>(searchItems);
 
         final SearchView.SearchAutoComplete searchBox = (SearchView.SearchAutoComplete) searchView.findViewById(R.id.search_src_text);
@@ -405,7 +414,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
     private void highlightItemDrawer(String title){
-        Map<String, Integer> hashmap = new HashMap<String, Integer>();
+        Map<String, Integer> hashmap = new HashMap<>();
         String [] titles = {MAPS,FAV,EVENTS,ABOUT};
         hashmap.put(MAPS,0);
         hashmap.put(FAV,1);

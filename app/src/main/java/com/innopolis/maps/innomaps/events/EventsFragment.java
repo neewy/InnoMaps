@@ -136,8 +136,8 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
         searchBox.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ArrayList<Event> filteredList = new ArrayList<Event>(list);
-                ArrayList<Event> origin = new ArrayList<Event>(list);
+                ArrayList<Event> filteredList = new ArrayList<>(list);
+                ArrayList<Event> origin = new ArrayList<>(list);
                 final CheckedTextView text = (CheckedTextView) view.findViewById(R.id.name);
                 Predicate<Event> predicate = new Predicate<Event>() {
                     @Override
@@ -158,7 +158,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        ArrayList<Event> filteredList = new ArrayList<Event>(adapter.events);
+        ArrayList<Event> filteredList = new ArrayList<>(adapter.events);
         switch (item.getItemId()) {
             case R.id.action_today:
                 Collection<Event> today = Collections2.filter(filteredList, Event.isToday);

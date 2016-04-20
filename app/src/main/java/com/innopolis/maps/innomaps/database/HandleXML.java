@@ -15,18 +15,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * Created by Nikolay on 13.03.2016.
- */
+
 public class HandleXML {
-    private Context context;
-    private XmlPullParserFactory xmlFactoryObject;
     private XmlPullParser parser;
 
     public HandleXML(Context context) {
-        this.context = context;
+        Context context1 = context;
         try {
-            xmlFactoryObject = XmlPullParserFactory.newInstance();
+            XmlPullParserFactory xmlFactoryObject = XmlPullParserFactory.newInstance();
             xmlFactoryObject.setNamespaceAware(false);
             parser = xmlFactoryObject.newPullParser();
         } catch (XmlPullParserException e) {

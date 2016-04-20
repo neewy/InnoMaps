@@ -197,7 +197,7 @@
     <string name="today">Today</string>
     <string name="tomorrow">Tomorrow</string>
     <string name="this_week">This week</string>
-    <string name="search_hint">Search...</string>
+    <string name="search_hint">Search…</string>
     <string name="search_title">Search</string>
     <string name="share">Share</string>
     <string name="empty_search">No events or locations found</string>
@@ -220,6 +220,15 @@
     <string name="mapselect">Find on map</string>
     <string name="qrselect">Scan code</string>
     <string name="no_event">No Event Description</string>
+    <string name="no_wc">There are no WC</string>
+    <string name="no_food_poi">There are no food POI</string>
+    <string name="no_other_poi">There are no other POI</string>
+    <string name="no_events">There are no events</string>
+    <string name="favourite">Favourite</string>
+    <string name="find_on_map">Find on map</string>
+    <string name="maps">Maps</string>
+    <string name="events">Events</string>
+    <string name="about">About</string>
 
 
 </resources>

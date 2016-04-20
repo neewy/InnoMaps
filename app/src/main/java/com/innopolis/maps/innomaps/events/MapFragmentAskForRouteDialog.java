@@ -103,6 +103,7 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
                 floors.add(floor);
             } while (floorCursor.moveToNext());
         }
+        floorCursor.close();
 
         for (String floor : floors) {
             Cursor roomCursor = database.rawQuery("SELECT * FROM poi WHERE type like '%room%' and floor like '%" + floor + "%'", null);
@@ -113,6 +114,7 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
                     rooms.add(room);
                 } while (roomCursor.moveToNext());
             }
+            roomCursor.close();
             Collections.sort(rooms);
             roomsMap.put(floor, rooms);
         }
@@ -126,7 +128,7 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 TextView textView = (TextView) view.findViewById(R.id.row);
-                ArrayAdapter<String> roomAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_row, roomsMap.get(textView.getText()));
+                ArrayAdapter<String> roomAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row, roomsMap.get(textView.getText()));
                 roomAdapter.setDropDownViewResource(R.layout.spinner_row);
                 sourceFloor = textView.getText().toString();
                 roomSpinner.setAdapter(roomAdapter);
@@ -188,6 +190,7 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
                             latitudeSource = cursorSource.getString(cursorSource.getColumnIndex(LATITUDE));
                             longitudeSource = cursorSource.getString(cursorSource.getColumnIndex(LONGITUDE));
                         }
+                        cursorSource.close();
 
                         maps.showRoute(new LatLng(Double.parseDouble(latitudeSource), Double.parseDouble(longitudeSource)),
                                 new LatLng(Double.parseDouble(latitudeDest), Double.parseDouble(longitudeDest)));

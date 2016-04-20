@@ -91,8 +91,6 @@ public class DetailedEvent extends Fragment {
     private GroundOverlay imageOverlay;
 
 
-    final private String NULL = "";
-
     String summary, htmlLink, start, end, descriptionStr, creator,
             eventID, building, floor, room, latitude, longitude, checked;
 
@@ -150,6 +148,7 @@ public class DetailedEvent extends Fragment {
 
         Bundle bundle = this.getArguments();
         if (bundle != null) {
+            String NULL = "";
             eventID = bundle.getString(EVENT_ID, NULL);
         }
         final Cursor cursor = database.query(EVENTS, null, "eventID=?", new String[]{eventID}, null, null, null);
@@ -185,6 +184,7 @@ public class DetailedEvent extends Fragment {
             longitude = locationC.getString(locationC.getColumnIndex(LONGITUDE));
         }
         database.close();
+        locationC.close();
 
         Link.OnClickListener telegramLinkListener = new Link.OnClickListener() {
             @Override

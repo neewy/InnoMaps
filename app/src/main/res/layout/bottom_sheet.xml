@@ -30,7 +30,9 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingLeft="56dp"
-                android:paddingStart="56dp">
+                android:paddingRight="56dp"
+                android:paddingStart="56dp"
+                android:paddingEnd="56dp">
 
                 <TextView
                     style="@style/TextAppearance.AppCompat.Headline"
@@ -122,6 +124,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/relatedLayout"
                 android:paddingLeft="58dp"
+                android:paddingRight="58dp"
+                android:paddingStart="58dp"
                 android:layout_marginBottom="@dimen/activity_horizontal_margin">
 
 

@@ -22,7 +22,7 @@
         android:background="@color/cardview_light_background"
         android:ellipsize="marquee"
         android:singleLine="true"
-        android:gravity="top|left"
+        android:gravity="top|start"
         android:textSize="11dp"
         android:textColor="@color/common_plus_signin_btn_text_dark_disabled"
         android:textAlignment="gravity" />

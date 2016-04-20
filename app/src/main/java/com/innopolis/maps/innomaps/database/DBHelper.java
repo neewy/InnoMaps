@@ -2,6 +2,7 @@ package com.innopolis.maps.innomaps.database;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -10,6 +11,7 @@ import com.innopolis.maps.innomaps.events.Event;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import java.text.ParseException;
+import java.text.StringCharacterIterator;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -223,16 +225,20 @@ public class DBHelper extends SQLiteOpenHelper {
             cv.put(DESCRIPTION, description);
             database.insert(EVENT_TYPE, null, cv);
         }
+        cursor.close();
     }
+
+
 
     /**
      * Inserts points of interest into database
+     *
      * @param database
      * @param pois
      * @return is the operation successful or not
      */
-    public static boolean insertPois(SQLiteDatabase database, List<HashMap<String, String>> pois) {
-        if (pois.size() == 0) return false;
+    public static void insertPois(SQLiteDatabase database, List<HashMap<String, String>> pois) {
+        if (pois.size() == 0) return;
         for (int i = 0; i < pois.size(); i++) {
             HashMap<String, String> poi = pois.get(i);
             ContentValues cv = new ContentValues();
@@ -247,32 +253,37 @@ public class DBHelper extends SQLiteOpenHelper {
             cv.put(ATTR, poi.get(ATTR));
             database.insert(POI, null, cv);
         }
-        return true;
     }
 
     /**
      * Inserts new record into Event_Poi table
+     *
      * @param database
      * @param eventID
      * @param poiID
      * @return
      */
-    public static boolean insertEventPoi(SQLiteDatabase database, String eventID, String poiID) {
+    public static void insertEventPoi(SQLiteDatabase database, String eventID, String poiID) {
         ContentValues cv = new ContentValues();
         cv.put(EVENT_ID, eventID);
         cv.put(POI_ID, poiID);
         database.insert(EVENT_POI, null, cv);
-        return true;
     }
 
+
     /**
-     * Returns the list of all POI that are not like a room
+     * Returns the list of POI
+     *
      * @param database
      * @return
      */
-    public static List<HashMap<String, String>> readPois(SQLiteDatabase database) {
+    public static List<HashMap<String, String>> readPois(SQLiteDatabase database, Integer type) {
+        String query;
+        if (type.equals(0)) query = readQueryConstructor(0);
+        else query = readQueryConstructor(1);
+
         List<HashMap<String, String>> pois = new ArrayList<>();
-        Cursor cursor = database.rawQuery("SELECT * FROM " + POI + " where type IS NOT NULL and attr IS NOT NULL and type NOT LIKE '%door%' and type NOT LIKE '%room%'", null);
+        Cursor cursor = database.rawQuery(query, null);
         if (cursor.moveToFirst()) {
             do {
                 HashMap<String, String> poi = new HashMap<>();
@@ -282,26 +293,20 @@ public class DBHelper extends SQLiteOpenHelper {
                 pois.add(poi);
             } while (cursor.moveToNext());
         }
+        cursor.close();
         return pois;
     }
 
     /**
      * Returns the list of all rooms POI
-     * @param database
-     * @return
+     * or the list of all POI that are not like a room
      */
-    public static List<HashMap<String, String>> readRoomPois(SQLiteDatabase database) {
-        List<HashMap<String, String>> pois = new ArrayList<>();
-        Cursor cursor = database.rawQuery("SELECT * FROM " + POI + " where room IS NOT NULL and type like '%room%'", null);
-        if (cursor.moveToFirst()) {
-            do {
-                HashMap<String, String> poi = new HashMap<>();
-                for (int i = 0; i < cursor.getColumnCount(); i++) {
-                    poi.put(cursor.getColumnName(i), cursor.getString(i));
-                }
-                pois.add(poi);
-            } while (cursor.moveToNext());
-        }
-        return pois;
+    private static String readQueryConstructor(Integer type) {
+        String query;
+        if (type.equals(0)) query =
+                "SELECT * FROM " + POI + " where room IS NOT NULL and type like '%room%'";
+        else
+            query = "SELECT * FROM " + POI + " where type IS NOT NULL and attr IS NOT NULL and type NOT LIKE '%door%' and type NOT LIKE '%room'";
+        return query;
     }
 }

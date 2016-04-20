@@ -1,7 +1,6 @@
 package com.innopolis.maps.innomaps.events;
 
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.SearchView;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -80,8 +79,8 @@ public class FavouriteFragment extends EventsFragment {
         searchBox.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ArrayList<Event> filteredList = new ArrayList<Event>(list);
-                ArrayList<Event> origin = new ArrayList<Event>(list);
+                ArrayList<Event> filteredList = new ArrayList<>(list);
+                ArrayList<Event> origin = new ArrayList<>(list);
 
                 final CheckedTextView text = (CheckedTextView) view.findViewById(R.id.name);
 
