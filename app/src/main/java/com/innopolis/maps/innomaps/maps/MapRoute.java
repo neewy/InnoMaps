@@ -19,6 +19,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.pathfinding.LatLngGraphVertex;
+import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.acra.ACRA;
 
@@ -239,7 +240,7 @@ public class MapRoute {
 
             for (int i = 16; i < 20; i++) {
                 MarkerOptions markerOptions = new MarkerOptions();
-                int size = (int) (30 + ((i - 15)/0.1));
+                int size = (int) (20 + ((i - 15)/0.1));
 
                 markerOptions
                         .icon(convertDrawable(R.drawable.route_finish, size))
@@ -259,7 +260,7 @@ public class MapRoute {
 
                 for (int i = 16; i < 20; i++) {
                     MarkerOptions markerOptions = new MarkerOptions();
-                    int size = (int) (30 + ((i - 15) / 0.1));
+                    int size = (int) (20 + ((i - 15) / 0.1));
 
                     if (isPathUp) markerOptions.icon(convertDrawable(R.drawable.route_up, size));
                     else markerOptions.icon(convertDrawable(R.drawable.route_down, size));
@@ -281,7 +282,7 @@ public class MapRoute {
                 for (int i = 16; i < 20; i++) {
                     MarkerOptions markerOptionsBegin = new MarkerOptions();
                     MarkerOptions markerOptionsEnd = new MarkerOptions();
-                    int size = (int) (30 + ((i - 15) / 0.1));
+                    int size = (int) (20 + ((i - 15) / 0.1));
 
                     if (isPathUp) markerOptionsBegin.icon(convertDrawable(R.drawable.route_down, size));
                     else markerOptionsBegin.icon(convertDrawable(R.drawable.route_up, size));
@@ -311,7 +312,7 @@ public class MapRoute {
                 for (int i = 16; i < 20; i++) {
                     MarkerOptions markerOptionsBegin = new MarkerOptions();
                     MarkerOptions markerOptionsEnd = new MarkerOptions();
-                    int size = (int) (30 + ((i - 15) / 0.1));
+                    int size = (int) (20 + ((i - 15) / 0.1));
 
                     if (isPathUp) {
                         markerOptionsBegin
@@ -444,7 +445,7 @@ public class MapRoute {
         BitmapDescriptor icon;
         Drawable shape;
 
-        Bitmap markerBitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+        Bitmap markerBitmap = Bitmap.createBitmap((int) Utils.convertDpToPixel(size, activity), (int) Utils.convertDpToPixel(size, activity), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(markerBitmap);
         shape = ContextCompat.getDrawable(activity, drawable);
         if (shape != null) {
