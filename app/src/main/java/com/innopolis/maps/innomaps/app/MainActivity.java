@@ -413,7 +413,8 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().setTitle(title);
         return true;
     }
-    private void highlightItemDrawer(String title){
+
+    public void highlightItemDrawer(String title){
         Map<String, Integer> hashmap = new HashMap<>();
         String [] titles = {MAPS,FAV,EVENTS,ABOUT};
         hashmap.put(MAPS,0);
@@ -422,6 +423,7 @@ public class MainActivity extends AppCompatActivity
         hashmap.put(ABOUT,3);
         navigationView.getMenu().getItem(hashmap.get(title)).setChecked(true);
     }
+
     @Override
     public void onResume() {
         super.onResume();

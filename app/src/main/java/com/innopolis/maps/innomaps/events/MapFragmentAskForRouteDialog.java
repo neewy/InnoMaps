@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatSpinner;
 import android.view.View;
@@ -42,7 +41,7 @@ import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
 public class MapFragmentAskForRouteDialog extends DialogFragment {
 
     MapsFragment maps;
-
+    MainActivity activity;
     RelativeLayout view;
     AppCompatSpinner floorSpinner;
     AppCompatSpinner roomSpinner;
@@ -70,6 +69,7 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
         setHasOptionsMenu(true);
         currentLocation = sPref.getString("currentLocation", NULL);
         currentLocationType = sPref.getString("currentLocationType", NULL);
+        activity = (MainActivity) getActivity();
     }
 
     @NonNull
@@ -162,9 +162,7 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
             @Override
             public void onClick(View v) {
                 if (source.equals("DetailedEvent")) {
-                    getActivity().getSupportFragmentManager().popBackStackImmediate("Maps", 0);
-                    ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Maps");
-                    ((MainActivity) getActivity()).setActivityDrawerToggle();
+                    displayMapsFragment();
                 }
                 maps.allowSelection(MapFragmentAskForRouteDialog.this.getDialog(), new LatLng(Double.parseDouble(latitudeDest), Double.parseDouble(longitudeDest)));
             }
@@ -192,14 +190,12 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
                         }
                         cursorSource.close();
 
+                        if (source.equals("DetailedEvent")) {
+                            displayMapsFragment();
+                        }
+
                         maps.showRoute(new LatLng(Double.parseDouble(latitudeSource), Double.parseDouble(longitudeSource)),
                                 new LatLng(Double.parseDouble(latitudeDest), Double.parseDouble(longitudeDest)));
-
-                        if (source.equals("DetailedEvent")) {
-                            getActivity().getSupportFragmentManager().popBackStackImmediate("Maps", 0);
-                            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Maps");
-                            ((MainActivity) getActivity()).setActivityDrawerToggle();
-                        }
 
                         MapFragmentAskForRouteDialog.this.getDialog().cancel();
                     }
@@ -267,5 +263,12 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
             }
             ed.apply();
         }
+    }
+
+    public void displayMapsFragment() {
+        activity.getSupportFragmentManager().popBackStackImmediate("Maps", 0);
+        activity.getSupportActionBar().setTitle("Maps");
+        activity.setActivityDrawerToggle();
+        activity.highlightItemDrawer("Maps");
     }
 }

@@ -107,7 +107,8 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     /*Dialog, that asks user how to select his location */
     public Dialog currentDialog;
 
-    /*Map route, that is build on map if user started a route*/
+    /*Map route, that is build on map if user started a route
+    * public modifier left for testing purposes */
     public MapRoute mapRoute;
 
     @Override
@@ -433,6 +434,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        mapRoute = null;
         scrollView.setVisibility(View.GONE);
     }
 
