@@ -1,16 +1,15 @@
 package com.innopolis.maps.innomaps.database;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.innopolis.maps.innomaps.utils.Utils;
 
-import org.apache.commons.io.IOUtils;
-
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
+
+import static com.innopolis.maps.innomaps.database.TableFields.NULL;
 
 /**
  * Downloads graph from server (if necessary)
@@ -18,9 +17,13 @@ import java.io.IOException;
  */
 public class GraphLoader extends AsyncTask<Void, Void, String> {
     private Context context;
+    private SQLiteDatabase database;
+    private SharedPreferences sPref;
 
-    public GraphLoader(Context context) {
+    public GraphLoader(Context context, SQLiteDatabase database, SharedPreferences sPref) {
         this.context = context;
+        this.database = database;
+        this.sPref = sPref;
     }
 
     @Override
@@ -30,30 +33,11 @@ public class GraphLoader extends AsyncTask<Void, Void, String> {
 
     @Override
     protected void onPostExecute(String result) {
-        Log.d("md5", "server md5: " + result);
-        String filename = "9.md5";
-        String storedMD5 = "";
-        FileInputStream inputStream;
-        try {
-            inputStream = context.openFileInput(filename);
-            storedMD5 = IOUtils.toString(inputStream);
-            inputStream.close();
+        if (graphUpdated(result)) {
+            new DownloadGraph().execute();
+        } else {
+            new JsonParseTask(database, sPref).execute();
         }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        Log.d("md5", "stored md5: " + storedMD5);
-        if (storedMD5.equals(result)) return;
-
-        FileOutputStream outputStream;
-        try {
-            outputStream = context.openFileOutput(filename, Context.MODE_PRIVATE);
-            outputStream.write(result.getBytes());
-            outputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        new DownloadGraph().execute();
     }
 
     private class DownloadGraph extends AsyncTask<Void, Void, String> {
@@ -74,6 +58,20 @@ public class GraphLoader extends AsyncTask<Void, Void, String> {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            new XMLParseTask(context, database, sPref).execute();
+        }
+    }
+
+    protected boolean graphUpdated(String hashKey) {
+        String savedText = sPref.getString("graph_md5", NULL);
+        if (savedText.equals(hashKey)) {
+            return false;
+        } else {
+            SharedPreferences.Editor ed = sPref.edit();
+            ed.putString("graph_md5", hashKey);
+            ed.apply();
+            return true;
         }
     }
 }

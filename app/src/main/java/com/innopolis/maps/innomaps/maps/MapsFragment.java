@@ -51,7 +51,6 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.GroundOverlay;
@@ -175,11 +174,17 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                 }
             }
         });
+        return v;
+    }
 
+
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         switch (GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity())) {
             case ConnectionResult.SUCCESS:
-                mapView = (MapView) v.findViewById(R.id.map);
-                floorPicker = (RadioGroup) v.findViewById(R.id.floorPicker);
+                mapView = (MapView) view.findViewById(R.id.map);
+                floorPicker = (RadioGroup) view.findViewById(R.id.floorPicker);
                 ((RadioButton) floorPicker.getChildAt(4)).setChecked(true); //1st floor
                 mapView.getMapAsync(new OnMapReadyCallback() {
                     @Override
@@ -280,12 +285,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             default:
                 Toast.makeText(getActivity(), GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity()), Toast.LENGTH_SHORT).show();
         }
-        return v;
-    }
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
         topNavigation = (AHBottomNavigation) view.findViewById(R.id.bottom_navigation);
         AHBottomNavigationItem item1 = new AHBottomNavigationItem("WC", R.drawable.wc_rast);
         AHBottomNavigationItem item2 = new AHBottomNavigationItem("Food", R.drawable.food_fork_drink);
@@ -570,13 +570,12 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
 
     private void buttonClickFloorPicker(LatLng southWest, LatLng northEast, Bitmap bitmap, int floor) {
         isMarkerSorted(floor);
-        putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromBitmap(bitmap));
-//        putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromResource(floorSource));
+        putOverlayToMap(southWest, northEast, bitmap);
         setFloorPOIHashMap(floor);
     }
 
 
-    private void putOverlayToMap(LatLng southWest, LatLng northEast, BitmapDescriptor bitmapDescriptor) {
+    private void putOverlayToMap(LatLng southWest, LatLng northEast, Bitmap bitmap) {
         if (imageOverlay != null) {
             imageOverlay.remove();
         }
@@ -585,7 +584,13 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         latLngBounds = new LatLngBounds(southWest, northEast);
         groundOverlayOptions = new GroundOverlayOptions();
         groundOverlayOptions.positionFromBounds(latLngBounds);
-        groundOverlayOptions.image(bitmapDescriptor);
+        groundOverlayOptions.image(BitmapDescriptorFactory.fromBitmap(bitmap));
+
+        if (!bitmap.isRecycled()) {
+            bitmap.recycle();
+            bitmap = null;
+        }
+
         imageOverlay = map.addGroundOverlay(groundOverlayOptions);
     }
 
@@ -722,7 +727,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         LatLng northEast = new LatLng(55.754597, 48.744469);
         int res = 600;
         Bitmap bitmap = decodeSampledBitmapFromResource(getResources(), R.raw.ui_unzoomed, res, res);
-        putOverlayToMap(southWest, northEast, BitmapDescriptorFactory.fromBitmap(bitmap));
+        putOverlayToMap(southWest, northEast, bitmap);
     }
 
     private void zoomToUniversityAlways() {

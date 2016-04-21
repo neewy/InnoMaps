@@ -1,12 +1,15 @@
 package com.innopolis.maps.innomaps;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
+import android.preference.PreferenceManager;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.InstrumentationTestCase;
 import android.test.RenamingDelegatingContext;
 
 import com.innopolis.maps.innomaps.database.DBHelper;
-import com.innopolis.maps.innomaps.database.DBUpdater;
+import com.innopolis.maps.innomaps.database.JsonParseTask;
 import com.innopolis.maps.innomaps.events.Event;
 import com.innopolis.maps.innomaps.utils.Utils;
 
@@ -27,7 +30,7 @@ import static android.support.test.InstrumentationRegistry.getTargetContext;
 @RunWith(AndroidJUnit4.class)
 public class ApplicationTest extends InstrumentationTestCase {
 
-    DBUpdater dbUpdater;
+    JsonParseTask jsonParseTask;
     Context context;
 
     @Before
@@ -35,8 +38,11 @@ public class ApplicationTest extends InstrumentationTestCase {
     public void setUp() throws Exception {
         super.setUp();
         context = new RenamingDelegatingContext(getTargetContext(), "test_");
-        dbUpdater = new DBUpdater(context);
-        assertNotNull(dbUpdater);
+        DBHelper dbHelper = new DBHelper(context);
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+        SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(context);
+        jsonParseTask = new JsonParseTask(database, sPref);
+        assertNotNull(jsonParseTask);
     }
 
     @After
@@ -65,7 +71,7 @@ public class ApplicationTest extends InstrumentationTestCase {
         JSONArray jsonObjects = dataJsonObj.getJSONArray("items");
         assertTrue("Events not found", jsonObjects != null);
 
-        int insertedEvents = dbUpdater.populateDB(dataJsonObj);
+        int insertedEvents = jsonParseTask.populateDB(dataJsonObj);
         List<Event> events = DBHelper.readEvents(context, false);
 
         assertTrue("The number of events inserted into database (" + insertedEvents
@@ -93,7 +99,7 @@ public class ApplicationTest extends InstrumentationTestCase {
         JSONArray jsonObjects = dataJsonObj.getJSONArray("items");
         assertTrue("Events not found", jsonObjects != null);
 
-        int insertedEvents = dbUpdater.populateDB(dataJsonObj);
+        int insertedEvents = jsonParseTask.populateDB(dataJsonObj);
         List<Event> events = DBHelper.readEvents(context, false);
 
         assertTrue("The number of events inserted into database (" + insertedEvents

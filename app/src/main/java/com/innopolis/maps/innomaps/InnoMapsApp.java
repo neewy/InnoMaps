@@ -1,6 +1,7 @@
 package com.innopolis.maps.innomaps;
 
 import android.app.Application;
+import android.content.Context;
 
 import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
@@ -13,8 +14,10 @@ import org.acra.annotation.ReportsCrashes;
 )
 public class InnoMapsApp extends Application {
     @Override
-    public final void onCreate() {
-        super.onCreate();
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+
+        // The following line triggers the initialization of ACRA
         ACRA.init(this);
     }
 }

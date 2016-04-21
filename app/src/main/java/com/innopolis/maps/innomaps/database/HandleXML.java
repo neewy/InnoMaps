@@ -2,38 +2,43 @@ package com.innopolis.maps.innomaps.database;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-
 public class HandleXML {
     private XmlPullParser parser;
 
+    FileInputStream inputStream = null;
+
+
     public HandleXML(Context context) {
-        Context context1 = context;
         try {
+            inputStream = context.openFileInput("9.xml");
             XmlPullParserFactory xmlFactoryObject = XmlPullParserFactory.newInstance();
             xmlFactoryObject.setNamespaceAware(false);
             parser = xmlFactoryObject.newPullParser();
-        } catch (XmlPullParserException e) {
+        } catch (XmlPullParserException | FileNotFoundException e) {
+            Toast.makeText(context, "Connect to the internet", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
     }
 
-    public List<HashMap<String, String>> parseXml(InputStream inputStream, String building, String floor) {
+    public List<HashMap<String, String>> parseXml() {
         List<HashMap<String, String>> res = new ArrayList<>();
         BufferedReader br = null;
-        int type = 0;
+        int type;
         try {
             br = new BufferedReader(new InputStreamReader(inputStream));
             parser.setInput(br);
@@ -54,8 +59,8 @@ public class HandleXML {
                 } else if (type == XmlPullParser.END_TAG) {
                     if (parser.getName().equals("node")) {
                         //Consider deleting it!
-                        poi.put("building", building);
-                        poi.put("floor", floor + "floor");
+                        poi.put("building", "university");
+                        poi.put("floor", poi.get("id").substring(0,1) + "floor");
 
                         res.add(poi);
                         poi = new HashMap<>();

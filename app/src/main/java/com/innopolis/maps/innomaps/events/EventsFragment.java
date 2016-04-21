@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -75,6 +76,12 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
         //the data were updated
 
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
+
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         swipeRefreshLayout.setOnRefreshListener(this);
 
         this.adapter = new EventsAdapter(context, getActivity().getSupportFragmentManager(), list, getActivity());
@@ -94,8 +101,6 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
         } else {
             onRefresh();
         }
-
-        return view;
     }
 
     @Override

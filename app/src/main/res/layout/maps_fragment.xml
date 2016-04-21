@@ -43,7 +43,7 @@
             android:id="@+id/button5"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:textColor="@color/cardview_dark_background"
+            android:textColor="#FFFAFAFA"
             android:text="5"
             style="@style/RadioButton" />
 

@@ -19,7 +19,11 @@ public class SplashScreenActivity extends Activity {
         getWindow().setBackgroundDrawable(null);
         // Get the view from splash_screen.xml
         setContentView(R.layout.splash_screen);
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
         if (Utils.isNetworkAvailable(SplashScreenActivity.this)) {
             new com.innopolis.maps.innomaps.database.DBUpdater(SplashScreenActivity.this);
         }
@@ -35,6 +39,5 @@ public class SplashScreenActivity extends Activity {
                 finish();
             }
         }, delay);
-
     }
 }

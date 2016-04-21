@@ -11,11 +11,11 @@
     </style>
 
     <style name="spinnerDropDownItemStyle">
-        <item name="android:background">@color/cardview_light_background</item>
+        <item name="android:background">#FFFAFAFA</item>
     </style>
 
     <style name="PopupListStyle" parent="@style/Widget.AppCompat.Light.ListPopupWindow">
-        <item name="android:popupBackground">@color/cardview_light_background</item>
+        <item name="android:popupBackground">#FFFAFAFA</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

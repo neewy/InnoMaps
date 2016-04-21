@@ -9,7 +9,7 @@
         style="?android:attr/spinnerDropDownItemStyle"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="@color/cardview_light_background"
+        android:background="#FFFAFAFA"
         android:ellipsize="marquee"
         android:singleLine="true" />
 
@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="20dp"
         android:layout_below="@+id/name"
-        android:background="@color/cardview_light_background"
+        android:background="#FFFAFAFA"
         android:ellipsize="marquee"
         android:singleLine="true"
         android:gravity="top|start"

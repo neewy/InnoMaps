@@ -1,6 +1,7 @@
 package com.innopolis.maps.innomaps.events;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.SearchView;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -36,13 +37,17 @@ public class FavouriteFragment extends EventsFragment {
         context = getActivity().getApplicationContext();
         View view = inflater.inflate(R.layout.favourite, container, false);
         listView = (ListView) view.findViewById(R.id.eventListFav);
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         listView.setEmptyView(view.findViewById(R.id.empty_fav));
 
         this.adapter = new EventsAdapter(context, getActivity().getSupportFragmentManager(), list, getActivity());
         listView.setAdapter(this.adapter);
 
         onRefresh();
-        return view;
     }
 
     @Override
