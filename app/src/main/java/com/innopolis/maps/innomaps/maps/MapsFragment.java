@@ -200,7 +200,21 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
 
                     map.setMapType(MAP_TYPE_NORMAL);
                     markerList = new ArrayList<>();
-
+                    if (checkIfZoomIsEnough(map.getCameraPosition())) {
+                        Log.d("OVERLAY", "Zoom is enough");
+                        floorPicker.setVisibility(View.VISIBLE);
+                        initializeOverlay();
+                    } else {
+                        Log.d("OVERLAY", "Zoom is not enough");
+                        floorPicker.setVisibility(View.INVISIBLE);
+                        makeUiOutline();
+                        if (markers != null) {
+                            for (Marker marker : markers) {
+                                marker.remove();
+                            }
+                            markers.clear();
+                        }
+                    }
                     /*Invokes when location button is triggered – checks whether user has GPS turned on*/
                     map.setOnMyLocationButtonClickListener(new OnMyLocationButtonClickListener() {
                         @Override
