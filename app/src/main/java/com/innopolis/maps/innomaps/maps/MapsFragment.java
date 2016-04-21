@@ -621,10 +621,10 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         buttons.setLayoutParams(buttonsLayoutParams);
         AppCompatButton back = new AppCompatButton(getContext());
         back.setLayoutParams(buttonsParams);
-        back.setText("BACK");
+        back.setText(R.string.back_caps);
         AppCompatButton select = new AppCompatButton(getContext());
         select.setLayoutParams(buttonsParams);
-        select.setText("GO");
+        select.setText(R.string.go_caps);
         buttons.addView(back);
         buttons.addView(select);
 
@@ -632,7 +632,9 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         parentParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         parentParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
 
-        ((RelativeLayout) getView()).addView(buttons, parentParams);
+        if (( getView()) != null) {
+            ((RelativeLayout) getView()).addView(buttons, parentParams);
+        }
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
@@ -243,12 +244,21 @@ public class DetailedEvent extends Fragment {
         } else {
             favCheckBox.setChecked(false);
         }
-        final SmallBang mSmallBang = SmallBang.attach2Window(getActivity());
+
+        final SmallBang mSmallBang;
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mSmallBang = SmallBang.attach2Window(getActivity());
+        } else {
+            mSmallBang = null;
+        }
 
         favCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mSmallBang.bang(favCheckBox);
+
+                if (mSmallBang != null) {
+                    mSmallBang.bang(favCheckBox);
+                }
                 String isFav = (favCheckBox.isChecked()) ? "1" : "0";
                 ContentValues cv = new ContentValues();
                 dbHelper = new DBHelper(context);
@@ -306,7 +316,7 @@ public class DetailedEvent extends Fragment {
                     if (latitude != null && longitude != null) {
                         LatLng position = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 19));
-                        mMap.addMarker(new MarkerOptions().position(position).title(summary));
+                        mMap.addMarker(new MarkerOptions().position(position).title(room));
                         switch (floor) {
                             case "1floor":
                                 southWest[0] = new LatLng(55.752533, 48.742492);

@@ -2,7 +2,6 @@ package com.innopolis.maps.innomaps.orm;
 
 import com.orm.SugarRecord;
 
-
 public class Event_poi extends SugarRecord {
 
     int id;

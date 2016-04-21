@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -96,7 +97,13 @@ public class EventsAdapter extends BaseAdapter {
         } else {
             favCheckBox.setChecked(false);
         }
-        final SmallBang mSmallBang = SmallBang.attach2Window(activity);
+
+        final SmallBang mSmallBang;
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mSmallBang = SmallBang.attach2Window(activity);
+        } else {
+            mSmallBang = null;
+        }
 
         final View finalView = view;
         view.setOnClickListener(new View.OnClickListener() {
@@ -128,7 +135,9 @@ public class EventsAdapter extends BaseAdapter {
         favCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mSmallBang.bang(favCheckBox);
+                if (mSmallBang != null) {
+                    mSmallBang.bang(favCheckBox);
+                }
                 String isFav = (favCheckBox.isChecked()) ? "1" : "0";
                 event.setChecked(isFav);
                 String eventID = event.getEventID();

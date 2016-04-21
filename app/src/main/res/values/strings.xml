@@ -229,6 +229,8 @@
     <string name="maps">Maps</string>
     <string name="events">Events</string>
     <string name="about">About</string>
+    <string name="back_caps">BACK</string>
+    <string name="go_caps">GO</string>
 
 
 </resources>

@@ -2,6 +2,7 @@ package com.innopolis.maps.innomaps.orm;
 
 import com.orm.SugarRecord;
 
+import java.util.List;
 
 
 public class Events extends SugarRecord {
@@ -16,6 +17,7 @@ public class Events extends SugarRecord {
 
     public Events(){
     }
+
 
     public  Events(int id, String summary, String htmlLink, String start, String end, int eventID, String checked){
         this.id = id;
