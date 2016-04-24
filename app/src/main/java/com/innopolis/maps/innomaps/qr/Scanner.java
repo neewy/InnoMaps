@@ -65,7 +65,6 @@ public class Scanner extends AppCompatActivity implements ZXingScannerView.Resul
     @Override
     public void handleResult(Result rawResult) {
         // Do something with the result here
-        Log.d("Tag", rawResult.getText()); // Prints scan results
         Cursor cursor = database.rawQuery("SELECT * FROM poi where _id like '"+ rawResult.getText() +"'", null);
         if (cursor.moveToFirst()) {
             FragmentManager fm = MainActivity.getInstance().getSupportFragmentManager();

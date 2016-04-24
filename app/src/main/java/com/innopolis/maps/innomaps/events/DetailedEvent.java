@@ -231,7 +231,6 @@ public class DetailedEvent extends Fragment {
         Long durationTime = TimeUnit.MILLISECONDS.toMinutes(endDate.getTime() - startDate.getTime());
         duration.setText("Duration: " + String.valueOf(durationTime) + "min");
 
-        Log.d("Mylog", "this.descriptionStr" + this.descriptionStr);
         if (this.descriptionStr.length() != 0) {
             description
                     .setText(descriptionStr)

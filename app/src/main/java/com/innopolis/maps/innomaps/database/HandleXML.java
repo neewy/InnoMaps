@@ -46,7 +46,6 @@ public class HandleXML {
             HashMap<String, String> poi = new HashMap<>();
             while (type != XmlPullParser.END_DOCUMENT) {
                 if (type == XmlPullParser.START_DOCUMENT) {
-                    Log.d("", "In start document");
                 } else if (type == XmlPullParser.START_TAG) {
                     if (parser.getName().equals("node")) {
                         for (int i = 0; i < parser.getAttributeCount(); i++) {

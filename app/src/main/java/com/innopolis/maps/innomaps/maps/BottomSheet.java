@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.app.SearchableItem;
 import com.innopolis.maps.innomaps.events.Event;
 import com.innopolis.maps.innomaps.events.MapBottomEventListAdapter;
@@ -86,23 +87,8 @@ public class BottomSheet extends Fragment {
     public void inSearchBottomList(SearchableItem item, View view) {
         ((RadioButton) floorPicker.getChildAt(5 - Integer.parseInt(item.getFloor().substring(0, 1)))).setChecked(true);
 
-        List<String> location = new LinkedList<>();
-        if (item.getBuilding() != null) location.add(item.getBuilding());
-        if (item.getFloor() != null) location.add(item.getFloor());
-        if (item.getRoom() != null) location.add(item.getRoom());
-        String[] locationArray = new String[location.size()];
-
-        for (int i = 0; i < location.size(); i++) {
-            locationArray[i] = location.get(i);
-        }
-
         CheckedTextView text = (CheckedTextView) view.findViewById(R.id.name);
-        headerText = (TextView) scrollView.findViewById(R.id.headerText);
-        locationText = (TextView) scrollView.findViewById(R.id.locationText);
-        startText = (TextView) scrollView.findViewById(R.id.startText);
-        durationText = (TextView) scrollView.findViewById(R.id.durationText);
-        relatedLayout = (FrameLayout) scrollView.findViewById(R.id.relatedLayout);
-        idPoi = (TextView) scrollView.findViewById(R.id.idPoi);
+        initializeBottomScrollerViews(item);
 
         if (relatedLayout.getChildCount() != 0) {
             relatedLayout.removeView(relatedLayout.getChildAt(0));
@@ -113,9 +99,8 @@ public class BottomSheet extends Fragment {
             idPoi.setText(EVENT);
         } else {
             idPoi.setText(item.getId());
-            typeEventNon(item.getId());
+            typeEventNon(item.getId(), false);
         }
-        locationText.setText(StringUtils.join(locationArray, ", "));
         if (scrollView.getVisibility() == View.GONE) {
             scrollView.setVisibility(View.VISIBLE);
         }
@@ -195,7 +180,7 @@ public class BottomSheet extends Fragment {
     }
 
 
-    public void typeEventNon(String poi_id) {
+    public void typeEventNon(String poi_id, boolean pinMakered) {
 
         String sqlQuery = "SELECT * FROM poi LEFT OUTER JOIN event_poi on event_poi.poi_id = poi._id LEFT OUTER JOIN events on events.eventID = event_poi.eventID WHERE poi._id=?";
 
@@ -237,7 +222,8 @@ public class BottomSheet extends Fragment {
             cursor.close();
             headerText.setText(poi_name);
             LatLng place = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
-            pinMarker(place);
+            if(!pinMakered)
+                pinMarker(place);
             map.animateCamera(CameraUpdateFactory.newLatLng(place));
             setPeekHeight("poi");
         }
@@ -255,7 +241,21 @@ public class BottomSheet extends Fragment {
     public void pinMarker(LatLng latLng) {
         clearMarkerList();
         MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.title(findClosestPOI(latLng).firstKey());
+        String title = findClosestPOI(latLng).firstKey();
+        markerOptions.title(title);
+        if (title!=null && !"".equals(title)){
+            boolean found = false;
+            for (SearchableItem item: ((MainActivity)getActivity()).searchItems){
+                if (item.getName().toLowerCase().contains(title.toLowerCase())){
+                    initializeBottomScrollerViews(item);
+                    typeEventNon(item.getId(), true);
+                    scrollView.setVisibility(View.VISIBLE);
+                    found = true;
+                }
+            }
+            if (!found)
+                scrollView.setVisibility(View.GONE);
+        }
         markerOptions.position(closest == null || closestDistance > 0.012 ? latLng : closest);
         Marker marker = map.addMarker(markerOptions);
         marker.showInfoWindow();
@@ -279,7 +279,6 @@ public class BottomSheet extends Fragment {
             }
             if (closestDistance < 0.012){
                 closest = new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
-                Log.d("DISTANCE: ", ""+closestDistance);
                 String sqlQuery = "SELECT " + POI_NAME + " FROM " + POI + " WHERE " + LATITUDE + "=?" + " AND " + LONGITUDE + "=?";
                 Cursor cursor = MarkersAdapter.database.rawQuery(sqlQuery, new String[]{lat, lng});
                 cursor.moveToFirst();
@@ -323,5 +322,25 @@ public class BottomSheet extends Fragment {
         RelativeLayout.LayoutParams rp = (RelativeLayout.LayoutParams) floorPicker.getLayoutParams();
         rp.setMargins((int) Utils.convertDpToPixel(10, getContext()), 0, 0, mBottomSheetBehavior.getPeekHeight() + (int) Utils.convertDpToPixel(20, getContext()));
         floorPicker.setLayoutParams(rp);
+    }
+
+    private void initializeBottomScrollerViews(SearchableItem item){
+        List<String> location = new LinkedList<>();
+        if (item.getBuilding() != null) location.add(item.getBuilding());
+        if (item.getFloor() != null) location.add(item.getFloor());
+        if (item.getRoom() != null) location.add(item.getRoom());
+        String[] locationArray = new String[location.size()];
+
+        for (int i = 0; i < location.size(); i++) {
+            locationArray[i] = location.get(i);
+        }
+        headerText = (TextView) scrollView.findViewById(R.id.headerText);
+        locationText = (TextView) scrollView.findViewById(R.id.locationText);
+        startText = (TextView) scrollView.findViewById(R.id.startText);
+        durationText = (TextView) scrollView.findViewById(R.id.durationText);
+        relatedLayout = (FrameLayout) scrollView.findViewById(R.id.relatedLayout);
+        idPoi = (TextView) scrollView.findViewById(R.id.idPoi);
+
+        locationText.setText(StringUtils.join(locationArray, ", "));
     }
 }

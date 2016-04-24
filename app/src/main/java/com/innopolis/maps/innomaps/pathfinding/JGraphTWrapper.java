@@ -94,7 +94,6 @@ public class JGraphTWrapper {
         if (foundPath == null || foundPath.size() == 0) {
             return null;
         }
-        Log.d("graph", Double.toString(dijkstraPathFinder.getPathLength()));
         ArrayList<LatLngGraphVertex> pointsList = new ArrayList<>();
         LatLngGraphVertex testVertexFrom = foundPath.get(0).getV1();
         LatLngGraphVertex testVertexTo = foundPath.get(0).getV2();
@@ -103,9 +102,6 @@ public class JGraphTWrapper {
             testVertexFrom = foundPath.get(i).getV1();
             testVertexTo = foundPath.get(i).getV2();
             pointsList.add(pointsList.get(pointsList.size()-1).equals(testVertexFrom) ? testVertexTo : testVertexFrom);
-        }
-        for (LatLngGraphVertex point: pointsList) {
-            Log.d("graph", point.getVertexId() + " ");
         }
         return pointsList;
     }
@@ -169,7 +165,6 @@ public class JGraphTWrapper {
                         else if (vType.equals("stairs")) vertexType = GraphElementType.STAIRS;
                         else if (vType.equals("elevator")) vertexType = GraphElementType.ELEVATOR;
                         else vertexType = GraphElementType.DEFAULT;
-                        Log.d("graph vertex", "type = " + vType + " id = " + id);
                         break;
                     case "edge":
                         int from = Integer.valueOf(xpp.getAttributeValue(null, "source"));
@@ -188,7 +183,6 @@ public class JGraphTWrapper {
                                 break;
                         }
                         addEdge(verticesMap.get(from), verticesMap.get(to), from, to, graphEdgeType);
-                        Log.d("graph edge", "type = " + eType + " source = " + from + " target = " + to);
                         break;
                     case "data":
                         if (id != -1) {

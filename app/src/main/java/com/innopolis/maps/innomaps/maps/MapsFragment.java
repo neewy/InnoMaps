@@ -207,11 +207,9 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                     map.setMapType(MAP_TYPE_NORMAL);
                     markerList = new ArrayList<>();
                     if (checkIfZoomIsEnough(map.getCameraPosition())) {
-                        Log.d("OVERLAY", "Zoom is enough");
                         floorPicker.setVisibility(View.VISIBLE);
                         initializeOverlay();
                     } else {
-                        Log.d("OVERLAY", "Zoom is not enough");
                         floorPicker.setVisibility(View.INVISIBLE);
                         makeUiOutline();
                         if (markers != null) {
@@ -254,7 +252,6 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
 
                                     } else {
                                         pinMarker(marker.getPosition());
-                                        scrollView.setVisibility(View.GONE);
                                         return true;
                                     }
                                 }
@@ -717,8 +714,6 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         @Override
         public void onMapClick(LatLng latLng) {
             pinMarker(latLng);
-            scrollView.setVisibility(View.GONE);
-            Log.d("location: ", latLng.toString());
         }
     };
 
