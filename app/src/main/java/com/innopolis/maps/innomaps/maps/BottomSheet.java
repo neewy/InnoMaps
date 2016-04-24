@@ -239,12 +239,12 @@ public class BottomSheet extends Fragment {
 
 
     public void pinMarker(LatLng latLng) {
+        boolean found = false;
         clearMarkerList();
         MarkerOptions markerOptions = new MarkerOptions();
         String title = findClosestPOI(latLng).firstKey();
         markerOptions.title(title);
         if (title!=null && !"".equals(title)){
-            boolean found = false;
             for (SearchableItem item: ((MainActivity)getActivity()).searchItems){
                 if (item.getName().toLowerCase().contains(title.toLowerCase())){
                     initializeBottomScrollerViews(item);
@@ -253,9 +253,9 @@ public class BottomSheet extends Fragment {
                     found = true;
                 }
             }
-            if (!found)
-                scrollView.setVisibility(View.GONE);
         }
+        if (!found)
+            scrollView.setVisibility(View.GONE);
         markerOptions.position(closest == null || closestDistance > 0.012 ? latLng : closest);
         Marker marker = map.addMarker(markerOptions);
         marker.showInfoWindow();
