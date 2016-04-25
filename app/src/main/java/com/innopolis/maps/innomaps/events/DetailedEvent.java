@@ -244,12 +244,7 @@ public class DetailedEvent extends Fragment {
             favCheckBox.setChecked(false);
         }
 
-        final SmallBang mSmallBang;
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mSmallBang = SmallBang.attach2Window(getActivity());
-        } else {
-            mSmallBang = null;
-        }
+        final SmallBang mSmallBang = SmallBang.attach2Window(getActivity());
 
         favCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override
