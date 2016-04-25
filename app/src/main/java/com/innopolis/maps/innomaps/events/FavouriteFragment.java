@@ -2,6 +2,7 @@ package com.innopolis.maps.innomaps.events;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.SearchView;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -30,18 +31,22 @@ import java.util.List;
 public class FavouriteFragment extends EventsFragment {
 
     protected final List<SearchableItem> favouriteNames = new LinkedList<>();
-
+    SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         context = getActivity().getApplicationContext();
         View view = inflater.inflate(R.layout.favourite, container, false);
         listView = (ListView) view.findViewById(R.id.eventListFav);
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fav_swipe_refresh_layout);
+
         return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        swipeRefreshLayout.setOnRefreshListener(this);
+
         listView.setEmptyView(view.findViewById(R.id.empty_fav));
 
         this.adapter = new EventsAdapter(context, getActivity().getSupportFragmentManager(), list, getActivity());
@@ -117,6 +122,7 @@ public class FavouriteFragment extends EventsFragment {
         adapter.events = list;
         adapter.notifyDataSetChanged();
         database.close();
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
