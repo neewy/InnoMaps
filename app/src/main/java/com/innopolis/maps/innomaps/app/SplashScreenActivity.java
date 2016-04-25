@@ -8,14 +8,12 @@ import android.view.Window;
 
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.utils.Utils;
-import com.testfairy.TestFairy;
 
 public class SplashScreenActivity extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        TestFairy.begin(this, "257b66690f978ea446f80313bb7927655de6bc40");
         // Remove the Title Bar
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setBackgroundDrawable(null);
