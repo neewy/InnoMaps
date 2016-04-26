@@ -1,5 +1,7 @@
 package com.innopolis.maps.innomaps.events;
 
+import android.support.annotation.NonNull;
+
 import com.google.common.base.Predicate;
 
 import java.util.Calendar;
@@ -18,17 +20,13 @@ public class Event implements Comparable<Event> {
     private String description;
     private String creatorName;
     private String creatorEmail;
-    private String telegramLogin;
-    private String telegramGroup;
     private String building;
     private String floor;
     private String room;
     private String latitude;
     private String longitude;
 
-    public Event() {
-    }
-
+    public Event() {}
 
     public String getSummary() {
         return summary;
@@ -142,7 +140,7 @@ public class Event implements Comparable<Event> {
     }
 
     @Override
-    public int compareTo(Event another) {
+    public int compareTo(@NonNull Event another) {
         return this.start.compareTo(another.getStart());
     }
 
@@ -190,4 +188,53 @@ public class Event implements Comparable<Event> {
             return lhs.getSummary().compareTo(rhs.getSummary());
         }
     };
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Event event = (Event) o;
+
+        if (!summary.equals(event.summary)) return false;
+        if (htmlLink != null ? !htmlLink.equals(event.htmlLink) : event.htmlLink != null)
+            return false;
+        if (!start.equals(event.start)) return false;
+        if (!end.equals(event.end)) return false;
+        if (eventID != null ? !eventID.equals(event.eventID) : event.eventID != null) return false;
+        if (checked != null ? !checked.equals(event.checked) : event.checked != null) return false;
+        if (description != null ? !description.equals(event.description) : event.description != null)
+            return false;
+        if (creatorName != null ? !creatorName.equals(event.creatorName) : event.creatorName != null)
+            return false;
+        if (creatorEmail != null ? !creatorEmail.equals(event.creatorEmail) : event.creatorEmail != null)
+            return false;
+        if (building != null ? !building.equals(event.building) : event.building != null)
+            return false;
+        if (floor != null ? !floor.equals(event.floor) : event.floor != null) return false;
+        if (room != null ? !room.equals(event.room) : event.room != null) return false;
+        if (latitude != null ? !latitude.equals(event.latitude) : event.latitude != null)
+            return false;
+        return !(longitude != null ? !longitude.equals(event.longitude) : event.longitude != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = summary.hashCode();
+        result = 31 * result + (htmlLink != null ? htmlLink.hashCode() : 0);
+        result = 31 * result + start.hashCode();
+        result = 31 * result + end.hashCode();
+        result = 31 * result + (eventID != null ? eventID.hashCode() : 0);
+        result = 31 * result + (checked != null ? checked.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (creatorName != null ? creatorName.hashCode() : 0);
+        result = 31 * result + (creatorEmail != null ? creatorEmail.hashCode() : 0);
+        result = 31 * result + (building != null ? building.hashCode() : 0);
+        result = 31 * result + (floor != null ? floor.hashCode() : 0);
+        result = 31 * result + (room != null ? room.hashCode() : 0);
+        result = 31 * result + (latitude != null ? latitude.hashCode() : 0);
+        result = 31 * result + (longitude != null ? longitude.hashCode() : 0);
+        return result;
+    }
 }

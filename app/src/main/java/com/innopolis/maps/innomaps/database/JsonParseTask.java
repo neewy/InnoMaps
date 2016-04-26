@@ -114,10 +114,10 @@ public class JsonParseTask extends AsyncTask<Void, Void, String> {
     @Override
     protected void onPostExecute(String strJson) {
         JSONObject dataJsonObj;
-        String md5 = new String(Hex.encodeHex(DigestUtils.md5(resultJson)));
+        String md5 = new String(Hex.encodeHex(DigestUtils.md5(strJson)));
         try {
             dataJsonObj = new JSONObject(strJson);
-            if (jsonUpdated(md5) | weekUpdated()) {
+            if (jsonUpdated(md5) || weekUpdated()) {
                 populateDB(dataJsonObj);
             }
         } catch (JSONException e) {

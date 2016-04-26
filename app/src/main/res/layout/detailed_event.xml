@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/topLayout"
     android:layout_width="match_parent"
@@ -39,7 +40,7 @@
 
         <CheckBox
             android:id="@+id/favCheckBox"
-            style="?android:attr/starStyle"
+            android:button="@drawable/btn_star_selector"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignRight="@+id/all_descr"
@@ -47,6 +48,9 @@
             android:layout_marginRight="12dp"
             android:checked="false"
             android:elevation="2dp" />
+
+
+
 
 
         <LinearLayout

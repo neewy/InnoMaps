@@ -9,11 +9,13 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckedTextView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -24,13 +26,14 @@ import com.innopolis.maps.innomaps.app.SuggestionAdapter;
 import com.innopolis.maps.innomaps.database.DBHelper;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 
 public class FavouriteFragment extends EventsFragment {
 
-    protected final List<SearchableItem> favouriteNames = new LinkedList<>();
+    protected final List<SearchableItem> favouriteNames = new ArrayList<>();
     SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
@@ -58,8 +61,10 @@ public class FavouriteFragment extends EventsFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.events_menu, menu);
+        this.menu = menu;
+        updateFilters(DBHelper.readEvents(getContext(), true));
         searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-        final List<SearchableItem> adapterList = new LinkedList<>(favouriteNames);
+        final List<SearchableItem> adapterList = new ArrayList<>(favouriteNames);
         searchBox = (SearchView.SearchAutoComplete) searchView.findViewById(R.id.search_src_text);
         searchBox.setAdapter(new SuggestionAdapter(getContext(), R.layout.complete_row, favouriteNames));
 
@@ -113,9 +118,63 @@ public class FavouriteFragment extends EventsFragment {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        List<Event> filteredList = DBHelper.readEvents(getContext(), true);
+        item.setChecked(!item.isChecked());
+        boolean addToEvents = item.isChecked();
+        switch (item.getItemId()) {
+            case R.id.action_today:
+                Collection<Event> today = Collections2.filter(filteredList, Event.isToday);
+                if (today.isEmpty()) {
+                    Toast.makeText(getContext(), "No events today", Toast.LENGTH_LONG).show();
+                    return true;
+                }
+                for (Event event : today) {
+                    if (addToEvents && !adapter.events.contains(event))
+                        adapter.events.add(event);
+                    else
+                        adapter.events.remove(event);
+                }
+                Collections.sort(adapter.events);
+                break;
+            case R.id.action_tomorrow:
+                Collection<Event> tomorrow = Collections2.filter(filteredList, Event.isTomorrow);
+                if (tomorrow.isEmpty()) {
+                    Toast.makeText(getContext(), "No events tomorrow", Toast.LENGTH_LONG).show();
+                    return true;
+                }
+                for (Event event : tomorrow) {
+                    if (addToEvents && !adapter.events.contains(event))
+                        adapter.events.add(event);
+                    else
+                        adapter.events.remove(event);
+                }
+                Collections.sort(adapter.events);
+                break;
+            case R.id.action_this_week:
+                Collection<Event> thisWeek = Collections2.filter(filteredList, Event.isThisWeek);
+                if (thisWeek.isEmpty()) {
+                    Toast.makeText(getContext(), "No events this week", Toast.LENGTH_LONG).show();
+                    return true;
+                }
+                for (Event event : thisWeek) {
+                    if (addToEvents && !adapter.events.contains(event))
+                        adapter.events.add(event);
+                    else
+                        adapter.events.remove(event);
+                }
+                Collections.sort(adapter.events);
+                break;
+        }
+        adapter.notifyDataSetChanged();
+        return true;
+    }
+
+    @Override
     public void onRefresh() {
         dbHelper = new DBHelper(context);
         database = dbHelper.getWritableDatabase();
+        updateFilters(DBHelper.readEvents(getContext(), true));
 
         list.clear();
         list = DBHelper.readEvents(getContext(), true);
@@ -128,7 +187,6 @@ public class FavouriteFragment extends EventsFragment {
     @Override
     public void onResume() {
         super.onResume();
-
         // Tracking the screen view
         MainActivity.getInstance().trackScreenView("Favourite Fragment");
     }

@@ -79,7 +79,8 @@ public class EventsAdapter extends BaseAdapter {
         TextView nameEvent = (TextView) view.findViewById(R.id.nameEvent);
         TextView location = (TextView) view.findViewById(R.id.location);
         TextView dateTime = (TextView) view.findViewById(R.id.dateTime);
-        final CheckBox favCheckBox = (CheckBox) view.findViewById(R.id.favCheckBox);
+        final CheckBox favCheckBox =(CheckBox) view.findViewById(R.id.favCheckBox);
+
 
         nameEvent.setText(event.getSummary());
         String[] locationText = new String[3];
@@ -98,12 +99,6 @@ public class EventsAdapter extends BaseAdapter {
             favCheckBox.setChecked(false);
         }
 
-        final SmallBang mSmallBang;
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mSmallBang = SmallBang.attach2Window(activity);
-        } else {
-            mSmallBang = null;
-        }
 
         final View finalView = view;
         view.setOnClickListener(new View.OnClickListener() {
@@ -135,7 +130,10 @@ public class EventsAdapter extends BaseAdapter {
         favCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mSmallBang != null) {
+
+                SmallBang mSmallBang;
+                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    mSmallBang = SmallBang.attach2Window(activity);
                     mSmallBang.bang(favCheckBox);
                 }
                 String isFav = (favCheckBox.isChecked()) ? "1" : "0";
@@ -151,6 +149,8 @@ public class EventsAdapter extends BaseAdapter {
         });
         return view;
     }
+
+
 
     Event getEventRow(int position) {
         return ((Event) getItem(position));

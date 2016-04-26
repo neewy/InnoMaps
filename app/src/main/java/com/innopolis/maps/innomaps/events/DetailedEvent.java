@@ -145,7 +145,7 @@ public class DetailedEvent extends Fragment {
         description = (LinkableTextView) view.findViewById(R.id.description);
         noEventText = (TextView) view.findViewById(R.id.noEventTextView);
         duration = (TextView) view.findViewById(R.id.duration);
-        final CheckBox favCheckBox = (CheckBox) view.findViewById(R.id.favCheckBox);
+        final CheckBox favCheckBox =(CheckBox) view.findViewById(R.id.favCheckBox);
 
         Bundle bundle = this.getArguments();
         if (bundle != null) {
@@ -255,7 +255,9 @@ public class DetailedEvent extends Fragment {
             @Override
             public void onClick(View v) {
 
-                if (mSmallBang != null) {
+                SmallBang mSmallBang;
+                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    mSmallBang = SmallBang.attach2Window(getActivity());
                     mSmallBang.bang(favCheckBox);
                 }
                 String isFav = (favCheckBox.isChecked()) ? "1" : "0";
@@ -290,6 +292,8 @@ public class DetailedEvent extends Fragment {
 
         return view;
     }
+
+
 
     public void initializeMap(final String latitude, final String longitude) {
         final LatLng[] southWest = new LatLng[1];
