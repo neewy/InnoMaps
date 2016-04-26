@@ -69,7 +69,7 @@
 
     <CheckBox
         android:id="@+id/favCheckBox"
-        style="?android:attr/starStyle"
+        android:button="@drawable/btn_star_selector"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:checked="false"
@@ -81,6 +81,7 @@
         android:scaleX="1.20"
         android:scaleY="1.20"
         />
+
 
 
 </RelativeLayout>
