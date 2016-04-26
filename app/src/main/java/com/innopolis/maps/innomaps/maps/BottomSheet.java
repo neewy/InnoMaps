@@ -210,6 +210,11 @@ public class BottomSheet extends Fragment {
                     events.add(event);
                 }
             } while (cursor.moveToNext());
+
+            if (relatedLayout.getChildCount() != 0) {
+                relatedLayout.removeView(relatedLayout.getChildAt(0));
+            }
+
             if (events.size() == 0) {
                 TextView noEvents = new TextView(getContext());
                 noEvents.setText(R.string.no_events);
@@ -342,5 +347,6 @@ public class BottomSheet extends Fragment {
         idPoi = (TextView) scrollView.findViewById(R.id.idPoi);
 
         locationText.setText(StringUtils.join(locationArray, ", "));
+
     }
 }
