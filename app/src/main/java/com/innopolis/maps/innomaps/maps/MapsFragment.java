@@ -26,7 +26,6 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -651,9 +650,13 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         select.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((RelativeLayout) getView()).removeView(buttons);
-                showRoute(closest, destination);
-                dialog.cancel();
+                if (closest != null) {
+                    ((RelativeLayout) getView()).removeView(buttons);
+                    showRoute(closest, destination);
+                    dialog.cancel();
+                } else {
+                    Toast.makeText(getContext(), R.string.marker_in_university, Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

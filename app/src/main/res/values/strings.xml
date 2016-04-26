@@ -231,6 +231,7 @@
     <string name="about">About</string>
     <string name="back_caps">BACK</string>
     <string name="go_caps">GO</string>
+    <string name="marker_in_university">Please, select a room within the university</string>
 
 
 </resources>

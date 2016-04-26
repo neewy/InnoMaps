@@ -20,17 +20,13 @@ public class Event implements Comparable<Event> {
     private String description;
     private String creatorName;
     private String creatorEmail;
-    private String telegramLogin;
-    private String telegramGroup;
     private String building;
     private String floor;
     private String room;
     private String latitude;
     private String longitude;
 
-    public Event() {
-    }
-
+    public Event() {}
 
     public String getSummary() {
         return summary;
@@ -213,10 +209,6 @@ public class Event implements Comparable<Event> {
             return false;
         if (creatorEmail != null ? !creatorEmail.equals(event.creatorEmail) : event.creatorEmail != null)
             return false;
-        if (telegramLogin != null ? !telegramLogin.equals(event.telegramLogin) : event.telegramLogin != null)
-            return false;
-        if (telegramGroup != null ? !telegramGroup.equals(event.telegramGroup) : event.telegramGroup != null)
-            return false;
         if (building != null ? !building.equals(event.building) : event.building != null)
             return false;
         if (floor != null ? !floor.equals(event.floor) : event.floor != null) return false;
@@ -238,8 +230,6 @@ public class Event implements Comparable<Event> {
         result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (creatorName != null ? creatorName.hashCode() : 0);
         result = 31 * result + (creatorEmail != null ? creatorEmail.hashCode() : 0);
-        result = 31 * result + (telegramLogin != null ? telegramLogin.hashCode() : 0);
-        result = 31 * result + (telegramGroup != null ? telegramGroup.hashCode() : 0);
         result = 31 * result + (building != null ? building.hashCode() : 0);
         result = 31 * result + (floor != null ? floor.hashCode() : 0);
         result = 31 * result + (room != null ? room.hashCode() : 0);
