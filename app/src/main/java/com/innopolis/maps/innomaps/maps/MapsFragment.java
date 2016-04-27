@@ -34,6 +34,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
+import android.widget.CheckedTextView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -250,7 +251,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                                         return true;
 
                                     } else {
-                                        pinMarker(marker.getPosition());
+                                        pinMarker(marker.getPosition(), true);
                                         return true;
                                     }
                                 }
@@ -385,7 +386,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 SearchableItem item = (SearchableItem) parent.getAdapter().getItem(position);
-                inSearchBottomList(item, view);
+                inSearchBottomList(item, ((CheckedTextView) view.findViewById(R.id.name)).getText().toString());
                 menu.findItem(R.id.search).collapseActionView();
             }
         });
@@ -716,7 +717,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     OnMapClickListener mapClickListener = new OnMapClickListener() {
         @Override
         public void onMapClick(LatLng latLng) {
-            pinMarker(latLng);
+            pinMarker(latLng, true);
         }
     };
 

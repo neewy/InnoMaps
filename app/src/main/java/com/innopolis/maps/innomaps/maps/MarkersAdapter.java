@@ -288,7 +288,7 @@ public class MarkersAdapter extends BottomSheet {
             item.setFloor(floor);
             item.setRoom(room);
             item.setId(id);
-            inSearchBottomList(item, mapView);
+//            inSearchBottomList(item, mapView);
         }
         cursor.close();
     }
