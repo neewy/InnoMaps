@@ -33,6 +33,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.CheckedTextView;
 import android.widget.LinearLayout;
@@ -379,6 +380,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                             resetMarkers(position, snackbarText, items, input, floor);
                             break;
                     }
+                    hideSoftKeyboard(getActivity());
                 }
             }
         });
@@ -391,7 +393,10 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             }
         });
     }
-
+    private static void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+    }
 
     private void resetMarkers(int selectedButton, String snackbarText, List<SearchableItem> items, Collection<SearchableItem> input, int floor) {
         if (input.isEmpty()) {
@@ -718,6 +723,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         @Override
         public void onMapClick(LatLng latLng) {
             pinMarker(latLng, true);
+            hideSoftKeyboard(getActivity());
         }
     };
 
