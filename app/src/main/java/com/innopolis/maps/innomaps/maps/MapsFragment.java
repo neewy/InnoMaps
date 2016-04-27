@@ -22,7 +22,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.SearchView;
@@ -61,6 +60,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.common.collect.Collections2;
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.app.CustomScrollView;
 import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.app.SearchableItem;
 import com.innopolis.maps.innomaps.app.SuggestionAdapter;
@@ -81,6 +81,7 @@ import java.util.List;
 
 import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
 import static android.widget.AdapterView.OnItemClickListener;
 import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_NORMAL;
 import static com.google.android.gms.maps.GoogleMap.OnMapClickListener;
@@ -118,9 +119,20 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         dbHelper = new DBHelper(getContext());
         database = dbHelper.getReadableDatabase();
 
-        scrollView = (NestedScrollView) getActivity().findViewById(R.id.bottom_sheet);
+        scrollView = (CustomScrollView) getActivity().findViewById(R.id.bottom_sheet);
         durationLayout = (LinearLayout) scrollView.findViewById(R.id.durationLayout);
         startLayout = (LinearLayout) scrollView.findViewById(R.id.startLayout);
+
+        scrollView.setVisibilityListener(new CustomScrollView.OnVisibilityChangedListener() {
+            @Override
+            public void visibilityChanged(int visibility) {
+                if (visibility == VISIBLE) {
+                    setFloorPickerMargin(false);
+                } else {
+                    setFloorPickerMargin(true);
+                }
+            }
+        });
 
         mBottomSheetBehavior = BottomSheetBehavior.from(scrollView);
         if (mBottomSheetBehavior != null) {
@@ -138,7 +150,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                                     }
                                 });
                     } else if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                        setFloorPickerMargin();
+                        setFloorPickerMargin(false);
                         floorPicker.setAlpha(0f);
                         if (checkIfZoomIsEnough(map.getCameraPosition()))
                             floorPicker.setVisibility(View.VISIBLE);

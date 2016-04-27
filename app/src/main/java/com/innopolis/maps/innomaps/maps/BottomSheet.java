@@ -6,11 +6,9 @@ import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.NestedScrollView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.widget.CheckedTextView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -27,6 +25,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.app.CustomScrollView;
 import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.app.SearchableItem;
 import com.innopolis.maps.innomaps.events.Event;
@@ -67,7 +66,7 @@ public class BottomSheet extends Fragment {
     private double closestDistance;
 
     /*Bottom element, that is shown when search item is clicked*/
-    NestedScrollView scrollView;
+    CustomScrollView scrollView;
 
     /*These components are the part of scrollview elements*/
     TextView headerText;
@@ -144,6 +143,7 @@ public class BottomSheet extends Fragment {
             if (cursor_type.moveToFirst()) {
                 description = cursor_type.getString(cursor_type.getColumnIndex(DESCRIPTION));
             }
+            cursor_type.close();
             cursor.close();
             LinkableTextView descriptionText = new LinkableTextView(getContext());
 
@@ -173,6 +173,10 @@ public class BottomSheet extends Fragment {
             List<Link> links = new ArrayList<>();
             links.add(linkUsername);
             links.add(linkGroup);
+
+            if (relatedLayout.getChildCount() != 0) {
+                relatedLayout.removeView(relatedLayout.getChildAt(0));
+            }
 
             descriptionText.setTextSize(16);
             descriptionText.setPadding(0, 20, 10, 10);
@@ -327,8 +331,8 @@ public class BottomSheet extends Fragment {
                     height = scrollView.getHeight() - (relatedLayoutHeight + locationTextHeight + (int) Utils.convertDpToPixel(32, getContext()));
                 }
                 mBottomSheetBehavior.setPeekHeight(height);
-                setFloorPickerMargin();
-                if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
+                setFloorPickerMargin(scrollView.getVisibility() != View.VISIBLE);
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
                     scrollView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 else
                     scrollView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
@@ -336,9 +340,10 @@ public class BottomSheet extends Fragment {
         });
     }
 
-    protected void setFloorPickerMargin() {
+    protected void setFloorPickerMargin(boolean hiddenScrollView) {
+        int peekHeight = (hiddenScrollView) ? (int) Utils.convertDpToPixel(54, getContext()) : mBottomSheetBehavior.getPeekHeight();
         RelativeLayout.LayoutParams rp = (RelativeLayout.LayoutParams) floorPicker.getLayoutParams();
-        rp.setMargins((int) Utils.convertDpToPixel(10, getContext()), 0, 0, mBottomSheetBehavior.getPeekHeight() + (int) Utils.convertDpToPixel(20, getContext()));
+        rp.setMargins((int) Utils.convertDpToPixel(10, getContext()), 0, 0, peekHeight + (int) Utils.convertDpToPixel(20, getContext()));
         floorPicker.setLayoutParams(rp);
     }
 

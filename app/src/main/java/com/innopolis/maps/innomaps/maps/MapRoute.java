@@ -66,6 +66,10 @@ public class MapRoute {
 
     RadioGroup floorPicker; //floorPicker object, that is used to handle different map overlays
 
+    private final int sizeScale = 12; //initial marker size
+    private final int fromZoom = 16; //lowest zoom level
+    private final int toZoom = 20; //highest zoom level
+
     public MapRoute(GoogleMap mMap, ArrayList<LatLngGraphVertex> path, Activity activity, RadioGroup floorPicker) {
         this.mMap = mMap;
         this.activity = activity;
@@ -238,9 +242,9 @@ public class MapRoute {
 
         if (from.equals(to)) {
 
-            for (int i = 16; i < 20; i++) {
+            for (int i = fromZoom; i < toZoom; i++) {
                 MarkerOptions markerOptions = new MarkerOptions();
-                int size = (int) (20 + ((i - 15)/0.1));
+                int size = (int) (sizeScale + ((i - 15)/0.1));
 
                 markerOptions
                         .icon(convertDrawable(R.drawable.route_finish, size))
@@ -258,9 +262,9 @@ public class MapRoute {
         } else {
             if (current.getFloor().equals(from)) {
 
-                for (int i = 16; i < 20; i++) {
+                for (int i = fromZoom; i < toZoom; i++) {
                     MarkerOptions markerOptions = new MarkerOptions();
-                    int size = (int) (20 + ((i - 15) / 0.1));
+                    int size = (int) (sizeScale + ((i - 15) / 0.1));
 
                     if (isPathUp) markerOptions.icon(convertDrawable(R.drawable.route_up, size));
                     else markerOptions.icon(convertDrawable(R.drawable.route_down, size));
@@ -279,10 +283,10 @@ public class MapRoute {
 
             } else if (current.getFloor().equals(to)) {
 
-                for (int i = 16; i < 20; i++) {
+                for (int i = fromZoom; i < toZoom; i++) {
                     MarkerOptions markerOptionsBegin = new MarkerOptions();
                     MarkerOptions markerOptionsEnd = new MarkerOptions();
-                    int size = (int) (20 + ((i - 15) / 0.1));
+                    int size = (int) (sizeScale + ((i - 15) / 0.1));
 
                     if (isPathUp) markerOptionsBegin.icon(convertDrawable(R.drawable.route_down, size));
                     else markerOptionsBegin.icon(convertDrawable(R.drawable.route_up, size));
@@ -309,10 +313,10 @@ public class MapRoute {
 
             } else {
 
-                for (int i = 16; i < 20; i++) {
+                for (int i = fromZoom; i < toZoom; i++) {
                     MarkerOptions markerOptionsBegin = new MarkerOptions();
                     MarkerOptions markerOptionsEnd = new MarkerOptions();
-                    int size = (int) (20 + ((i - 15) / 0.1));
+                    int size = (int) (sizeScale + ((i - 15) / 0.1));
 
                     if (isPathUp) {
                         markerOptionsBegin

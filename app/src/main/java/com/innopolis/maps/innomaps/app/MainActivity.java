@@ -15,7 +15,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -69,7 +68,7 @@ public class MainActivity extends AppCompatActivity
     NavigationView navigationView;
     SearchView searchView;
 
-    NestedScrollView scrollView;
+    CustomScrollView scrollView;
     FloatingActionButton routeButton;
 
     private static MainActivity mInstance;
@@ -86,7 +85,7 @@ public class MainActivity extends AppCompatActivity
         Uri data = intent.getData();
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        scrollView = (NestedScrollView) findViewById(R.id.bottom_sheet);
+        scrollView = (CustomScrollView) findViewById(R.id.bottom_sheet);
         routeButton = (FloatingActionButton) findViewById(R.id.goto_fab);
         final TextView locationText = (TextView) scrollView.findViewById(R.id.locationText);
         final TextView idPoi = (TextView) scrollView.findViewById(R.id.idPoi);
@@ -126,6 +125,7 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().setTitle(MAPS);
         dbHelper = new DBHelper(MainActivity.this);
         database = dbHelper.getReadableDatabase();
+
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         /*
