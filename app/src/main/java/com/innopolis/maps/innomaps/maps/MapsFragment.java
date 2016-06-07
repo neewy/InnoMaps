@@ -103,6 +103,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     /*Don't be confused by class name - it is the element, which is shown during search, with 5 categories*/
     AHBottomNavigation topNavigation;
 
+    // TODO: Access levels
     JGraphTWrapper graphWrapper;
 
     /*Dialog, that asks user how to select his location */
@@ -290,6 +291,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                 Toast.makeText(getActivity(), "SERVICE MISSING", Toast.LENGTH_SHORT).show();
                 break;
             case ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED:
+                // TODO: extract string constants
                 Toast.makeText(getActivity(), "UPDATE REQUIRED", Toast.LENGTH_SHORT).show();
                 break;
             default:
@@ -297,6 +299,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         }
 
         topNavigation = (AHBottomNavigation) view.findViewById(R.id.bottom_navigation);
+        // TODO: probably these constants are part of your domain model
         AHBottomNavigationItem item1 = new AHBottomNavigationItem("WC", R.drawable.wc_rast);
         AHBottomNavigationItem item2 = new AHBottomNavigationItem("Food", R.drawable.food_fork_drink);
         AHBottomNavigationItem item3 = new AHBottomNavigationItem("All", R.drawable.all_pack);
@@ -313,6 +316,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         topNavigation.setInactiveColor(Color.WHITE);
         topNavigation.setVisibility(View.GONE);
         topNavigation.setForceTitlesDisplay(true);
+        // TODO: Which item is number 2?
         topNavigation.setCurrentItem(2);
     }
 
@@ -322,6 +326,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         super.onCreateOptionsMenu(menu, inflater);
         searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchBox = (SearchView.SearchAutoComplete) searchView.findViewById(R.id.search_src_text);
+        // TODO: ???
         searchBox.setThreshold(1);
         MenuItemCompat.setOnActionExpandListener(menu.findItem(R.id.search), new MenuItemCompat.OnActionExpandListener() {
             @Override
@@ -364,6 +369,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                 String snackbarText;
                 if (!wasSelected) {
                     switch (position) {
+                        // TODO: are these floors?
                         case 0:
                             input = Collections2.filter(allItems, SearchableItem.isWc);
                             snackbarText = getString(R.string.no_wc);
@@ -411,6 +417,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
     }
 
+    // TODO: make it readable
     private void resetMarkers(int selectedButton, String snackbarText, List<SearchableItem> items, Collection<SearchableItem> input, int floor) {
         if (input.isEmpty()) {
             Snackbar.make(getView(), snackbarText, Snackbar.LENGTH_SHORT);
@@ -431,6 +438,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         mapView.onResume();
         super.onResume();
 
+        // TODO: constants!!
         MainActivity.getInstance().trackScreenView("Maps Fragment");
     }
 
@@ -456,6 +464,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     private void getAndDrawPath(LatLng source, LatLng destination) {
         FileInputStream inputStream = null;
         try {
+            // TODO: KILL!!!
             inputStream = getContext().openFileInput("9.xml");
         } catch (IOException e) {
             e.printStackTrace();
@@ -481,6 +490,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             mapRoute = new MapRoute(map, path, getActivity(), floorPicker);
             mapRoute.startRoute();
         } else {
+            // TODO: use resource string here
             Toast.makeText(getContext(), "You are already there", Toast.LENGTH_SHORT).show();
         }
     }
@@ -488,11 +498,13 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     private void displayPromptForEnablingGPS(Activity activity) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         final String action = Settings.ACTION_LOCATION_SOURCE_SETTINGS;
+        // TODO: string resource
         final String message = "Enable either GPS or any other location"
                 + " service to find current location. Click OK to go to"
                 + " location services settings to let you do so.";
 
         builder.setMessage(message)
+                // TODO: replace with android.R.string.ok
                 .setPositiveButton("OK",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface d, int id) {
@@ -501,6 +513,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                                 startActivity(intent);
                             }
                         })
+                // TODO: replace with android.R.string.cancel
                 .setNegativeButton("Cancel",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface d, int id) {
@@ -519,6 +532,8 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         clearMarkerList();
         if (mapRoute != null && mapRoute.hasCurrentPath) mapRoute.addMarkerPolylineToMap(checkedId);
         switch (checkedId) {
+            // TODO: this is a part of your domain model, so you need to create a class representing it
+            // Then you will need a manager, that will instantiate objects of that class with these constant values
             case R.id.button1:
             default:
                 southWest = new LatLng(55.752533, 48.742492);
@@ -549,6 +564,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     }
 
     private void changeOnFloorPickerClick(LatLng southWest, LatLng northEast, int id, int floor) {
+        // TODO: constant values of size (600x600px) for all screen sizes
         buttonClickFloorPicker(southWest, northEast, decodeSampledBitmapFromResource(getResources(), id, 600, 600), floor);
         isMarkerSorted(floor);
         clearMarkerList();
@@ -589,7 +605,6 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         setFloorPOIHashMap(floor);
     }
 
-
     private void putOverlayToMap(LatLng southWest, LatLng northEast, Bitmap bitmap) {
         if (imageOverlay != null) {
             imageOverlay.remove();
@@ -609,9 +624,10 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         imageOverlay = map.addGroundOverlay(groundOverlayOptions);
     }
 
-
+    // TODO: check if this method is used or not, because it is useless
     private void setFloorPOIHashMap(Integer floor) {
         latLngMap = new HashMap<>();
+        // TODO: this is fragment, so it shouldn't contain any SQL logic
         String sqlQuery = "SELECT " + LATITUDE + "," + LONGITUDE + "," + FLOOR + " FROM " + POI + " WHERE " + FLOOR + "=?";
         Cursor cursor = database.rawQuery(sqlQuery, new String[]{floor + "floor"});
         if (cursor.moveToFirst()) {
@@ -624,7 +640,6 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         cursor.close();
     }
 
-
     public void showRoute(LatLng source, LatLng destination) {
         getAndDrawPath(source, destination);
     }
@@ -635,8 +650,10 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     }
 
     public void allowSelection(final Dialog dialog, final LatLng destination) {
+        // TODO: this is so wrong!
         dialog.hide();
 
+        // This whole code block could be replaces with an xml and layout inflater
         final LinearLayout buttons = new LinearLayout(getContext());
         LinearLayout.LayoutParams buttonsLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
         LinearLayout.LayoutParams buttonsParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 0.5f);
@@ -686,6 +703,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         dialog.hide();
         Intent intent = new Intent(getActivity(), Scanner.class);
         Bundle bundle = new Bundle();
+        // TODO: extract constants
         bundle.putDouble("latitude", closest.latitude);
         bundle.putDouble("longitude", closest.longitude);
         intent.putExtras(bundle);
@@ -725,7 +743,8 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         }
     };
 
-
+    // TODO: extract coordinates to local constants
+    // something like final double innoLatTop = 55.752116019;
     private boolean checkIfZoomIsEnough(CameraPosition cameraPosition) {
         LatLng cameraTarget = cameraPosition.target;
         return (cameraTarget.latitude > 55.752116019 && cameraTarget.latitude < 55.754923377) &&
@@ -740,6 +759,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         }
     };
 
+    // TODO: extract coordinates to local constants
     private void makeUiOutline() {
         LatLng southWest = new LatLng(55.752828, 48.742661);
         LatLng northEast = new LatLng(55.754597, 48.744469);
@@ -748,6 +768,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         putOverlayToMap(southWest, northEast, bitmap);
     }
 
+    // TODO: extract coordinates to local constants
     private void zoomToUniversityAlways() {
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(55.75360130293316, 48.7435007840395), (float) 17.7));
     }
