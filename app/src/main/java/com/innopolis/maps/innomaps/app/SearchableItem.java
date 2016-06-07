@@ -103,6 +103,7 @@ public class SearchableItem implements Comparable<SearchableItem> {
         }
     }
 
+    // TODO: Extract string constants
     public static void addPois(List<SearchableItem> items, List<HashMap<String, String>> pois) {
         for (HashMap<String, String> poi : pois) {
             SearchableItem searchableItem = new SearchableItem();
