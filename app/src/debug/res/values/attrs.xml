@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MapBottomView">
+        <attr name="titleText" format="string"></attr>
+        <attr name="descText" format="string"></attr>
+        <attr name="titleColor" format="color"></attr>
+    </declare-styleable>
+</resources>

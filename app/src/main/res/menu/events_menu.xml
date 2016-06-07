@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group android:checkableBehavior="all">
+    <item
+        android:id="@+id/action_today"
+        android:orderInCategory="100"
+        android:title="@string/today"
+        android:checked="true"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_tomorrow"
+        android:orderInCategory="100"
+        android:title="@string/tomorrow"
+        android:checked="true"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_this_week"
+        android:orderInCategory="100"
+        android:title="@string/this_week"
+        android:checked="true"
+        app:showAsAction="never" />
+    </group>
+</menu>

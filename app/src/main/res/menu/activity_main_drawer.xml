@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_maps"
+            android:icon="@drawable/ic_map_24dp"
+            android:title="@string/maps" />
+        <item
+            android:id="@+id/nav_favourite"
+            android:icon="@drawable/ic_menu_favourite"
+            android:title="@string/favourite"/>
+        <item
+            android:id="@+id/nav_event"
+            android:icon="@drawable/ic_menu_event2"
+            android:title="@string/events" />
+
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/ic_help_24dp"
+            android:title="@string/about" />
+    </group>
+
+</menu>

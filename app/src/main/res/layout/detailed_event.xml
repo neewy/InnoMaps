@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/topLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/upper_part"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/all_descr"
+            android:background="@color/colorPrimary"
+            android:orientation="horizontal" />
+
+        <TextView
+            android:id="@+id/eventName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="56dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="5dp"
+            android:layout_toLeftOf="@+id/favCheckBox"
+            android:layout_toStartOf="@+id/favCheckBox"
+            android:layout_weight="1"
+            android:elevation="2dp"
+            android:gravity="center"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/textColor"
+            android:typeface="serif" />
+
+        <CheckBox
+            android:id="@+id/favCheckBox"
+            android:button="@drawable/btn_star_selector"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/all_descr"
+            android:layout_alignTop="@+id/eventName"
+            android:layout_marginRight="12dp"
+            android:checked="false"
+            android:elevation="2dp" />
+
+
+
+
+
+        <LinearLayout
+            android:id="@+id/upper_text"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/eventName"
+            android:layout_marginTop="12dp"
+            android:layout_weight="1"
+            android:elevation="2dp"
+            android:weightSum="100">
+
+            <TextView
+                android:id="@+id/location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="false"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="false"
+                android:layout_alignParentTop="false"
+                android:layout_marginLeft="25dp"
+                android:layout_weight="53.84"
+                android:ellipsize="end"
+                android:gravity="left"
+                android:maxWidth="80dp"
+                android:textColor="@color/textColor" />
+
+
+            <TextView
+                android:id="@+id/timeLeft"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="false"
+                android:layout_marginRight="25dp"
+                android:layout_toRightOf="@+id/location"
+                android:layout_weight="50"
+                android:gravity="right"
+                android:minWidth="32dp"
+                android:textColor="@color/textColor" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/lower_text"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/upper_text"
+            android:layout_marginBottom="6dp"
+            android:elevation="2dp"
+            android:paddingTop="3dp"
+            android:weightSum="100">
+
+            <TextView
+                android:id="@+id/dateTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:layout_weight="50"
+                android:ellipsize="end"
+                android:gravity="left"
+                android:textColor="@color/textColor" />
+
+            <TextView
+                android:id="@+id/duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="25dp"
+                android:layout_toRightOf="@+id/dateTime"
+                android:layout_weight="50"
+                android:gravity="right"
+                android:hyphenationFrequency="full"
+                android:textColor="@color/textColor" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/lower_text"
+            android:orientation="vertical"
+            android:id="@+id/all_descr">
+
+            <LinearLayout
+                android:id="@+id/text_description"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.5"
+                android:layout_marginBottom="6dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="10dp"
+                android:autoLink="web">
+
+                <com.apradanas.simplelinkabletext.LinkableTextView
+                    android:id="@+id/description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp"
+                    android:autoLink="web"
+                    android:gravity="left"
+                    android:maxEms="39"
+                    android:maxHeight="150dp"
+                    android:maxLines="10"
+                    android:scrollbars="vertical"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:typeface="sans" />
+
+                <TextView
+                    android:id="@+id/noEventTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center"
+                    android:maxHeight="150dp"
+                    android:text="@string/no_event"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:visibility="invisible" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/map_event_fragment"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_below="@+id/text_description"
+                android:layout_weight="0.5"
+                android:background="@color/borderColor"
+                android:baselineAligned="false">
+
+                <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:tools="http://schemas.android.com/tools"
+
+                    android:id="@+id/mapDesc"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_alignParentBottom="false"
+                    android:layout_alignParentEnd="false"
+                    android:layout_alignParentLeft="false"
+                    android:layout_alignParentRight="false"
+                    android:layout_alignParentStart="false"
+                    android:layout_below="@+id/text_description"
+                    android:layout_marginTop="1dp"
+                    tools:context="com.innopolis.maps.innomaps.MapsActivity" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:clickable="true"
+        android:src="@drawable/ic_directions_36"
+        app:layout_anchor="@id/mapDesc"
+        app:layout_anchorGravity="top|right|end" />
+
+
+</android.support.design.widget.CoordinatorLayout>

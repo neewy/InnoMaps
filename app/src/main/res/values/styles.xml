@@ -6,15 +6,30 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColor">@color/textColorGray</item>
+        <item name="listPopupWindowStyle">@style/PopupListStyle</item>
+    </style>
+
+    <style name="spinnerDropDownItemStyle">
+        <item name="android:background">#FFFAFAFA</item>
+    </style>
+
+    <style name="PopupListStyle" parent="@style/Widget.AppCompat.Light.ListPopupWindow">
+        <item name="android:popupBackground">#FFFAFAFA</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    </style>
+
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"></style>
+
 
 </resources>

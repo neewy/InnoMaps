@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="25dp">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/routeSpinners"
+        android:gravity="center">
+        <android.support.v7.widget.AppCompatSpinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/floorSpinner">
+        </android.support.v7.widget.AppCompatSpinner>
+        <android.support.v7.widget.AppCompatSpinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/roomSpinner"
+            android:layout_toRightOf="@+id/floorSpinner"
+            android:layout_alignBottom="@+id/floorSpinner"
+            android:layout_alignTop="@+id/floorSpinner"
+            android:layout_marginLeft="25dp">
+        </android.support.v7.widget.AppCompatSpinner>
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/routeButtons"
+        android:layout_below="@+id/routeSpinners"
+        android:gravity="center">
+    <android.support.v7.widget.AppCompatButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/mapSelect"
+        android:text="@string/mapselect"
+        android:drawableLeft="@drawable/map_select"
+        />
+    <android.support.v7.widget.AppCompatButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/qrSelect"
+        android:text="@string/qrselect"
+        android:drawableLeft="@drawable/qrcode_scan"
+        android:layout_toRightOf="@+id/mapSelect" />
+    </RelativeLayout>
+
+</RelativeLayout>

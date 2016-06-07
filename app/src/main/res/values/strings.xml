@@ -1,5 +1,16 @@
 <resources>
+    <string name="app_name">InnoMaps</string>
     <string name="applicationName">InnoMaps</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="action_logout">Log out</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">
+        AIzaSyBtYaL2aDAeDqcnwGCED4Tp1QbRYtJjoSg
+    </string>
+
     <string name="mainWelcomeText">Welcome to our application that allows you to navigate through Innopolis city!</string>
     <string name="mainActivityLabel">Innopolis City</string>
     <string name="mapActivityLabel">City Map</string>
@@ -183,4 +194,45 @@
     <string name="permission_rationale_location">Access to the location service is required to demonstrate the \'my location\' feature, which shows your current location on the map.</string>
     <string name="location_permission_denied">This sample requires location permission to enable the \'my location\' layer. Please try again and grant access to use the location.\nIf the permission has been permanently denied, it can be enabled from the System Settings &gt; Apps &gt; \'Google Maps API Demos\'.</string>
     <string name="permission_required_toast">Location permission is required for this demo.</string>
+    <string name="today">Today</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="this_week">This week</string>
+    <string name="search_hint">Search…</string>
+    <string name="search_title">Search</string>
+    <string name="share">Share</string>
+    <string name="empty_search">No events or locations found</string>
+    <string name="crash_toast_text">The report on the crash was sent to us. We will fix it!</string>
+
+    <string name="about_text">InnoMaps is designed to help you with navigation through Innopolis University. With this application you will easily find any room in the building as well as find out about all events that take place in the University.</string>
+
+        <string name="analytics">Google Analytics</string>
+        <string name="toast_track_exception">Exception is recorded. Check the Crashes and Exceptions on Google Dashboard!</string>
+        <string name="toast_app_crash">The app will crash now! Check the Crashes and Exceptions on Google Dashboard!</string>
+    <string name="collapsed">collapsed</string>
+    <string name="dragging">dragging</string>
+    <string name="expanded">expanded</string>
+    <string name="hidden">hidden</string>
+    <string name="settling">settling</string>
+    <string name="undefined">undefined</string>
+    <string name="offset">offset</string>
+    <string name="desc_no_fav">empty fav list</string>
+    <string name="there_are_no_fav">There are no favourites yet</string>
+    <string name="mapselect">Find on map</string>
+    <string name="qrselect">Scan code</string>
+    <string name="no_event">No Event Description</string>
+    <string name="no_wc">There are no WC</string>
+    <string name="no_food_poi">There are no food POI</string>
+    <string name="no_other_poi">There are no other POI</string>
+    <string name="no_events">There are no events</string>
+    <string name="favourite">Favourite</string>
+    <string name="find_on_map">Find on map</string>
+    <string name="maps">Maps</string>
+    <string name="events">Events</string>
+    <string name="about">About</string>
+    <string name="back_caps">BACK</string>
+    <string name="go_caps">GO</string>
+    <string name="marker_in_university">Please, select a room within the university</string>
+
+
 </resources>
+

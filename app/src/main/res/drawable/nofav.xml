@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="709.97dp"
+    android:height="676.2dp"
+    android:viewportWidth="709.97"
+    android:viewportHeight="676.2">
+
+    <path
+
+        android:strokeColor="@color/common_plus_signin_btn_text_light_disabled"
+        android:strokeWidth="20"
+        android:strokeLineJoin="round"
+        android:pathData="M596.25,383.2L711.07,271.27,472.7,236.63l-106.61-216-106.61,216L21.11,271.27,193.6,439.41,152.88,676.82,366.09,564.73l45.43,23.88" />
+    <path
+        android:fillColor="@color/common_plus_signin_btn_text_light_disabled"
+        android:strokeColor="@color/common_plus_signin_btn_text_light_disabled"
+        android:strokeWidth="20"
+        android:strokeLineJoin="round"
+        android:pathData="M446.14,547.58H689.38" />
+    <path
+        android:fillColor="@color/common_plus_signin_btn_text_light_disabled"
+        android:strokeColor="@color/common_plus_signin_btn_text_light_disabled"
+        android:strokeWidth="20"
+        android:strokeLineJoin="round"
+        android:pathData="M571.69,669.2V426" />
+</vector>
