@@ -49,8 +49,6 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private DrawerLayout drawer;
-
     private final String MAPS = "Maps";
     private final String FAV = "Favourite";
     private final String EVENTS = "Events";
@@ -62,7 +60,9 @@ public class MainActivity extends AppCompatActivity
     public final List<SearchableItem> searchItems = new LinkedList<>();
 
     private Toolbar toolbar;
+    private DrawerLayout drawer;
 
+    // TODO: Check access level and add appropriate access modifiers
     DBHelper dbHelper;
     SQLiteDatabase database;
     NavigationView navigationView;
@@ -75,10 +75,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        // TODO: Split onCreate method into several logical part
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // TODO: Why do you need this code block?
         //for deep linking
         Intent intent = getIntent();
         String action = intent.getAction();
@@ -95,6 +96,7 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View v) {
                 DialogFragment newFragment = new MapFragmentAskForRouteDialog();
                 Bundle bundle = new Bundle();
+                // TODO: Extract string constants
                 bundle.putString("dialogSource", "MapsFragment");
                 if (idPoi.getText().toString().equals("event")) {
                     bundle.putString("type", "event");
@@ -122,6 +124,7 @@ public class MainActivity extends AppCompatActivity
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.content_frame, fragment, MAPS).addToBackStack(MAPS);
         ft.commit();
+        // TODO: Replace MAPS constant with string resource
         getSupportActionBar().setTitle(MAPS);
         dbHelper = new DBHelper(MainActivity.this);
         database = dbHelper.getReadableDatabase();
@@ -142,6 +145,7 @@ public class MainActivity extends AppCompatActivity
         return mInstance;
     }
 
+    // TODO: Extract all analytics into separate class
     public synchronized Tracker getGoogleAnalyticsTracker() {
         AnalyticsTrackers analyticsTrackers = AnalyticsTrackers.getInstance();
         return analyticsTrackers.get(AnalyticsTrackers.Target.APP);
@@ -207,7 +211,7 @@ public class MainActivity extends AppCompatActivity
             scrollView.setVisibility(View.GONE);
         } else {
             if (getSupportFragmentManager().getBackStackEntryCount() == 1) {
-
+                // TODO: Replace this string with a constant
                 final MapsFragment mapsFragment = (MapsFragment) getSupportFragmentManager().findFragmentByTag("Maps");
 
                 if (mapsFragment.mapRoute != null && mapsFragment.mapRoute.hasCurrentPath) {
@@ -217,6 +221,7 @@ public class MainActivity extends AppCompatActivity
                     }
 
                     this.doubleBackToFinishRoute = true;
+                    // TODO: Replace this hard-coded string with a resource string
                     Snackbar.make(findViewById(android.R.id.content), "Please click BACK again to finish the route", Snackbar.LENGTH_LONG)
                             .setAction("FINISH", new View.OnClickListener() {
                         @Override
@@ -230,6 +235,7 @@ public class MainActivity extends AppCompatActivity
                         public void run() {
                             doubleBackToFinishRoute = false;
                         }
+                        // Extract 2000 to a local constant
                     }, 2000);
 
                 } else {
@@ -239,6 +245,7 @@ public class MainActivity extends AppCompatActivity
                     }
 
                     this.doubleBackToExitPressedOnce = true;
+                    // TODO: Replace this hard-coded string with a resource string
                     Snackbar.make(findViewById(android.R.id.content), "Please click BACK again to exit", Snackbar.LENGTH_LONG).setActionTextColor(Color.WHITE).show();
 
                     new Handler().postDelayed(new Runnable() {
@@ -258,11 +265,12 @@ public class MainActivity extends AppCompatActivity
                 } else {
                     //TODO: handle back press to update events in EventsFragment
                     getSupportFragmentManager().popBackStackImmediate(MAPS, 0);
+                    // TODO: Title strings should be from resources
                     getSupportActionBar().setTitle(MAPS);
                 }
             }
             setToggle(toolbar);
-            highlightItemDrawer( getSupportActionBar().getTitle().toString());
+            highlightItemDrawer(getSupportActionBar().getTitle().toString());
         }
     }
 
@@ -286,6 +294,8 @@ public class MainActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.main_toolbar, menu);
         searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchItems.clear();
+        
+        // TODO: Unclear what do they mean, and how they are used
         Integer roomPois = 0;
         Integer pois = 1;
         SearchableItem.addEvents(searchItems, DBHelper.readUniqueEvents(this, false));
@@ -345,6 +355,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
 
         int id = item.getItemId();
+        // TODO: change title to tag
         String title = "";
         Fragment fragment = null;
 
@@ -402,6 +413,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
+        // TODO: you already have a drawer from onCreate!
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         if (fragment != null) {
@@ -410,11 +422,13 @@ public class MainActivity extends AppCompatActivity
             ft.replace(R.id.content_frame, fragment, title).addToBackStack(title);
             ft.commit();
         }
+        // TODO: title should always be from resources
         getSupportActionBar().setTitle(title);
         return true;
     }
 
     public void highlightItemDrawer(String title){
+        // TODO: HashMap is not needed here, could be removed
         Map<String, Integer> hashmap = new HashMap<>();
         String [] titles = {MAPS,FAV,EVENTS,ABOUT};
         hashmap.put(MAPS,0);
