@@ -16,9 +16,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class About extends Fragment {
+    // TODO: decide on access level
     TextView creators;
     TextView about;
 
+    // TODO: Replace author list with XML array resource
     List<String> authorsList;
 
     @Override
