@@ -65,8 +65,8 @@ import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.app.SearchableItem;
 import com.innopolis.maps.innomaps.app.SuggestionAdapter;
 import com.innopolis.maps.innomaps.database.DBHelper;
+import com.innopolis.maps.innomaps.network.NetworkController;
 import com.innopolis.maps.innomaps.database.SQLQueries;
-import com.innopolis.maps.innomaps.pathfinding.JGraphTWrapper;
 import com.innopolis.maps.innomaps.pathfinding.LatLngGraphVertex;
 import com.innopolis.maps.innomaps.qr.Scanner;
 
@@ -74,6 +74,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -482,14 +483,15 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         if (inputStream == null) {
             return;
         }
+        ArrayList<LatLngGraphVertex> path;
         try {
-            graphWrapper = new JGraphTWrapper();
-            graphWrapper.importGraphML(inputStream);
-        } catch (XmlPullParserException | IOException e) {
+            NetworkController networkController = new NetworkController();
+            path = (ArrayList<LatLngGraphVertex>) networkController.findShortestPath(String.valueOf(source.latitude), String.valueOf(source.longitude),
+                    String.valueOf(destination.latitude), String.valueOf(destination.longitude));
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             return;
         }
-        ArrayList<LatLngGraphVertex> path = graphWrapper.shortestPath(source, destination);
 
             /*Creation and start of a new route*/
         if (path != null) {
