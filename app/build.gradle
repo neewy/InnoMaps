@@ -63,6 +63,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-appindexing:8.4.0'
     compile 'com.apradanas.simplelinkabletext:library:1.0.3@aar'
     compile 'ch.acra:acra:4.8.5'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.0.1' // for JSON deserialization
 }
 
 apply plugin: 'com.google.gms.google-services'
