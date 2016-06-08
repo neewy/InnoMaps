@@ -10,9 +10,6 @@ import com.innopolis.maps.innomaps.utils.Utils;
 import static com.innopolis.maps.innomaps.database.TableFields.NULL;
 import static com.innopolis.maps.innomaps.database.TableFields.POI;
 
-/**
- * Created by neewy on 21.04.16.
- */
 public class XMLParseTask extends AsyncTask<Void, Void, Boolean> {
 
     private Context context;

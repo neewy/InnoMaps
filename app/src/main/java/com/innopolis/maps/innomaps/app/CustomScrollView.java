@@ -4,9 +4,7 @@ import android.content.Context;
 import android.support.v4.widget.NestedScrollView;
 import android.util.AttributeSet;
 
-/**
- * Created by Nikolay on 27.04.2016.
- */
+
 public class CustomScrollView extends NestedScrollView {
 
     private OnVisibilityChangedListener mVisibilityListener;

@@ -58,8 +58,6 @@
     <string-array name="layers_array">
         <item>@string/normal</item>
         <item>@string/hybrid</item>
-
-
         <item>@string/satellite</item>
         <item>@string/terrain</item>
         <item>@string/none_map</item>
@@ -247,6 +245,11 @@
     <string name="room">room</string>
     <string name="empty" />
     <string name="main_fragment">Main Fragment</string>
+    <string name="graph_md5_url">/innomaps/graphml/md5?floor=9</string>
+    <string name="graph_load_url">/innomaps/graphml/loadmap?floor=9</string>
+    <string name="graph_md5">graph_md5</string>
+    <string name="graph_filename">9.xml</string>
+    <string name="internet_connect">Connect to the internet</string>
 
 
 </resources>

@@ -21,7 +21,7 @@ import java.util.List;
 
 import static com.innopolis.maps.innomaps.database.TableFields.BUILDING;
 import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
-import static com.innopolis.maps.innomaps.database.TableFields.ID;
+import static com.innopolis.maps.innomaps.database.TableFields._ID;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.POI;
@@ -277,7 +277,7 @@ public class MarkersAdapter extends BottomSheet {
         Cursor cursor = database.rawQuery(sqlQuery, new String[]{});
 
         if (cursor.moveToFirst()) {
-            String id = cursor.getString(cursor.getColumnIndex(ID));
+            String id = cursor.getString(cursor.getColumnIndex(_ID));
             String type = cursor.getString(cursor.getColumnIndex(TYPE));
             String building = cursor.getString(cursor.getColumnIndex(BUILDING));
             String floor = cursor.getString(cursor.getColumnIndex(FLOOR));

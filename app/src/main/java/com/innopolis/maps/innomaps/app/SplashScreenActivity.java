@@ -16,8 +16,6 @@ public class SplashScreenActivity extends Activity {
         super.onCreate(savedInstanceState);
         // Remove the Title Bar
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        // TODO: Why do you need this line?
-        getWindow().setBackgroundDrawable(null);
         // Get the view from splash_screen.xml
         setContentView(R.layout.splash_screen);
     }
@@ -31,7 +29,6 @@ public class SplashScreenActivity extends Activity {
             new com.innopolis.maps.innomaps.database.DBUpdater(SplashScreenActivity.this);
         }
 
-        // TODO: This handler works only if orientation is locked to portrait
         long delay = 500;
         new Handler().postDelayed(new Runnable() {
             @Override
