@@ -65,11 +65,9 @@ import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.app.SearchableItem;
 import com.innopolis.maps.innomaps.app.SuggestionAdapter;
 import com.innopolis.maps.innomaps.database.DBHelper;
-import com.innopolis.maps.innomaps.network.NetworkController;
 import com.innopolis.maps.innomaps.database.SQLQueries;
+import com.innopolis.maps.innomaps.network.NetworkController;
 import com.innopolis.maps.innomaps.qr.Scanner;
-
-import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -98,10 +96,18 @@ import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.OTHER_CAPITAL;
 import static com.innopolis.maps.innomaps.database.TableFields.OTHER_FILTER;
-import static com.innopolis.maps.innomaps.database.TableFields.POI;
 import static com.innopolis.maps.innomaps.database.TableFields.WC_CAPITAL;
 import static com.innopolis.maps.innomaps.database.TableFields.WC_FILTER;
-import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.*;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.CAMERA_LAT_BOTTOM;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.CAMERA_LAT_TOP;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.CAMERA_LNG_LEFT;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.CAMERA_LNG_RIGHT;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.UI_LAT;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.UI_LNG;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.UI_OUTLINE_LAT_BOTTOM;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.UI_OUTLINE_LAT_TOP;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.UI_OUTLINE_LNG_LEFT;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.UI_OUTLINE_LNG_RIGHT;
 
 public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnRequestPermissionsResultCallback {
 

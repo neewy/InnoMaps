@@ -3,7 +3,6 @@ package com.innopolis.maps.innomaps.maps;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.provider.CalendarContract;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;

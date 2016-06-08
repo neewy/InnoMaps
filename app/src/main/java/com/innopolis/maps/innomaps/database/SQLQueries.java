@@ -175,12 +175,12 @@ public class SQLQueries {
     }
 
     public static String makeEventsMarkersQuery() {
-    return "SELECT * FROM poi " +
-            "LEFT OUTER JOIN event_poi on event_poi.poi_id = poi._id " +
-            "LEFT OUTER JOIN events on events.eventID = event_poi.eventID " +
-            "INNER JOIN event_type on event_type._id = events._id " +
-            "WHERE poi.floor = ? AND " +
-            "poi.type = ?";
+        return "SELECT * FROM poi " +
+                "LEFT OUTER JOIN event_poi on event_poi.poi_id = poi._id " +
+                "LEFT OUTER JOIN events on events.eventID = event_poi.eventID " +
+                "INNER JOIN event_type on event_type._id = events._id " +
+                "WHERE poi.floor = ? AND " +
+                "poi.type = ?";
     }
 
 
