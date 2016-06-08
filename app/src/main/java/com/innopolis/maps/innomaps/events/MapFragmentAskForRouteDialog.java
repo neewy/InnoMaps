@@ -80,8 +80,8 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
         super.onCreate(savedInstanceState);
         sPref = PreferenceManager.getDefaultSharedPreferences(getContext());
         setHasOptionsMenu(true);
-        currentLocation = sPref.getString(activity.getString(R.string.current_location), EMPTY);
-        currentLocationType = sPref.getString(activity.getString(R.string.current_location_type), EMPTY);
+        currentLocation = sPref.getString("currentLocation", EMPTY);
+        currentLocationType = sPref.getString("currentLocationType", EMPTY);
         activity = (MainActivity) getActivity();
     }
 
