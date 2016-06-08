@@ -154,9 +154,9 @@ public class Utils {
         }
     }
 
-    public static Bitmap drawableToBitmap (Drawable drawable) {
+    public static Bitmap drawableToBitmap(Drawable drawable) {
         if (drawable instanceof BitmapDrawable) {
-            return ((BitmapDrawable)drawable).getBitmap();
+            return ((BitmapDrawable) drawable).getBitmap();
         }
 
         int width = drawable.getIntrinsicWidth();
@@ -175,16 +175,16 @@ public class Utils {
     public static void selectSpinnerItemByValue(Spinner spnr, String value) {
         ArrayAdapter<String> adapter = (ArrayAdapter<String>) spnr.getAdapter();
         for (int position = 0; position < adapter.getCount(); position++) {
-            if(adapter.getItem(position).equals(value)) {
+            if (adapter.getItem(position).equals(value)) {
                 spnr.setSelection(position, true);
                 return;
             }
         }
     }
 
-    public static float convertDpToPixel(float dp, Context context){
+    public static float convertDpToPixel(float dp, Context context) {
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
-        return dp * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        return dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 }
