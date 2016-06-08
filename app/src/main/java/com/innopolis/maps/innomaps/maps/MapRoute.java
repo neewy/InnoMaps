@@ -12,11 +12,8 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.*;
+import com.google.android.gms.maps.model.LatLng;
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.utils.Utils;
 
@@ -218,7 +215,7 @@ public class MapRoute {
                 .color(R.color.route_color) //current style color
                 .geodesic(true);
         for (LatLngGraphVertex v : path) {
-            polylineOptions.add(v.getVertex());
+            polylineOptions.add(new LatLng(v.getVertex().getLatitude(), v.getVertex().getLongitude()));
         }
         current.setPolyline(map, polylineOptions);
         current.setFloor(floor);
@@ -245,7 +242,7 @@ public class MapRoute {
 
                 markerOptions
                         .icon(convertDrawable(R.drawable.route_finish, size))
-                        .position(end.getVertex())
+                        .position(new LatLng(end.getVertex().getLatitude(), end.getVertex().getLongitude()))
                         .anchor(center, center)
                         .snippet(activity.getString(R.string.finish))
                         .visible(false);
@@ -267,7 +264,7 @@ public class MapRoute {
                     else markerOptions.icon(convertDrawable(R.drawable.route_down, size));
 
                     markerOptions
-                            .position(end.getVertex())
+                            .position(new LatLng(end.getVertex().getLatitude(), end.getVertex().getLongitude()))
                             .anchor(center, center)
                             .snippet(activity.getString(R.string.next))
                             .visible(false);
@@ -288,14 +285,14 @@ public class MapRoute {
                     if (isPathUp) markerOptionsBegin.icon(convertDrawable(R.drawable.route_down, size));
                     else markerOptionsBegin.icon(convertDrawable(R.drawable.route_up, size));
 
-                    markerOptionsBegin.position(begin.getVertex())
+                    markerOptionsBegin.position(new LatLng(begin.getVertex().getLatitude(), begin.getVertex().getLongitude()))
                             .anchor(center, center)
                             .snippet(activity.getString(R.string.previous))
                             .visible(false);
 
                     markerOptionsEnd
                             .icon(convertDrawable(R.drawable.route_finish, size))
-                            .position(end.getVertex())
+                            .position(new LatLng(end.getVertex().getLatitude(), end.getVertex().getLongitude()))
                             .anchor(center, center)
                             .snippet(activity.getString(R.string.finish))
                             .visible(false);
@@ -328,11 +325,11 @@ public class MapRoute {
                     }
 
                     markerOptionsBegin
-                            .position(begin.getVertex())
+                            .position(new LatLng(begin.getVertex().getLatitude(), begin.getVertex().getLongitude()))
                             .snippet(activity.getString(R.string.previous))
                             .visible(false);
                     markerOptionsEnd
-                            .position(end.getVertex())
+                            .position(new LatLng(end.getVertex().getLatitude(), end.getVertex().getLongitude()))
                             .snippet(activity.getString(R.string.next))
                             .visible(false);
 
@@ -467,7 +464,7 @@ public class MapRoute {
             int last = 20;
             for (int i = first; i < last; i++) {
                 if (markerEndpointsZoom.get(i) != null) {
-                    for (Marker marker: markerEndpointsZoom.get(i)){
+                    for (Marker marker : markerEndpointsZoom.get(i)) {
                         marker.remove();
                     }
                 }

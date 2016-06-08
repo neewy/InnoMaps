@@ -490,7 +490,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         }
 
             /*Creation and start of a new route*/
-        if (path != null) {
+        if (path != null && !path.isEmpty()) {
             scrollView.setVisibility(View.GONE);
             if (mapRoute != null && mapRoute.hasCurrentPath) {
                 mapRoute.finishRoute(false);
