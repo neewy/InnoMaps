@@ -12,12 +12,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.innopolis.maps.innomaps.app.MainActivity;
+import com.innopolis.maps.innomaps.network.NetworkController;
 import com.innopolis.maps.innomaps.pathfinding.JGraphTWrapper;
 import com.innopolis.maps.innomaps.pathfinding.LatLngGraphVertex;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.io.IOUtils;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -113,7 +115,15 @@ public class GraphDrawingTest extends ActivityInstrumentationTestCase2<MainActiv
                     if (start.equals(finish)) {
                         continue;
                     }
-                    ArrayList<LatLngGraphVertex> path = graph.shortestPath(start.getVertex(), finish.getVertex());
+                    ArrayList<LatLngGraphVertex> path;
+                    try {
+                        NetworkController networkController = new NetworkController();
+                        path = (ArrayList<LatLngGraphVertex>) networkController.findShortestPath(String.valueOf(start.getVertex().latitude), String.valueOf(start.getVertex().longitude),
+                                String.valueOf(finish.getVertex().latitude), String.valueOf(finish.getVertex().longitude));
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                        return;
+                    }
                     if (path == null) {
                         Log.d("graph", "Path not found between " + start.getVertexId() + " and " + finish.getVertexId());
                         assertTrue(false);
