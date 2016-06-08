@@ -116,8 +116,6 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     /*Don't be confused by class name - it is the element, which is shown during search, with 5 categories*/
     private AHBottomNavigation topNavigation;
 
-    private JGraphTWrapper graphWrapper;
-
     /*Dialog, that asks user how to select his location */
     public Dialog currentDialog;
 
