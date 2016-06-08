@@ -10,7 +10,7 @@ import com.innopolis.maps.innomaps.utils.Utils;
 
 import java.io.FileOutputStream;
 
-import static com.innopolis.maps.innomaps.database.TableFields.NULL;
+import static com.innopolis.maps.innomaps.database.TableFields.EMPTY;
 
 /**
  * Downloads graph from server (if necessary)
@@ -64,7 +64,7 @@ public class GraphLoader extends AsyncTask<Void, Void, String> {
     }
 
     protected boolean graphUpdated(String hashKey) {
-        String savedText = sPref.getString(context.getString(R.string.graph_md5), NULL);
+        String savedText = sPref.getString(context.getString(R.string.graph_md5), EMPTY);
         if (savedText.equals(hashKey)) {
             return false;
         } else {

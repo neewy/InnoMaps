@@ -35,7 +35,7 @@ import java.util.List;
 import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
-import static com.innopolis.maps.innomaps.database.TableFields.NULL;
+import static com.innopolis.maps.innomaps.database.TableFields.EMPTY;
 import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
 
 public class MapFragmentAskForRouteDialog extends DialogFragment {
@@ -67,8 +67,8 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
         super.onCreate(savedInstanceState);
         sPref = PreferenceManager.getDefaultSharedPreferences(getContext());
         setHasOptionsMenu(true);
-        currentLocation = sPref.getString("currentLocation", NULL);
-        currentLocationType = sPref.getString("currentLocationType", NULL);
+        currentLocation = sPref.getString("currentLocation", EMPTY);
+        currentLocationType = sPref.getString("currentLocationType", EMPTY);
         activity = (MainActivity) getActivity();
     }
 
@@ -234,7 +234,7 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
 
     public void saveUserDestination(Bundle arguments, SQLiteDatabase database) {
         SharedPreferences.Editor ed = sPref.edit();
-        if (currentLocationType.equals(NULL)) {
+        if (currentLocationType.equals(EMPTY)) {
             ed.putString("currentLocationType", type);
             if (type.equals("event")) {
                 ed.putString("currentLocation", arguments.getString("destination"));

@@ -21,6 +21,8 @@ public class SQLQueries {
     public static final String AND = " AND ";
     public static final String IS_NOT_NULL = " IS NOT NULL ";
     public static final String DROP = "DROP TABLE IF EXISTS ";
+    public static final String INNER_JOIN = " INNER JOIN";
+    public static final String ON = " ON ";
 
     public static String deleteLikeQuery(String table, String row, String like) {
         String query = DELETE + table + WHERE + row + LIKE + "'" + like + "'";
@@ -87,5 +89,20 @@ public class SQLQueries {
     public static String drop(String table) {
         String query = DROP + table;
         return query;
+    }
+
+    public static String rowInTable(String table, String row){
+        String string = table + "." + row;
+        return string;
+    }
+
+    public static String innerJoin(String table1, String table2, String row1, String row2){
+        String query = selectAll(table1) + INNER_JOIN + table2 + ON + rowInTable(table2, row2) + " = " + rowInTable(table1, row1);
+        return query;
+    }
+
+    public static String locationQuery(String table1, String table2, String row1, String row2, String like_row, String like_data){
+        String query = innerJoin(table1, table2, row1, row2) + WHERE + like(rowInTable(table2, like_row), like_data);
+    return query;
     }
 }

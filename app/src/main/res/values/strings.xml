@@ -250,6 +250,27 @@
     <string name="graph_md5">graph_md5</string>
     <string name="graph_filename">9.xml</string>
     <string name="internet_connect">Connect to the internet</string>
+    <string name="XmlUpdated">XmlUpdated</string>
+    <string name="text_plain">text/plain</string>
+    <string name="share_sms">%1$s begins in %2$s. Join us!</string>
+    <string name="event_details">Event details</string>
+    <string name="duration_text">"Duration: %smin"</string>
+    <string name="detailed_event">DetailedEvent</string>
+    <string name="detailed_event_fragment">Detailed Events Fragment</string>
+    <string name="last_update">lastUpdate</string>
+    <string name="hash">hash</string>
+    <string name="offline_message">You are offline. Showing last events</string>
+    <string name="no_events_today">No events today</string>
+    <string name="no_events_tomorrow">No events tomorrow</string>
+    <string name="no_events_week">No events this week</string>
+    <string name="events_fragment">Events Fragment</string>
+    <string name="favourite_fragment">Favourite Fragment</string>
+    <string name="contact_url">https://telegram.me/</string>
+    <string name="dialog_text">dialogText</string>
+    <string name="telegram_in_touch">"Get in touch with %s via telegram""</string>
+    <string name="open_link">"Open link %s?"</string>
+    <string name="open">Open</string>
+    <string name="cancel">Cancel</string>
 
 
 </resources>

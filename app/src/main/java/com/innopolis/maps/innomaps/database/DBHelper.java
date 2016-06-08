@@ -34,6 +34,7 @@ import static com.innopolis.maps.innomaps.database.TableFields.FAV;
 import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
 import static com.innopolis.maps.innomaps.database.TableFields.ID;
 import static com.innopolis.maps.innomaps.database.TableFields.NUMBER;
+import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY_EQUAL;
 import static com.innopolis.maps.innomaps.database.TableFields._ID;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LINK;
@@ -197,7 +198,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static void insertEventType(SQLiteDatabase database, String summary, String description,
                                        String creator_name, String creator_email) {
         String[] whereArgs = new String[]{summary};
-        Cursor cursor = database.query(EVENT_TYPE, null, "summary=?", whereArgs, null, null, null);
+        Cursor cursor = database.query(EVENT_TYPE, null, SUMMARY_EQUAL, whereArgs, null, null, null);
         if (cursor.getCount() == 0) {
             ContentValues cv = new ContentValues();
             cv.put(SUMMARY, summary);

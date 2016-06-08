@@ -32,6 +32,8 @@ import java.util.List;
 
 import xyz.hanks.library.SmallBang;
 
+import static com.innopolis.maps.innomaps.database.TableFields.*;
+
 
 public class EventsAdapter extends BaseAdapter {
 
@@ -84,9 +86,9 @@ public class EventsAdapter extends BaseAdapter {
 
         nameEvent.setText(event.getSummary());
         String[] locationText = new String[3];
-        locationText[0] = (event.getBuilding() != null) ? event.getBuilding() : "null";
-        locationText[1] = (event.getFloor() != null) ? event.getFloor() : "null";
-        locationText[2] = (event.getRoom() != null) ? event.getRoom() : "null";
+        locationText[0] = (event.getBuilding() != null) ? event.getBuilding() : NULL_STRING;
+        locationText[1] = (event.getFloor() != null) ? event.getFloor() : NULL_STRING;
+        locationText[2] = (event.getRoom() != null) ? event.getRoom() : NULL_STRING;
         location.setText(StringUtils.join(Utils.clean(locationText), ", "));
         Date startTime = event.getStart();
         if (startTime != null) {
@@ -107,7 +109,7 @@ public class EventsAdapter extends BaseAdapter {
                 if (!(finalView.getParent().getParent() instanceof SwipeRefreshLayout) || !((SwipeRefreshLayout) finalView.getParent().getParent()).isRefreshing()) {
                     Fragment fragment = new DetailedEvent();
                     Bundle bundle = new Bundle();
-                    bundle.putString("eventID", event.getEventID());
+                    bundle.putString(EVENT_ID, event.getEventID());
                     fragment.setArguments(bundle);
                     DrawerLayout drawer = (DrawerLayout) activity.findViewById(R.id.drawer_layout);
                     Toolbar toolbar = (Toolbar) activity.findViewById(R.id.toolbar);
@@ -121,7 +123,7 @@ public class EventsAdapter extends BaseAdapter {
                     });
                     FragmentTransaction ft = fm.beginTransaction();
                     ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                    ft.replace(R.id.content_frame, fragment, "Detailed").addToBackStack("Detailed");
+                    ft.replace(R.id.content_frame, fragment, context.getString(R.string.detailed)).addToBackStack(context.getString(R.string.detailed));
                     ft.commit();
                 }
             }
@@ -142,8 +144,8 @@ public class EventsAdapter extends BaseAdapter {
                 ContentValues cv = new ContentValues();
                 dbHelper = new DBHelper(context);
                 database = dbHelper.getWritableDatabase();
-                cv.put(TableFields.FAV, isFav);
-                database.update(TableFields.EVENTS, cv, "eventID = ?", new String[]{eventID});
+                cv.put(FAV, isFav);
+                database.update(EVENTS, cv, EVENT_ID_EQUAL, new String[]{eventID});
                 dbHelper.close();
             }
         });

@@ -126,7 +126,7 @@ public class FavouriteFragment extends EventsFragment {
             case R.id.action_today:
                 Collection<Event> today = Collections2.filter(filteredList, Event.isToday);
                 if (today.isEmpty()) {
-                    Toast.makeText(getContext(), "No events today", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), R.string.no_events_today, Toast.LENGTH_LONG).show();
                     return true;
                 }
                 for (Event event : today) {
@@ -140,7 +140,7 @@ public class FavouriteFragment extends EventsFragment {
             case R.id.action_tomorrow:
                 Collection<Event> tomorrow = Collections2.filter(filteredList, Event.isTomorrow);
                 if (tomorrow.isEmpty()) {
-                    Toast.makeText(getContext(), "No events tomorrow", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), R.string.no_events_tomorrow, Toast.LENGTH_LONG).show();
                     return true;
                 }
                 for (Event event : tomorrow) {
@@ -154,7 +154,7 @@ public class FavouriteFragment extends EventsFragment {
             case R.id.action_this_week:
                 Collection<Event> thisWeek = Collections2.filter(filteredList, Event.isThisWeek);
                 if (thisWeek.isEmpty()) {
-                    Toast.makeText(getContext(), "No events this week", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), R.string.no_events_week, Toast.LENGTH_LONG).show();
                     return true;
                 }
                 for (Event event : thisWeek) {
@@ -188,6 +188,6 @@ public class FavouriteFragment extends EventsFragment {
     public void onResume() {
         super.onResume();
         // Tracking the screen view
-        MainActivity.getInstance().trackScreenView("Favourite Fragment");
+        MainActivity.getInstance().trackScreenView(context.getString(R.string.favourite_fragment));
     }
 }

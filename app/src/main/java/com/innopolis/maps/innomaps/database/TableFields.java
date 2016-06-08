@@ -36,7 +36,7 @@ public final class TableFields {
     public static final String POI_ID = "poi_id";
 
     /*for Json*/
-    public static final String NULL = "";
+    public static final String EMPTY = "";
     public static final String DATETIME = "dateTime";
     public static final String CREATOR = "creator";
     public static final String DISPLAY_NAME = "displayName";
@@ -64,5 +64,12 @@ public final class TableFields {
     public static final String UNIVERSITY = "university";
     public static final String NODE = "node";
     public static final String ITEMS = "items";
+    public static final String DESTINATION = "destination";
+    public static final String DETAILED_EVENT = "DetailedEvent";
+    public static final String DIALOG_SOURCE = "dialogSource";
+    public static final String NULL_STRING = "null";
+    public static final String EVENT_ID_EQUAL = "eventID = ?";
+    public static final String SUMMARY_EQUAL = "summary = ?";
+
 
 }

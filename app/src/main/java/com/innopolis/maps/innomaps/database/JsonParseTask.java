@@ -45,7 +45,7 @@ import static com.innopolis.maps.innomaps.database.TableFields._ID;
 import static com.innopolis.maps.innomaps.database.TableFields.LAST_UPDATE;
 import static com.innopolis.maps.innomaps.database.TableFields.LINK;
 import static com.innopolis.maps.innomaps.database.TableFields.LOCATION;
-import static com.innopolis.maps.innomaps.database.TableFields.NULL;
+import static com.innopolis.maps.innomaps.database.TableFields.EMPTY;
 import static com.innopolis.maps.innomaps.database.TableFields.RECURRENCE;
 import static com.innopolis.maps.innomaps.database.TableFields.RRULE;
 import static com.innopolis.maps.innomaps.database.TableFields.START;
@@ -55,7 +55,6 @@ public class JsonParseTask extends AsyncTask<Void, Void, String> {
 
     private SQLiteDatabase database;
     private SharedPreferences sPref;
-    private final String resultJson = "";
 
     public JsonParseTask(SQLiteDatabase database, SharedPreferences sPref) {
         this.database = database;
@@ -74,7 +73,7 @@ public class JsonParseTask extends AsyncTask<Void, Void, String> {
      * @return true in case the JSON was updated
      */
     protected boolean jsonUpdated(String hashKey) {
-        String savedText = sPref.getString(HASH, NULL);
+        String savedText = sPref.getString(HASH, EMPTY);
         if (savedText.equals(hashKey)) {
             return false;
         } else {
@@ -101,7 +100,7 @@ public class JsonParseTask extends AsyncTask<Void, Void, String> {
         cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek()); //the starting date of current week
         Date updatedDate = null;
         try {
-            updatedDate = Utils.googleTimeFormat.parse(sPref.getString(LAST_UPDATE, NULL));
+            updatedDate = Utils.googleTimeFormat.parse(sPref.getString(LAST_UPDATE, EMPTY));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -141,10 +140,10 @@ public class JsonParseTask extends AsyncTask<Void, Void, String> {
         JSONArray events = dataJsonObj.getJSONArray(ITEMS);
         for (int i = 0; i < events.length(); i++) {
             JSONObject jsonEvent = events.getJSONObject(i);
-            String summary = NULL, htmlLink = NULL, start = NULL, end = NULL,
-                    location = NULL, eventID = NULL, description = NULL,
-                    creator_name = NULL, creator_email = NULL, checked = "0",
-                    recurrence = NULL;
+            String summary = EMPTY, htmlLink = EMPTY, start = EMPTY, end = EMPTY,
+                    location = EMPTY, eventID = EMPTY, description = EMPTY,
+                    creator_name = EMPTY, creator_email = EMPTY, checked = "0",
+                    recurrence = EMPTY;
             Iterator<String> iter = jsonEvent.keys();
             while (iter.hasNext()) {
                 String key = iter.next();
@@ -175,7 +174,7 @@ public class JsonParseTask extends AsyncTask<Void, Void, String> {
                         creator_email = jsonEvent.getJSONObject(CREATOR).getString(EMAIL);
                         break;
                     case RECURRENCE:
-                        recurrence = jsonEvent.getJSONArray(RECURRENCE).getString(0).replace(RRULE, NULL);
+                        recurrence = jsonEvent.getJSONArray(RECURRENCE).getString(0).replace(RRULE, EMPTY);
                         break;
                 }
             }

@@ -39,6 +39,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import static com.innopolis.maps.innomaps.database.TableFields.EMPTY;
+
 public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     Context context;
     ListView listView;
@@ -75,8 +77,8 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
         listView = (ListView) view.findViewById(R.id.eventList);
 
         sPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        hashPref = sPref.getString("hash", ""); //field, storing hash
-        updatedPref = sPref.getString("lastUpdate", ""); //field, storing starting day of last week
+        hashPref = sPref.getString(context.getString(R.string.hash), EMPTY); //field, storing hash
+        updatedPref = sPref.getString(context.getString(R.string.last_update), EMPTY); //field, storing starting day of last week
         //the data were updated
 
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
@@ -95,7 +97,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
         dbHelper = new DBHelper(context);
         database = dbHelper.getWritableDatabase();
 
-        if (!hashPref.equals("")) {
+        if (!hashPref.equals(EMPTY)) {
             adapter.events.clear();
             list = DBHelper.readEvents(getContext(), false);
             adapter.events = list;
@@ -122,15 +124,15 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
             adapter.notifyDataSetChanged();
             database.close();
             swipeRefreshLayout.setRefreshing(false);
-        } else if (!Utils.isNetworkAvailable(context) && !hashPref.equals("")) {
+        } else if (!Utils.isNetworkAvailable(context) && !hashPref.equals(EMPTY)) {
             adapter.events.clear();
-            Toast.makeText(context, "You are offline. Showing last events", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.offline_message, Toast.LENGTH_SHORT).show();
             adapter.events = DBHelper.readEvents(getContext(), false);
             Collections.sort(adapter.events);
             adapter.notifyDataSetChanged();
             database.close();
-        } else if (!Utils.isNetworkAvailable(context) && hashPref.equals("")) {
-            Toast.makeText(context, "Connect to the internet", Toast.LENGTH_SHORT).show();
+        } else if (!Utils.isNetworkAvailable(context) && hashPref.equals(EMPTY)) {
+            Toast.makeText(context, R.string.internet_connect, Toast.LENGTH_SHORT).show();
             database.close();
         }
     }
@@ -201,7 +203,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
             case R.id.action_today:
                 Collection<Event> today = Collections2.filter(filteredList, Event.isToday);
                 if (today.isEmpty()) {
-                    Toast.makeText(getContext(), "No events today", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), R.string.no_events_today, Toast.LENGTH_LONG).show();
                     return true;
                 }
                 for (Event event : today) {
@@ -215,7 +217,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
             case R.id.action_tomorrow:
                 Collection<Event> tomorrow = Collections2.filter(filteredList, Event.isTomorrow);
                 if (tomorrow.isEmpty()) {
-                    Toast.makeText(getContext(), "No events tomorrow", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), R.string.no_events_tomorrow, Toast.LENGTH_LONG).show();
                     return true;
                 }
                 for (Event event : tomorrow) {
@@ -229,7 +231,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
             case R.id.action_this_week:
                 Collection<Event> thisWeek = Collections2.filter(filteredList, Event.isThisWeek);
                 if (thisWeek.isEmpty()) {
-                    Toast.makeText(getContext(), "No events this week", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), R.string.no_events_week, Toast.LENGTH_LONG).show();
                     return true;
                 }
                 for (Event event : thisWeek) {
@@ -246,12 +248,11 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
     }
 
 
-
     @Override
     public void onResume() {
         super.onResume();
         // Tracking the screen view
-        MainActivity.getInstance().trackScreenView("Events Fragment");
+        MainActivity.getInstance().trackScreenView(context.getString(R.string.events_fragment));
     }
 
     /**
