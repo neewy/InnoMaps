@@ -292,5 +292,7 @@
     <string name="navigation_location_message">Enable either GPS or any other location service to find current location. Click OK to go to location services settings to let you do so.</string>
 
 
+    <!--     For network    -->
+
 </resources>
 
