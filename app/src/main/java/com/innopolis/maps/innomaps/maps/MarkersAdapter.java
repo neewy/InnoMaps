@@ -15,12 +15,29 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.app.SearchableItem;
+import com.innopolis.maps.innomaps.database.SQLQueries;
 import com.innopolis.maps.innomaps.database.TableFields;
 
 import java.util.List;
 
+import static com.innopolis.maps.innomaps.database.SQLQueries.*;
+import static com.innopolis.maps.innomaps.database.TableFields.ALL_FILTER;
 import static com.innopolis.maps.innomaps.database.TableFields.BUILDING;
+import static com.innopolis.maps.innomaps.database.TableFields.CLINIC;
+import static com.innopolis.maps.innomaps.database.TableFields.DOOR;
+import static com.innopolis.maps.innomaps.database.TableFields.EASTER_EGG;
+import static com.innopolis.maps.innomaps.database.TableFields.ELEVATOR;
+import static com.innopolis.maps.innomaps.database.TableFields.EVENTS_FILTER;
 import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
+import static com.innopolis.maps.innomaps.database.TableFields.FOOD;
+import static com.innopolis.maps.innomaps.database.TableFields.FOOD_FILTER;
+import static com.innopolis.maps.innomaps.database.TableFields.LIBRARY;
+import static com.innopolis.maps.innomaps.database.TableFields.OTHER_FILTER;
+import static com.innopolis.maps.innomaps.database.TableFields.READING;
+import static com.innopolis.maps.innomaps.database.TableFields.STAIRS;
+import static com.innopolis.maps.innomaps.database.TableFields.WC;
+import static com.innopolis.maps.innomaps.database.TableFields.WC_DOOR;
+import static com.innopolis.maps.innomaps.database.TableFields.WC_FILTER;
 import static com.innopolis.maps.innomaps.database.TableFields._ID;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
@@ -30,24 +47,16 @@ import static com.innopolis.maps.innomaps.database.TableFields.ROOM;
 import static com.innopolis.maps.innomaps.database.TableFields.TYPE;
 
 
-
 /**
  * This class is responsible for drawing markers that show
  * names and numbers of rooms. In addition it contains adapters for graphic
- *
  */
 
 public class MarkersAdapter extends BottomSheet {
-    protected static final int ALL_FILTER = 2;
-    private static final int WC_FILTER = 0;
-    private static final int FOOD_FILTER = 1;
-    private static final int EVENTS_FILTER = 3;
-    private static final int OTHER_FILTER = 4;
     static SQLiteDatabase database;
     MapView mapView;
     List<Marker> markers; //store all markers
     List<Integer> filterList; //to store elements after choosing filter
-
 
 
     /**
@@ -76,9 +85,9 @@ public class MarkersAdapter extends BottomSheet {
      * @param floor
      */
     private void makeWcMarkers(int floor) {
-        String numFloor = String.valueOf(floor) + "floor";
+        String numFloor = String.valueOf(floor) + FLOOR;
 
-        String sqlQuery = "SELECT * FROM " + POI + " WHERE " + FLOOR + "=?" + " AND " + TYPE + " like 'wc'";
+        String sqlQuery = makeWcMarkersQuery();
         Cursor cursor = database.rawQuery(sqlQuery, new String[]{numFloor});
         refreshMarkers(cursor);
 
@@ -89,9 +98,9 @@ public class MarkersAdapter extends BottomSheet {
      * @param floor
      */
     private void makeFoodMarkers(int floor) {
-        String numFloor = String.valueOf(floor) + "floor";
+        String numFloor = String.valueOf(floor) + FLOOR;
 
-        String sqlQuery = "SELECT * FROM " + POI + " WHERE " + FLOOR + "= ?" + " AND " + TYPE + " = 'food'";
+        String sqlQuery = makeFoodMarkersQuery();
         Cursor cursor = database.rawQuery(sqlQuery, new String[]{numFloor});
         refreshMarkers(cursor);
 
@@ -102,10 +111,8 @@ public class MarkersAdapter extends BottomSheet {
      * @param floor
      */
     private void makeOtherMarkers(int floor) {
-        String selection = FLOOR + " = ? AND (" + TYPE + " != ? and "
-                + TYPE + " != ? and " + TYPE + " != ? and " + TYPE + " != ? and " +
-                TYPE + " != ? and " + TYPE + " != ? and " + TYPE + " != ?)";
-        String[] selectionArgs = {floor + "floor", "room", "food", "stairs", "elevator", "wc door", "wc", "door"};
+        String selection = makeOtherMarkersQuery();
+        String[] selectionArgs = {floor + FLOOR, ROOM, FOOD, STAIRS, ELEVATOR, WC_DOOR, WC, DOOR};
         Cursor cursor = database.query(POI, null, selection, selectionArgs, null, null, null);
         refreshMarkers(cursor);
 
@@ -117,8 +124,8 @@ public class MarkersAdapter extends BottomSheet {
      * @param floor
      */
     protected void makeAllMarkers(int floor) {
-        String selection = FLOOR + " = ? AND (" + TYPE + " = ? or " + TYPE + " = ? or " + TYPE + " = ? or " + TYPE + " = ? or " + TYPE + " = ? or " + TYPE + " = ?)";
-        String[] selectionArgs = {floor + "floor", "room", "wc", "food", "library", "clinic", "reading"};
+        String selection = makeAllMarkersQuery();
+        String[] selectionArgs = {floor + FLOOR, ROOM, WC, FOOD, LIBRARY, CLINIC, READING};
         Cursor cursor = database.query(POI, null, selection, selectionArgs, null, null, null);
         refreshMarkers(cursor);
 
@@ -130,13 +137,8 @@ public class MarkersAdapter extends BottomSheet {
      * @param floor
      */
     protected void makeEventsMarkers(int floor) {
-        String selection = "SELECT * FROM poi " +
-                "LEFT OUTER JOIN event_poi on event_poi.poi_id = poi._id " +
-                "LEFT OUTER JOIN events on events.eventID = event_poi.eventID " +
-                "INNER JOIN event_type on event_type._id = events._id " +
-                "WHERE poi.floor = ? AND " +
-                "poi.type = ?";
-        String[] selectionArgs = {floor + "floor", ROOM};
+        String selection = makeEventsMarkersQuery();
+        String[] selectionArgs = {floor + FLOOR, ROOM};
         Cursor cursor = database.rawQuery(selection, selectionArgs);
         refreshMarkers(cursor);
 
@@ -205,34 +207,34 @@ public class MarkersAdapter extends BottomSheet {
         int px_small = 15;
 
         switch (type) {
-            case "room":
+            case ROOM:
                 src = R.drawable.ic_room;
                 px = px_small;
                 break;
 
-            case "wc":
+            case WC:
                 src = R.drawable.wc;
                 px = px_large;
                 break;
 
-            case "food":
+            case FOOD:
                 src = R.drawable.ic_food;
                 px = px_large;
                 break;
 
-            case "clinic":
+            case CLINIC:
                 src = R.drawable.ic_clinic;
                 px = px_large;
                 break;
 
-            case "library":
+            case LIBRARY:
 
-            case "reading":
+            case READING:
                 src = R.drawable.ic_library;
                 px = px_large;
                 break;
 
-            case "easter egg":
+            case EASTER_EGG:
                 src = R.drawable.ic_egg;
                 px = px_large;
                 break;
@@ -269,27 +271,5 @@ public class MarkersAdapter extends BottomSheet {
         }
         icon = BitmapDescriptorFactory.fromBitmap(markerBitmap);
         return icon;
-    }
-
-    private void searchMarker(Marker marker) {
-        String room = marker.getTitle();
-        String sqlQuery = "SELECT * FROM " + POI + " WHERE " + TableFields.POI_NAME + " like '" + room.replaceAll("'", "''") + "';";
-        Cursor cursor = database.rawQuery(sqlQuery, new String[]{});
-
-        if (cursor.moveToFirst()) {
-            String id = cursor.getString(cursor.getColumnIndex(_ID));
-            String type = cursor.getString(cursor.getColumnIndex(TYPE));
-            String building = cursor.getString(cursor.getColumnIndex(BUILDING));
-            String floor = cursor.getString(cursor.getColumnIndex(FLOOR));
-
-            SearchableItem item = new SearchableItem();
-            item.setBuilding(building);
-            item.setType(type);
-            item.setFloor(floor);
-            item.setRoom(room);
-            item.setId(id);
-//            inSearchBottomList(item, mapView);
-        }
-        cursor.close();
     }
 }

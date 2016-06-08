@@ -3,6 +3,7 @@ package com.innopolis.maps.innomaps.maps;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -28,6 +29,7 @@ import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.app.CustomScrollView;
 import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.app.SearchableItem;
+import com.innopolis.maps.innomaps.database.SQLQueries;
 import com.innopolis.maps.innomaps.events.Event;
 import com.innopolis.maps.innomaps.events.MapBottomEventListAdapter;
 import com.innopolis.maps.innomaps.events.TelegramOpenDialog;
@@ -47,15 +49,21 @@ import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 import static com.innopolis.maps.innomaps.database.TableFields.DESCRIPTION;
+import static com.innopolis.maps.innomaps.database.TableFields.EMPTY;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT;
+import static com.innopolis.maps.innomaps.database.TableFields.EVENTS;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_ID;
+import static com.innopolis.maps.innomaps.database.TableFields.EVENT_POI;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_TYPE;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.POI;
+import static com.innopolis.maps.innomaps.database.TableFields.POI_ID;
 import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
 import static com.innopolis.maps.innomaps.database.TableFields.START;
 import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY;
+import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY_EQUAL;
+import static com.innopolis.maps.innomaps.database.TableFields._ID;
 
 
 public class BottomSheet extends Fragment {
@@ -123,7 +131,8 @@ public class BottomSheet extends Fragment {
 
 
     protected void typeEvent(String summary) {
-        String sqlQuery = "SELECT * FROM events INNER JOIN event_poi ON events.eventID = event_poi.eventID INNER JOIN poi ON event_poi.poi_id = poi._id WHERE events.summary=?";
+        String sqlQuery = SQLQueries.innerJoinDouble(EVENTS, EVENT_POI, POI, EVENT_ID, EVENT_ID, _ID, POI_ID) +
+                SQLQueries.where(EVENTS, SUMMARY_EQUAL);
 
         String name = "", latitude = "", longitude = "", startDateText = "", description = "";
         Date startDate = null;
@@ -139,7 +148,7 @@ public class BottomSheet extends Fragment {
             startDateText = cursor.getString(cursor.getColumnIndex(START));
             name = cursor.getString(cursor.getColumnIndex(SUMMARY));
 
-            Cursor cursor_type = MarkersAdapter.database.query(EVENT_TYPE, null, "summary=?", new String[]{summary}, null, null, null);
+            Cursor cursor_type = MarkersAdapter.database.query(EVENT_TYPE, null, SUMMARY_EQUAL, new String[]{summary}, null, null, null);
             if (cursor_type.moveToFirst()) {
                 description = cursor_type.getString(cursor_type.getColumnIndex(DESCRIPTION));
             }
@@ -152,9 +161,9 @@ public class BottomSheet extends Fragment {
                 public void onClick(String text) {
                     DialogFragment newFragment = new TelegramOpenDialog();
                     Bundle bundle = new Bundle();
-                    bundle.putString("dialogText", text);
+                    bundle.putString(getContext().getString(R.string.dialog_text), text);
                     newFragment.setArguments(bundle);
-                    newFragment.show(getActivity().getSupportFragmentManager(), "Telegram");
+                    newFragment.show(getActivity().getSupportFragmentManager(), getContext().getString(R.string.telegram));
                 }
             };
 
@@ -185,7 +194,7 @@ public class BottomSheet extends Fragment {
             try {
                 startDate = Utils.googleTimeFormat.parse(startDateText);
             } catch (ParseException e) {
-                Log.e("Maps", "Time parse exception", e);
+                Log.e(getContext().getString(R.string.maps), getContext().getString(R.string.time_parse_exception), e);
             }
             LatLng place = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
             pinMarker(place, false);
@@ -195,13 +204,13 @@ public class BottomSheet extends Fragment {
         headerText.setText(name);
         startText.setText(Utils.commonTime.format(startDate));
         durationText.setText(Utils.prettyTime.format(startDate));
-        setPeekHeight("event");
+        setPeekHeight(EVENT);
     }
 
 
     public void typeEventNon(String poi_id) {
 
-        String sqlQuery = "SELECT * FROM poi LEFT OUTER JOIN event_poi on event_poi.poi_id = poi._id LEFT OUTER JOIN events on events.eventID = event_poi.eventID WHERE poi._id=?";
+        String sqlQuery = SQLQueries.typeEventNoneQuery(POI, EVENT_POI, EVENTS, _ID, POI_ID, EVENT_ID, EVENT_ID);
 
         Cursor cursor = MarkersAdapter.database.rawQuery(sqlQuery, new String[]{poi_id});
         String poi_name, latitude, longitude;
@@ -222,7 +231,7 @@ public class BottomSheet extends Fragment {
                         event.setStart(Utils.googleTimeFormat.parse(cursor.getString(cursor.getColumnIndex(START))));
                     }
                 } catch (ParseException e) {
-                    Log.e("Maps", "Date parse exception", e);
+                    Log.e(getContext().getString(R.string.maps), getContext().getString(R.string.date_parse_exception), e);
                 }
                 event.setEventID(cursor.getString(cursor.getColumnIndex(EVENT_ID)));
                 if (event.getEventID() != null) {
@@ -243,14 +252,14 @@ public class BottomSheet extends Fragment {
             LatLng place = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
             pinMarker(place, false);
             map.animateCamera(CameraUpdateFactory.newLatLng(place));
-            setPeekHeight("poi");
+            setPeekHeight(POI);
         }
     }
 
 
     protected void clearMarkerList() {
         if (markerList != null && markerList.size() > 0) {
-            for (Marker marker: markerList){
+            for (Marker marker : markerList) {
                 marker.remove();
             }
             markerList.clear();
@@ -263,10 +272,10 @@ public class BottomSheet extends Fragment {
         MarkerOptions markerOptions = new MarkerOptions();
         String title = findClosestPOI(latLng).firstKey();
         markerOptions.title(title);
-        if (title!=null && !"".equals(title) && firstTimeFlag){
+        if (title != null && !"".equals(title) && firstTimeFlag) {
             boolean found = false;
-            for (SearchableItem item: ((MainActivity)getActivity()).searchItems){
-                if (item.getName().toLowerCase().contains(title.toLowerCase()) && item.getCoordinate().equals(latLng)){
+            for (SearchableItem item : ((MainActivity) getActivity()).searchItems) {
+                if (item.getName().toLowerCase().contains(title.toLowerCase()) && item.getCoordinate().equals(latLng)) {
                     inSearchBottomList(item, title);
                     scrollView.setVisibility(View.VISIBLE);
                     found = true;
@@ -291,17 +300,19 @@ public class BottomSheet extends Fragment {
             String lat = "", lng = "";
             while (iterator.hasNext()) {
                 Map.Entry pair = (Map.Entry) iterator.next();
-                double distance = Utils.haversine(latLng.latitude, latLng.longitude, Double.parseDouble(pair.getKey().toString()), Double.parseDouble(pair.getValue().toString()));
+                double distance = Utils.haversine(latLng.latitude, latLng.longitude,
+                        Double.parseDouble(pair.getKey().toString()),
+                        Double.parseDouble(pair.getValue().toString()));
                 if (distance < closestDistance) {
                     closestDistance = distance;
                     lat = pair.getKey().toString();
                     lng = pair.getValue().toString();
                 }
             }
-            if (closestDistance < 0.012){
+            if (closestDistance < 0.012) {
                 closest = new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
-                Log.d("DISTANCE: ", ""+closestDistance);
-                String sqlQuery = "SELECT " + POI_NAME + " FROM " + POI + " WHERE " + LATITUDE + "=?" + " AND " + LONGITUDE + "=?";
+                Log.d(getContext().getString(R.string.distance), EMPTY + closestDistance);
+                String sqlQuery = SQLQueries.distanceQuery(POI, POI_NAME, LATITUDE, LONGITUDE);
                 Cursor cursor = MarkersAdapter.database.rawQuery(sqlQuery, new String[]{lat, lng});
                 cursor.moveToFirst();
                 result.put(cursor.getString(cursor.getColumnIndex(POI_NAME)), closest);
@@ -325,7 +336,7 @@ public class BottomSheet extends Fragment {
                 int durationLayoutHeight = durationLayout.getHeight();
                 int startLayoutHeight = startLayout.getHeight();
                 int locationTextHeight = locationText.getHeight();
-                if (type.equals("event")) {
+                if (type.equals(EVENT)) {
                     height = scrollView.getHeight() - (relatedLayoutHeight + durationLayoutHeight + startLayoutHeight + locationTextHeight + (int) Utils.convertDpToPixel(32, getContext()));
                 } else {
                     height = scrollView.getHeight() - (relatedLayoutHeight + locationTextHeight + (int) Utils.convertDpToPixel(32, getContext()));

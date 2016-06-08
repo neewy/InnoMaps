@@ -238,6 +238,7 @@
     <string name="id">id</string>
     <string name="destination">destination</string>
     <string name="FindRoute">FindRoute</string>
+
     <string name="finish_route">Please click BACK again to finish the route</string>
     <string name="finish">FINISH</string>
     <string name="exit_double_back">Please click BACK again to exit</string>
@@ -271,6 +272,24 @@
     <string name="open_link">"Open link %s?"</string>
     <string name="open">Open</string>
     <string name="cancel">Cancel</string>
+    <string name="telegram">Telegram</string>
+    <string name="time_parse_exception">Time parse exception</string>
+    <string name="date_parse_exception">Date parse exception</string>
+    <string name="distance">"DISTANCE: "</string>
+    <string name="current_location">currentLocation</string>
+    <string name="current_location_type">currentLocationType</string>
+    <string name="find_route">Find route</string>
+    <string name="specify_location_dialog">Please specify your location</string>
+    <string name="route">Route</string>
+    <string name="maps_fragment">MapsFragment</string>
+    <string name="reached_destination_dialog">You have reached the destination</string>
+    <string name="next">NEXT</string>
+    <string name="previous">PREV</string>
+    <string name="crash_on_zoom">Crash on zoom :</string>
+    <string name="service_missing">SERVICE MISSING</string>
+    <string name="update_required">UPDATE REQUIRED</string>
+    <string name="already_there">You are already there</string>
+    <string name="navigation_location_message">Enable either GPS or any other location service to find current location. Click OK to go to location services settings to let you do so.</string>
 
 
 </resources>

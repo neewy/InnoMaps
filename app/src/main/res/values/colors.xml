@@ -9,4 +9,5 @@
 
 
     <color name="textColorGray">#676767</color>
+    <color name="route_color">#b4f57c00</color>
 </resources>

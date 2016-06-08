@@ -34,8 +34,6 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * This class represents an object, responsible for handling shortest path parts
  * to different floors of the university building.
-
- * Created by neewy on 16.04.16.
  */
 public class MapRoute {
 
@@ -199,7 +197,7 @@ public class MapRoute {
         current = null;
         hasCurrentPath = false;
         if (showMessage) {
-            Toast.makeText(activity, "You have reached the destination", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, R.string.reached_destination_dialog, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -218,7 +216,7 @@ public class MapRoute {
         PolylineOptions polylineOptions = new PolylineOptions();
         polylineOptions
                 .width(7)
-                .color(Color.parseColor("#b4f57c00")) //current style color
+                .color(R.color.route_color) //current style color
                 .geodesic(true);
         for (LatLngGraphVertex v : path) {
             polylineOptions.add(v.getVertex());
@@ -250,7 +248,7 @@ public class MapRoute {
                         .icon(convertDrawable(R.drawable.route_finish, size))
                         .position(end.getVertex())
                         .anchor(center, center)
-                        .snippet("FINISH")
+                        .snippet(activity.getString(R.string.finish))
                         .visible(false);
 
                 Marker marker = mMap.addMarker(markerOptions);
@@ -272,7 +270,7 @@ public class MapRoute {
                     markerOptions
                             .position(end.getVertex())
                             .anchor(center, center)
-                            .snippet("NEXT")
+                            .snippet(activity.getString(R.string.next))
                             .visible(false);
 
                     Marker marker = mMap.addMarker(markerOptions);
@@ -293,14 +291,14 @@ public class MapRoute {
 
                     markerOptionsBegin.position(begin.getVertex())
                             .anchor(center, center)
-                            .snippet("PREV")
+                            .snippet(activity.getString(R.string.previous))
                             .visible(false);
 
                     markerOptionsEnd
                             .icon(convertDrawable(R.drawable.route_finish, size))
                             .position(end.getVertex())
                             .anchor(center, center)
-                            .snippet("FINISH")
+                            .snippet(activity.getString(R.string.finish))
                             .visible(false);
 
                     Marker markerBegin = mMap.addMarker(markerOptionsBegin);
@@ -332,11 +330,11 @@ public class MapRoute {
 
                     markerOptionsBegin
                             .position(begin.getVertex())
-                            .snippet("PREV")
+                            .snippet(activity.getString(R.string.previous))
                             .visible(false);
                     markerOptionsEnd
                             .position(end.getVertex())
-                            .snippet("NEXT")
+                            .snippet(activity.getString(R.string.next))
                             .visible(false);
 
                     Marker markerBegin = mMap.addMarker(markerOptionsBegin);
@@ -361,7 +359,7 @@ public class MapRoute {
         }
 
         if (markerEndpointsZoom.get(currentZoom) == null) {
-            ACRA.log.d("Crash on zoom :", currentZoom.toString());
+            ACRA.log.d(activity.getString(R.string.crash_on_zoom), currentZoom.toString());
         }
 
         for (Marker marker : markerEndpointsZoom.get(currentZoom)) {

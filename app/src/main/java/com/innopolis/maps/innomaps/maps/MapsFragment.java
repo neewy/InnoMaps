@@ -65,6 +65,7 @@ import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.app.SearchableItem;
 import com.innopolis.maps.innomaps.app.SuggestionAdapter;
 import com.innopolis.maps.innomaps.database.DBHelper;
+import com.innopolis.maps.innomaps.database.SQLQueries;
 import com.innopolis.maps.innomaps.pathfinding.JGraphTWrapper;
 import com.innopolis.maps.innomaps.pathfinding.LatLngGraphVertex;
 import com.innopolis.maps.innomaps.qr.Scanner;
@@ -86,25 +87,35 @@ import static android.widget.AdapterView.OnItemClickListener;
 import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_NORMAL;
 import static com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import static com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
+import static com.innopolis.maps.innomaps.database.TableFields.ALL_CAPITAL;
+import static com.innopolis.maps.innomaps.database.TableFields.ALL_FILTER;
+import static com.innopolis.maps.innomaps.database.TableFields.EVENTS_CAPITAL;
+import static com.innopolis.maps.innomaps.database.TableFields.EVENTS_FILTER;
 import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
+import static com.innopolis.maps.innomaps.database.TableFields.FOOD_CAPITAL;
+import static com.innopolis.maps.innomaps.database.TableFields.FOOD_FILTER;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
+import static com.innopolis.maps.innomaps.database.TableFields.OTHER_CAPITAL;
+import static com.innopolis.maps.innomaps.database.TableFields.OTHER_FILTER;
 import static com.innopolis.maps.innomaps.database.TableFields.POI;
+import static com.innopolis.maps.innomaps.database.TableFields.WC_CAPITAL;
+import static com.innopolis.maps.innomaps.database.TableFields.WC_FILTER;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.*;
 
 public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     private GroundOverlay imageOverlay;
     private LocationManager locationManager;
-    DBHelper dbHelper;
+    private DBHelper dbHelper;
 
-    SearchView searchView;
-    SearchView.SearchAutoComplete searchBox;
+    private SearchView searchView;
+    private SearchView.SearchAutoComplete searchBox;
 
     /*Don't be confused by class name - it is the element, which is shown during search, with 5 categories*/
-    AHBottomNavigation topNavigation;
+    private AHBottomNavigation topNavigation;
 
-    // TODO: Access levels
-    JGraphTWrapper graphWrapper;
+    private JGraphTWrapper graphWrapper;
 
     /*Dialog, that asks user how to select his location */
     public Dialog currentDialog;
@@ -112,6 +123,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     /*Map route, that is build on map if user started a route
     * public modifier left for testing purposes */
     public MapRoute mapRoute;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -192,7 +204,6 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     }
 
 
-
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         switch (GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity())) {
@@ -254,11 +265,11 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                                 public boolean onMarkerClick(Marker marker) {
                                     /*If the path has started and a path handling marker was clicked*/
                                     if (mapRoute != null && mapRoute.hasCurrentPath && marker.getSnippet() != null) {
-                                        if (marker.getSnippet().equals("NEXT")) {
+                                        if (marker.getSnippet().equals(getContext().getString(R.string.next))) {
                                             mapRoute.nextPath();
-                                        } else if (marker.getSnippet().equals("PREV")) {
+                                        } else if (marker.getSnippet().equals(getContext().getString(R.string.previous))) {
                                             mapRoute.prevPath();
-                                        } else if (marker.getSnippet().equals("FINISH")) {
+                                        } else if (marker.getSnippet().equals(getContext().getString(R.string.finish))) {
                                             mapRoute.finishRoute(true);
                                         }
                                         marker.hideInfoWindow();
@@ -288,11 +299,11 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                 }
                 break;
             case ConnectionResult.SERVICE_MISSING:
-                Toast.makeText(getActivity(), "SERVICE MISSING", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.service_missing, Toast.LENGTH_SHORT).show();
                 break;
             case ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED:
-                // TODO: extract string constants
-                Toast.makeText(getActivity(), "UPDATE REQUIRED", Toast.LENGTH_SHORT).show();
+                // TODO: extract string constants +
+                Toast.makeText(getActivity(), R.string.update_required, Toast.LENGTH_SHORT).show();
                 break;
             default:
                 Toast.makeText(getActivity(), GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity()), Toast.LENGTH_SHORT).show();
@@ -300,24 +311,23 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
 
         topNavigation = (AHBottomNavigation) view.findViewById(R.id.bottom_navigation);
         // TODO: probably these constants are part of your domain model
-        AHBottomNavigationItem item1 = new AHBottomNavigationItem("WC", R.drawable.wc_rast);
-        AHBottomNavigationItem item2 = new AHBottomNavigationItem("Food", R.drawable.food_fork_drink);
-        AHBottomNavigationItem item3 = new AHBottomNavigationItem("All", R.drawable.all_pack);
-        AHBottomNavigationItem item4 = new AHBottomNavigationItem("Events", R.drawable.calendar_mult);
-        AHBottomNavigationItem item5 = new AHBottomNavigationItem("Other", R.drawable.duck_rast);
-        topNavigation.addItem(item1);
-        topNavigation.addItem(item2);
-        topNavigation.addItem(item3);
-        topNavigation.addItem(item4);
-        topNavigation.addItem(item5);
+        AHBottomNavigationItem wc = new AHBottomNavigationItem(WC_CAPITAL, R.drawable.wc_rast);
+        AHBottomNavigationItem food = new AHBottomNavigationItem(FOOD_CAPITAL, R.drawable.food_fork_drink);
+        AHBottomNavigationItem all = new AHBottomNavigationItem(ALL_CAPITAL, R.drawable.all_pack);
+        AHBottomNavigationItem events = new AHBottomNavigationItem(EVENTS_CAPITAL, R.drawable.calendar_mult);
+        AHBottomNavigationItem other = new AHBottomNavigationItem(OTHER_CAPITAL, R.drawable.duck_rast);
+        topNavigation.addItem(wc);
+        topNavigation.addItem(food);
+        topNavigation.addItem(all);
+        topNavigation.addItem(events);
+        topNavigation.addItem(other);
         topNavigation.setDefaultBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
         topNavigation.setAccentColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
         topNavigation.setBehaviorTranslationEnabled(false);
         topNavigation.setInactiveColor(Color.WHITE);
         topNavigation.setVisibility(View.GONE);
         topNavigation.setForceTitlesDisplay(true);
-        // TODO: Which item is number 2?
-        topNavigation.setCurrentItem(2);
+        topNavigation.setCurrentItem(ALL_FILTER);
     }
 
 
@@ -326,7 +336,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         super.onCreateOptionsMenu(menu, inflater);
         searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchBox = (SearchView.SearchAutoComplete) searchView.findViewById(R.id.search_src_text);
-        // TODO: ???
+        //Specifies number of characters to type before dropdown is shown
         searchBox.setThreshold(1);
         MenuItemCompat.setOnActionExpandListener(menu.findItem(R.id.search), new MenuItemCompat.OnActionExpandListener() {
             @Override
@@ -369,30 +379,30 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                 String snackbarText;
                 if (!wasSelected) {
                     switch (position) {
-                        // TODO: are these floors?
-                        case 0:
+                        // TODO: are these floors? +
+                        case WC_FILTER:
                             input = Collections2.filter(allItems, SearchableItem.isWc);
                             snackbarText = getString(R.string.no_wc);
                             resetMarkers(position, snackbarText, items, input, floor);
                             break;
-                        case 1:
+                        case FOOD_FILTER:
                             input = Collections2.filter(allItems, SearchableItem.isFood);
                             snackbarText = getString(R.string.no_food_poi);
                             resetMarkers(position, snackbarText, items, input, floor);
                             break;
-                        case 2:
-                            sortClearAdd(2);
+                        case ALL_FILTER:
+                            sortClearAdd(ALL_FILTER);
                             items.clear();
                             for (SearchableItem item : allItems)
                                 items.add(item);
                             isMarkerSorted(floor);
                             break;
-                        case 3:
+                        case EVENTS_FILTER:
                             input = Collections2.filter(allItems, SearchableItem.isEvent);
                             snackbarText = getString(R.string.no_events);
                             resetMarkers(position, snackbarText, items, input, floor);
                             break;
-                        case 4:
+                        case OTHER_FILTER:
                             input = Collections2.filter(allItems, SearchableItem.isOther);
                             snackbarText = getString(R.string.no_other_poi);
                             resetMarkers(position, snackbarText, items, input, floor);
@@ -438,8 +448,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         mapView.onResume();
         super.onResume();
 
-        // TODO: constants!!
-        MainActivity.getInstance().trackScreenView("Maps Fragment");
+        MainActivity.getInstance().trackScreenView(getContext().getString(R.string.maps_fragment));
     }
 
     @Override
@@ -464,8 +473,9 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     private void getAndDrawPath(LatLng source, LatLng destination) {
         FileInputStream inputStream = null;
         try {
-            // TODO: KILL!!!
-            inputStream = getContext().openFileInput("9.xml");
+            // TODO: KILL!!! +
+            // :D
+            inputStream = getContext().openFileInput(getContext().getString(R.string.graph_filename));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -490,8 +500,8 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             mapRoute = new MapRoute(map, path, getActivity(), floorPicker);
             mapRoute.startRoute();
         } else {
-            // TODO: use resource string here
-            Toast.makeText(getContext(), "You are already there", Toast.LENGTH_SHORT).show();
+            // TODO: use resource string here +
+            Toast.makeText(getContext(), R.string.already_there, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -499,13 +509,10 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         final String action = Settings.ACTION_LOCATION_SOURCE_SETTINGS;
         // TODO: string resource
-        final String message = "Enable either GPS or any other location"
-                + " service to find current location. Click OK to go to"
-                + " location services settings to let you do so.";
+        final String message = activity.getString(R.string.navigation_location_message);
 
         builder.setMessage(message)
-                // TODO: replace with android.R.string.ok
-                .setPositiveButton("OK",
+                .setPositiveButton(android.R.string.ok,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface d, int id) {
                                 Intent intent = new Intent(action);
@@ -513,8 +520,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                                 startActivity(intent);
                             }
                         })
-                // TODO: replace with android.R.string.cancel
-                .setNegativeButton("Cancel",
+                .setNegativeButton(android.R.string.cancel,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface d, int id) {
                                 d.cancel();
@@ -627,9 +633,8 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     // TODO: check if this method is used or not, because it is useless
     private void setFloorPOIHashMap(Integer floor) {
         latLngMap = new HashMap<>();
-        // TODO: this is fragment, so it shouldn't contain any SQL logic
-        String sqlQuery = "SELECT " + LATITUDE + "," + LONGITUDE + "," + FLOOR + " FROM " + POI + " WHERE " + FLOOR + "=?";
-        Cursor cursor = database.rawQuery(sqlQuery, new String[]{floor + "floor"});
+        String sqlQuery = SQLQueries.selectFloorPoiHashmapQuery();
+        Cursor cursor = database.rawQuery(sqlQuery, new String[]{floor + FLOOR});
         if (cursor.moveToFirst()) {
             do {
                 latLngMap.put(cursor.getString(cursor.getColumnIndex(LATITUDE)), cursor.getString(cursor.getColumnIndex(LONGITUDE)));
@@ -671,7 +676,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         parentParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         parentParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
 
-        if (( getView()) != null) {
+        if ((getView()) != null) {
             ((RelativeLayout) getView()).addView(buttons, parentParams);
         }
 
@@ -704,8 +709,8 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         Intent intent = new Intent(getActivity(), Scanner.class);
         Bundle bundle = new Bundle();
         // TODO: extract constants
-        bundle.putDouble("latitude", closest.latitude);
-        bundle.putDouble("longitude", closest.longitude);
+        bundle.putDouble(LATITUDE, closest.latitude);
+        bundle.putDouble(LONGITUDE, closest.longitude);
         intent.putExtras(bundle);
         startActivity(intent);
     }
@@ -743,12 +748,11 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         }
     };
 
-    // TODO: extract coordinates to local constants
-    // something like final double innoLatTop = 55.752116019;
+
     private boolean checkIfZoomIsEnough(CameraPosition cameraPosition) {
         LatLng cameraTarget = cameraPosition.target;
-        return (cameraTarget.latitude > 55.752116019 && cameraTarget.latitude < 55.754923377) &&
-                (cameraTarget.longitude < 48.7448166297 && cameraTarget.longitude > 48.742106790) && cameraPosition.zoom > 17.50;
+        return (cameraTarget.latitude > CAMERA_LAT_BOTTOM && cameraTarget.latitude < CAMERA_LAT_TOP) &&
+                (cameraTarget.longitude < CAMERA_LNG_RIGHT && cameraTarget.longitude > CAMERA_LNG_LEFT) && cameraPosition.zoom > 17.50;
     }
 
     OnMapClickListener mapClickListener = new OnMapClickListener() {
@@ -759,17 +763,15 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         }
     };
 
-    // TODO: extract coordinates to local constants
     private void makeUiOutline() {
-        LatLng southWest = new LatLng(55.752828, 48.742661);
-        LatLng northEast = new LatLng(55.754597, 48.744469);
+        LatLng southWest = new LatLng(UI_OUTLINE_LAT_BOTTOM, UI_OUTLINE_LNG_LEFT);
+        LatLng northEast = new LatLng(UI_OUTLINE_LAT_TOP, UI_OUTLINE_LNG_RIGHT);
         int res = 600;
         Bitmap bitmap = decodeSampledBitmapFromResource(getResources(), R.raw.ui_unzoomed, res, res);
         putOverlayToMap(southWest, northEast, bitmap);
     }
 
-    // TODO: extract coordinates to local constants
     private void zoomToUniversityAlways() {
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(55.75360130293316, 48.7435007840395), (float) 17.7));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(UI_LAT, UI_LNG), (float) 17.7));
     }
 }

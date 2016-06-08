@@ -65,6 +65,7 @@ import static com.innopolis.maps.innomaps.database.TableFields.END;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENTS;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_ID;
+import static com.innopolis.maps.innomaps.database.TableFields.EVENT_ID_EQUAL;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_POI;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_TYPE;
 import static com.innopolis.maps.innomaps.database.TableFields.FAV;
@@ -77,6 +78,7 @@ import static com.innopolis.maps.innomaps.database.TableFields.POI_ID;
 import static com.innopolis.maps.innomaps.database.TableFields.ROOM;
 import static com.innopolis.maps.innomaps.database.TableFields.START;
 import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY;
+import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY_EQUAL;
 import static com.innopolis.maps.innomaps.database.TableFields.TYPE;
 import static com.innopolis.maps.innomaps.database.TableFields._ID;
 
@@ -177,7 +179,7 @@ public class DetailedEvent extends Fragment {
             this.end = cursor.getString(end);
             this.checked = cursor.getString(checked);
             String[] summaryArgs = new String[]{cursor.getString(summary)};
-            Cursor cursor1 = database.query(EVENT_TYPE, null, SUMMARY + "=?", summaryArgs, null, null, null);
+            Cursor cursor1 = database.query(EVENT_TYPE, null, SUMMARY_EQUAL, summaryArgs, null, null, null);
             cursor1.moveToFirst();
             int description = cursor1.getColumnIndex(DESCRIPTION);
             this.descriptionStr = cursor1.getString(description);
@@ -186,7 +188,7 @@ public class DetailedEvent extends Fragment {
             cursor1.close();
         } while (cursor.moveToNext());
         cursor.close();
-        Cursor locationC = database.rawQuery(SQLQueries.locationQuery(POI, EVENT_POI, _ID, POI_ID, EVENT_ID, eventID), null);
+        Cursor locationC = database.rawQuery(SQLQueries.innerJoinLike(POI, EVENT_POI, _ID, POI_ID, EVENT_ID, eventID), null);
         if (locationC.moveToFirst()) {
             building = locationC.getString(locationC.getColumnIndex(BUILDING));
             floor = locationC.getString(locationC.getColumnIndex(FLOOR));
@@ -202,9 +204,9 @@ public class DetailedEvent extends Fragment {
             public void onClick(String text) {
                 DialogFragment newFragment = new TelegramOpenDialog();
                 Bundle bundle = new Bundle();
-                bundle.putString("dialogText", text);
+                bundle.putString(getContext().getString(R.string.dialog_text), text);
                 newFragment.setArguments(bundle);
-                newFragment.show(getActivity().getSupportFragmentManager(), "Telegram");
+                newFragment.show(getActivity().getSupportFragmentManager(), getContext().getString(R.string.telegram));
             }
         };
 
@@ -275,7 +277,7 @@ public class DetailedEvent extends Fragment {
                 dbHelper = new DBHelper(context);
                 database = dbHelper.getWritableDatabase();
                 cv.put(FAV, isFav);
-                database.update(EVENTS, cv, "eventID = ?", new String[]{eventID});
+                database.update(EVENTS, cv, EVENT_ID_EQUAL, new String[]{eventID});
                 dbHelper.close();
             }
         });
