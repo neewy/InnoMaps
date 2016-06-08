@@ -260,7 +260,7 @@ public class MarkersAdapter extends BottomSheet {
     public BitmapDescriptor converterDrawable(int src, int size) {
         BitmapDescriptor icon;
         Drawable shape;
-        Bitmap markerBitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+        Bitmap markerBitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_4444);
         Canvas canvas = new Canvas(markerBitmap);
         shape = ContextCompat.getDrawable(getActivity(), src);
         if (shape != null) {

@@ -179,13 +179,13 @@
     <string name="street_view_panorama_basic_demo_label">Street View Panorama</string>
     <string name="street_view_panorama_events_demo_description">Standard Street View Panorama with event handling.</string>
     <string name="street_view_panorama_events_demo_label">Street View Panorama events</string>
-    <string name="street_view_panorama_navigation_demo_description">Street View Panorama with programatic navigation</string>
+    <string name="street_view_panorama_navigation_demo_description">Street View Panorama with programmatic navigation</string>
     <string name="street_view_panorama_navigation_demo_label">Street View Panorama navigation</string>
     <string name="street_view_panorama_options_demo_description">Street View Panorama with toggles for options</string>
     <string name="street_view_panorama_options_demo_label">Street View Panorama options</string>
     <string name="street_view_panorama_view_demo_description">Standard Street View Panorama using a View</string>
     <string name="street_view_panorama_view_demo_label">Street View Panorama View</string>
-    <string name="streetnames">Streetnames</string>
+    <string name="street_names">Streetnames</string>
     <string name="tap_screen">tap screen</string>
     <string name="long_press_screen">long press screen</string>
     <string name="walk_panorama">Walk</string>
@@ -232,6 +232,21 @@
     <string name="back_caps">BACK</string>
     <string name="go_caps">GO</string>
     <string name="marker_in_university">Please, select a room within the university</string>
+    <string name="dialogSource">dialogSource</string>
+    <string name="MapsFragment">MapsFragment</string>
+    <string name="event">event</string>
+    <string name="type">type</string>
+    <string name="poi">poi</string>
+    <string name="id">id</string>
+    <string name="destination">destination</string>
+    <string name="FindRoute">FindRoute</string>
+    <string name="finish_route">Please click BACK again to finish the route</string>
+    <string name="finish">FINISH</string>
+    <string name="exit_double_back">Please click BACK again to exit</string>
+    <string name="detailed">Detailed</string>
+    <string name="room">room</string>
+    <string name="empty" />
+    <string name="main_fragment">Main Fragment</string>
 
 
 </resources>

@@ -5,22 +5,22 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
 import com.innopolis.maps.innomaps.app.MainActivity;
-import com.innopolis.maps.innomaps.maps.MapsFragment;
 import com.innopolis.maps.innomaps.database.DBHelper;
+import com.innopolis.maps.innomaps.maps.MapsFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
-import static com.innopolis.maps.innomaps.database.TableFields.*;
+import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
+import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
 
 
 public class Scanner extends AppCompatActivity implements ZXingScannerView.ResultHandler  {

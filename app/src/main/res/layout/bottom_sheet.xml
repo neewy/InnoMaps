@@ -52,12 +52,14 @@
                     style="@style/TextAppearance.AppCompat.Headline"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    />
 
                 <TextView
                     android:id="@+id/headerText"
                     style="@style/TextAppearance.AppCompat.Headline"
                     android:layout_width="254dp"
+
                     android:layout_height="wrap_content"
                     android:paddingBottom="16dp" />
 
@@ -104,7 +106,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/activity_horizontal_margin"
                     android:layout_marginStart="@dimen/activity_horizontal_margin"
-                    android:textColor="@android:color/primary_text_light" />
+                    android:textColor="@android:color/primary_text_light"
+                    android:scrollbars="vertical"/>
 
             </LinearLayout>
 
@@ -113,7 +116,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="@dimen/activity_horizontal_margin">
+                android:padding="@dimen/activity_horizontal_margin"
+                android:layout_below="@+id/startLayout">
 
                 <ImageButton
                     android:layout_width="24dp"
@@ -137,7 +141,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/activity_horizontal_margin"
-                android:paddingLeft="58dp">
+                android:paddingLeft="58dp"
+                android:layout_below="@+id/durationLayout"
+                android:scrollbars="vertical">
 
 
             </FrameLayout>
