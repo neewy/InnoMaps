@@ -2,7 +2,7 @@ package com.innopolis.maps.innomaps;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.innopolis.maps.innomaps.pathfinding.JGraphTWrapper;
-import com.innopolis.maps.innomaps.pathfinding.LatLngGraphVertex;
+import com.innopolis.maps.innomaps.maps.LatLngGraphVertex;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.io.IOUtils;

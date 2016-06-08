@@ -1,4 +1,4 @@
-package com.innopolis.maps.innomaps.pathfinding;
+package com.innopolis.maps.innomaps.maps;
 
 import com.google.android.gms.maps.model.LatLng;
 

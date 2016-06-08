@@ -67,7 +67,6 @@ import com.innopolis.maps.innomaps.app.SuggestionAdapter;
 import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.network.NetworkController;
 import com.innopolis.maps.innomaps.database.SQLQueries;
-import com.innopolis.maps.innomaps.pathfinding.LatLngGraphVertex;
 import com.innopolis.maps.innomaps.qr.Scanner;
 
 import org.xmlpull.v1.XmlPullParserException;
@@ -122,7 +121,6 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     /*Map route, that is build on map if user started a route
     * public modifier left for testing purposes */
     public MapRoute mapRoute;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
