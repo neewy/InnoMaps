@@ -12,14 +12,14 @@ import static com.innopolis.maps.innomaps.database.TableFields.BUILDING;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT;
 import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
 import static com.innopolis.maps.innomaps.database.TableFields.FOOD;
-import static com.innopolis.maps.innomaps.database.TableFields._ID;
+import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
+import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.NUMBER;
 import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
 import static com.innopolis.maps.innomaps.database.TableFields.ROOM;
 import static com.innopolis.maps.innomaps.database.TableFields.TYPE;
-import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
-import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.WC;
+import static com.innopolis.maps.innomaps.database.TableFields._ID;
 
 public class SearchableItem implements Comparable<SearchableItem> {
     public String name;

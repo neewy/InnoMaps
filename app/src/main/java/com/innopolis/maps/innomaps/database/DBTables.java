@@ -22,7 +22,7 @@ import static com.innopolis.maps.innomaps.database.TableTypeFields.SUMMARY_TEXT;
 import static com.innopolis.maps.innomaps.database.TableTypeFields.TYPE_TEXT;
 
 
-public class DBTables{
+public class DBTables {
 
     public static abstract class TableColumns {
 

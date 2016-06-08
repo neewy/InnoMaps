@@ -61,6 +61,7 @@ public class MarkersAdapter extends BottomSheet {
 
     /**
      * Switch markers by id of optionMenu under toolbar
+     *
      * @param floor
      */
 
@@ -191,7 +192,6 @@ public class MarkersAdapter extends BottomSheet {
 
         markers.add(markersRoom);
     }
-
 
 
     /**

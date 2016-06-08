@@ -73,8 +73,8 @@ public class MapRoute {
         this.activity = activity;
         setCurrentZoom(Double.valueOf(Math.floor((double) mMap.getCameraPosition().zoom)).intValue()); //initial zoom level
 
-        from = String.valueOf(path.get(0).getVertexId()).substring(0,1);
-        to = String.valueOf(path.get(path.size()-1).getVertexId()).substring(0,1);
+        from = String.valueOf(path.get(0).getVertexId()).substring(0, 1);
+        to = String.valueOf(path.get(path.size() - 1).getVertexId()).substring(0, 1);
         isPathUp = (to.compareTo(from) > 0);
 
         this.floorPicker = floorPicker;
@@ -126,7 +126,7 @@ public class MapRoute {
             currentNavPath.put(lastVerticeId.substring(0, 1), pathPart);
         }
 
-        for (String floor : currentNavPath.keySet()){
+        for (String floor : currentNavPath.keySet()) {
             if (currentNavPath.get(floor).size() == 1) {
                 currentNavPath.remove(floor); //eliminating parts, that consist of one point
             }

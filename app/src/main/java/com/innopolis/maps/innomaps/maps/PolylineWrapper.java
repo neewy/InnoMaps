@@ -11,7 +11,8 @@ public class PolylineWrapper {
     Polyline polyline;
     PolylineOptions polylineOptions;
 
-    public PolylineWrapper(){}
+    public PolylineWrapper() {
+    }
 
     public PolylineWrapper(String floor, Polyline polyline, PolylineOptions polylineOptions) {
         this.floor = floor;

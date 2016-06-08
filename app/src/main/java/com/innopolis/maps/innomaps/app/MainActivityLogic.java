@@ -36,7 +36,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 
-
 public class MainActivityLogic extends AppCompatActivity {
     private static TextView locationText;
     private static TextView idPoi;
@@ -207,7 +206,7 @@ public class MainActivityLogic extends AppCompatActivity {
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
     }
 
-/**
+    /**
      * Methods used for accessing database by two different parameters.
      * Depending on them DBhelper use "room" in table POI or other.
      *

@@ -24,13 +24,17 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
-import static com.innopolis.maps.innomaps.database.SQLQueries.*;
+import static com.innopolis.maps.innomaps.database.SQLQueries.cursorSelectBuilding;
+import static com.innopolis.maps.innomaps.database.SQLQueries.cursorSelectFloor;
+import static com.innopolis.maps.innomaps.database.SQLQueries.cursorSelectRoom;
+import static com.innopolis.maps.innomaps.database.SQLQueries.delete;
 import static com.innopolis.maps.innomaps.database.TableFields.BUILDING;
 import static com.innopolis.maps.innomaps.database.TableFields.CREATOR;
 import static com.innopolis.maps.innomaps.database.TableFields.DATETIME;
 import static com.innopolis.maps.innomaps.database.TableFields.DESCRIPTION;
 import static com.innopolis.maps.innomaps.database.TableFields.DISPLAY_NAME;
 import static com.innopolis.maps.innomaps.database.TableFields.EMAIL;
+import static com.innopolis.maps.innomaps.database.TableFields.EMPTY;
 import static com.innopolis.maps.innomaps.database.TableFields.END;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENTS;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_POI;
@@ -39,17 +43,16 @@ import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
 import static com.innopolis.maps.innomaps.database.TableFields.HASH;
 import static com.innopolis.maps.innomaps.database.TableFields.ID;
 import static com.innopolis.maps.innomaps.database.TableFields.ITEMS;
-import static com.innopolis.maps.innomaps.database.TableFields.POI;
-import static com.innopolis.maps.innomaps.database.TableFields.ROOM;
-import static com.innopolis.maps.innomaps.database.TableFields._ID;
 import static com.innopolis.maps.innomaps.database.TableFields.LAST_UPDATE;
 import static com.innopolis.maps.innomaps.database.TableFields.LINK;
 import static com.innopolis.maps.innomaps.database.TableFields.LOCATION;
-import static com.innopolis.maps.innomaps.database.TableFields.EMPTY;
+import static com.innopolis.maps.innomaps.database.TableFields.POI;
 import static com.innopolis.maps.innomaps.database.TableFields.RECURRENCE;
+import static com.innopolis.maps.innomaps.database.TableFields.ROOM;
 import static com.innopolis.maps.innomaps.database.TableFields.RRULE;
 import static com.innopolis.maps.innomaps.database.TableFields.START;
 import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY;
+import static com.innopolis.maps.innomaps.database.TableFields._ID;
 
 public class JsonParseTask extends AsyncTask<Void, Void, String> {
 

@@ -23,7 +23,7 @@ public class SplashScreenActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        
+
         // TODO: Why do you create database access and preferences only when network is availabale?
         if (Utils.isNetworkAvailable(SplashScreenActivity.this)) {
             new com.innopolis.maps.innomaps.database.DBUpdater(SplashScreenActivity.this);

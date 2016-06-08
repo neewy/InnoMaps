@@ -49,5 +49,4 @@ public class XMLParseTask extends AsyncTask<Void, Void, Boolean> {
     }
 
 
-
 }
