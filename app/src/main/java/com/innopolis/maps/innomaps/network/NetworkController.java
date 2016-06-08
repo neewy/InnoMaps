@@ -19,7 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -134,7 +134,7 @@ public class NetworkController {
             String response = establishPostConnection(Constants.CONNECTION_PROTOCOL + "://" + Constants.IP + ":" + Constants.PORT +
                     "/resources/shortestPath", params[0]);
             ObjectMapper mapper = new ObjectMapper();
-            response = response.substring(9, response.length() - 1);
+            response = response.substring(12, response.length() - 1);
             try {
                 return mapper.readValue(response,
                         TypeFactory.defaultInstance().constructCollectionType(List.class,
@@ -142,7 +142,7 @@ public class NetworkController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
     }
 }
