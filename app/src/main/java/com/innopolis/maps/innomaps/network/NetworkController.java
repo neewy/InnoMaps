@@ -7,7 +7,7 @@ import android.util.Log;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.innopolis.maps.innomaps.pathfinding.LatLngGraphVertex;
+import com.innopolis.maps.innomaps.maps.LatLngGraphVertex;
 
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 

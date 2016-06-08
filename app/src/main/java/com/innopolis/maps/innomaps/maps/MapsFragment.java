@@ -66,7 +66,6 @@ import com.innopolis.maps.innomaps.app.SearchableItem;
 import com.innopolis.maps.innomaps.app.SuggestionAdapter;
 import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.network.NetworkController;
-import com.innopolis.maps.innomaps.pathfinding.LatLngGraphVertex;
 import com.innopolis.maps.innomaps.qr.Scanner;
 
 import java.io.FileInputStream;

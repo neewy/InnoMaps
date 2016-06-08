@@ -18,7 +18,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.innopolis.maps.innomaps.R;
-import com.innopolis.maps.innomaps.pathfinding.LatLngGraphVertex;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.acra.ACRA;
