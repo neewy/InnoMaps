@@ -12,11 +12,8 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.*;
+import com.google.android.gms.maps.model.LatLng;
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.utils.Utils;
 
@@ -225,7 +222,7 @@ public class MapRoute {
                 .color(Color.parseColor("#b4f57c00")) //current style color
                 .geodesic(true);
         for (LatLngGraphVertex v : path) {
-            polylineOptions.add(v.getVertex());
+            polylineOptions.add(new LatLng(v.getVertex().getLatitude(), v.getVertex().getLongitude()));
         }
         current.setPolyline(map, polylineOptions);
         current.setFloor(floor);
@@ -252,7 +249,7 @@ public class MapRoute {
 
                 markerOptions
                         .icon(convertDrawable(R.drawable.route_finish, size))
-                        .position(end.getVertex())
+                        .position(new LatLng(end.getVertex().getLatitude(), end.getVertex().getLongitude()))
                         .anchor(center, center)
                         .snippet("FINISH")
                         .visible(false);
@@ -274,7 +271,7 @@ public class MapRoute {
                     else markerOptions.icon(convertDrawable(R.drawable.route_down, size));
 
                     markerOptions
-                            .position(end.getVertex())
+                            .position(new LatLng(end.getVertex().getLatitude(), end.getVertex().getLongitude()))
                             .anchor(center, center)
                             .snippet("NEXT")
                             .visible(false);
@@ -296,14 +293,14 @@ public class MapRoute {
                         markerOptionsBegin.icon(convertDrawable(R.drawable.route_down, size));
                     else markerOptionsBegin.icon(convertDrawable(R.drawable.route_up, size));
 
-                    markerOptionsBegin.position(begin.getVertex())
+                    markerOptionsBegin.position(new LatLng(begin.getVertex().getLatitude(), begin.getVertex().getLongitude()))
                             .anchor(center, center)
                             .snippet("PREV")
                             .visible(false);
 
                     markerOptionsEnd
                             .icon(convertDrawable(R.drawable.route_finish, size))
-                            .position(end.getVertex())
+                            .position(new LatLng(end.getVertex().getLatitude(), end.getVertex().getLongitude()))
                             .anchor(center, center)
                             .snippet("FINISH")
                             .visible(false);
@@ -336,11 +333,11 @@ public class MapRoute {
                     }
 
                     markerOptionsBegin
-                            .position(begin.getVertex())
+                            .position(new LatLng(begin.getVertex().getLatitude(), begin.getVertex().getLongitude()))
                             .snippet("PREV")
                             .visible(false);
                     markerOptionsEnd
-                            .position(end.getVertex())
+                            .position(new LatLng(end.getVertex().getLatitude(), end.getVertex().getLongitude()))
                             .snippet("NEXT")
                             .visible(false);
 

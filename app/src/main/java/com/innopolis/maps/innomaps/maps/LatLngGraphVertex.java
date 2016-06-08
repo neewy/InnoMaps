@@ -1,7 +1,5 @@
 package com.innopolis.maps.innomaps.maps;
 
-import com.google.android.gms.maps.model.LatLng;
-
 /**
  * Implements custom graph vertex for JGraphT based on DefaultEdge class.
  * Necessary for export and import functions.
@@ -25,6 +23,10 @@ public class LatLngGraphVertex {
     public LatLngGraphVertex(LatLngGraphVertex vertex) {
         this.vertex = vertex.getVertex();
         this.vertexId = vertex.getVertexId();
+    }
+
+    public LatLngGraphVertex() {
+        // all persisted classes must define a no-arg constructor with at least package visibility
     }
 
     public LatLng getVertex() {
