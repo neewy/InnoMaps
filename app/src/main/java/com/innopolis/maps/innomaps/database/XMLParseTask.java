@@ -5,20 +5,17 @@ import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 
+import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.utils.Utils;
 
-import static com.innopolis.maps.innomaps.database.TableFields.NULL;
+import static com.innopolis.maps.innomaps.database.TableFields.EMPTY;
 import static com.innopolis.maps.innomaps.database.TableFields.POI;
 
-/**
- * Created by neewy on 21.04.16.
- */
 public class XMLParseTask extends AsyncTask<Void, Void, Boolean> {
 
     private Context context;
     private SQLiteDatabase database;
     private SharedPreferences sPref;
-    private final static String DELETE = "delete from ";
 
     public XMLParseTask(Context context, SQLiteDatabase database, SharedPreferences sPref) {
         this.context = context;
@@ -28,12 +25,12 @@ public class XMLParseTask extends AsyncTask<Void, Void, Boolean> {
 
     @Override
     protected Boolean doInBackground(Void... params) {
-        String md5 = Utils.doGetRequest(Utils.restServerUrl + "/innomaps/graphml/md5?floor=9");
-        String savedText = sPref.getString("XmlUpdated", NULL);
+        String md5 = Utils.doGetRequest(Utils.restServerUrl + context.getString(R.string.graph_md5_url));
+        String savedText = sPref.getString(context.getString(R.string.XmlUpdated), EMPTY);
         if (!savedText.equals(md5)) {
             SharedPreferences.Editor ed = sPref.edit();
-            ed.putString("XmlUpdated", md5);
-            database.execSQL(DELETE + POI);
+            ed.putString(context.getString(R.string.XmlUpdated), md5);
+            database.execSQL(SQLQueries.delete(POI));
             ed.apply();
             return true;
         } else {

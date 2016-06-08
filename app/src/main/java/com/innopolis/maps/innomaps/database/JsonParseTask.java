@@ -24,6 +24,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
+import static com.innopolis.maps.innomaps.database.SQLQueries.*;
+import static com.innopolis.maps.innomaps.database.TableFields.BUILDING;
 import static com.innopolis.maps.innomaps.database.TableFields.CREATOR;
 import static com.innopolis.maps.innomaps.database.TableFields.DATETIME;
 import static com.innopolis.maps.innomaps.database.TableFields.DESCRIPTION;
@@ -33,12 +35,17 @@ import static com.innopolis.maps.innomaps.database.TableFields.END;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENTS;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_POI;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_TYPE;
+import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
 import static com.innopolis.maps.innomaps.database.TableFields.HASH;
 import static com.innopolis.maps.innomaps.database.TableFields.ID;
+import static com.innopolis.maps.innomaps.database.TableFields.ITEMS;
+import static com.innopolis.maps.innomaps.database.TableFields.POI;
+import static com.innopolis.maps.innomaps.database.TableFields.ROOM;
+import static com.innopolis.maps.innomaps.database.TableFields._ID;
 import static com.innopolis.maps.innomaps.database.TableFields.LAST_UPDATE;
 import static com.innopolis.maps.innomaps.database.TableFields.LINK;
 import static com.innopolis.maps.innomaps.database.TableFields.LOCATION;
-import static com.innopolis.maps.innomaps.database.TableFields.NULL;
+import static com.innopolis.maps.innomaps.database.TableFields.EMPTY;
 import static com.innopolis.maps.innomaps.database.TableFields.RECURRENCE;
 import static com.innopolis.maps.innomaps.database.TableFields.RRULE;
 import static com.innopolis.maps.innomaps.database.TableFields.START;
@@ -48,8 +55,6 @@ public class JsonParseTask extends AsyncTask<Void, Void, String> {
 
     private SQLiteDatabase database;
     private SharedPreferences sPref;
-    private final String resultJson = "";
-    private final static String DELETE = "delete from ";
 
     public JsonParseTask(SQLiteDatabase database, SharedPreferences sPref) {
         this.database = database;
@@ -68,7 +73,7 @@ public class JsonParseTask extends AsyncTask<Void, Void, String> {
      * @return true in case the JSON was updated
      */
     protected boolean jsonUpdated(String hashKey) {
-        String savedText = sPref.getString(HASH, NULL);
+        String savedText = sPref.getString(HASH, EMPTY);
         if (savedText.equals(hashKey)) {
             return false;
         } else {
@@ -95,7 +100,7 @@ public class JsonParseTask extends AsyncTask<Void, Void, String> {
         cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek()); //the starting date of current week
         Date updatedDate = null;
         try {
-            updatedDate = Utils.googleTimeFormat.parse(sPref.getString(LAST_UPDATE, NULL));
+            updatedDate = Utils.googleTimeFormat.parse(sPref.getString(LAST_UPDATE, EMPTY));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -126,19 +131,19 @@ public class JsonParseTask extends AsyncTask<Void, Void, String> {
     }
 
     private void removeTable(String tableName) {
-        database.execSQL(DELETE + tableName);
+        database.execSQL(delete(tableName));
     }
 
 
     public int populateDB(JSONObject dataJsonObj) throws JSONException {
         int eventsInserted = 0;
-        JSONArray events = dataJsonObj.getJSONArray("items");
+        JSONArray events = dataJsonObj.getJSONArray(ITEMS);
         for (int i = 0; i < events.length(); i++) {
             JSONObject jsonEvent = events.getJSONObject(i);
-            String summary = NULL, htmlLink = NULL, start = NULL, end = NULL,
-                    location = NULL, eventID = NULL, description = NULL,
-                    creator_name = NULL, creator_email = NULL, checked = "0",
-                    recurrence = NULL;
+            String summary = EMPTY, htmlLink = EMPTY, start = EMPTY, end = EMPTY,
+                    location = EMPTY, eventID = EMPTY, description = EMPTY,
+                    creator_name = EMPTY, creator_email = EMPTY, checked = "0",
+                    recurrence = EMPTY;
             Iterator<String> iter = jsonEvent.keys();
             while (iter.hasNext()) {
                 String key = iter.next();
@@ -158,8 +163,8 @@ public class JsonParseTask extends AsyncTask<Void, Void, String> {
                     case LOCATION:
                         location = jsonEvent.getString(LOCATION);
                         break;
-                    case "id":
-                        eventID = jsonEvent.getString("id");
+                    case ID:
+                        eventID = jsonEvent.getString(ID);
                         break;
                     case DESCRIPTION:
                         description = jsonEvent.getString(DESCRIPTION);
@@ -169,7 +174,7 @@ public class JsonParseTask extends AsyncTask<Void, Void, String> {
                         creator_email = jsonEvent.getJSONObject(CREATOR).getString(EMAIL);
                         break;
                     case RECURRENCE:
-                        recurrence = jsonEvent.getJSONArray(RECURRENCE).getString(0).replace(RRULE, NULL);
+                        recurrence = jsonEvent.getJSONArray(RECURRENCE).getString(0).replace(RRULE, EMPTY);
                         break;
                 }
             }
@@ -210,16 +215,16 @@ public class JsonParseTask extends AsyncTask<Void, Void, String> {
                     Cursor poiCursor = null;
                     switch (locationArray.length) {
                         case 1:
-                            poiCursor = database.rawQuery("SELECT * FROM POI WHERE building LIKE '%" + locationArray[0] + "%'", null);
+                            poiCursor = database.rawQuery(cursorSelectBuilding(POI, BUILDING, locationArray), null);
                             break;
                         case 2:
-                            poiCursor = database.rawQuery("SELECT * FROM POI WHERE building LIKE '%" + locationArray[0] + "%' AND floor LIKE '%" + locationArray[1] + "%'", null);
+                            poiCursor = database.rawQuery(cursorSelectFloor(POI, BUILDING, FLOOR, locationArray), null);
                             break;
                         case 3:
-                            poiCursor = database.rawQuery("SELECT * FROM POI WHERE building LIKE '%" + locationArray[0] + "%' AND floor LIKE '%" + locationArray[1] + "%' AND room LIKE '%" + locationArray[2] + "%'", null);
+                            poiCursor = database.rawQuery(cursorSelectRoom(POI, BUILDING, FLOOR, ROOM, locationArray), null);
                     }
                     if (poiCursor.moveToFirst()) {
-                        String poiID = poiCursor.getString(poiCursor.getColumnIndex(ID));
+                        String poiID = poiCursor.getString(poiCursor.getColumnIndex(_ID));
                         DBHelper.insertEventPoi(database, eventID + "_" + maxInstances, poiID);
                         DBHelper.insertEvent(database, summary, htmlLink, finalStartDate, finalEndDate, eventID + "_" + maxInstances, checked);
                         DBHelper.insertEventType(database, summary, description, creator_name, creator_email);

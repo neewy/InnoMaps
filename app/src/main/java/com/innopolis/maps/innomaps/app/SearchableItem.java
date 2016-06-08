@@ -9,12 +9,17 @@ import java.util.List;
 
 import static com.innopolis.maps.innomaps.database.TableFields.ATTR;
 import static com.innopolis.maps.innomaps.database.TableFields.BUILDING;
+import static com.innopolis.maps.innomaps.database.TableFields.EVENT;
 import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
+import static com.innopolis.maps.innomaps.database.TableFields.FOOD;
+import static com.innopolis.maps.innomaps.database.TableFields._ID;
+import static com.innopolis.maps.innomaps.database.TableFields.NUMBER;
 import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
 import static com.innopolis.maps.innomaps.database.TableFields.ROOM;
 import static com.innopolis.maps.innomaps.database.TableFields.TYPE;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
+import static com.innopolis.maps.innomaps.database.TableFields.WC;
 
 public class SearchableItem implements Comparable<SearchableItem> {
     public String name;
@@ -93,7 +98,7 @@ public class SearchableItem implements Comparable<SearchableItem> {
         for (Event event : events) {
             SearchableItem searchableItem = new SearchableItem();
             searchableItem.setName(event.getSummary());
-            searchableItem.setType("event");
+            searchableItem.setType(EVENT);
             searchableItem.setId(event.getEventID());
             searchableItem.setBuilding(event.getBuilding());
             searchableItem.setFloor(event.getFloor());
@@ -103,21 +108,21 @@ public class SearchableItem implements Comparable<SearchableItem> {
         }
     }
 
-    // TODO: Extract string constants
+    // TODO: Extract string constants +
     public static void addPois(List<SearchableItem> items, List<HashMap<String, String>> pois) {
         for (HashMap<String, String> poi : pois) {
             SearchableItem searchableItem = new SearchableItem();
-            if (poi.get("number") != null) {
-                searchableItem.setName(poi.get("number"));
+            if (poi.get(NUMBER) != null) {
+                searchableItem.setName(poi.get(NUMBER));
             } else {
-                if (poi.get(POI_NAME).toLowerCase().contains("wc")) {
+                if (poi.get(POI_NAME).toLowerCase().contains(WC)) {
                     searchableItem.setName(poi.get(POI_NAME) + " | " + poi.get(ATTR));
                 } else {
                     searchableItem.setName(poi.get(POI_NAME));
                 }
             }
             searchableItem.setType(poi.get(TYPE));
-            searchableItem.setId(poi.get("_id"));
+            searchableItem.setId(poi.get(_ID));
             searchableItem.setBuilding(poi.get(BUILDING));
             searchableItem.setFloor(poi.get(FLOOR));
             searchableItem.setRoom(poi.get(ROOM));
@@ -129,21 +134,21 @@ public class SearchableItem implements Comparable<SearchableItem> {
     public static Predicate<SearchableItem> isWc = new Predicate<SearchableItem>() {
         @Override
         public boolean apply(SearchableItem input) {
-            return input.getType().toLowerCase().equals("wc");
+            return input.getType().toLowerCase().equals(WC);
         }
     };
 
     public static Predicate<SearchableItem> isFood = new Predicate<SearchableItem>() {
         @Override
         public boolean apply(SearchableItem input) {
-            return input.getType().toLowerCase().equals("food");
+            return input.getType().toLowerCase().equals(FOOD);
         }
     };
 
     public static Predicate<SearchableItem> isEvent = new Predicate<SearchableItem>() {
         @Override
         public boolean apply(SearchableItem input) {
-            return input.getType().toLowerCase().equals("event");
+            return input.getType().toLowerCase().equals(EVENT);
         }
     };
 
@@ -151,7 +156,7 @@ public class SearchableItem implements Comparable<SearchableItem> {
         @Override
         public boolean apply(SearchableItem input) {
             Boolean res;
-            res = !(input.getType().toLowerCase().equals("event") || input.getType().toLowerCase().equals("food") || input.getType().toLowerCase().equals("wc"));
+            res = !(input.getType().toLowerCase().equals(EVENT) || input.getType().toLowerCase().equals(FOOD) || input.getType().toLowerCase().equals(WC));
             return res;
         }
     };

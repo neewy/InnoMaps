@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="authors_array">
+        <item>Yushkevich N</item>
+        <item>Munichev K</item>
+        <item>Yusupov Z</item>
+        <item>Grishina E</item>
+        <item>Shalavin M</item>
+    </string-array>
+</resources>

@@ -58,8 +58,6 @@
     <string-array name="layers_array">
         <item>@string/normal</item>
         <item>@string/hybrid</item>
-
-
         <item>@string/satellite</item>
         <item>@string/terrain</item>
         <item>@string/none_map</item>
@@ -179,13 +177,13 @@
     <string name="street_view_panorama_basic_demo_label">Street View Panorama</string>
     <string name="street_view_panorama_events_demo_description">Standard Street View Panorama with event handling.</string>
     <string name="street_view_panorama_events_demo_label">Street View Panorama events</string>
-    <string name="street_view_panorama_navigation_demo_description">Street View Panorama with programatic navigation</string>
+    <string name="street_view_panorama_navigation_demo_description">Street View Panorama with programmatic navigation</string>
     <string name="street_view_panorama_navigation_demo_label">Street View Panorama navigation</string>
     <string name="street_view_panorama_options_demo_description">Street View Panorama with toggles for options</string>
     <string name="street_view_panorama_options_demo_label">Street View Panorama options</string>
     <string name="street_view_panorama_view_demo_description">Standard Street View Panorama using a View</string>
     <string name="street_view_panorama_view_demo_label">Street View Panorama View</string>
-    <string name="streetnames">Streetnames</string>
+    <string name="street_names">Streetnames</string>
     <string name="tap_screen">tap screen</string>
     <string name="long_press_screen">long press screen</string>
     <string name="walk_panorama">Walk</string>
@@ -232,6 +230,47 @@
     <string name="back_caps">BACK</string>
     <string name="go_caps">GO</string>
     <string name="marker_in_university">Please, select a room within the university</string>
+    <string name="dialogSource">dialogSource</string>
+    <string name="MapsFragment">MapsFragment</string>
+    <string name="event">event</string>
+    <string name="type">type</string>
+    <string name="poi">poi</string>
+    <string name="id">id</string>
+    <string name="destination">destination</string>
+    <string name="FindRoute">FindRoute</string>
+    <string name="finish_route">Please click BACK again to finish the route</string>
+    <string name="finish">FINISH</string>
+    <string name="exit_double_back">Please click BACK again to exit</string>
+    <string name="detailed">Detailed</string>
+    <string name="room">room</string>
+    <string name="empty" />
+    <string name="main_fragment">Main Fragment</string>
+    <string name="graph_md5_url">/innomaps/graphml/md5?floor=9</string>
+    <string name="graph_load_url">/innomaps/graphml/loadmap?floor=9</string>
+    <string name="graph_md5">graph_md5</string>
+    <string name="graph_filename">9.xml</string>
+    <string name="internet_connect">Connect to the internet</string>
+    <string name="XmlUpdated">XmlUpdated</string>
+    <string name="text_plain">text/plain</string>
+    <string name="share_sms">%1$s begins in %2$s. Join us!</string>
+    <string name="event_details">Event details</string>
+    <string name="duration_text">"Duration: %smin"</string>
+    <string name="detailed_event">DetailedEvent</string>
+    <string name="detailed_event_fragment">Detailed Events Fragment</string>
+    <string name="last_update">lastUpdate</string>
+    <string name="hash">hash</string>
+    <string name="offline_message">You are offline. Showing last events</string>
+    <string name="no_events_today">No events today</string>
+    <string name="no_events_tomorrow">No events tomorrow</string>
+    <string name="no_events_week">No events this week</string>
+    <string name="events_fragment">Events Fragment</string>
+    <string name="favourite_fragment">Favourite Fragment</string>
+    <string name="contact_url">https://telegram.me/</string>
+    <string name="dialog_text">dialogText</string>
+    <string name="telegram_in_touch">"Get in touch with %s via telegram""</string>
+    <string name="open_link">"Open link %s?"</string>
+    <string name="open">Open</string>
+    <string name="cancel">Cancel</string>
 
 
 </resources>

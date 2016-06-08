@@ -5,15 +5,15 @@ import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 
+import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import java.io.FileOutputStream;
 
-import static com.innopolis.maps.innomaps.database.TableFields.NULL;
+import static com.innopolis.maps.innomaps.database.TableFields.EMPTY;
 
 /**
  * Downloads graph from server (if necessary)
- * Created by luckychess on 4/17/16.
  */
 public class GraphLoader extends AsyncTask<Void, Void, String> {
     private Context context;
@@ -28,7 +28,7 @@ public class GraphLoader extends AsyncTask<Void, Void, String> {
 
     @Override
     protected String doInBackground(Void... params) {
-        return Utils.doGetRequest(Utils.restServerUrl + "/innomaps/graphml/md5?floor=9");
+        return Utils.doGetRequest(Utils.restServerUrl + context.getString(R.string.graph_md5_url));
     }
 
     @Override
@@ -43,12 +43,12 @@ public class GraphLoader extends AsyncTask<Void, Void, String> {
     private class DownloadGraph extends AsyncTask<Void, Void, String> {
         @Override
         protected String doInBackground(Void... params) {
-            return Utils.doGetRequest(Utils.restServerUrl + "/innomaps/graphml/loadmap?floor=9");
+            return Utils.doGetRequest(Utils.restServerUrl + context.getString(R.string.graph_load_url));
         }
 
         @Override
         protected void onPostExecute(String result) {
-            String filename = "9.xml";
+            String filename = context.getString(R.string.graph_filename);
             FileOutputStream outputStream;
 
             try {
@@ -64,12 +64,12 @@ public class GraphLoader extends AsyncTask<Void, Void, String> {
     }
 
     protected boolean graphUpdated(String hashKey) {
-        String savedText = sPref.getString("graph_md5", NULL);
+        String savedText = sPref.getString(context.getString(R.string.graph_md5), EMPTY);
         if (savedText.equals(hashKey)) {
             return false;
         } else {
             SharedPreferences.Editor ed = sPref.edit();
-            ed.putString("graph_md5", hashKey);
+            ed.putString(context.getString(R.string.graph_md5), hashKey);
             ed.apply();
             return true;
         }

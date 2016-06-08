@@ -17,9 +17,12 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.database.TableFields;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import java.util.List;
+
+import static com.innopolis.maps.innomaps.database.TableFields.*;
 
 public class MapBottomEventListAdapter extends BaseAdapter {
 
@@ -71,7 +74,7 @@ public class MapBottomEventListAdapter extends BaseAdapter {
             public void onClick(View v) {
                 Fragment fragment = new DetailedEvent();
                 Bundle bundle = new Bundle();
-                bundle.putString("eventID", event.getEventID());
+                bundle.putString(EVENT_ID, event.getEventID());
                 fragment.setArguments(bundle);
                 DrawerLayout drawer = (DrawerLayout) activity.findViewById(R.id.drawer_layout);
                 Toolbar toolbar = (Toolbar) activity.findViewById(R.id.toolbar);
@@ -85,7 +88,7 @@ public class MapBottomEventListAdapter extends BaseAdapter {
                 });
                 FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
                 ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                ft.replace(R.id.content_frame, fragment, "Detailed").addToBackStack("Detailed");
+                ft.replace(R.id.content_frame, fragment, activity.getString(R.string.detailed)).addToBackStack(activity.getString(R.string.detailed));
                 ft.commit();
             }
         });

@@ -15,7 +15,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -43,6 +42,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.database.DBHelper;
+import com.innopolis.maps.innomaps.database.SQLQueries;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -58,18 +58,27 @@ import xyz.hanks.library.SmallBang;
 
 import static com.innopolis.maps.innomaps.database.TableFields.BUILDING;
 import static com.innopolis.maps.innomaps.database.TableFields.DESCRIPTION;
+import static com.innopolis.maps.innomaps.database.TableFields.DESTINATION;
+import static com.innopolis.maps.innomaps.database.TableFields.DETAILED_EVENT;
+import static com.innopolis.maps.innomaps.database.TableFields.DIALOG_SOURCE;
 import static com.innopolis.maps.innomaps.database.TableFields.END;
+import static com.innopolis.maps.innomaps.database.TableFields.EVENT;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENTS;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_ID;
+import static com.innopolis.maps.innomaps.database.TableFields.EVENT_POI;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_TYPE;
 import static com.innopolis.maps.innomaps.database.TableFields.FAV;
 import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LINK;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
+import static com.innopolis.maps.innomaps.database.TableFields.POI;
+import static com.innopolis.maps.innomaps.database.TableFields.POI_ID;
 import static com.innopolis.maps.innomaps.database.TableFields.ROOM;
 import static com.innopolis.maps.innomaps.database.TableFields.START;
 import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY;
+import static com.innopolis.maps.innomaps.database.TableFields.TYPE;
+import static com.innopolis.maps.innomaps.database.TableFields._ID;
 
 
 public class DetailedEvent extends Fragment {
@@ -92,7 +101,7 @@ public class DetailedEvent extends Fragment {
     private GroundOverlay imageOverlay;
 
 
-    String summary, htmlLink, start, end, descriptionStr, creator,
+    String summary, htmlLink, start, end, descriptionStr,
             eventID, building, floor, room, latitude, longitude, checked;
 
 
@@ -123,9 +132,10 @@ public class DetailedEvent extends Fragment {
 
     private void actionShare() {
         Intent i = new Intent(Intent.ACTION_SEND);
-        i.setType("text/plain");
+        i.setType(context.getString(R.string.text_plain));
         i.putExtra(Intent.EXTRA_SUBJECT, eventName.getText());
-        i.putExtra(Intent.EXTRA_TEXT, (eventName.getText() + " begins in " + dateTime.getText() + ". Join us!"));
+        i.putExtra(Intent.EXTRA_TEXT, (String.format(context.getString(R.string.share_sms),
+                eventName.getText(), dateTime.getText())));
         startActivity(i);
     }
 
@@ -133,7 +143,7 @@ public class DetailedEvent extends Fragment {
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         ((DrawerLayout) getActivity().findViewById(R.id.drawer_layout)).setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Event details");
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.event_details);
         context = getActivity().getApplicationContext();
         View view = inflater.inflate(R.layout.detailed_event, container, false);
         dbHelper = new DBHelper(context);
@@ -145,14 +155,14 @@ public class DetailedEvent extends Fragment {
         description = (LinkableTextView) view.findViewById(R.id.description);
         noEventText = (TextView) view.findViewById(R.id.noEventTextView);
         duration = (TextView) view.findViewById(R.id.duration);
-        final CheckBox favCheckBox =(CheckBox) view.findViewById(R.id.favCheckBox);
+        final CheckBox favCheckBox = (CheckBox) view.findViewById(R.id.favCheckBox);
 
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             String NULL = "";
             eventID = bundle.getString(EVENT_ID, NULL);
         }
-        final Cursor cursor = database.query(EVENTS, null, "eventID=?", new String[]{eventID}, null, null, null);
+        final Cursor cursor = database.query(EVENTS, null, EVENT_ID + "=?", new String[]{eventID}, null, null, null);
         cursor.moveToFirst();
         do {
             int summary, htmlLink, start, end, checked;
@@ -167,7 +177,7 @@ public class DetailedEvent extends Fragment {
             this.end = cursor.getString(end);
             this.checked = cursor.getString(checked);
             String[] summaryArgs = new String[]{cursor.getString(summary)};
-            Cursor cursor1 = database.query(EVENT_TYPE, null, "summary=?", summaryArgs, null, null, null);
+            Cursor cursor1 = database.query(EVENT_TYPE, null, SUMMARY + "=?", summaryArgs, null, null, null);
             cursor1.moveToFirst();
             int description = cursor1.getColumnIndex(DESCRIPTION);
             this.descriptionStr = cursor1.getString(description);
@@ -176,7 +186,7 @@ public class DetailedEvent extends Fragment {
             cursor1.close();
         } while (cursor.moveToNext());
         cursor.close();
-        Cursor locationC = database.rawQuery("SELECT * FROM poi INNER JOIN event_poi on event_poi.poi_id = poi._id WHERE event_poi.eventID LIKE '%" + eventID + "%'", null);
+        Cursor locationC = database.rawQuery(SQLQueries.locationQuery(POI, EVENT_POI, _ID, POI_ID, EVENT_ID, eventID), null);
         if (locationC.moveToFirst()) {
             building = locationC.getString(locationC.getColumnIndex(BUILDING));
             floor = locationC.getString(locationC.getColumnIndex(FLOOR));
@@ -229,7 +239,7 @@ public class DetailedEvent extends Fragment {
         location.setText(StringUtils.join(Utils.clean(locationText), ", "));
         dateTime.setText(Utils.commonTime.format(startDate));
         Long durationTime = TimeUnit.MILLISECONDS.toMinutes(endDate.getTime() - startDate.getTime());
-        duration.setText("Duration: " + String.valueOf(durationTime) + "min");
+        duration.setText(String.format(context.getString(R.string.duration_text), String.valueOf(durationTime)));
 
         if (this.descriptionStr.length() != 0) {
             description
@@ -280,11 +290,11 @@ public class DetailedEvent extends Fragment {
             public void onClick(View v) {
                 DialogFragment newFragment = new MapFragmentAskForRouteDialog();
                 Bundle bundle = new Bundle();
-                bundle.putString("dialogSource", "DetailedEvent");
-                bundle.putString("type", "event");
-                bundle.putString("destination", location.getText().toString());
+                bundle.putString(getString(R.string.dialogSource), context.getString(R.string.detailed_event));
+                bundle.putString(TYPE, EVENT);
+                bundle.putString(getString(R.string.destination), location.getText().toString());
                 newFragment.setArguments(bundle);
-                newFragment.show(getActivity().getSupportFragmentManager(), "FindRoute");
+                newFragment.show(getActivity().getSupportFragmentManager(), context.getString(R.string.FindRoute));
 
             }
         });
@@ -292,7 +302,6 @@ public class DetailedEvent extends Fragment {
 
         return view;
     }
-
 
 
     public void initializeMap(final String latitude, final String longitude) {
@@ -357,7 +366,7 @@ public class DetailedEvent extends Fragment {
                             Bundle bundle = new Bundle();
                             bundle.putString(SUMMARY, summary);
                             newFragment.setArguments(bundle);
-                            newFragment.show(getActivity().getSupportFragmentManager(), "FindRoute");
+                            newFragment.show(getActivity().getSupportFragmentManager(), context.getString(R.string.FindRoute));
                         }
                     });
                 }
@@ -370,7 +379,7 @@ public class DetailedEvent extends Fragment {
         super.onResume();
 
         // Tracking the screen view
-        MainActivity.getInstance().trackScreenView("Detailed Events Fragment");
+        MainActivity.getInstance().trackScreenView(context.getString(R.string.detailed_event_fragment));
     }
 
     private void putOverlayToMap(LatLng southWest, LatLng northEast, BitmapDescriptor bitmapDescriptor) {
