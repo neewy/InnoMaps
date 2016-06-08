@@ -26,7 +26,8 @@ public class Event implements Comparable<Event> {
     private String latitude;
     private String longitude;
 
-    public Event() {}
+    public Event() {
+    }
 
     public String getSummary() {
         return summary;
@@ -109,7 +110,9 @@ public class Event implements Comparable<Event> {
         this.building = building;
     }
 
-    public String getFloor() { return floor; }
+    public String getFloor() {
+        return floor;
+    }
 
     public void setFloor(String floor) {
         this.floor = floor;
@@ -176,7 +179,7 @@ public class Event implements Comparable<Event> {
             Date today = new Date();
             Calendar c = Calendar.getInstance();
             c.setTime(today);
-            c.add(Calendar.DAY_OF_WEEK, c.getFirstDayOfWeek()+6);
+            c.add(Calendar.DAY_OF_WEEK, c.getFirstDayOfWeek() + 6);
             Date endOfWeek = c.getTime();
             return (event.getStart().after(today) && event.getEnd().before(endOfWeek));
         }

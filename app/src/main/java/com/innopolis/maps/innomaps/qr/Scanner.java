@@ -23,7 +23,7 @@ import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
 
 
-public class Scanner extends AppCompatActivity implements ZXingScannerView.ResultHandler  {
+public class Scanner extends AppCompatActivity implements ZXingScannerView.ResultHandler {
 
     private ZXingScannerView mScannerView;
 
@@ -65,7 +65,7 @@ public class Scanner extends AppCompatActivity implements ZXingScannerView.Resul
     @Override
     public void handleResult(Result rawResult) {
         // Do something with the result here
-        Cursor cursor = database.rawQuery("SELECT * FROM poi where _id like '"+ rawResult.getText() +"'", null);
+        Cursor cursor = database.rawQuery("SELECT * FROM poi where _id like '" + rawResult.getText() + "'", null);
         if (cursor.moveToFirst()) {
             FragmentManager fm = MainActivity.getInstance().getSupportFragmentManager();
             MapsFragment maps = (MapsFragment) fm.findFragmentByTag("Maps");

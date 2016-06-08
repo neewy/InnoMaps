@@ -91,18 +91,18 @@ public class SQLQueries {
         return query;
     }
 
-    public static String rowInTable(String table, String row){
+    public static String rowInTable(String table, String row) {
         String string = table + "." + row;
         return string;
     }
 
-    public static String innerJoin(String table1, String table2, String row1, String row2){
+    public static String innerJoin(String table1, String table2, String row1, String row2) {
         String query = selectAll(table1) + INNER_JOIN + table2 + ON + rowInTable(table2, row2) + " = " + rowInTable(table1, row1);
         return query;
     }
 
-    public static String locationQuery(String table1, String table2, String row1, String row2, String like_row, String like_data){
+    public static String locationQuery(String table1, String table2, String row1, String row2, String like_row, String like_data) {
         String query = innerJoin(table1, table2, row1, row2) + WHERE + like(rowInTable(table2, like_row), like_data);
-    return query;
+        return query;
     }
 }

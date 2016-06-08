@@ -58,9 +58,6 @@ import xyz.hanks.library.SmallBang;
 
 import static com.innopolis.maps.innomaps.database.TableFields.BUILDING;
 import static com.innopolis.maps.innomaps.database.TableFields.DESCRIPTION;
-import static com.innopolis.maps.innomaps.database.TableFields.DESTINATION;
-import static com.innopolis.maps.innomaps.database.TableFields.DETAILED_EVENT;
-import static com.innopolis.maps.innomaps.database.TableFields.DIALOG_SOURCE;
 import static com.innopolis.maps.innomaps.database.TableFields.END;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENTS;

@@ -250,7 +250,7 @@ public class BottomSheet extends Fragment {
 
     protected void clearMarkerList() {
         if (markerList != null && markerList.size() > 0) {
-            for (Marker marker: markerList){
+            for (Marker marker : markerList) {
                 marker.remove();
             }
             markerList.clear();
@@ -263,10 +263,10 @@ public class BottomSheet extends Fragment {
         MarkerOptions markerOptions = new MarkerOptions();
         String title = findClosestPOI(latLng).firstKey();
         markerOptions.title(title);
-        if (title!=null && !"".equals(title) && firstTimeFlag){
+        if (title != null && !"".equals(title) && firstTimeFlag) {
             boolean found = false;
-            for (SearchableItem item: ((MainActivity)getActivity()).searchItems){
-                if (item.getName().toLowerCase().contains(title.toLowerCase()) && item.getCoordinate().equals(latLng)){
+            for (SearchableItem item : ((MainActivity) getActivity()).searchItems) {
+                if (item.getName().toLowerCase().contains(title.toLowerCase()) && item.getCoordinate().equals(latLng)) {
                     inSearchBottomList(item, title);
                     scrollView.setVisibility(View.VISIBLE);
                     found = true;
@@ -298,9 +298,9 @@ public class BottomSheet extends Fragment {
                     lng = pair.getValue().toString();
                 }
             }
-            if (closestDistance < 0.012){
+            if (closestDistance < 0.012) {
                 closest = new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
-                Log.d("DISTANCE: ", ""+closestDistance);
+                Log.d("DISTANCE: ", "" + closestDistance);
                 String sqlQuery = "SELECT " + POI_NAME + " FROM " + POI + " WHERE " + LATITUDE + "=?" + " AND " + LONGITUDE + "=?";
                 Cursor cursor = MarkersAdapter.database.rawQuery(sqlQuery, new String[]{lat, lng});
                 cursor.moveToFirst();

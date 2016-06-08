@@ -17,7 +17,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static com.innopolis.maps.innomaps.database.SQLQueries.*;
+import static com.innopolis.maps.innomaps.database.SQLQueries.IF_FAVOURITE_QUERY;
+import static com.innopolis.maps.innomaps.database.SQLQueries.READ_EVENTS_QUERY;
+import static com.innopolis.maps.innomaps.database.SQLQueries.drop;
+import static com.innopolis.maps.innomaps.database.SQLQueries.readOtherTypesQuery;
+import static com.innopolis.maps.innomaps.database.SQLQueries.readRoomTypeQuery;
 import static com.innopolis.maps.innomaps.database.TableFields.ATTR;
 import static com.innopolis.maps.innomaps.database.TableFields.BUILDING;
 import static com.innopolis.maps.innomaps.database.TableFields.CREATOR_EMAIL;
@@ -33,19 +37,19 @@ import static com.innopolis.maps.innomaps.database.TableFields.EVENT_TYPE;
 import static com.innopolis.maps.innomaps.database.TableFields.FAV;
 import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
 import static com.innopolis.maps.innomaps.database.TableFields.ID;
-import static com.innopolis.maps.innomaps.database.TableFields.NUMBER;
-import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY_EQUAL;
-import static com.innopolis.maps.innomaps.database.TableFields._ID;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LINK;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
+import static com.innopolis.maps.innomaps.database.TableFields.NUMBER;
 import static com.innopolis.maps.innomaps.database.TableFields.POI;
 import static com.innopolis.maps.innomaps.database.TableFields.POI_ID;
 import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
 import static com.innopolis.maps.innomaps.database.TableFields.ROOM;
 import static com.innopolis.maps.innomaps.database.TableFields.START;
 import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY;
+import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY_EQUAL;
 import static com.innopolis.maps.innomaps.database.TableFields.TYPE;
+import static com.innopolis.maps.innomaps.database.TableFields._ID;
 
 
 public class DBHelper extends SQLiteOpenHelper {

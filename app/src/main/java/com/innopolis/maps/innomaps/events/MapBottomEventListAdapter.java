@@ -17,12 +17,11 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.innopolis.maps.innomaps.R;
-import com.innopolis.maps.innomaps.database.TableFields;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import java.util.List;
 
-import static com.innopolis.maps.innomaps.database.TableFields.*;
+import static com.innopolis.maps.innomaps.database.TableFields.EVENT_ID;
 
 public class MapBottomEventListAdapter extends BaseAdapter {
 

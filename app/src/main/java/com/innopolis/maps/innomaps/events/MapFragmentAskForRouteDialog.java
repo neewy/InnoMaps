@@ -32,10 +32,10 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.innopolis.maps.innomaps.database.TableFields.EMPTY;
 import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
-import static com.innopolis.maps.innomaps.database.TableFields.EMPTY;
 import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
 
 public class MapFragmentAskForRouteDialog extends DialogFragment {

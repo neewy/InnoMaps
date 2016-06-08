@@ -21,20 +21,18 @@ import java.util.List;
 
 import static com.innopolis.maps.innomaps.database.TableFields.BUILDING;
 import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
-import static com.innopolis.maps.innomaps.database.TableFields._ID;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.POI;
 import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
 import static com.innopolis.maps.innomaps.database.TableFields.ROOM;
 import static com.innopolis.maps.innomaps.database.TableFields.TYPE;
-
+import static com.innopolis.maps.innomaps.database.TableFields._ID;
 
 
 /**
  * This class is responsible for drawing markers that show
  * names and numbers of rooms. In addition it contains adapters for graphic
- *
  */
 
 public class MarkersAdapter extends BottomSheet {
@@ -49,9 +47,9 @@ public class MarkersAdapter extends BottomSheet {
     List<Integer> filterList; //to store elements after choosing filter
 
 
-
     /**
      * Switch markers by id of optionMenu under toolbar
+     *
      * @param floor
      */
 
@@ -73,6 +71,7 @@ public class MarkersAdapter extends BottomSheet {
 
     /**
      * Filters markers on map and shows wc
+     *
      * @param floor
      */
     private void makeWcMarkers(int floor) {
@@ -86,6 +85,7 @@ public class MarkersAdapter extends BottomSheet {
 
     /**
      * Filters markers on map and shows only food places
+     *
      * @param floor
      */
     private void makeFoodMarkers(int floor) {
@@ -99,6 +99,7 @@ public class MarkersAdapter extends BottomSheet {
 
     /**
      * Filters markers on map and shows markers like "library" or "clinic"
+     *
      * @param floor
      */
     private void makeOtherMarkers(int floor) {
@@ -114,6 +115,7 @@ public class MarkersAdapter extends BottomSheet {
 
     /**
      * Filters markers on map and shows all markers
+     *
      * @param floor
      */
     protected void makeAllMarkers(int floor) {
@@ -127,6 +129,7 @@ public class MarkersAdapter extends BottomSheet {
 
     /**
      * Filters markers on map and shows only rooms with events
+     *
      * @param floor
      */
     protected void makeEventsMarkers(int floor) {
@@ -145,6 +148,7 @@ public class MarkersAdapter extends BottomSheet {
 
     /**
      * Clears markers and finds new
+     *
      * @param cursor - keep and search info in db table
      */
     private void refreshMarkers(Cursor cursor) {
@@ -171,6 +175,7 @@ public class MarkersAdapter extends BottomSheet {
     /**
      * Puts markers with custom icons on the map
      * Params are info in db table
+     *
      * @param room
      * @param type
      * @param latitude
@@ -191,9 +196,9 @@ public class MarkersAdapter extends BottomSheet {
     }
 
 
-
     /**
      * Switches icons by type
+     *
      * @param type - type of room
      * @return BitmapDescriptor
      */
@@ -252,6 +257,7 @@ public class MarkersAdapter extends BottomSheet {
 
     /**
      * Converts drawable to a bitmap resource
+     *
      * @param src
      * @param size - size in pixels
      * @return bitmap object

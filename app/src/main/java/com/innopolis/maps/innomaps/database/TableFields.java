@@ -47,7 +47,6 @@ public final class TableFields {
     public static final String HASH = "hash";
 
 
-
     /*table names*/
     public static final String EVENTS = "events";
     public static final String EVENT_TYPE = "event_type";

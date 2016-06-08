@@ -22,7 +22,6 @@ import android.widget.TextView;
 
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.database.DBHelper;
-import com.innopolis.maps.innomaps.database.TableFields;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +31,11 @@ import java.util.List;
 
 import xyz.hanks.library.SmallBang;
 
-import static com.innopolis.maps.innomaps.database.TableFields.*;
+import static com.innopolis.maps.innomaps.database.TableFields.EVENTS;
+import static com.innopolis.maps.innomaps.database.TableFields.EVENT_ID;
+import static com.innopolis.maps.innomaps.database.TableFields.EVENT_ID_EQUAL;
+import static com.innopolis.maps.innomaps.database.TableFields.FAV;
+import static com.innopolis.maps.innomaps.database.TableFields.NULL_STRING;
 
 
 public class EventsAdapter extends BaseAdapter {
@@ -81,7 +84,7 @@ public class EventsAdapter extends BaseAdapter {
         TextView nameEvent = (TextView) view.findViewById(R.id.nameEvent);
         TextView location = (TextView) view.findViewById(R.id.location);
         TextView dateTime = (TextView) view.findViewById(R.id.dateTime);
-        final CheckBox favCheckBox =(CheckBox) view.findViewById(R.id.favCheckBox);
+        final CheckBox favCheckBox = (CheckBox) view.findViewById(R.id.favCheckBox);
 
 
         nameEvent.setText(event.getSummary());
@@ -151,7 +154,6 @@ public class EventsAdapter extends BaseAdapter {
         });
         return view;
     }
-
 
 
     Event getEventRow(int position) {

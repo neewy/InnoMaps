@@ -34,7 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * This class represents an object, responsible for handling shortest path parts
  * to different floors of the university building.
-
+ * <p/>
  * Created by neewy on 16.04.16.
  */
 public class MapRoute {
@@ -75,8 +75,8 @@ public class MapRoute {
         this.activity = activity;
         setCurrentZoom(Double.valueOf(Math.floor((double) mMap.getCameraPosition().zoom)).intValue()); //initial zoom level
 
-        from = String.valueOf(path.get(0).getVertexId()).substring(0,1);
-        to = String.valueOf(path.get(path.size()-1).getVertexId()).substring(0,1);
+        from = String.valueOf(path.get(0).getVertexId()).substring(0, 1);
+        to = String.valueOf(path.get(path.size() - 1).getVertexId()).substring(0, 1);
         isPathUp = (to.compareTo(from) > 0);
 
         this.floorPicker = floorPicker;
@@ -88,6 +88,7 @@ public class MapRoute {
 
     /**
      * Sets zoom level and redraws markers, if such exist
+     *
      * @param currentZoom
      */
     public void setCurrentZoom(Integer currentZoom) {
@@ -101,8 +102,9 @@ public class MapRoute {
 
     /**
      * Splits shortest path into individual parts, corresponding to floors
+     *
      * @param currentNavPath - map, that contains there parts
-     * @param path - initial shortest path
+     * @param path           - initial shortest path
      */
     public void splitPathtoFloors(Map<String, ArrayList<LatLngGraphVertex>> currentNavPath, ArrayList<LatLngGraphVertex> path) {
         currentNavPath.clear();
@@ -128,7 +130,7 @@ public class MapRoute {
             currentNavPath.put(lastVerticeId.substring(0, 1), pathPart);
         }
 
-        for (String floor : currentNavPath.keySet()){
+        for (String floor : currentNavPath.keySet()) {
             if (currentNavPath.get(floor).size() == 1) {
                 currentNavPath.remove(floor); //eliminating parts, that consist of one point
             }
@@ -137,13 +139,14 @@ public class MapRoute {
 
     /**
      * Populates pathEndpoints with endpoints
+     *
      * @param currentNavPath
      * @param pathEndpoints
      */
     public void getEndpoints(Map<String, ArrayList<LatLngGraphVertex>> currentNavPath, Map<String, LatLngGraphVertex> pathEndpoints) {
-        for (String floor: currentNavPath.keySet()) {
+        for (String floor : currentNavPath.keySet()) {
             LatLngGraphVertex begin = currentNavPath.get(floor).get(0);
-            LatLngGraphVertex end = currentNavPath.get(floor).get(currentNavPath.get(floor).size()-1);
+            LatLngGraphVertex end = currentNavPath.get(floor).get(currentNavPath.get(floor).size() - 1);
             pathEndpoints.put(floor + "_0", begin);
             pathEndpoints.put(floor + "_1", end);
         }
@@ -191,6 +194,7 @@ public class MapRoute {
 
     /**
      * Method, that should be called when the route is finished
+     *
      * @param showMessage
      */
     public void finishRoute(boolean showMessage) {
@@ -205,12 +209,13 @@ public class MapRoute {
 
     /**
      * Draws path on GoogleMap
-     * @param map - GoogleMap, where a path should be drawn
+     *
+     * @param map   - GoogleMap, where a path should be drawn
      * @param floor - floor, that contains the path
-     * @param path - ArrayList of vertices, that should be drawn on a map
+     * @param path  - ArrayList of vertices, that should be drawn on a map
      */
     public void drawPathOnMap(GoogleMap map, String floor, ArrayList<LatLngGraphVertex> path) {
-        RadioButton button = ((RadioButton)floorPicker.getChildAt(5 - Integer.parseInt(floor)));
+        RadioButton button = ((RadioButton) floorPicker.getChildAt(5 - Integer.parseInt(floor)));
         if (!button.isChecked()) button.setChecked(true);
 
         if (!current.isEmpty()) current.deleteFromMap();
@@ -237,14 +242,14 @@ public class MapRoute {
 
         float center = 0.5f;
 
-        LatLngGraphVertex begin = pathEndpoints.get(current.getFloor()+"_0");
-        LatLngGraphVertex end = pathEndpoints.get(current.getFloor()+"_1");
+        LatLngGraphVertex begin = pathEndpoints.get(current.getFloor() + "_0");
+        LatLngGraphVertex end = pathEndpoints.get(current.getFloor() + "_1");
 
         if (from.equals(to)) {
 
             for (int i = fromZoom; i < toZoom; i++) {
                 MarkerOptions markerOptions = new MarkerOptions();
-                int size = (int) (sizeScale + ((i - 15)/0.1));
+                int size = (int) (sizeScale + ((i - 15) / 0.1));
 
                 markerOptions
                         .icon(convertDrawable(R.drawable.route_finish, size))
@@ -288,7 +293,8 @@ public class MapRoute {
                     MarkerOptions markerOptionsEnd = new MarkerOptions();
                     int size = (int) (sizeScale + ((i - 15) / 0.1));
 
-                    if (isPathUp) markerOptionsBegin.icon(convertDrawable(R.drawable.route_down, size));
+                    if (isPathUp)
+                        markerOptionsBegin.icon(convertDrawable(R.drawable.route_down, size));
                     else markerOptionsBegin.icon(convertDrawable(R.drawable.route_up, size));
 
                     markerOptionsBegin.position(begin.getVertex())
@@ -353,6 +359,7 @@ public class MapRoute {
 
     /**
      * Updates markers in accordance to new zoom level
+     *
      * @param newZoom
      */
     public void redrawMarkers(Integer newZoom) {
@@ -373,7 +380,7 @@ public class MapRoute {
             }
         } else {
             if (newZoom > currentZoom) {
-                int lastIndex = markerEndpointsZoom.keyAt(markerEndpointsZoom.size()-1);
+                int lastIndex = markerEndpointsZoom.keyAt(markerEndpointsZoom.size() - 1);
                 for (Marker marker : markerEndpointsZoom.get(lastIndex)) {
                     marker.setVisible(true);
                 }
@@ -391,6 +398,7 @@ public class MapRoute {
     /**
      * Adds markers and polylines to GoogleMap,
      * if the floor was manually selected by a user.
+     *
      * @param floorId - button of a level picker, that was clicked
      */
     public void addMarkerPolylineToMap(int floorId) {
@@ -429,7 +437,7 @@ public class MapRoute {
     public void setFloorRange() {
         floorRange = Arrays.asList(currentNavPath.keySet().toArray(new String[currentNavPath.keySet().size()]));
         Collections.sort(floorRange);
-        if (!floorRange.get(0).equals(from)){
+        if (!floorRange.get(0).equals(from)) {
             Collections.sort(floorRange, new Comparator<String>() {
                 @Override
                 public int compare(String lhs, String rhs) {
@@ -441,8 +449,9 @@ public class MapRoute {
 
     /**
      * Converts drawable to a bitmap resource
+     *
      * @param drawable
-     * @param size - size in pixels
+     * @param size     - size in pixels
      * @return bitmap object
      */
     public BitmapDescriptor convertDrawable(int drawable, int size) {
@@ -470,7 +479,7 @@ public class MapRoute {
             int last = 20;
             for (int i = first; i < last; i++) {
                 if (markerEndpointsZoom.get(i) != null) {
-                    for (Marker marker: markerEndpointsZoom.get(i)){
+                    for (Marker marker : markerEndpointsZoom.get(i)) {
                         marker.remove();
                     }
                 }
