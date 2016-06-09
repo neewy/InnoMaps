@@ -61,7 +61,7 @@
                     android:layout_alignParentLeft="false"
                     android:layout_alignParentRight="false"
                     android:layout_alignParentStart="false"
-                    android:layout_below="@+id/all_descr"
+                    android:layout_below="@+id/descr"
                     android:layout_marginTop="1dp"
                     tools:context="com.innopolis.maps.innomaps.MapsActivity" />
             </LinearLayout>
