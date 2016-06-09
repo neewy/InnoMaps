@@ -16,7 +16,7 @@ public interface Constants {
     String CONTENT_TYPE = "Content-Type";
     String CONTENT_TYPE_VALUE = "application/x-www-form-urlencoded";
 
-    String shortest_path_url = "%1$s://%2$s:%2$s/resources/shortestPath";
+    String shortest_path_url = "%1$s://%2$s:%3$s/resources/shortestPath";
 
     String VERTEX_ONE_LAT = "vertexOneLatitude";
     String VERTEX_ONE_LNG = "vertexOneLongitude";
