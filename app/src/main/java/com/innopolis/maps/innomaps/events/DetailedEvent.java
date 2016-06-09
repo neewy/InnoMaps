@@ -147,7 +147,7 @@ public class DetailedEvent extends Fragment {
         View view = inflater.inflate(R.layout.detailed_event, container, false);
         dbHelper = new DBHelper(context);
         database = dbHelper.getWritableDatabase();
-        eventName = (TextView) view.findViewById(R.id.eventName);
+        eventName = (TextView) view.findViewById(R.id.eventName_part);
         timeLeft = (TextView) view.findViewById(R.id.timeLeft);
         location = (TextView) view.findViewById(R.id.location);
         dateTime = (TextView) view.findViewById(R.id.dateTime);
@@ -161,7 +161,7 @@ public class DetailedEvent extends Fragment {
             String NULL = "";
             eventID = bundle.getString(EVENT_ID, NULL);
         }
-        final Cursor cursor = database.query(EVENTS, null, EVENT_ID + "=?", new String[]{eventID}, null, null, null);
+        final Cursor cursor = database.query(EVENTS, null, EVENT_ID_EQUAL, new String[]{eventID}, null, null, null);
         cursor.moveToFirst();
         do {
             int summary, htmlLink, start, end, checked;
