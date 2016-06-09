@@ -10,10 +10,6 @@
         <item name="listPopupWindowStyle">@style/PopupListStyle</item>
     </style>
 
-    <style name="spinnerDropDownItemStyle">
-        <item name="android:background">#FFFAFAFA</item>
-    </style>
-
     <style name="PopupListStyle" parent="@style/Widget.AppCompat.Light.ListPopupWindow">
         <item name="android:popupBackground">#FFFAFAFA</item>
     </style>

@@ -1,19 +1,44 @@
 package com.innopolis.maps.innomaps.maps;
 
 
-public class CoordinatesConstants {
+public interface CoordinatesConstants {
 
-    public static final double CAMERA_LAT_TOP = 55.754923377;
-    public static final double CAMERA_LAT_BOTTOM = 55.752116019;
-    public static final double CAMERA_LNG_LEFT = 48.742106790;
-    public static final double CAMERA_LNG_RIGHT = 48.7448166297;
+    double CAMERA_LAT_TOP = 55.754923377;
+    double CAMERA_LAT_BOTTOM = 55.752116019;
+    double CAMERA_LNG_LEFT = 48.742106790;
+    double CAMERA_LNG_RIGHT = 48.7448166297;
 
-    public static final double UI_OUTLINE_LAT_BOTTOM = 55.752828;
-    public static final double UI_OUTLINE_LAT_TOP = 55.754597;
-    public static final double UI_OUTLINE_LNG_LEFT = 48.742661;
-    public static final double UI_OUTLINE_LNG_RIGHT = 48.744469;
+    double UI_OUTLINE_LAT_BOTTOM = 55.752828;
+    double UI_OUTLINE_LAT_TOP = 55.754597;
+    double UI_OUTLINE_LNG_LEFT = 48.742661;
+    double UI_OUTLINE_LNG_RIGHT = 48.744469;
 
-    public static final double UI_LAT = 55.75360130293316;
-    public static final double UI_LNG = 48.7435007840395;
+    double UI_LAT = 55.75360130293316;
+    double UI_LNG = 48.7435007840395;
+
+    double FLOOR_ONE_LAT_BOTTOM = 55.752533;
+    double FLOOR_ONE_LNG_LEFT = 48.742492;
+    double FLOOR_ONE_LAT_TOP = 55.754656;
+    double FLOOR_ONE_LNG_RIGHT = 48.744589;
+
+    double FLOOR_TWO_LAT_BOTTOM = 55.752828;
+    double FLOOR_TWO_LNG_LEFT = 48.742661;
+    double FLOOR_TWO_LAT_TOP = 55.754597;
+    double FLOOR_TWO_LNG_RIGHT = 48.744469;
+
+    double FLOOR_THREE_LAT_BOTTOM = 55.752875;
+    double FLOOR_THREE_LNG_LEFT = 48.742739;
+    double FLOOR_THREE_LAT_TOP = 55.754572;
+    double FLOOR_THREE_LNG_RIGHT = 48.744467;
+
+    double FLOOR_FOUR_LAT_BOTTOM = 55.752789;
+    double FLOOR_FOUR_LNG_LEFT = 48.742711;
+    double FLOOR_FOUR_LAT_TOP = 55.754578;
+    double FLOOR_FOUR_LNG_RIGHT = 48.744569;
+
+    double FLOOR_FIVE_LAT_BOTTOM = 55.752808;
+    double FLOOR_FIVE_LNG_LEFT = 48.743497;
+    double FLOOR_FIVE_LAT_TOP = 55.753383;
+    double FLOOR_FIVE_LNG_RIGHT = 48.744519;
 
 }
