@@ -10,8 +10,10 @@ import android.widget.Toast;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
+import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.database.DBHelper;
+import com.innopolis.maps.innomaps.database.SQLQueries;
 import com.innopolis.maps.innomaps.maps.MapsFragment;
 
 import java.util.ArrayList;
@@ -21,6 +23,8 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
+import static com.innopolis.maps.innomaps.database.TableFields.POI;
+import static com.innopolis.maps.innomaps.database.TableFields._ID;
 
 
 public class Scanner extends AppCompatActivity implements ZXingScannerView.ResultHandler {
@@ -65,17 +69,17 @@ public class Scanner extends AppCompatActivity implements ZXingScannerView.Resul
     @Override
     public void handleResult(Result rawResult) {
         // Do something with the result here
-        Cursor cursor = database.rawQuery("SELECT * FROM poi where _id like '" + rawResult.getText() + "'", null);
+        Cursor cursor = database.rawQuery(SQLQueries.selectAllLike(POI, _ID, rawResult.getText()), null);
         if (cursor.moveToFirst()) {
             FragmentManager fm = MainActivity.getInstance().getSupportFragmentManager();
-            MapsFragment maps = (MapsFragment) fm.findFragmentByTag("Maps");
+            MapsFragment maps = (MapsFragment) fm.findFragmentByTag(getString(R.string.maps));
             String latitude = cursor.getString(cursor.getColumnIndex(LATITUDE));
             String longitude = cursor.getString(cursor.getColumnIndex(LONGITUDE));
             maps.showRoute(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)), new LatLng(destinationLatitude, destinationLongitude));
             maps.currentDialog.cancel();
             this.finish();
         } else {
-            Toast.makeText(this, "This QR code cannot be used", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.wrond_qr, Toast.LENGTH_SHORT).show();
             mScannerView.resumeCameraPreview(this);
         }
         cursor.close();

@@ -1,8 +1,6 @@
 package com.innopolis.maps.innomaps.network;
 
-/**
- * Created by alnedorezov on 6/8/16.
- */
+
 public interface Constants {
     String LOG = "Exception";
     String CONNECTION_PROTOCOL = "https";
@@ -11,4 +9,18 @@ public interface Constants {
     char PARAMETER_DELIMITER = '&';
     char PARAMETER_EQUALS_CHAR = '=';
     String ENCODING = "UTF-8";
+
+    String USER_AGENT = "User-Agent";
+    String CONNECTION = "Connection";
+    String POST = "POST";
+    String CONTENT_TYPE = "Content-Type";
+    String CONTENT_TYPE_VALUE = "application/x-www-form-urlencoded";
+
+    String shortest_path_url = "%1$s://%2$s:%2$s/resources/shortestPath";
+
+    String VERTEX_ONE_LAT = "vertexOneLatitude";
+    String VERTEX_ONE_LNG = "vertexOneLongitude";
+    String VERTEX_TWO_LAT = "vertexTwoLatitude";
+    String VERTEX_TWO_LNG = "vertexTwoLongitude";
+
 }

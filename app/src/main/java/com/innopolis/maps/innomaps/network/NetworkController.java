@@ -27,9 +27,8 @@ import java.util.concurrent.ExecutionException;
 
 import javax.net.ssl.HttpsURLConnection;
 
-/**
- * Created by alnedorezov on 6/8/16.
- */
+import static com.innopolis.maps.innomaps.network.Constants.*;
+
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class NetworkController {
@@ -41,15 +40,15 @@ public class NetworkController {
 
             for (String parameterName : parameters.keySet()) {
                 if (!firstParameter) {
-                    parametersAsQueryString.append(Constants.PARAMETER_DELIMITER);
+                    parametersAsQueryString.append(PARAMETER_DELIMITER);
                 }
 
                 try {
                     parametersAsQueryString.append(parameterName)
-                            .append(Constants.PARAMETER_EQUALS_CHAR)
-                            .append(URLEncoder.encode(parameters.get(parameterName), Constants.ENCODING));
+                            .append(PARAMETER_EQUALS_CHAR)
+                            .append(URLEncoder.encode(parameters.get(parameterName), ENCODING));
                 } catch (UnsupportedEncodingException e) {
-                    Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
+                    Log.e(LOG, e.getMessage(), e.fillInStackTrace());
                 }
 
                 firstParameter = false;
@@ -70,11 +69,11 @@ public class NetworkController {
             connection.setHostnameVerifier(new AllowAllHostnameVerifier());
 
             if (urlParams != null) {
-                connection.setRequestMethod("POST");
+                connection.setRequestMethod(POST);
                 connection.setDoInput(true);
                 connection.setDoOutput(true);
 
-                connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                connection.setRequestProperty(CONTENT_TYPE, CONTENT_TYPE_VALUE);
 
                 connection.connect();
 
@@ -103,7 +102,7 @@ public class NetworkController {
             }
 
         } catch (IOException e) {
-            Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
+            Log.e(LOG, e.getMessage(), e.fillInStackTrace());
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -114,16 +113,16 @@ public class NetworkController {
 
     public List<LatLngGraphVertex> findShortestPath(String vertexOneLatitude, String vertexOneLongitude, String vertexTwoLatitude, String vertexTwoLongitude) throws UnsupportedEncodingException {
         Map<String, String> urlParametersMap = new HashMap<>();
-        urlParametersMap.put("vertexOneLatitude", vertexOneLatitude);
-        urlParametersMap.put("vertexOneLongitude", vertexOneLongitude);
-        urlParametersMap.put("vertexTwoLatitude", vertexTwoLatitude);
-        urlParametersMap.put("vertexTwoLongitude", vertexTwoLongitude);
+        urlParametersMap.put(VERTEX_ONE_LAT, vertexOneLatitude);
+        urlParametersMap.put(VERTEX_ONE_LNG, vertexOneLongitude);
+        urlParametersMap.put(VERTEX_TWO_LAT, vertexTwoLatitude);
+        urlParametersMap.put(VERTEX_TWO_LNG, vertexTwoLongitude);
         String urlParameters = createQueryStringForParameters(urlParametersMap);
 
         try {
             return new findShortestPathTask().execute(urlParameters).get();
         } catch (InterruptedException | ExecutionException e) {
-            Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
+            Log.e(LOG, e.getMessage(), e.fillInStackTrace());
         }
         return null;
     }
@@ -131,8 +130,9 @@ public class NetworkController {
     private class findShortestPathTask extends AsyncTask<String, Void, List<LatLngGraphVertex>> {
         @Override
         protected List<LatLngGraphVertex> doInBackground(String... params) {
-            String response = establishPostConnection(Constants.CONNECTION_PROTOCOL + "://" + Constants.IP + ":" + Constants.PORT +
-                    "/resources/shortestPath", params[0]);
+            String response =
+                    establishPostConnection(String.format(shortest_path_url,
+                            CONNECTION_PROTOCOL, IP, PORT), params[0]);
             ObjectMapper mapper = new ObjectMapper();
             response = response.substring(12, response.length() - 1);
             try {

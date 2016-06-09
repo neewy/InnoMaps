@@ -1,8 +1,6 @@
 package com.innopolis.maps.innomaps.network;
 
-/**
- * Created by alnedorezov on 6/8/16.
- */
+
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -10,9 +8,13 @@ import android.net.NetworkInfo;
 import android.os.Handler;
 import android.util.Log;
 
+import com.innopolis.maps.innomaps.R;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import static com.innopolis.maps.innomaps.network.Constants.*;
 
 public class InternetAccessChecker {
 
@@ -23,10 +25,10 @@ public class InternetAccessChecker {
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         if (activeNetwork != null && activeNetwork.isConnected()) {
             try {
-                URL url = new URL("http://www.google.com/");
+                URL url = new URL(context.getString(R.string.google_url));
                 HttpURLConnection urlc = (HttpURLConnection) url.openConnection();
-                urlc.setRequestProperty("User-Agent", "test");
-                urlc.setRequestProperty("Connection", "close");
+                urlc.setRequestProperty(USER_AGENT, context.getString(R.string.test));
+                urlc.setRequestProperty(CONNECTION, context.getString(R.string.close));
                 urlc.setConnectTimeout(1000); // mTimeout is in seconds
                 urlc.connect();
                 if (urlc.getResponseCode() == 200) {
@@ -35,7 +37,7 @@ public class InternetAccessChecker {
                     return false;
                 }
             } catch (IOException e) {
-                Log.i("warning", "Error checking internet connection", e);
+                Log.i(context.getString(R.string.warning), context.getString(R.string.connection_error), e);
                 return false;
             }
         }
@@ -47,6 +49,8 @@ public class InternetAccessChecker {
     public static void isNetworkAvailable(final Handler handler, final int timeout, final Context context) {
         // ask fo message '0' (not connected) or '1' (connected) on 'handler'
         // the answer must be send before before within the 'timeout' (in milliseconds)
+        final int connected = 1;
+        final int disconnected = 0;
 
         new Thread() {
             private boolean responded = false;
@@ -76,9 +80,9 @@ public class InternetAccessChecker {
                 } // do nothing
                 finally {
                     if (!responded) {
-                        handler.sendEmptyMessage(0);
+                        handler.sendEmptyMessage(disconnected);
                     } else {
-                        handler.sendEmptyMessage(1);
+                        handler.sendEmptyMessage(connected);
                     }
                 }
             }

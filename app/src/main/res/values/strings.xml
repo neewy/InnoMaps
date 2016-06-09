@@ -290,6 +290,12 @@
     <string name="update_required">UPDATE REQUIRED</string>
     <string name="already_there">You are already there</string>
     <string name="navigation_location_message">Enable either GPS or any other location service to find current location. Click OK to go to location services settings to let you do so.</string>
+    <string name="google_url">http://www.google.com/</string>
+    <string name="test">test</string>
+    <string name="close">close</string>
+    <string name="warning">warning</string>
+    <string name="connection_error">Error checking internet connection</string>
+    <string name="wrond_qr">This QR code cannot be used</string>
 
 
     <!--     For network    -->

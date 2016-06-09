@@ -47,6 +47,6 @@ public class LatLng {
     }
 
     public String toString() {
-        return "coordinates: (" + this.latitude + "," + this.longitude + ")";
+        return String.format("coordinates: (%1$s, %2$s)", this.latitude, this.longitude);
     }
 }

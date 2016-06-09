@@ -82,7 +82,7 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
         setHasOptionsMenu(true);
         activity = (MainActivity) getActivity();
         currentLocation = sPref.getString(activity.getString(R.string.current_location), EMPTY);
-        currentLocationType = sPref.getString(activity.getString(R.string.current_location), EMPTY);
+        currentLocationType = sPref.getString(activity.getString(R.string.current_location_type), EMPTY);
     }
 
     @NonNull
