@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/event_name"
+        layout="@layout/detailed_event_top_title"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:elevation="0dp" />
+
+    <include
+        android:id="@id/upper_text"
+        layout="@layout/detailed_event_top_upper_text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/event_name"
+        android:elevation="0dp" />
+
+    <include
+        android:id="@+id/lower_text"
+        layout="@layout/detailed_event_top_lower_text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/upper_text"
+        android:elevation="0dp" />
+
+</RelativeLayout>
