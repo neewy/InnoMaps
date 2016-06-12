@@ -102,6 +102,26 @@ import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.CAMERA_LAT_B
 import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.CAMERA_LAT_TOP;
 import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.CAMERA_LNG_LEFT;
 import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.CAMERA_LNG_RIGHT;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.FLOOR_FIVE_LAT_BOTTOM;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.FLOOR_FIVE_LAT_TOP;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.FLOOR_FIVE_LNG_LEFT;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.FLOOR_FIVE_LNG_RIGHT;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.FLOOR_FOUR_LAT_BOTTOM;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.FLOOR_FOUR_LAT_TOP;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.FLOOR_FOUR_LNG_LEFT;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.FLOOR_FOUR_LNG_RIGHT;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.FLOOR_ONE_LAT_BOTTOM;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.FLOOR_ONE_LAT_TOP;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.FLOOR_ONE_LNG_LEFT;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.FLOOR_ONE_LNG_RIGHT;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.FLOOR_THREE_LAT_BOTTOM;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.FLOOR_THREE_LAT_TOP;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.FLOOR_THREE_LNG_LEFT;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.FLOOR_THREE_LNG_RIGHT;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.FLOOR_TWO_LAT_BOTTOM;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.FLOOR_TWO_LAT_TOP;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.FLOOR_TWO_LNG_LEFT;
+import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.FLOOR_TWO_LNG_RIGHT;
 import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.UI_LAT;
 import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.UI_LNG;
 import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.UI_OUTLINE_LAT_BOTTOM;
@@ -546,28 +566,28 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             // Then you will need a manager, that will instantiate objects of that class with these constant values
             case R.id.button1:
             default:
-                southWest = new LatLng(55.752533, 48.742492);
-                northEast = new LatLng(55.754656, 48.744589);
+                southWest = new LatLng(FLOOR_ONE_LAT_BOTTOM, FLOOR_ONE_LNG_LEFT);
+                northEast = new LatLng(FLOOR_ONE_LAT_TOP, FLOOR_ONE_LNG_RIGHT);
                 changeOnFloorPickerClick(southWest, northEast, R.raw.ai6_floor1, 1);
                 break;
             case R.id.button2:
-                southWest = new LatLng(55.752828, 48.742661);
-                northEast = new LatLng(55.754597, 48.744469);
+                southWest = new LatLng(FLOOR_TWO_LAT_BOTTOM, FLOOR_TWO_LNG_LEFT);
+                northEast = new LatLng(FLOOR_TWO_LAT_TOP, FLOOR_TWO_LNG_RIGHT);
                 changeOnFloorPickerClick(southWest, northEast, R.raw.ai6_floor2, 2);
                 break;
             case R.id.button3:
-                southWest = new LatLng(55.752875, 48.742739);
-                northEast = new LatLng(55.754572, 48.744467);
+                southWest = new LatLng(FLOOR_THREE_LAT_BOTTOM, FLOOR_THREE_LNG_LEFT);
+                northEast = new LatLng(FLOOR_THREE_LAT_TOP, FLOOR_THREE_LNG_RIGHT);
                 changeOnFloorPickerClick(southWest, northEast, R.raw.ai6_floor3, 3);
                 break;
             case R.id.button4:
-                southWest = new LatLng(55.752789, 48.742711);
-                northEast = new LatLng(55.754578, 48.744569);
+                southWest = new LatLng(FLOOR_FOUR_LAT_BOTTOM, FLOOR_FOUR_LNG_LEFT);
+                northEast = new LatLng(FLOOR_FOUR_LAT_TOP, FLOOR_FOUR_LNG_RIGHT);
                 changeOnFloorPickerClick(southWest, northEast, R.raw.ai6_floor4, 4);
                 break;
             case R.id.button5:
-                southWest = new LatLng(55.752808, 48.743497);
-                northEast = new LatLng(55.753383, 48.744519);
+                southWest = new LatLng(FLOOR_FIVE_LAT_BOTTOM, FLOOR_FIVE_LNG_LEFT);
+                northEast = new LatLng(FLOOR_FIVE_LAT_TOP, FLOOR_FIVE_LNG_RIGHT);
                 changeOnFloorPickerClick(southWest, northEast, R.raw.ai6_floor5, 5);
                 break;
         }
