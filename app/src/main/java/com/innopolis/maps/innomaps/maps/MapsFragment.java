@@ -473,7 +473,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         scrollView.setVisibility(View.GONE);
     }
 
-    private void getAndDrawPath(LatLng source, LatLng destination) {
+    private void getAndDrawPath(LatLng source, int sourceFloor, LatLng destination) {
         FileInputStream inputStream = null;
         try {
             // TODO: KILL!!! +
@@ -489,7 +489,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         try {
             NetworkController networkController = new NetworkController();
             path = (ArrayList<LatLngGraphVertex>) networkController.findShortestPath(String.valueOf(source.latitude), String.valueOf(source.longitude),
-                    String.valueOf(destination.latitude), String.valueOf(destination.longitude));
+                    String.valueOf(sourceFloor), String.valueOf(destination.latitude), String.valueOf(destination.longitude));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             return;
@@ -649,8 +649,8 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         cursor.close();
     }
 
-    public void showRoute(LatLng source, LatLng destination) {
-        getAndDrawPath(source, destination);
+    public void showRoute(LatLng source, int sourceFloor, LatLng destination) {
+        getAndDrawPath(source, sourceFloor, destination);
     }
 
     private void sortClearAdd(int num) {
@@ -692,12 +692,21 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             }
         });
 
+        final Context context = super.getContext();
         select.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (closest != null) {
                     ((RelativeLayout) getView()).removeView(buttons);
-                    showRoute(closest, destination);
+
+                    Cursor cursor = database.rawQuery(SQLQueries.selectFloorForCoordinate(closest), null);
+                    int floor = 1;
+                    if (cursor.moveToFirst())
+                        floor = Integer.parseInt(cursor.getString(cursor.getColumnIndex(FLOOR)).substring(0, 1));
+                    else
+                        Toast.makeText(context, R.string.something_went_wrong, Toast.LENGTH_SHORT).show();
+
+                    showRoute(closest, floor, destination);
                     dialog.cancel();
                 } else {
                     Toast.makeText(getContext(), R.string.marker_in_university, Toast.LENGTH_SHORT).show();

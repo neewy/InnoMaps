@@ -296,6 +296,7 @@
     <string name="warning">warning</string>
     <string name="connection_error">Error checking internet connection</string>
     <string name="wrond_qr">This QR code cannot be used</string>
+    <string name="something_went_wrong">Sorry, something went wrong.</string>
 
 
     <!--     For network    -->

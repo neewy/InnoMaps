@@ -20,6 +20,7 @@ public interface Constants {
 
     String VERTEX_ONE_LAT = "vertexOneLatitude";
     String VERTEX_ONE_LNG = "vertexOneLongitude";
+    String VERTEX_ONE_FLR = "vertexOneFloor";
     String VERTEX_TWO_LAT = "vertexTwoLatitude";
     String VERTEX_TWO_LNG = "vertexTwoLongitude";
 

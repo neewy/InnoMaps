@@ -21,6 +21,7 @@ import java.util.List;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
+import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.POI;
@@ -75,7 +76,8 @@ public class Scanner extends AppCompatActivity implements ZXingScannerView.Resul
             MapsFragment maps = (MapsFragment) fm.findFragmentByTag(getString(R.string.maps));
             String latitude = cursor.getString(cursor.getColumnIndex(LATITUDE));
             String longitude = cursor.getString(cursor.getColumnIndex(LONGITUDE));
-            maps.showRoute(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)), new LatLng(destinationLatitude, destinationLongitude));
+            int floor = Integer.parseInt(cursor.getString(cursor.getColumnIndex(FLOOR)).substring(0, 1));
+            maps.showRoute(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)), floor, new LatLng(destinationLatitude, destinationLongitude));
             maps.currentDialog.cancel();
             this.finish();
         } else {

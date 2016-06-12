@@ -111,10 +111,12 @@ public class NetworkController {
         return null;
     }
 
-    public List<LatLngGraphVertex> findShortestPath(String vertexOneLatitude, String vertexOneLongitude, String vertexTwoLatitude, String vertexTwoLongitude) throws UnsupportedEncodingException {
+    public List<LatLngGraphVertex> findShortestPath(String vertexOneLatitude, String vertexOneLongitude, String vertexOneFloor,
+                                                    String vertexTwoLatitude, String vertexTwoLongitude) throws UnsupportedEncodingException {
         Map<String, String> urlParametersMap = new HashMap<>();
         urlParametersMap.put(VERTEX_ONE_LAT, vertexOneLatitude);
         urlParametersMap.put(VERTEX_ONE_LNG, vertexOneLongitude);
+        urlParametersMap.put(VERTEX_ONE_FLR, vertexOneFloor);
         urlParametersMap.put(VERTEX_TWO_LAT, vertexTwoLatitude);
         urlParametersMap.put(VERTEX_TWO_LNG, vertexTwoLongitude);
         String urlParameters = createQueryStringForParameters(urlParametersMap);

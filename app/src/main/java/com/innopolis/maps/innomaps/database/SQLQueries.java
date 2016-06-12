@@ -1,6 +1,8 @@
 package com.innopolis.maps.innomaps.database;
 
 
+import com.google.android.gms.maps.model.LatLng;
+
 import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
@@ -154,6 +156,10 @@ public class SQLQueries {
 
     public static String selectFloorPoiHashmapQuery() {
         return "SELECT " + LATITUDE + "," + LONGITUDE + "," + FLOOR + " FROM " + POI + WHERE + FLOOR + "=?";
+    }
+
+    public static String selectFloorForCoordinate(LatLng coordinate) {
+        return "SELECT " + FLOOR + " FROM " + POI + WHERE + LATITUDE + "=" + coordinate.latitude + AND + LONGITUDE + "=" + coordinate.longitude;
     }
 
     public static String makeWcMarkersQuery() {
