@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.innopolis.maps.innomaps.maps.LatLngGraphVertex;
+import com.innopolis.maps.innomaps.network.tasks.findShortestPathTask;
 
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 
@@ -57,7 +58,7 @@ public class NetworkController {
         return parametersAsQueryString.toString();
     }
 
-    private static String establishPostConnection(String targetURL, String urlParams) {
+    public static String establishPostConnection(String targetURL, String urlParams) {
         URL url;
         HttpsURLConnection connection = null;
         try {
@@ -127,24 +128,5 @@ public class NetworkController {
             Log.e(LOG, e.getMessage(), e.fillInStackTrace());
         }
         return null;
-    }
-
-    private class findShortestPathTask extends AsyncTask<String, Void, List<LatLngGraphVertex>> {
-        @Override
-        protected List<LatLngGraphVertex> doInBackground(String... params) {
-            String response =
-                    establishPostConnection(String.format(shortest_path_url,
-                            CONNECTION_PROTOCOL, IP, PORT), params[0]);
-            ObjectMapper mapper = new ObjectMapper();
-            response = response.substring(12, response.length() - 1);
-            try {
-                return mapper.readValue(response,
-                        TypeFactory.defaultInstance().constructCollectionType(List.class,
-                                LatLngGraphVertex.class));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return new ArrayList<>();
-        }
     }
 }
