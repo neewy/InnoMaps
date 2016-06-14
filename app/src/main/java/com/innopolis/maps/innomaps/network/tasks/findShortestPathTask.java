@@ -26,7 +26,8 @@ public class findShortestPathTask extends AsyncTask<String, Void, List<LatLngGra
                 NetworkController.establishPostConnection(String.format(shortest_path_url,
                         CONNECTION_PROTOCOL, IP, PORT), params[0]);
         ObjectMapper mapper = new ObjectMapper();
-        response = response.substring(12, response.length() - 1);
+        if(response != null)
+            response = response.substring(12, response.length() - 1);
         try {
             return mapper.readValue(response,
                     TypeFactory.defaultInstance().constructCollectionType(List.class,
