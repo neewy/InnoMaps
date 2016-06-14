@@ -1,14 +1,11 @@
 package com.innopolis.maps.innomaps.network;
 
 import android.net.SSLCertificateSocketFactory;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.innopolis.maps.innomaps.maps.LatLngGraphVertex;
-import com.innopolis.maps.innomaps.network.tasks.findShortestPathTask;
+import com.innopolis.maps.innomaps.network.tasks.FindShortestPathTask;
 
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 
@@ -20,7 +17,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +24,18 @@ import java.util.concurrent.ExecutionException;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import static com.innopolis.maps.innomaps.network.Constants.*;
+import static com.innopolis.maps.innomaps.network.Constants.CONTENT_TYPE;
+import static com.innopolis.maps.innomaps.network.Constants.CONTENT_TYPE_VALUE;
+import static com.innopolis.maps.innomaps.network.Constants.ENCODING;
+import static com.innopolis.maps.innomaps.network.Constants.LOG;
+import static com.innopolis.maps.innomaps.network.Constants.PARAMETER_DELIMITER;
+import static com.innopolis.maps.innomaps.network.Constants.PARAMETER_EQUALS_CHAR;
+import static com.innopolis.maps.innomaps.network.Constants.POST;
+import static com.innopolis.maps.innomaps.network.Constants.VERTEX_ONE_FLR;
+import static com.innopolis.maps.innomaps.network.Constants.VERTEX_ONE_LAT;
+import static com.innopolis.maps.innomaps.network.Constants.VERTEX_ONE_LNG;
+import static com.innopolis.maps.innomaps.network.Constants.VERTEX_TWO_LAT;
+import static com.innopolis.maps.innomaps.network.Constants.VERTEX_TWO_LNG;
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -123,7 +130,7 @@ public class NetworkController {
         String urlParameters = createQueryStringForParameters(urlParametersMap);
 
         try {
-            return new findShortestPathTask().execute(urlParameters).get();
+            return new FindShortestPathTask().execute(urlParameters).get();
         } catch (InterruptedException | ExecutionException e) {
             Log.e(LOG, e.getMessage(), e.fillInStackTrace());
         }

@@ -19,14 +19,14 @@ import static com.innopolis.maps.innomaps.network.Constants.shortest_path_url;
 /**
  * Created by alnedorezov on 6/15/16.
  */
-public class findShortestPathTask extends AsyncTask<String, Void, List<LatLngGraphVertex>> {
+public class FindShortestPathTask extends AsyncTask<String, Void, List<LatLngGraphVertex>> {
     @Override
     protected List<LatLngGraphVertex> doInBackground(String... params) {
         String response =
                 NetworkController.establishPostConnection(String.format(shortest_path_url,
                         CONNECTION_PROTOCOL, IP, PORT), params[0]);
         ObjectMapper mapper = new ObjectMapper();
-        if(response != null)
+        if (response != null)
             response = response.substring(12, response.length() - 1);
         try {
             return mapper.readValue(response,
