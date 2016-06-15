@@ -508,8 +508,8 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         ArrayList<LatLngGraphVertex> path;
         try {
             NetworkController networkController = new NetworkController();
-            path = (ArrayList<LatLngGraphVertex>) networkController.findShortestPath(String.valueOf(source.latitude), String.valueOf(source.longitude),
-                    String.valueOf(sourceFloor), String.valueOf(destination.latitude), String.valueOf(destination.longitude));
+            path = (ArrayList<LatLngGraphVertex>) networkController.findShortestPath(source.latitude, source.longitude,
+                    sourceFloor, destination.latitude, destination.longitude);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             return;

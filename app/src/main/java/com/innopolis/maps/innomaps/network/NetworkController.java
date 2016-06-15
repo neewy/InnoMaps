@@ -144,14 +144,14 @@ public class NetworkController {
         return null;
     }
 
-    public List<LatLngGraphVertex> findShortestPath(String vertexOneLatitude, String vertexOneLongitude, String vertexOneFloor,
-                                                    String vertexTwoLatitude, String vertexTwoLongitude) throws UnsupportedEncodingException {
+    public List<LatLngGraphVertex> findShortestPath(double vertexOneLatitude, double vertexOneLongitude, int vertexOneFloor,
+                                                    double vertexTwoLatitude, double vertexTwoLongitude) throws UnsupportedEncodingException {
         Map<String, String> urlParametersMap = new HashMap<>();
-        urlParametersMap.put(VERTEX_ONE_LAT, vertexOneLatitude);
-        urlParametersMap.put(VERTEX_ONE_LNG, vertexOneLongitude);
-        urlParametersMap.put(VERTEX_ONE_FLR, vertexOneFloor);
-        urlParametersMap.put(VERTEX_TWO_LAT, vertexTwoLatitude);
-        urlParametersMap.put(VERTEX_TWO_LNG, vertexTwoLongitude);
+        urlParametersMap.put(VERTEX_ONE_LAT, String.valueOf(vertexOneLatitude));
+        urlParametersMap.put(VERTEX_ONE_LNG, String.valueOf(vertexOneLongitude));
+        urlParametersMap.put(VERTEX_ONE_FLR, String.valueOf(vertexOneFloor));
+        urlParametersMap.put(VERTEX_TWO_LAT, String.valueOf(vertexTwoLatitude));
+        urlParametersMap.put(VERTEX_TWO_LNG, String.valueOf(vertexTwoLongitude));
         String urlParameters = createQueryStringForParameters(urlParametersMap);
 
         try {
