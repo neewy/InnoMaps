@@ -6,6 +6,7 @@ import android.util.Log;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.innopolis.maps.innomaps.maps.LatLngFlr;
 import com.innopolis.maps.innomaps.maps.LatLngGraphVertex;
+import com.innopolis.maps.innomaps.network.clientServerCommunicationClasses.ClosestCoordinateWithDistance;
 import com.innopolis.maps.innomaps.network.tasks.FindClosestPointFromGraphTask;
 import com.innopolis.maps.innomaps.network.tasks.FindShortestPathTask;
 
@@ -162,7 +163,7 @@ public class NetworkController {
         return null;
     }
 
-    public LatLngFlr findClosestPointFromGraph(double latitude, double longitude, int floor) {
+    public ClosestCoordinateWithDistance findClosestPointFromGraph(double latitude, double longitude, int floor) {
         try {
             return new FindClosestPointFromGraphTask().execute(String.valueOf(latitude), String.valueOf(longitude), String.valueOf(floor)).get();
         } catch (InterruptedException | ExecutionException e) {

@@ -32,6 +32,7 @@ import com.innopolis.maps.innomaps.database.SQLQueries;
 import com.innopolis.maps.innomaps.events.Event;
 import com.innopolis.maps.innomaps.events.MapBottomEventListAdapter;
 import com.innopolis.maps.innomaps.events.TelegramOpenDialog;
+import com.innopolis.maps.innomaps.network.NetworkController;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -295,6 +296,7 @@ public class BottomSheet extends Fragment {
         TreeMap<String, LatLng> result = new TreeMap<>();
         if (latLngMap != null) {
             Iterator iterator = latLngMap.entrySet().iterator();
+            NetworkController networkController = new NetworkController();
             closestDistance = Double.MAX_VALUE;
             String lat = "", lng = "";
             while (iterator.hasNext()) {

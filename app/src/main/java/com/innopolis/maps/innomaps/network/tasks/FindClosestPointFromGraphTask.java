@@ -4,9 +4,9 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.innopolis.maps.innomaps.maps.LatLngFlr;
 import com.innopolis.maps.innomaps.network.Constants;
 import com.innopolis.maps.innomaps.network.NetworkController;
+import com.innopolis.maps.innomaps.network.clientServerCommunicationClasses.ClosestCoordinateWithDistance;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -14,16 +14,16 @@ import java.io.UnsupportedEncodingException;
 /**
  * Created by alnedorezov on 6/15/16.
  */
-public class FindClosestPointFromGraphTask extends AsyncTask<String, Void, LatLngFlr> {
+public class FindClosestPointFromGraphTask extends AsyncTask<String, Void, ClosestCoordinateWithDistance> {
     @Override
-    protected LatLngFlr doInBackground(String... params) {
+    protected ClosestCoordinateWithDistance doInBackground(String... params) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             String urlString = getURL(params[0], params[1], params[2]);
             String response;
             try {
                 response = NetworkController.establishGetConnection(urlString);
-                return mapper.readValue(response, LatLngFlr.class);
+                return mapper.readValue(response, ClosestCoordinateWithDistance.class);
             } catch (UnsupportedEncodingException | IllegalStateException | NullPointerException e) {
                 Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
             }
