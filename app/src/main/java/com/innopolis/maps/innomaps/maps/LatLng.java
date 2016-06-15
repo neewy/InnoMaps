@@ -21,16 +21,16 @@ public class LatLng {
         return longitude;
     }
 
+    // For deserialization with Jackson
     public LatLng() {
         // all persisted classes must define a no-arg constructor with at least package visibility
     }
 
     public int hashCode() {
-        boolean var1 = true;
         byte var2 = 1;
-        long var3 = Double.doubleToLongBits(this.latitude);
+        long var3 = Double.doubleToLongBits(getLatitude());
         int var5 = 31 * var2 + (int) (var3 ^ var3 >>> 32);
-        var3 = Double.doubleToLongBits(this.longitude);
+        var3 = Double.doubleToLongBits(getLongitude());
         var5 = 31 * var5 + (int) (var3 ^ var3 >>> 32);
         return var5;
     }
@@ -42,11 +42,12 @@ public class LatLng {
             return false;
         } else {
             LatLng var2 = (LatLng) o;
-            return Double.doubleToLongBits(this.latitude) == Double.doubleToLongBits(var2.latitude) && Double.doubleToLongBits(this.longitude) == Double.doubleToLongBits(var2.longitude);
+            return Double.doubleToLongBits(getLatitude()) == Double.doubleToLongBits(var2.getLatitude()) &&
+                    Double.doubleToLongBits(getLongitude()) == Double.doubleToLongBits(var2.getLongitude());
         }
     }
 
     public String toString() {
-        return String.format("coordinates: (%1$s, %2$s)", this.latitude, this.longitude);
+        return String.format("coordinates: (%1$s, %2$s)", getLatitude(), getLongitude());
     }
 }
