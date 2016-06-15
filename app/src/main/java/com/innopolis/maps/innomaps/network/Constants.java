@@ -9,6 +9,16 @@ public interface Constants {
     char PARAMETER_DELIMITER = '&';
     char PARAMETER_EQUALS_CHAR = '=';
     String ENCODING = "UTF-8";
+    String colon_and_two_slashes = "://";
+    char colon = ':';
+    char slash = '/';
+    char question_mark = '?';
+    String slash_resources_slash = "/resources/";
+    String latitude = "latitude";
+    String longitude = "longitude";
+    String floor = "floor";
+    String closestPointFromGraph = "closestPointFromGraph";
+    String response_null = "Response equals null. Check if the server is running.";
 
     String USER_AGENT = "User-Agent";
     String CONNECTION = "Connection";

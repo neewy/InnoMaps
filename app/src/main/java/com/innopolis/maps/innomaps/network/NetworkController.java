@@ -4,7 +4,9 @@ import android.net.SSLCertificateSocketFactory;
 import android.util.Log;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.innopolis.maps.innomaps.maps.LatLngFlr;
 import com.innopolis.maps.innomaps.maps.LatLngGraphVertex;
+import com.innopolis.maps.innomaps.network.tasks.FindClosestPointFromGraphTask;
 import com.innopolis.maps.innomaps.network.tasks.FindShortestPathTask;
 
 import org.apache.commons.io.IOUtils;
@@ -67,7 +69,7 @@ public class NetworkController {
         return parametersAsQueryString.toString();
     }
 
-    private String establishGetConnection(String urlString) {
+    public static String establishGetConnection(String urlString) {
         try {
             URL url = new URL(urlString);
 
@@ -156,6 +158,15 @@ public class NetworkController {
             return new FindShortestPathTask().execute(urlParameters).get();
         } catch (InterruptedException | ExecutionException e) {
             Log.e(LOG, e.getMessage(), e.fillInStackTrace());
+        }
+        return null;
+    }
+
+    public LatLngFlr findClosestPointFromGraph(double latitude, double longitude, int floor) {
+        try {
+            return new FindClosestPointFromGraphTask().execute(String.valueOf(latitude), String.valueOf(longitude), String.valueOf(floor)).get();
+        } catch (InterruptedException | ExecutionException e) {
+            Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
         }
         return null;
     }
