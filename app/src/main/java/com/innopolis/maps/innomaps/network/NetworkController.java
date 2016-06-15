@@ -7,11 +7,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.innopolis.maps.innomaps.maps.LatLngGraphVertex;
 import com.innopolis.maps.innomaps.network.tasks.FindShortestPathTask;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -63,6 +65,27 @@ public class NetworkController {
             }
         }
         return parametersAsQueryString.toString();
+    }
+
+    private String establishGetConnection(String urlString) {
+        try {
+            URL url = new URL(urlString);
+
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            if (connection instanceof HttpsURLConnection) {
+                HttpsURLConnection httpsConn = (HttpsURLConnection) connection;
+                httpsConn.setSSLSocketFactory(SSLCertificateSocketFactory.getInsecure(0, null));
+                httpsConn.setHostnameVerifier(new AllowAllHostnameVerifier());
+            }
+            InputStream is = connection.getInputStream();
+
+            return IOUtils.toString(is, ENCODING);
+
+        } catch (IOException e) {
+            Log.e(Constants.LOG, e.getMessage());
+        }
+        return null;
     }
 
     public static String establishPostConnection(String targetURL, String urlParams) {
