@@ -25,6 +25,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -66,6 +67,7 @@ import com.innopolis.maps.innomaps.app.SearchableItem;
 import com.innopolis.maps.innomaps.app.SuggestionAdapter;
 import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.database.SQLQueries;
+import com.innopolis.maps.innomaps.network.Constants;
 import com.innopolis.maps.innomaps.network.NetworkController;
 import com.innopolis.maps.innomaps.qr.Scanner;
 
@@ -128,6 +130,7 @@ import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.UI_OUTLINE_L
 import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.UI_OUTLINE_LAT_TOP;
 import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.UI_OUTLINE_LNG_LEFT;
 import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.UI_OUTLINE_LNG_RIGHT;
+import static com.innopolis.maps.innomaps.network.Constants.LOG;
 
 public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -719,12 +722,24 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                 if (closest != null) {
                     ((RelativeLayout) getView()).removeView(buttons);
 
+                    // TODO: Figure out why the floor for the point from the graph cannot be detected
+                    // Will write an error message to log. Don't know why it cannot determine the floor
+                    // for the point from the graph.
+                    // All should be fixed with the planned change of the database structure
+                    // Currently everything works fine because there are no coordinates with the same
+                    // latitude and longitude but with different floor numbers and because the floor for
+                    // given latitude and longitude is detected on the server side
                     Cursor cursor = database.rawQuery(SQLQueries.selectFloorForCoordinate(closest), null);
                     int floor = 1;
                     if (cursor.moveToFirst())
                         floor = Integer.parseInt(cursor.getString(cursor.getColumnIndex(FLOOR)).substring(0, 1));
-                    else
-                        Toast.makeText(context, R.string.something_went_wrong, Toast.LENGTH_SHORT).show();
+                    else {
+                        // TODO: Remove commented code after and only after the app will work with 3D coordinates and the DB will support them
+                        // Toast.makeText(context, R.string.something_went_wrong, Toast.LENGTH_SHORT).show();
+                        Log.e(LOG, String.format("%1$s %2$s: %3$s, %4$s: %5$s", Constants.floor_calculation_error, Constants.latitude,
+                                closest.latitude, Constants.longitude, closest.longitude));
+                    }
+                    cursor.close();
 
                     showRoute(closest, floor, destination);
                     dialog.cancel();

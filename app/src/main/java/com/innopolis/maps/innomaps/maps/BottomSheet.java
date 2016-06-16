@@ -1,6 +1,7 @@
 package com.innopolis.maps.innomaps.maps;
 
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
@@ -28,11 +29,13 @@ import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.app.CustomScrollView;
 import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.app.SearchableItem;
+import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.database.SQLQueries;
 import com.innopolis.maps.innomaps.events.Event;
 import com.innopolis.maps.innomaps.events.MapBottomEventListAdapter;
 import com.innopolis.maps.innomaps.events.TelegramOpenDialog;
 import com.innopolis.maps.innomaps.network.NetworkController;
+import com.innopolis.maps.innomaps.network.clientServerCommunicationClasses.ClosestCoordinateWithDistance;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -41,10 +44,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
@@ -55,6 +56,7 @@ import static com.innopolis.maps.innomaps.database.TableFields.EVENTS;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_ID;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_POI;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_TYPE;
+import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.POI;
@@ -295,26 +297,31 @@ public class BottomSheet extends Fragment {
     private TreeMap<String, LatLng> findClosestPOI(LatLng latLng) {
         TreeMap<String, LatLng> result = new TreeMap<>();
         if (latLngMap != null) {
-            Iterator iterator = latLngMap.entrySet().iterator();
             NetworkController networkController = new NetworkController();
-            closestDistance = Double.MAX_VALUE;
-            String lat = "", lng = "";
-            while (iterator.hasNext()) {
-                Map.Entry pair = (Map.Entry) iterator.next();
-                double distance = Utils.haversine(latLng.latitude, latLng.longitude,
-                        Double.parseDouble(pair.getKey().toString()),
-                        Double.parseDouble(pair.getValue().toString()));
-                if (distance < closestDistance) {
-                    closestDistance = distance;
-                    lat = pair.getKey().toString();
-                    lng = pair.getValue().toString();
-                }
-            }
+            DBHelper dbHelper = new DBHelper(getContext());
+            SQLiteDatabase database = dbHelper.getReadableDatabase();
+            Cursor dbCursor = database.rawQuery(SQLQueries.selectFloorForCoordinate(latLng), null);
+            int floor = 1;
+            if (dbCursor.moveToFirst())
+                floor = Integer.parseInt(dbCursor.getString(dbCursor.getColumnIndex(FLOOR)).substring(0, 1));
+            dbCursor.close();
+
+            ClosestCoordinateWithDistance closestCoordinateWithDistance = null;
+
+            // TODO: Find out if we need to get rid of latLngMap and check if latLng!=null instead
+            if (!latLngMap.entrySet().isEmpty()) {
+                closestCoordinateWithDistance = networkController.findClosestPointFromGraph(latLng.latitude, latLng.longitude, floor);
+                closestDistance = closestCoordinateWithDistance.getDistance();
+            } else
+                closestDistance = Double.MAX_VALUE;
+
             if (closestDistance < 0.012) {
-                closest = new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
+                closest = new LatLng(closestCoordinateWithDistance.getCoordinate().getLatitude(), closestCoordinateWithDistance.getCoordinate().getLongitude());
                 Log.d(getContext().getString(R.string.distance), EMPTY + closestDistance);
                 String sqlQuery = SQLQueries.distanceQuery(POI, POI_NAME, LATITUDE, LONGITUDE);
-                Cursor cursor = MarkersAdapter.database.rawQuery(sqlQuery, new String[]{lat, lng});
+                Cursor cursor = MarkersAdapter.database.rawQuery(sqlQuery,
+                        new String[]{String.valueOf(closestCoordinateWithDistance.getCoordinate().getLatitude()),
+                                String.valueOf(closestCoordinateWithDistance.getCoordinate().getLongitude())});
                 cursor.moveToFirst();
                 result.put(cursor.getString(cursor.getColumnIndex(POI_NAME)), closest);
                 cursor.close();
