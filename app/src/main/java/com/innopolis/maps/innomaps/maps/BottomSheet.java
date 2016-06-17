@@ -294,6 +294,7 @@ public class BottomSheet extends Fragment {
         markerList.add(marker);
     }
 
+    // TODO: Fix. Works incorrectly, takes point from the first floor if it is not a room
     private TreeMap<String, LatLng> findClosestPOI(LatLng latLng) {
         TreeMap<String, LatLng> result = new TreeMap<>();
         if (latLngMap != null) {
