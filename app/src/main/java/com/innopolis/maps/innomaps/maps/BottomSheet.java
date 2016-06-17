@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
+import static com.innopolis.maps.innomaps.database.SQLQueries.roomCursorQuery;
 import static com.innopolis.maps.innomaps.database.TableFields.DESCRIPTION;
 import static com.innopolis.maps.innomaps.database.TableFields.EMPTY;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT;
@@ -59,6 +60,7 @@ import static com.innopolis.maps.innomaps.database.TableFields.EVENT_TYPE;
 import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
+import static com.innopolis.maps.innomaps.database.TableFields.NAME;
 import static com.innopolis.maps.innomaps.database.TableFields.POI;
 import static com.innopolis.maps.innomaps.database.TableFields.POI_ID;
 import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
@@ -294,17 +296,15 @@ public class BottomSheet extends Fragment {
         markerList.add(marker);
     }
 
-    // TODO: Fix. Works incorrectly, takes point from the first floor if it is not a room
+    // TODO: Fix. Works incorrectly, usually takes point from the first floor if it is not a room
     // It will work correctly when we will move to 3D coordinates and new database structure
     private TreeMap<String, LatLng> findClosestPOI(LatLng latLng) {
         TreeMap<String, LatLng> result = new TreeMap<>();
         if (latLngMap != null) {
             NetworkController networkController = new NetworkController();
-            DBHelper dbHelper = new DBHelper(getContext());
-            SQLiteDatabase database = dbHelper.getReadableDatabase();
-            Cursor dbCursor = database.rawQuery(SQLQueries.selectFloorForCoordinate(latLng), null);
+            Cursor dbCursor = MarkersAdapter.database.rawQuery(SQLQueries.selectFloorForCoordinate(latLng), null);
             int floor = 1;
-            // Selecting floor doesn't work
+            // Selecting floor doesn't always work
             if (dbCursor.moveToFirst())
                 floor = Integer.parseInt(dbCursor.getString(dbCursor.getColumnIndex(FLOOR)).substring(0, 1));
             dbCursor.close();

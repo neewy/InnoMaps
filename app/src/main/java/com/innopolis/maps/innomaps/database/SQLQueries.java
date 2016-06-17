@@ -3,6 +3,9 @@ package com.innopolis.maps.innomaps.database;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
@@ -158,8 +161,25 @@ public class SQLQueries {
         return "SELECT " + LATITUDE + "," + LONGITUDE + "," + FLOOR + " FROM " + POI + WHERE + FLOOR + "=?";
     }
 
+    private static double RoundAndIncreaseOrDecreaseOnOneBillionth(double d, boolean increase) {
+        if(increase) {
+            d = new BigDecimal(d).setScale(9, RoundingMode.UP).doubleValue();
+            return d + 0.000000001;
+        }
+        else {
+            d = new BigDecimal(d).setScale(9, RoundingMode.DOWN).doubleValue();
+            return d - 0.000000001;
+        }
+    }
+
+    // For some reason equality check fails
     public static String selectFloorForCoordinate(LatLng coordinate) {
-        return "SELECT " + FLOOR + " FROM " + POI + WHERE + LATITUDE + "=" + coordinate.latitude + AND + LONGITUDE + "=" + coordinate.longitude;
+        double smaller_then_latitude = RoundAndIncreaseOrDecreaseOnOneBillionth(coordinate.latitude, false);
+        double bigger_then_latitude = RoundAndIncreaseOrDecreaseOnOneBillionth(coordinate.latitude, true);
+        double smaller_then_longitude = RoundAndIncreaseOrDecreaseOnOneBillionth(coordinate.longitude, false);
+        double bigger_then_longitude = RoundAndIncreaseOrDecreaseOnOneBillionth(coordinate.longitude, true);
+        return "SELECT " + FLOOR + " FROM " + POI + WHERE + LATITUDE + " >= " + smaller_then_latitude + AND + LATITUDE + " <= " + bigger_then_latitude +
+                AND + LONGITUDE + " >= " + smaller_then_longitude + AND + LONGITUDE + " <= " + bigger_then_longitude + ";";
     }
 
     public static String makeWcMarkersQuery() {
