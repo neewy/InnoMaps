@@ -295,6 +295,7 @@ public class BottomSheet extends Fragment {
     }
 
     // TODO: Fix. Works incorrectly, takes point from the first floor if it is not a room
+    // It will work correctly when we will move to 3D coordinates and new database structure
     private TreeMap<String, LatLng> findClosestPOI(LatLng latLng) {
         TreeMap<String, LatLng> result = new TreeMap<>();
         if (latLngMap != null) {
@@ -303,6 +304,7 @@ public class BottomSheet extends Fragment {
             SQLiteDatabase database = dbHelper.getReadableDatabase();
             Cursor dbCursor = database.rawQuery(SQLQueries.selectFloorForCoordinate(latLng), null);
             int floor = 1;
+            // Selecting floor doesn't work
             if (dbCursor.moveToFirst())
                 floor = Integer.parseInt(dbCursor.getString(dbCursor.getColumnIndex(FLOOR)).substring(0, 1));
             dbCursor.close();
