@@ -52,7 +52,6 @@ public class MainActivityLogic extends AppCompatActivity {
     private boolean doubleBackToFinishRoute = false;
     private DrawerLayout drawer;
     private NavigationView navigationView;
-    private SearchView searchView;
     private CustomScrollView scrollView;
     private FloatingActionButton routeButton;
 
@@ -100,17 +99,13 @@ public class MainActivityLogic extends AppCompatActivity {
             scrollView.setVisibility(View.GONE);
         } else {
             if (getSupportFragmentManager().getBackStackEntryCount() == 1) {
-                // TODO: Replace this string with a constant +
                 final MapsFragment mapsFragment = (MapsFragment) getSupportFragmentManager().findFragmentByTag(maps);
-
                 if (mapsFragment.mapRoute != null && mapsFragment.mapRoute.hasCurrentPath) {
-
                     if (doubleBackToFinishRoute) {
                         mapsFragment.mapRoute.finishRoute(false);
                     }
 
                     this.doubleBackToFinishRoute = true;
-                    // TODO: Replace this hard-coded string with a resource string +
                     Snackbar.make(findViewById(android.R.id.content), R.string.finish_route, Snackbar.LENGTH_LONG)
                             .setAction(R.string.finish, new View.OnClickListener() {
                                 @Override
@@ -136,7 +131,6 @@ public class MainActivityLogic extends AppCompatActivity {
                     }
 
                     this.doubleBackToExitPressedOnce = true;
-                    // TODO: Replace this hard-coded string with a resource string +
                     Snackbar.make(findViewById(android.R.id.content),
                             R.string.exit_double_back,
                             Snackbar.LENGTH_LONG).setActionTextColor(Color.WHITE).show();
@@ -153,17 +147,18 @@ public class MainActivityLogic extends AppCompatActivity {
                 int lastEntry = getSupportFragmentManager().getBackStackEntryCount() - 1;
                 FragmentManager.BackStackEntry last = getSupportFragmentManager().getBackStackEntryAt(lastEntry);
                 if (last.getName().equals(detailed)) {
-                    getSupportActionBar().setTitle(getSupportFragmentManager().getBackStackEntryAt(lastEntry - 1).getName());
+                    if(getSupportActionBar()!=null)
+                        getSupportActionBar().setTitle(getSupportFragmentManager().getBackStackEntryAt(lastEntry - 1).getName());
                     getSupportFragmentManager().popBackStackImmediate();
                 } else {
                     //TODO: handle back press to update events in EventsFragment
                     getSupportFragmentManager().popBackStackImmediate(maps, 0);
-                    // TODO: Title strings should be from resources +
                     getSupportActionBar().setTitle(maps);
                 }
             }
             setToggle(toolbar);
-            highlightItemDrawer(getSupportActionBar().getTitle().toString());
+            if(getSupportActionBar().getTitle()!=null)
+                highlightItemDrawer(getSupportActionBar().getTitle().toString());
         }
     }
 
@@ -176,7 +171,6 @@ public class MainActivityLogic extends AppCompatActivity {
             public void onClick(View v) {
                 DialogFragment newFragment = new MapFragmentAskForRouteDialog();
                 Bundle bundle = new Bundle();
-                // TODO: Extract string constants +
                 bundle.putString(getString(R.string.dialogSource), getString(R.string.MapsFragment));
                 if (finalIdPoi.getText().toString().equals(getString(R.string.event))) {
                     bundle.putString(getString(R.string.type), getString(R.string.event));
@@ -197,7 +191,8 @@ public class MainActivityLogic extends AppCompatActivity {
     }
 
     protected void setToggle(Toolbar toolbar) {
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        if(getSupportActionBar()!=null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         invalidateOptionsMenu();
@@ -226,7 +221,7 @@ public class MainActivityLogic extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main_toolbar, menu);
-        searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchItems.clear();
 
         // TODO: Unclear what do they mean, and how they are used +
@@ -348,7 +343,6 @@ public class MainActivityLogic extends AppCompatActivity {
             }
         }
 
-        // TODO: you already have a drawer from onCreate! +
         drawer.closeDrawer(GravityCompat.START);
         if (fragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -356,8 +350,8 @@ public class MainActivityLogic extends AppCompatActivity {
             ft.replace(R.id.content_frame, fragment, title).addToBackStack(title);
             ft.commit();
         }
-        // TODO: title should always be from resources +
-        getSupportActionBar().setTitle(getTitle());
+        if(getSupportActionBar()!=null)
+            getSupportActionBar().setTitle(getTitle());
         return true;
     }
 

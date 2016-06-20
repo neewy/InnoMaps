@@ -3,6 +3,7 @@ package com.innopolis.maps.innomaps.app;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.database.DBHelper;
@@ -12,14 +13,10 @@ import com.innopolis.maps.innomaps.utils.AnalyticsTrackers;
 public class MainActivity extends MainActivityLogic
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    // TODO: Check access level and add appropriate access modifiers +
-    private DBHelper dbHelper;
-
     private static MainActivity mInstance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // TODO: Split onCreate method into several logical part
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -36,9 +33,10 @@ public class MainActivity extends MainActivityLogic
 
         initializeNavigationView();
         initializeFragment();
-        // TODO: Replace maps constant with string resource +
-        getSupportActionBar().setTitle(maps);
-        dbHelper = new DBHelper(MainActivity.this);
+        if (getSupportActionBar()!=null)
+            getSupportActionBar().setTitle(maps);
+        else Log.e("NullPointException: ", getResources().getString(R.string.supportedActionBarIsNull));
+        DBHelper dbHelper = new DBHelper(MainActivity.this);
         database = dbHelper.getReadableDatabase();
 
         AnalyticsTrackers.initialize(this);
@@ -46,7 +44,7 @@ public class MainActivity extends MainActivityLogic
     }
 
     public static synchronized MainActivity getInstance() {
-        return mInstance;
+        return mInstance!=null?mInstance:new MainActivity();
     }
 
 }
