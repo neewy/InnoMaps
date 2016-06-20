@@ -14,12 +14,8 @@ import com.google.common.base.Joiner;
 import com.innopolis.maps.innomaps.R;
 
 public class About extends Fragment {
-    // TODO: decide on access level +
-    private TextView creators;
-    private TextView about;
 
-    // TODO: Replace author list with XML array resource +
-    String[] authorsArray;
+    private String[] authorsArray;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -33,8 +29,8 @@ public class About extends Fragment {
 
         authorsArray = getResources().getStringArray(R.array.authors_array);
 
-        creators = (TextView) view.findViewById(R.id.creators_about);
-        about = (TextView) view.findViewById(R.id.text_about);
+        TextView creators = (TextView) view.findViewById(R.id.creators_about);
+        TextView about = (TextView) view.findViewById(R.id.text_about);
 
         about.setText(R.string.about_text);
         creators.setText(makeAuthors());
