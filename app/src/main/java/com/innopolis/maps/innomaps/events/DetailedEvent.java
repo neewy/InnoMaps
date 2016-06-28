@@ -304,8 +304,7 @@ public class DetailedEvent extends Fragment {
 
 
     public void initializeMap(final String latitude, final String longitude) {
-        final LatLng[] southWest = new LatLng[1];
-        final LatLng[] northEast = new LatLng[1];
+        final LatLng[] southWestAndNorthEast = new LatLng[2];
         mSupportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapDesc);
         if (mSupportMapFragment == null) {
             FragmentManager fragmentManager = getFragmentManager();
@@ -330,29 +329,29 @@ public class DetailedEvent extends Fragment {
                         mMap.addMarker(new MarkerOptions().position(position).title(room));
                         switch (floor) {
                             case "1floor":
-                                southWest[0] = new LatLng(55.752533, 48.742492);
-                                northEast[0] = new LatLng(55.754656, 48.744589);
-                                putOverlayToMap(southWest[0], northEast[0], BitmapDescriptorFactory.fromResource(R.raw.ai6_floor1));
+                                southWestAndNorthEast[0] = new LatLng(55.752533, 48.742492);
+                                southWestAndNorthEast[1] = new LatLng(55.754656, 48.744589);
+                                putOverlayToMap(southWestAndNorthEast[0], southWestAndNorthEast[1], BitmapDescriptorFactory.fromResource(R.raw.ai6_floor1));
                                 break;
                             case "2floor":
-                                southWest[0] = new LatLng(55.752828, 48.742661);
-                                northEast[0] = new LatLng(55.754597, 48.744469);
-                                putOverlayToMap(southWest[0], northEast[0], BitmapDescriptorFactory.fromResource(R.raw.ai6_floor2));
+                                southWestAndNorthEast[0] = new LatLng(55.752828, 48.742661);
+                                southWestAndNorthEast[1] = new LatLng(55.754597, 48.744469);
+                                putOverlayToMap(southWestAndNorthEast[0], southWestAndNorthEast[1], BitmapDescriptorFactory.fromResource(R.raw.ai6_floor2));
                                 break;
                             case "3floor":
-                                southWest[0] = new LatLng(55.752875, 48.742739);
-                                northEast[0] = new LatLng(55.754572, 48.744467);
-                                putOverlayToMap(southWest[0], northEast[0], BitmapDescriptorFactory.fromResource(R.raw.ai6_floor3));
+                                southWestAndNorthEast[0] = new LatLng(55.752875, 48.742739);
+                                southWestAndNorthEast[1] = new LatLng(55.754572, 48.744467);
+                                putOverlayToMap(southWestAndNorthEast[0], southWestAndNorthEast[1], BitmapDescriptorFactory.fromResource(R.raw.ai6_floor3));
                                 break;
                             case "4floor":
-                                southWest[0] = new LatLng(55.752789, 48.742711);
-                                northEast[0] = new LatLng(55.754578, 48.744569);
-                                putOverlayToMap(southWest[0], northEast[0], BitmapDescriptorFactory.fromResource(R.raw.ai6_floor4));
+                                southWestAndNorthEast[0] = new LatLng(55.752789, 48.742711);
+                                southWestAndNorthEast[1] = new LatLng(55.754578, 48.744569);
+                                putOverlayToMap(southWestAndNorthEast[0], southWestAndNorthEast[1], BitmapDescriptorFactory.fromResource(R.raw.ai6_floor4));
                                 break;
                             case "5floor":
-                                southWest[0] = new LatLng(55.752808, 48.743497);
-                                northEast[0] = new LatLng(55.753383, 48.744519);
-                                putOverlayToMap(southWest[0], northEast[0], BitmapDescriptorFactory.fromResource(R.raw.ai6_floor5));
+                                southWestAndNorthEast[0] = new LatLng(55.752808, 48.743497);
+                                southWestAndNorthEast[1] = new LatLng(55.753383, 48.744519);
+                                putOverlayToMap(southWestAndNorthEast[0], southWestAndNorthEast[1], BitmapDescriptorFactory.fromResource(R.raw.ai6_floor5));
                                 break;
                         }
                     }
