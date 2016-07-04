@@ -42,6 +42,6 @@ public class GetEdgeTypeByIdTask extends AsyncTask<String, Void, EdgeType> {
     // parameter id
     protected String getURL(String id) {
         return Constants.CONNECTION_PROTOCOL + Constants.COLON_AND_TWO_SLASHES + Constants.IP + Constants.COLON +
-                Constants.PORT + Constants.SLASH_RESOURCES_SLASH + Constants.EDGE_TYPE + Constants.QUESTION_MARK_ID_EQUALS + id;
+                Constants.PORT + Constants.SLASH_RESOURCES_SLASH + Constants.EDGE + Constants.TYPE + Constants.QUESTION_MARK_ID_EQUALS + id;
     }
 }

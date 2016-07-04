@@ -4,6 +4,7 @@ import android.test.AndroidTestCase;
 
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.CoordinateType;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Edge;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EdgeType;
 import com.innopolis.maps.innomaps.network.NetworkController;
 import com.innopolis.maps.innomaps.network.clientServerCommunicationClasses.ClosestCoordinateWithDistance;
@@ -21,6 +22,7 @@ public class NetworkControllerTest extends AndroidTestCase {
     NetworkController networkController;
     double testLatitude, testLongitude;
     int testFloor;
+    String modifiedDateTime;
 
     @Before
     public void setUp() throws Exception {
@@ -28,6 +30,7 @@ public class NetworkControllerTest extends AndroidTestCase {
         testLatitude = 55.75304847354006;
         testLongitude = 48.7436814921;
         testFloor = 2;
+        modifiedDateTime = "2016-02-03 04:05:06.7";
     }
 
     @Test
@@ -48,7 +51,6 @@ public class NetworkControllerTest extends AndroidTestCase {
 
     @Test
     public void testGetCoordinateId() throws ParseException {
-        String modifiedDateTime = "2016-02-03 04:05:06.7";
         String IU_description = "Specializing in the field " +
                 "of modern information technologies, Innopolis University is not only one of Russia’s youngest universities," +
                 " but also the new city’s intellectual center.\n" +
@@ -72,7 +74,7 @@ public class NetworkControllerTest extends AndroidTestCase {
     }
 
     @Test
-    public void testGetCoordinateTypeId() throws ParseException {
+    public void testGetCoordinateTypeById() throws ParseException {
         // Coordinate_type=2 (DAFAULT)
         CoordinateType coordinateTypeWithId2 = new CoordinateType(2, "DEFAULT");
 
@@ -83,13 +85,27 @@ public class NetworkControllerTest extends AndroidTestCase {
     }
 
     @Test
-    public void testGetEdgeTypeId() throws ParseException {
+    public void testGetEdgeTypeById() throws ParseException {
         // Edge_type=1 (DAFAULT)
-        EdgeType edgeTypeWithId2 = new EdgeType(1, "DEFAULT");
+        EdgeType edgeTypeWithId1 = new EdgeType(1, "DEFAULT");
 
         EdgeType reseivedEdgeType = networkController.getEdgeTypeById(1);
 
-        assertEquals(edgeTypeWithId2.getId(), reseivedEdgeType.getId());
-        assertEquals(edgeTypeWithId2.getName(), reseivedEdgeType.getName());
+        assertEquals(edgeTypeWithId1.getId(), reseivedEdgeType.getId());
+        assertEquals(edgeTypeWithId1.getName(), reseivedEdgeType.getName());
+    }
+
+    @Test
+    public void testGetEdgeById() throws ParseException {
+        // Edge_type=1 (DAFAULT)
+        Edge edgeWithId1 = new Edge(1, 1, 112, 33, modifiedDateTime);
+
+        Edge reseivedEdge = networkController.getEdgeById(1);
+
+        assertEquals(edgeWithId1.getId(), reseivedEdge.getId());
+        assertEquals(edgeWithId1.getType_id(), reseivedEdge.getType_id());
+        assertEquals(edgeWithId1.getSource_id(), reseivedEdge.getSource_id());
+        assertEquals(edgeWithId1.getTarget_id(), reseivedEdge.getTarget_id());
+        assertEquals(edgeWithId1.getModified(), reseivedEdge.getModified());
     }
 }
