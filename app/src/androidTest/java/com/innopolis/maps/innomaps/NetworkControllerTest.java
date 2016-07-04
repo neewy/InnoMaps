@@ -6,6 +6,7 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.CoordinateType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Edge;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EdgeType;
+import com.innopolis.maps.innomaps.maps.LatLngFlr;
 import com.innopolis.maps.innomaps.network.NetworkController;
 import com.innopolis.maps.innomaps.network.clientServerCommunicationClasses.ClosestCoordinateWithDistance;
 
@@ -42,11 +43,10 @@ public class NetworkControllerTest extends AndroidTestCase {
         expectedLongitude = 48.7436814921;
         expectedFloor = 2;
         expectedDistance = 1.5806213947811135E-12;
+        ClosestCoordinateWithDistance expectedClosestCoordinateWithDistance =
+                new ClosestCoordinateWithDistance(new LatLngFlr(expectedLatitude, expectedLongitude, expectedFloor), expectedDistance);
         assertNotNull(response);
-        assertEquals(expectedLatitude, response.getCoordinate().getLatitude());
-        assertEquals(expectedLongitude, response.getCoordinate().getLongitude());
-        assertEquals(expectedFloor, response.getCoordinate().getFloor());
-        assertEquals(expectedDistance, response.getDistance());
+        assertEquals(expectedClosestCoordinateWithDistance, response);
     }
 
     @Test
@@ -63,14 +63,7 @@ public class NetworkControllerTest extends AndroidTestCase {
 
         Coordinate reseivedCoordinate = networkController.getCoordinateById(1);
 
-        assertEquals(coordinateWithId1.getId(), reseivedCoordinate.getId());
-        assertEquals(coordinateWithId1.getLatitude(), reseivedCoordinate.getLatitude());
-        assertEquals(coordinateWithId1.getLongitude(), reseivedCoordinate.getLongitude());
-        assertEquals(coordinateWithId1.getFloor(), reseivedCoordinate.getFloor());
-        assertEquals(coordinateWithId1.getType_id(), reseivedCoordinate.getType_id());
-        assertEquals(coordinateWithId1.getName(), reseivedCoordinate.getName());
-        assertEquals(coordinateWithId1.getDescription(), reseivedCoordinate.getDescription());
-        assertEquals(coordinateWithId1.getModified(), reseivedCoordinate.getModified());
+        assertEquals(coordinateWithId1, reseivedCoordinate);
     }
 
     @Test
@@ -80,8 +73,7 @@ public class NetworkControllerTest extends AndroidTestCase {
 
         CoordinateType reseivedCoordinateType = networkController.getCoordinateTypeById(2);
 
-        assertEquals(coordinateTypeWithId2.getId(), reseivedCoordinateType.getId());
-        assertEquals(coordinateTypeWithId2.getName(), reseivedCoordinateType.getName());
+        assertEquals(coordinateTypeWithId2, reseivedCoordinateType);
     }
 
     @Test
@@ -91,8 +83,7 @@ public class NetworkControllerTest extends AndroidTestCase {
 
         EdgeType reseivedEdgeType = networkController.getEdgeTypeById(1);
 
-        assertEquals(edgeTypeWithId1.getId(), reseivedEdgeType.getId());
-        assertEquals(edgeTypeWithId1.getName(), reseivedEdgeType.getName());
+        assertEquals(edgeTypeWithId1, reseivedEdgeType);
     }
 
     @Test
@@ -102,10 +93,6 @@ public class NetworkControllerTest extends AndroidTestCase {
 
         Edge reseivedEdge = networkController.getEdgeById(1);
 
-        assertEquals(edgeWithId1.getId(), reseivedEdge.getId());
-        assertEquals(edgeWithId1.getType_id(), reseivedEdge.getType_id());
-        assertEquals(edgeWithId1.getSource_id(), reseivedEdge.getSource_id());
-        assertEquals(edgeWithId1.getTarget_id(), reseivedEdge.getTarget_id());
-        assertEquals(edgeWithId1.getModified(), reseivedEdge.getModified());
+        assertEquals(edgeWithId1, reseivedEdge);
     }
 }
