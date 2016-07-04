@@ -30,6 +30,7 @@ public interface Constants {
 
     String QUESTION_MARK_ID_EQUALS = "?id=";
     String COORDINATE = "coordinate";
+    String COORDINATE_TYPE = "coordinatetype";
     String SHORTEST_PATH_URL = "%1$s://%2$s:%3$s/resources/shortestPath";
 
     String VERTEX_ONE_LAT = "vertexOneLatitude";

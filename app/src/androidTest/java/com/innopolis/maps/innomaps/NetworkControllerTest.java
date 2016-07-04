@@ -3,6 +3,7 @@ package com.innopolis.maps.innomaps;
 import android.test.AndroidTestCase;
 
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.CoordinateType;
 import com.innopolis.maps.innomaps.network.NetworkController;
 import com.innopolis.maps.innomaps.network.clientServerCommunicationClasses.ClosestCoordinateWithDistance;
 
@@ -67,5 +68,16 @@ public class NetworkControllerTest extends AndroidTestCase {
         assertEquals(coordinateWithId1.getName(), reseivedCoordinate.getName());
         assertEquals(coordinateWithId1.getDescription(), reseivedCoordinate.getDescription());
         assertEquals(coordinateWithId1.getModified(), reseivedCoordinate.getModified());
+    }
+
+    @Test
+    public void testGetCoordinateTypeId() throws ParseException {
+        // Coordinate_type=2 (DAFAULT)
+        CoordinateType coordinateTypeWithId2 = new CoordinateType(2, "DEFAULT");
+
+        CoordinateType reseivedCoordinateType = networkController.getCoordinateTypeById(2);
+
+        assertEquals(coordinateTypeWithId2.getId(), reseivedCoordinateType.getId());
+        assertEquals(coordinateTypeWithId2.getName(), reseivedCoordinateType.getName());
     }
 }
