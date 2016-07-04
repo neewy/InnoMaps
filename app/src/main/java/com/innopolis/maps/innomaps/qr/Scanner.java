@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -15,6 +16,7 @@ import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.database.SQLQueries;
 import com.innopolis.maps.innomaps.maps.MapsFragment;
+import com.innopolis.maps.innomaps.network.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,7 @@ import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.POI;
 import static com.innopolis.maps.innomaps.database.TableFields._ID;
+import static com.innopolis.maps.innomaps.network.Constants.LOG;
 
 
 public class Scanner extends AppCompatActivity implements ZXingScannerView.ResultHandler {
@@ -76,8 +79,22 @@ public class Scanner extends AppCompatActivity implements ZXingScannerView.Resul
             MapsFragment maps = (MapsFragment) fm.findFragmentByTag(getString(R.string.maps));
             String latitude = cursor.getString(cursor.getColumnIndex(LATITUDE));
             String longitude = cursor.getString(cursor.getColumnIndex(LONGITUDE));
-            int floor = Integer.parseInt(cursor.getString(cursor.getColumnIndex(FLOOR)).substring(0, 1));
-            maps.showRoute(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)), floor, new LatLng(destinationLatitude, destinationLongitude));
+            int floorSource = Integer.parseInt(cursor.getString(cursor.getColumnIndex(FLOOR)).substring(0, 1));
+            int floorDestination = 1;
+            LatLng destination = new LatLng(destinationLatitude, destinationLongitude);
+            cursor = database.rawQuery(SQLQueries.selectFloorForCoordinate(destination), null);
+            if (cursor.moveToFirst())
+                floorDestination = Integer.parseInt(cursor.getString(cursor.getColumnIndex(FLOOR)).substring(0, 1));
+            else {
+                // TODO: Remove commented code after and only after the app will work with 3D coordinates and the DB will support them
+                // To be honest, the error message should be shown. If there was no floor detection on server shortest path will work incorrectly.
+                // Since, as I hope, we will rewrite app and DB to support 3D coordinates and such floor detection won't be needed
+                // I will leave it as it is. But honestly, I understand that everything here holds on a hair.
+                Log.e(LOG, String.format("%1$s %2$s: %3$s, %4$s: %5$s", Constants.FLOOR_CALCULATION_ERROR, Constants.LATITUDE,
+                        destination.latitude, Constants.LONGITUDE, destination.longitude));
+            }
+            cursor.close();
+            maps.showRoute(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)), floorSource, destination, floorDestination);
             maps.currentDialog.cancel();
             this.finish();
         } else {

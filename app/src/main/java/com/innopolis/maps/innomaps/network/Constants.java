@@ -37,6 +37,7 @@ public interface Constants {
     String VERTEX_ONE_FLR = "vertexOneFloor";
     String VERTEX_TWO_LAT = "vertexTwoLatitude";
     String VERTEX_TWO_LNG = "vertexTwoLongitude";
+    String VERTEX_TWO_FLR = "vertexTwoFloor";
 
     SimpleDateFormat serverDateFormat = new SimpleDateFormat("yyyy-MM-dd H:mm:ss.S", Locale.ENGLISH);
 }

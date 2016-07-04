@@ -5,7 +5,7 @@ import android.util.Log;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
-import com.innopolis.maps.innomaps.maps.LatLngGraphVertex;
+import com.innopolis.maps.innomaps.maps.LatLngFlrGraphVertex;
 import com.innopolis.maps.innomaps.network.clientServerCommunicationClasses.ClosestCoordinateWithDistance;
 import com.innopolis.maps.innomaps.network.tasks.FindClosestPointFromGraphTask;
 import com.innopolis.maps.innomaps.network.tasks.FindShortestPathTask;
@@ -23,6 +23,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,7 @@ import static com.innopolis.maps.innomaps.network.Constants.POST;
 import static com.innopolis.maps.innomaps.network.Constants.VERTEX_ONE_FLR;
 import static com.innopolis.maps.innomaps.network.Constants.VERTEX_ONE_LAT;
 import static com.innopolis.maps.innomaps.network.Constants.VERTEX_ONE_LNG;
+import static com.innopolis.maps.innomaps.network.Constants.VERTEX_TWO_FLR;
 import static com.innopolis.maps.innomaps.network.Constants.VERTEX_TWO_LAT;
 import static com.innopolis.maps.innomaps.network.Constants.VERTEX_TWO_LNG;
 
@@ -146,14 +148,15 @@ public class NetworkController {
         return null;
     }
 
-    public List<LatLngGraphVertex> findShortestPath(double vertexOneLatitude, double vertexOneLongitude, int vertexOneFloor,
-                                                    double vertexTwoLatitude, double vertexTwoLongitude) throws UnsupportedEncodingException {
+    public List<LatLngFlrGraphVertex> findShortestPath(double vertexOneLatitude, double vertexOneLongitude, int vertexOneFloor,
+                                                       double vertexTwoLatitude, double vertexTwoLongitude, int vertexTwoFloor) throws UnsupportedEncodingException {
         Map<String, String> urlParametersMap = new HashMap<>();
         urlParametersMap.put(VERTEX_ONE_LAT, String.valueOf(vertexOneLatitude));
         urlParametersMap.put(VERTEX_ONE_LNG, String.valueOf(vertexOneLongitude));
         urlParametersMap.put(VERTEX_ONE_FLR, String.valueOf(vertexOneFloor));
         urlParametersMap.put(VERTEX_TWO_LAT, String.valueOf(vertexTwoLatitude));
         urlParametersMap.put(VERTEX_TWO_LNG, String.valueOf(vertexTwoLongitude));
+        urlParametersMap.put(VERTEX_TWO_FLR, String.valueOf(vertexTwoFloor));
         String urlParameters = createQueryStringForParameters(urlParametersMap);
 
         try {
@@ -161,7 +164,7 @@ public class NetworkController {
         } catch (InterruptedException | ExecutionException e) {
             Log.e(LOG, e.getMessage(), e.fillInStackTrace());
         }
-        return null;
+        return Collections.emptyList();
     }
 
     public ClosestCoordinateWithDistance findClosestPointFromGraph(double latitude, double longitude, int floor) {

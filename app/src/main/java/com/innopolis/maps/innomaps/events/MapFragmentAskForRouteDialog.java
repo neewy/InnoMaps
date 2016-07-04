@@ -195,7 +195,8 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
                 .setPositiveButton(R.string.route, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
 
-                        String latitudeSource = "", longitudeSource = ""; int floorSource = 1;
+                        String latitudeSource = "", longitudeSource = "";
+                        int floorSource = 1;
                         Cursor cursorSource = database.rawQuery(roomCursorQuery(POI, FLOOR, sourceFloor, NAME, sourceRoom), null);
                         if (cursorSource.moveToFirst()) {
                             latitudeSource = cursorSource.getString(cursorSource.getColumnIndex(LATITUDE));
@@ -208,8 +209,15 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
                             displayMapsFragment();
                         }
 
+                        LatLng destination = new LatLng(Double.parseDouble(latitudeDest), Double.parseDouble(longitudeDest));
+                        Cursor dbCursor = database.rawQuery(SQLQueries.selectFloorForCoordinate(destination), null);
+                        int floorDestination = 1;
+                        if (dbCursor.moveToFirst())
+                            floorDestination = Integer.parseInt(dbCursor.getString(dbCursor.getColumnIndex(FLOOR)).substring(0, 1));
+                        dbCursor.close();
+
                         maps.showRoute(new LatLng(Double.parseDouble(latitudeSource), Double.parseDouble(longitudeSource)),
-                                floorSource, new LatLng(Double.parseDouble(latitudeDest), Double.parseDouble(longitudeDest)));
+                                floorSource, destination, floorDestination);
 
                         MapFragmentAskForRouteDialog.this.getDialog().cancel();
                     }

@@ -496,7 +496,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         scrollView.setVisibility(View.GONE);
     }
 
-    private void getAndDrawPath(LatLng source, int sourceFloor, LatLng destination) {
+    private void getAndDrawPath(LatLng source, int sourceFloor, LatLng destination, int targetFloor) {
         FileInputStream inputStream = null;
         try {
             // TODO: KILL!!! +
@@ -508,11 +508,16 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         if (inputStream == null) {
             return;
         }
-        ArrayList<LatLngGraphVertex> path;
+        ArrayList<LatLngGraphVertex> path = new ArrayList<>();
         try {
             NetworkController networkController = new NetworkController();
-            path = (ArrayList<LatLngGraphVertex>) networkController.findShortestPath(source.latitude, source.longitude,
-                    sourceFloor, destination.latitude, destination.longitude);
+
+            // TODO: Remove temporary fix when app will be fully supporting 3D coordinates. Made path of type ArrayList<LatLngFlrGraphVertex>
+            ArrayList<LatLngFlrGraphVertex> pathWithFloors = (ArrayList<LatLngFlrGraphVertex>) networkController.findShortestPath(source.latitude, source.longitude,
+                    sourceFloor, destination.latitude, destination.longitude, targetFloor);
+            for (int i = 0; i < pathWithFloors.size(); i++) {
+                path.add(new LatLngGraphVertex(pathWithFloors.get(i).getVertex().getLatLng(), pathWithFloors.get(i).getVertex().getFloor(), pathWithFloors.get(i).getGraphVertexType()));
+            }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             return;
@@ -672,8 +677,8 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         cursor.close();
     }
 
-    public void showRoute(LatLng source, int sourceFloor, LatLng destination) {
-        getAndDrawPath(source, sourceFloor, destination);
+    public void showRoute(LatLng source, int sourceFloor, LatLng destination, int targetFloor) {
+        getAndDrawPath(source, sourceFloor, destination, targetFloor);
     }
 
     private void sortClearAdd(int num) {
@@ -730,9 +735,10 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                     // latitude and longitude but with different floor numbers and because the floor for
                     // given latitude and longitude is detected on the server side
                     Cursor cursor = database.rawQuery(SQLQueries.selectFloorForCoordinate(closest), null);
-                    int floor = 1;
+                    int floorSource = 1;
+                    int floorDestination = 1;
                     if (cursor.moveToFirst())
-                        floor = Integer.parseInt(cursor.getString(cursor.getColumnIndex(FLOOR)).substring(0, 1));
+                        floorSource = Integer.parseInt(cursor.getString(cursor.getColumnIndex(FLOOR)).substring(0, 1));
                     else {
                         // TODO: Remove commented code after and only after the app will work with 3D coordinates and the DB will support them
                         // To be honest, the error message should be shown. If there was no floor detection on server shortest path will work incorrectly.
@@ -742,8 +748,20 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                                 closest.latitude, Constants.LONGITUDE, closest.longitude));
                     }
                     cursor.close();
+                    cursor = database.rawQuery(SQLQueries.selectFloorForCoordinate(destination), null);
+                    if (cursor.moveToFirst())
+                        floorDestination = Integer.parseInt(cursor.getString(cursor.getColumnIndex(FLOOR)).substring(0, 1));
+                    else {
+                        // TODO: Remove commented code after and only after the app will work with 3D coordinates and the DB will support them
+                        // To be honest, the error message should be shown. If there was no floor detection on server shortest path will work incorrectly.
+                        // Since, as I hope, we will rewrite app and DB to support 3D coordinates and such floor detection won't be needed
+                        // I will leave it as it is. But honestly, I understand that everything here holds on a hair.
+                        Log.e(LOG, String.format("%1$s %2$s: %3$s, %4$s: %5$s", Constants.FLOOR_CALCULATION_ERROR, Constants.LATITUDE,
+                                destination.latitude, Constants.LONGITUDE, destination.longitude));
+                    }
+                    cursor.close();
 
-                    showRoute(closest, floor, destination);
+                    showRoute(closest, floorSource, destination, floorDestination);
                     dialog.cancel();
                 } else {
                     Toast.makeText(getContext(), R.string.marker_in_university, Toast.LENGTH_SHORT).show();

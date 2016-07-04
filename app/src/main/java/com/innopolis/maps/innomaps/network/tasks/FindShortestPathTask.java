@@ -4,7 +4,7 @@ import android.os.AsyncTask;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.innopolis.maps.innomaps.maps.LatLngGraphVertex;
+import com.innopolis.maps.innomaps.maps.LatLngFlrGraphVertex;
 import com.innopolis.maps.innomaps.network.NetworkController;
 
 import java.io.IOException;
@@ -19,9 +19,9 @@ import static com.innopolis.maps.innomaps.network.Constants.SHORTEST_PATH_URL;
 /**
  * Created by alnedorezov on 6/15/16.
  */
-public class FindShortestPathTask extends AsyncTask<String, Void, List<LatLngGraphVertex>> {
+public class FindShortestPathTask extends AsyncTask<String, Void, List<LatLngFlrGraphVertex>> {
     @Override
-    protected List<LatLngGraphVertex> doInBackground(String... params) {
+    protected List<LatLngFlrGraphVertex> doInBackground(String... params) {
         String response =
                 NetworkController.establishPostConnection(String.format(SHORTEST_PATH_URL,
                         CONNECTION_PROTOCOL, IP, PORT), params[0]);
@@ -31,7 +31,7 @@ public class FindShortestPathTask extends AsyncTask<String, Void, List<LatLngGra
         try {
             return mapper.readValue(response,
                     TypeFactory.defaultInstance().constructCollectionType(List.class,
-                            LatLngGraphVertex.class));
+                            LatLngFlrGraphVertex.class));
         } catch (IOException e) {
             e.printStackTrace();
         }
