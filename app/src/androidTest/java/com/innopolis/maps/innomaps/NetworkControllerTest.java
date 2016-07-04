@@ -4,6 +4,7 @@ import android.test.AndroidTestCase;
 
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.CoordinateType;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EdgeType;
 import com.innopolis.maps.innomaps.network.NetworkController;
 import com.innopolis.maps.innomaps.network.clientServerCommunicationClasses.ClosestCoordinateWithDistance;
 
@@ -79,5 +80,16 @@ public class NetworkControllerTest extends AndroidTestCase {
 
         assertEquals(coordinateTypeWithId2.getId(), reseivedCoordinateType.getId());
         assertEquals(coordinateTypeWithId2.getName(), reseivedCoordinateType.getName());
+    }
+
+    @Test
+    public void testGetEdgeTypeId() throws ParseException {
+        // Edge_type=1 (DAFAULT)
+        EdgeType edgeTypeWithId2 = new EdgeType(1, "DEFAULT");
+
+        EdgeType reseivedEdgeType = networkController.getEdgeTypeById(1);
+
+        assertEquals(edgeTypeWithId2.getId(), reseivedEdgeType.getId());
+        assertEquals(edgeTypeWithId2.getName(), reseivedEdgeType.getName());
     }
 }

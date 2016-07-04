@@ -6,12 +6,14 @@ import android.util.Log;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.CoordinateType;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EdgeType;
 import com.innopolis.maps.innomaps.maps.LatLngFlrGraphVertex;
 import com.innopolis.maps.innomaps.network.clientServerCommunicationClasses.ClosestCoordinateWithDistance;
 import com.innopolis.maps.innomaps.network.tasks.FindClosestPointFromGraphTask;
 import com.innopolis.maps.innomaps.network.tasks.FindShortestPathTask;
 import com.innopolis.maps.innomaps.network.tasks.GetCoordinateByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetCoordinateTypeByIdTask;
+import com.innopolis.maps.innomaps.network.tasks.GetEdgeTypeByIdTask;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
@@ -190,6 +192,15 @@ public class NetworkController {
     public CoordinateType getCoordinateTypeById(int id) {
         try {
             return new GetCoordinateTypeByIdTask().execute(String.valueOf(id)).get();
+        } catch (InterruptedException | ExecutionException e) {
+            Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
+        }
+        return null;
+    }
+
+    public EdgeType getEdgeTypeById(int id) {
+        try {
+            return new GetEdgeTypeByIdTask().execute(String.valueOf(id)).get();
         } catch (InterruptedException | ExecutionException e) {
             Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
         }
