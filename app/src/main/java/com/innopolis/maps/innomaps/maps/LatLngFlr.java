@@ -38,25 +38,22 @@ public class LatLngFlr extends LatLng {
 
     @Override
     public int hashCode() {
-        byte var2 = 1;
-        long var3 = Double.doubleToLongBits(getLatitude());
-        int var5 = 31 * var2 + (int) (var3 ^ var3 >>> 32);
-        var3 = Double.doubleToLongBits(getLongitude());
-        var5 = 31 * var5 + (int) (var3 ^ var3 >>> 32);
-        var3 = getFloor();
-        var5 = 31 * var5 + (int) (var3 ^ var3 >>> 32);
-        return var5;
+        int result = super.hashCode();
+        result = 31 * result + getFloor();
+        return result;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
-        } else if (!(o instanceof LatLng)) {
+        } else if (!(o instanceof LatLngFlr)) {
             return false;
         } else {
-            LatLng var2 = (LatLng) o;
-            return Double.doubleToLongBits(getLatitude()) == Double.doubleToLongBits(var2.getLatitude()) && Double.doubleToLongBits(getLongitude()) == Double.doubleToLongBits(var2.getLongitude());
+            LatLngFlr var2 = (LatLngFlr) o;
+            return Double.doubleToLongBits(getLatitude()) == Double.doubleToLongBits(var2.getLatitude()) &&
+                    Double.doubleToLongBits(getLongitude()) == Double.doubleToLongBits(var2.getLongitude()) &&
+                    getFloor() == var2.getFloor();
         }
     }
 
