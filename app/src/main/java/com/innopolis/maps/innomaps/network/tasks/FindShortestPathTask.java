@@ -1,10 +1,12 @@
 package com.innopolis.maps.innomaps.network.tasks;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.innopolis.maps.innomaps.maps.LatLngFlrGraphVertex;
+import com.innopolis.maps.innomaps.network.Constants;
 import com.innopolis.maps.innomaps.network.NetworkController;
 
 import java.io.IOException;
@@ -33,7 +35,7 @@ public class FindShortestPathTask extends AsyncTask<String, Void, List<LatLngFlr
                     TypeFactory.defaultInstance().constructCollectionType(List.class,
                             LatLngFlrGraphVertex.class));
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
         }
         return new ArrayList<>();
     }
