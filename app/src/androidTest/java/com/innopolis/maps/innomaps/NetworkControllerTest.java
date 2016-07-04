@@ -2,6 +2,7 @@ package com.innopolis.maps.innomaps;
 
 import android.test.AndroidTestCase;
 
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Building;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.CoordinateType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Edge;
@@ -26,6 +27,7 @@ public class NetworkControllerTest extends AndroidTestCase {
     double testLatitude, testLongitude;
     int testFloor;
     String modifiedDateTime;
+    String IU_description;
 
     @Before
     public void setUp() throws Exception {
@@ -34,6 +36,12 @@ public class NetworkControllerTest extends AndroidTestCase {
         testLongitude = 48.7436814921;
         testFloor = 2;
         modifiedDateTime = "2016-02-03 04:05:06.7";
+        IU_description = "Specializing in the field " +
+                "of modern information technologies, Innopolis University is not only one of Russia’s youngest universities," +
+                " but also the new city’s intellectual center.\n" +
+                "The teaching staff consists of leading Russian and foreign IT specialists and robotic science.\n" +
+                "Driven by the demands of both business and industry, the educational programs are committed to producing" +
+                " a high-quality stream of professionals for companies located in Innopolis.";
     }
 
     @Test
@@ -53,12 +61,6 @@ public class NetworkControllerTest extends AndroidTestCase {
 
     @Test
     public void testGetCoordinateId() throws ParseException {
-        String IU_description = "Specializing in the field " +
-                "of modern information technologies, Innopolis University is not only one of Russia’s youngest universities," +
-                " but also the new city’s intellectual center.\n" +
-                "The teaching staff consists of leading Russian and foreign IT specialists and robotic science.\n" +
-                "Driven by the demands of both business and industry, the educational programs are committed to producing" +
-                " a high-quality stream of professionals for companies located in Innopolis.";
         // Coordinate for Innopolis University are taken from Google Maps
         // Coordinate_type=2 (DAFAULT)
         Coordinate coordinateWithId1 = new Coordinate(1, 55.7541793, 48.744085, 1, 2, "Innopolis University", IU_description, modifiedDateTime);
@@ -115,5 +117,14 @@ public class NetworkControllerTest extends AndroidTestCase {
         Street reseivedStreet = networkController.getStreetById(1);
 
         assertEquals(streetWithId1, reseivedStreet);
+    }
+
+    @Test
+    public void testGetBuildingById() throws ParseException {
+        Building buildingWithId1 = new Building(1, String.valueOf(1), null, IU_description, 1, 1, modifiedDateTime);
+
+        Building reseivedBuilding = networkController.getBuildingById(1);
+
+        assertEquals(buildingWithId1, reseivedBuilding);
     }
 }
