@@ -7,6 +7,7 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.CoordinateType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Edge;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EdgeType;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Photo;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Street;
@@ -136,5 +137,14 @@ public class NetworkControllerTest extends AndroidTestCase {
         Room reseivedRoom = networkController.getRoomById(1);
 
         assertEquals(roomWithId1, reseivedRoom);
+    }
+
+    @Test
+    public void testGetPhotoById() throws ParseException {
+        Photo photoWithId1 = new Photo(1, "http://www.djpurviswoodfloors.co.uk/Images/laminate.gif");
+
+        Photo reseivedPhoto = networkController.getPhotoById(1);
+
+        assertEquals(photoWithId1, reseivedPhoto);
     }
 }
