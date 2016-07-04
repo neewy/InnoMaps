@@ -1,6 +1,9 @@
 package com.innopolis.maps.innomaps.network;
 
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 public interface Constants {
     String LOG = "Exception";
     String CONNECTION_PROTOCOL = "https";
@@ -25,6 +28,8 @@ public interface Constants {
     String CONTENT_TYPE = "Content-Type";
     String CONTENT_TYPE_VALUE = "application/x-www-form-urlencoded";
 
+    String question_mark_id_equals = "?id=";
+    String coordinate = "coordinate";
     String shortest_path_url = "%1$s://%2$s:%3$s/resources/shortestPath";
 
     String VERTEX_ONE_LAT = "vertexOneLatitude";
@@ -33,4 +38,5 @@ public interface Constants {
     String VERTEX_TWO_LAT = "vertexTwoLatitude";
     String VERTEX_TWO_LNG = "vertexTwoLongitude";
 
+    SimpleDateFormat serverDateFormat = new SimpleDateFormat("yyyy-MM-dd H:mm:ss.S", Locale.ENGLISH);
 }
