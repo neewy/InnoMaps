@@ -9,6 +9,7 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.CoordinateType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Edge;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EdgeType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomType;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Street;
 import com.innopolis.maps.innomaps.maps.LatLngFlrGraphVertex;
 import com.innopolis.maps.innomaps.network.clientServerCommunicationClasses.ClosestCoordinateWithDistance;
 import com.innopolis.maps.innomaps.network.tasks.FindClosestPointFromGraphTask;
@@ -18,6 +19,7 @@ import com.innopolis.maps.innomaps.network.tasks.GetCoordinateTypeByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetEdgeByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetEdgeTypeByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetRoomTypeByIdTask;
+import com.innopolis.maps.innomaps.network.tasks.GetStreetByIdTask;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
@@ -223,6 +225,15 @@ public class NetworkController {
     public RoomType getRoomTypeById(int id) {
         try {
             return new GetRoomTypeByIdTask().execute(String.valueOf(id)).get();
+        } catch (InterruptedException | ExecutionException e) {
+            Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
+        }
+        return null;
+    }
+
+    public Street getStreetById(int id) {
+        try {
+            return new GetStreetByIdTask().execute(String.valueOf(id)).get();
         } catch (InterruptedException | ExecutionException e) {
             Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
         }

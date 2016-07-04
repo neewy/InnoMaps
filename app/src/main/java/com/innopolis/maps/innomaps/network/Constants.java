@@ -33,6 +33,7 @@ public interface Constants {
     String TYPE = "type";
     String EDGE = "edge";
     String ROOM = "room";
+    String STREET = "street";
     String SHORTEST_PATH_URL = "%1$s://%2$s:%3$s/resources/shortestPath";
 
     String VERTEX_ONE_LAT = "vertexOneLatitude";
