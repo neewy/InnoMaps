@@ -63,4 +63,30 @@ public class Edge {
     public String getModified() {
         return Constants.serverDateFormat.format(modified);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        } else if (!(o instanceof Edge)) {
+            return false;
+        } else {
+            Edge var2 = (Edge) o;
+            return getId() == var2.getId() &&
+                    getType_id() == var2.getType_id() &&
+                    getSource_id() == var2.getSource_id() &&
+                    getTarget_id() == var2.getTarget_id() &&
+                    getModified().equals(var2.getModified());
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + type_id;
+        result = 31 * result + source_id;
+        result = 31 * result + target_id;
+        result = 31 * result + (modified != null ? modified.hashCode() : 0);
+        return result;
+    }
 }

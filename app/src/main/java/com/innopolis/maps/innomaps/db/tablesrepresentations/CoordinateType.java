@@ -30,4 +30,24 @@ public class CoordinateType {
     public String getName() {
         return name;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        } else if (!(o instanceof CoordinateType)) {
+            return false;
+        } else {
+            CoordinateType var2 = (CoordinateType) o;
+            return getId() == var2.getId() &&
+                    getName().equals(var2.getName());
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        return result;
+    }
 }
