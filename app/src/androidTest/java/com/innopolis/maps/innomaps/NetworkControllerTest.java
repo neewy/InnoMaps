@@ -6,6 +6,7 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.CoordinateType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Edge;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EdgeType;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomType;
 import com.innopolis.maps.innomaps.maps.LatLngFlr;
 import com.innopolis.maps.innomaps.network.NetworkController;
 import com.innopolis.maps.innomaps.network.clientServerCommunicationClasses.ClosestCoordinateWithDistance;
@@ -94,5 +95,15 @@ public class NetworkControllerTest extends AndroidTestCase {
         Edge reseivedEdge = networkController.getEdgeById(1);
 
         assertEquals(edgeWithId1, reseivedEdge);
+    }
+
+    @Test
+    public void testGetRoomTypeById() throws ParseException {
+        // Room_type=1 (ROOM)
+        RoomType roomTypeWithId1 = new RoomType(1, "ROOM");
+
+        RoomType reseivedRoomType = networkController.getRoomTypeById(1);
+
+        assertEquals(roomTypeWithId1, reseivedRoomType);
     }
 }
