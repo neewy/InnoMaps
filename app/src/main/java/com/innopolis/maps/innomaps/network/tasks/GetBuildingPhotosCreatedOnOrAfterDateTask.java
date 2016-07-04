@@ -11,6 +11,7 @@ import com.innopolis.maps.innomaps.network.NetworkController;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -25,7 +26,7 @@ public class GetBuildingPhotosCreatedOnOrAfterDateTask extends AsyncTask<String,
             } catch (IOException e) {
                 Log.e(Constants.LOG, e.getMessage());
             }
-            return null;
+            return Collections.emptyList();
         }
 
         private List<BuildingPhoto> deserializeCoordinate(String urlString) throws IOException {
@@ -42,7 +43,7 @@ public class GetBuildingPhotosCreatedOnOrAfterDateTask extends AsyncTask<String,
             } catch (UnsupportedEncodingException | IllegalStateException | NullPointerException e) {
                 Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
             }
-            return null;
+            return Collections.emptyList();
         }
 
         // parameter id
