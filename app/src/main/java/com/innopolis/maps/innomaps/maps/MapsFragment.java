@@ -509,18 +509,13 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             return;
         }
         ArrayList<LatLngGraphVertex> path = new ArrayList<>();
-        try {
-            NetworkController networkController = new NetworkController();
+        NetworkController networkController = new NetworkController();
 
-            // TODO: Remove temporary fix when app will be fully supporting 3D coordinates. Made path of type ArrayList<LatLngFlrGraphVertex>
-            ArrayList<LatLngFlrGraphVertex> pathWithFloors = (ArrayList<LatLngFlrGraphVertex>) networkController.findShortestPath(source.latitude, source.longitude,
-                    sourceFloor, destination.latitude, destination.longitude, targetFloor);
-            for (int i = 0; i < pathWithFloors.size(); i++) {
-                path.add(new LatLngGraphVertex(pathWithFloors.get(i).getVertex().getLatLng(), pathWithFloors.get(i).getVertex().getFloor(), pathWithFloors.get(i).getGraphVertexType()));
-            }
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return;
+        // TODO: Remove temporary fix when app will be fully supporting 3D coordinates. Made path of type ArrayList<LatLngFlrGraphVertex>
+        ArrayList<LatLngFlrGraphVertex> pathWithFloors = (ArrayList<LatLngFlrGraphVertex>) networkController.findShortestPath(source.latitude, source.longitude,
+                sourceFloor, destination.latitude, destination.longitude, targetFloor);
+        for (int i = 0; i < pathWithFloors.size(); i++) {
+            path.add(new LatLngGraphVertex(pathWithFloors.get(i).getVertex().getLatLng(), pathWithFloors.get(i).getVertex().getFloor(), pathWithFloors.get(i).getGraphVertexType()));
         }
 
             /*Creation and start of a new route*/

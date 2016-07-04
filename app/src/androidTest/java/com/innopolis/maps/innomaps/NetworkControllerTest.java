@@ -3,6 +3,7 @@ package com.innopolis.maps.innomaps;
 import android.test.AndroidTestCase;
 
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Building;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingPhoto;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.CoordinateType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Edge;
@@ -12,13 +13,16 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Street;
 import com.innopolis.maps.innomaps.maps.LatLngFlr;
+import com.innopolis.maps.innomaps.network.Constants;
 import com.innopolis.maps.innomaps.network.NetworkController;
 import com.innopolis.maps.innomaps.network.clientServerCommunicationClasses.ClosestCoordinateWithDistance;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
+import java.util.Date;
 
 /**
  * Created by alnedorezov on 6/15/16.
@@ -67,29 +71,29 @@ public class NetworkControllerTest extends AndroidTestCase {
         // Coordinate_type=2 (DAFAULT)
         Coordinate coordinateWithId1 = new Coordinate(1, 55.7541793, 48.744085, 1, 2, "Innopolis University", IU_description, modifiedDateTime);
 
-        Coordinate reseivedCoordinate = networkController.getCoordinateById(1);
+        Coordinate receivedCoordinate = networkController.getCoordinateById(1);
 
-        assertEquals(coordinateWithId1, reseivedCoordinate);
+        assertEquals(coordinateWithId1, receivedCoordinate);
     }
 
     @Test
-    public void testGetCoordinateTypeById() throws ParseException {
+    public void testGetCoordinateTypeById() {
         // Coordinate_type=2 (DAFAULT)
         CoordinateType coordinateTypeWithId2 = new CoordinateType(2, "DEFAULT");
 
-        CoordinateType reseivedCoordinateType = networkController.getCoordinateTypeById(2);
+        CoordinateType receivedCoordinateType = networkController.getCoordinateTypeById(2);
 
-        assertEquals(coordinateTypeWithId2, reseivedCoordinateType);
+        assertEquals(coordinateTypeWithId2, receivedCoordinateType);
     }
 
     @Test
-    public void testGetEdgeTypeById() throws ParseException {
+    public void testGetEdgeTypeById() {
         // Edge_type=1 (DAFAULT)
         EdgeType edgeTypeWithId1 = new EdgeType(1, "DEFAULT");
 
-        EdgeType reseivedEdgeType = networkController.getEdgeTypeById(1);
+        EdgeType receivedEdgeType = networkController.getEdgeTypeById(1);
 
-        assertEquals(edgeTypeWithId1, reseivedEdgeType);
+        assertEquals(edgeTypeWithId1, receivedEdgeType);
     }
 
     @Test
@@ -97,54 +101,64 @@ public class NetworkControllerTest extends AndroidTestCase {
         // Edge_type=1 (DAFAULT)
         Edge edgeWithId1 = new Edge(1, 1, 112, 33, modifiedDateTime);
 
-        Edge reseivedEdge = networkController.getEdgeById(1);
+        Edge receivedEdge = networkController.getEdgeById(1);
 
-        assertEquals(edgeWithId1, reseivedEdge);
+        assertEquals(edgeWithId1, receivedEdge);
     }
 
     @Test
-    public void testGetRoomTypeById() throws ParseException {
+    public void testGetRoomTypeById() {
         // Room_type=1 (ROOM)
         RoomType roomTypeWithId1 = new RoomType(1, "ROOM");
 
-        RoomType reseivedRoomType = networkController.getRoomTypeById(1);
+        RoomType receivedRoomType = networkController.getRoomTypeById(1);
 
-        assertEquals(roomTypeWithId1, reseivedRoomType);
+        assertEquals(roomTypeWithId1, receivedRoomType);
     }
 
     @Test
     public void testGetStreetById() throws ParseException {
         Street streetWithId1 = new Street(1, "Universitetskaya");
 
-        Street reseivedStreet = networkController.getStreetById(1);
+        Street receivedStreet = networkController.getStreetById(1);
 
-        assertEquals(streetWithId1, reseivedStreet);
+        assertEquals(streetWithId1, receivedStreet);
     }
 
     @Test
     public void testGetBuildingById() throws ParseException {
         Building buildingWithId1 = new Building(1, String.valueOf(1), null, IU_description, 1, 1, modifiedDateTime);
 
-        Building reseivedBuilding = networkController.getBuildingById(1);
+        Building receivedBuilding = networkController.getBuildingById(1);
 
-        assertEquals(buildingWithId1, reseivedBuilding);
+        assertEquals(buildingWithId1, receivedBuilding);
     }
 
     @Test
     public void testGetRoomById() throws ParseException {
         Room roomWithId1 = new Room(1, null, 1, 2, 6, modifiedDateTime);
 
-        Room reseivedRoom = networkController.getRoomById(1);
+        Room receivedRoom = networkController.getRoomById(1);
 
-        assertEquals(roomWithId1, reseivedRoom);
+        assertEquals(roomWithId1, receivedRoom);
     }
 
     @Test
     public void testGetPhotoById() throws ParseException {
         Photo photoWithId1 = new Photo(1, "http://www.djpurviswoodfloors.co.uk/Images/laminate.gif");
 
-        Photo reseivedPhoto = networkController.getPhotoById(1);
+        Photo receivedPhoto = networkController.getPhotoById(1);
 
-        assertEquals(photoWithId1, reseivedPhoto);
+        assertEquals(photoWithId1, receivedPhoto);
+    }
+
+    @Test
+    public void testGetBuildingPhotosCreatedOnOrAfterDate() throws ParseException {
+        BuildingPhoto requiredFirstBuildingPhotoInList = new BuildingPhoto(1, 2, "2016-07-04 23:28:37.363");
+
+        Date date = Constants.serverDateFormat.parse("2016-07-04 22:48:03.001");
+        BuildingPhoto receivedBuildingPhoto = networkController.getBuildingPhotosCreatedOnOrAfterDate(date).get(0);
+
+        assertEquals(requiredFirstBuildingPhotoInList, receivedBuildingPhoto);
     }
 }

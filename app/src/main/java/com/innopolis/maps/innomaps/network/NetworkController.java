@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Building;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingPhoto;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.CoordinateType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Edge;
@@ -18,6 +19,7 @@ import com.innopolis.maps.innomaps.network.clientServerCommunicationClasses.Clos
 import com.innopolis.maps.innomaps.network.tasks.FindClosestPointFromGraphTask;
 import com.innopolis.maps.innomaps.network.tasks.FindShortestPathTask;
 import com.innopolis.maps.innomaps.network.tasks.GetBuildingByIdTask;
+import com.innopolis.maps.innomaps.network.tasks.GetBuildingPhotosCreatedOnOrAfterDateTask;
 import com.innopolis.maps.innomaps.network.tasks.GetCoordinateByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetCoordinateTypeByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetEdgeByIdTask;
@@ -40,6 +42,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -164,8 +167,15 @@ public class NetworkController {
         return null;
     }
 
+    public static String urlEncodeDate(Date date) {
+        String result = Constants.serverDateFormat.format(date);
+        result = result.replaceAll(" ", "%20");
+        result = result.replaceAll(":", "%3A");
+        return result;
+    }
+
     public List<LatLngFlrGraphVertex> findShortestPath(double vertexOneLatitude, double vertexOneLongitude, int vertexOneFloor,
-                                                       double vertexTwoLatitude, double vertexTwoLongitude, int vertexTwoFloor) throws UnsupportedEncodingException {
+                                                       double vertexTwoLatitude, double vertexTwoLongitude, int vertexTwoFloor) {
         Map<String, String> urlParametersMap = new HashMap<>();
         urlParametersMap.put(VERTEX_ONE_LAT, String.valueOf(vertexOneLatitude));
         urlParametersMap.put(VERTEX_ONE_LNG, String.valueOf(vertexOneLongitude));
@@ -271,5 +281,14 @@ public class NetworkController {
             Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
         }
         return null;
+    }
+
+    public List<BuildingPhoto> getBuildingPhotosCreatedOnOrAfterDate(Date date) {
+        try {
+            return new GetBuildingPhotosCreatedOnOrAfterDateTask().execute(urlEncodeDate(date)).get();
+        } catch (InterruptedException | ExecutionException e) {
+            Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
+        }
+        return Collections.emptyList();
     }
 }
