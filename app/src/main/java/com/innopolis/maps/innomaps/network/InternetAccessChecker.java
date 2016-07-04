@@ -18,6 +18,13 @@ import static com.innopolis.maps.innomaps.network.Constants.USER_AGENT;
 
 public class InternetAccessChecker {
 
+    // Utility classes, which are a collection of static members, are not meant to be instantiated
+    private InternetAccessChecker() {
+        // Even abstract utility classes, which can be extended, should not have public constructors.
+        // Java adds an implicit public constructor to every class which does not define at least one explicitly.
+        // Hence, at least one non-public constructor should be defined
+    }
+
     public static boolean isConnected(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
