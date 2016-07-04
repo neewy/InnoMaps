@@ -7,6 +7,7 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.CoordinateType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Edge;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EdgeType;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Street;
 import com.innopolis.maps.innomaps.maps.LatLngFlr;
@@ -126,5 +127,14 @@ public class NetworkControllerTest extends AndroidTestCase {
         Building reseivedBuilding = networkController.getBuildingById(1);
 
         assertEquals(buildingWithId1, reseivedBuilding);
+    }
+
+    @Test
+    public void testGetRoomById() throws ParseException {
+        Room roomWithId1 = new Room(1, null, 1, 2, 6, modifiedDateTime);
+
+        Room reseivedRoom = networkController.getRoomById(1);
+
+        assertEquals(roomWithId1, reseivedRoom);
     }
 }

@@ -9,6 +9,7 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.CoordinateType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Edge;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EdgeType;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Street;
 import com.innopolis.maps.innomaps.maps.LatLngFlrGraphVertex;
@@ -20,6 +21,7 @@ import com.innopolis.maps.innomaps.network.tasks.GetCoordinateByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetCoordinateTypeByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetEdgeByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetEdgeTypeByIdTask;
+import com.innopolis.maps.innomaps.network.tasks.GetRoomByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetRoomTypeByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetStreetByIdTask;
 
@@ -245,6 +247,15 @@ public class NetworkController {
     public Building getBuildingById(int id) {
         try {
             return new GetBuildingByIdTask().execute(String.valueOf(id)).get();
+        } catch (InterruptedException | ExecutionException e) {
+            Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
+        }
+        return null;
+    }
+
+    public Room getRoomById(int id) {
+        try {
+            return new GetRoomByIdTask().execute(String.valueOf(id)).get();
         } catch (InterruptedException | ExecutionException e) {
             Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
         }
