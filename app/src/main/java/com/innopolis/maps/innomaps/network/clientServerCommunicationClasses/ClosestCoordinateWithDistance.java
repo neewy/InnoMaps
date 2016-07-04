@@ -29,12 +29,15 @@ public class ClosestCoordinateWithDistance {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ClosestCoordinateWithDistance)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof ClosestCoordinateWithDistance))
+            return false;
 
         ClosestCoordinateWithDistance that = (ClosestCoordinateWithDistance) o;
 
-        if (Double.compare(that.getDistance(), getDistance()) != 0) return false;
+        if (Double.compare(that.getDistance(), getDistance()) != 0)
+            return false;
         return getCoordinate() != null ? getCoordinate().equals(that.getCoordinate()) : that.getCoordinate() == null;
 
     }
