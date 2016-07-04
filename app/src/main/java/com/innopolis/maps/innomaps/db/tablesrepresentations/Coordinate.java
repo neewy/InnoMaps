@@ -90,37 +90,38 @@ public class Coordinate {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        } else if (!(o instanceof Coordinate)) {
+        if (this == o) return true;
+        if (!(o instanceof Coordinate)) return false;
+
+        Coordinate that = (Coordinate) o;
+
+        if (getId() != that.getId()) return false;
+        if (Double.compare(that.getLatitude(), getLatitude()) != 0) return false;
+        if (Double.compare(that.getLongitude(), getLongitude()) != 0) return false;
+        if (getFloor() != that.getFloor()) return false;
+        if (getType_id() != that.getType_id()) return false;
+        if (getName() != null ? !getName().equals(that.getName()) : that.getName() != null)
             return false;
-        } else {
-            Coordinate var2 = (Coordinate) o;
-            return getId() == var2.getId() &&
-                    Double.doubleToLongBits(getLatitude()) == Double.doubleToLongBits(var2.getLatitude()) &&
-                    Double.doubleToLongBits(getLongitude()) == Double.doubleToLongBits(var2.getLongitude()) &&
-                    getFloor() == var2.getFloor() &&
-                    getType_id() == var2.getType_id() &&
-                    getName().equals(var2.getName()) &&
-                    getDescription().equals(var2.getDescription()) &&
-                    getModified().equals(var2.getModified());
-        }
+        if (getDescription() != null ? !getDescription().equals(that.getDescription()) : that.getDescription() != null)
+            return false;
+        return getModified() != null ? getModified().equals(that.getModified()) : that.getModified() == null;
+
     }
 
     @Override
     public int hashCode() {
         int result;
         long temp;
-        result = id;
-        temp = Double.doubleToLongBits(latitude);
+        result = getId();
+        temp = Double.doubleToLongBits(getLatitude());
         result = 31 * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(longitude);
+        temp = Double.doubleToLongBits(getLongitude());
         result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + floor;
-        result = 31 * result + type_id;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + (modified != null ? modified.hashCode() : 0);
+        result = 31 * result + getFloor();
+        result = 31 * result + getType_id();
+        result = 31 * result + (getName() != null ? getName().hashCode() : 0);
+        result = 31 * result + (getDescription() != null ? getDescription().hashCode() : 0);
+        result = 31 * result + (getModified() != null ? getModified().hashCode() : 0);
         return result;
     }
 }

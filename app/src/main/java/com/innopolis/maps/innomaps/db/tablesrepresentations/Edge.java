@@ -66,27 +66,26 @@ public class Edge {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        } else if (!(o instanceof Edge)) {
-            return false;
-        } else {
-            Edge var2 = (Edge) o;
-            return getId() == var2.getId() &&
-                    getType_id() == var2.getType_id() &&
-                    getSource_id() == var2.getSource_id() &&
-                    getTarget_id() == var2.getTarget_id() &&
-                    getModified().equals(var2.getModified());
-        }
+        if (this == o) return true;
+        if (!(o instanceof Edge)) return false;
+
+        Edge edge = (Edge) o;
+
+        if (getId() != edge.getId()) return false;
+        if (getType_id() != edge.getType_id()) return false;
+        if (getSource_id() != edge.getSource_id()) return false;
+        if (getTarget_id() != edge.getTarget_id()) return false;
+        return getModified() != null ? getModified().equals(edge.getModified()) : edge.getModified() == null;
+
     }
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + type_id;
-        result = 31 * result + source_id;
-        result = 31 * result + target_id;
-        result = 31 * result + (modified != null ? modified.hashCode() : 0);
+        int result = getId();
+        result = 31 * result + getType_id();
+        result = 31 * result + getSource_id();
+        result = 31 * result + getTarget_id();
+        result = 31 * result + (getModified() != null ? getModified().hashCode() : 0);
         return result;
     }
 }
