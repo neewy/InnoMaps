@@ -18,16 +18,21 @@ public class FindClosestPointFromGraphTask extends AsyncTask<String, Void, Close
     @Override
     protected ClosestCoordinateWithDistance doInBackground(String... params) {
         try {
-            ObjectMapper mapper = new ObjectMapper();
             String urlString = getURL(params[0], params[1], params[2]);
-            String response;
-            try {
-                response = NetworkController.establishGetConnection(urlString);
-                return mapper.readValue(response, ClosestCoordinateWithDistance.class);
-            } catch (UnsupportedEncodingException | IllegalStateException | NullPointerException e) {
-                Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
-            }
+            return deserializeClosestCoordinateWithDistance(urlString);
         } catch (IOException e) {
+            Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
+        }
+        return null;
+    }
+
+    private ClosestCoordinateWithDistance deserializeClosestCoordinateWithDistance(String urlString) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        String response;
+        try {
+            response = NetworkController.establishGetConnection(urlString);
+            return mapper.readValue(response, ClosestCoordinateWithDistance.class);
+        } catch (UnsupportedEncodingException | IllegalStateException | NullPointerException e) {
             Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
         }
         return null;

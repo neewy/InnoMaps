@@ -18,18 +18,23 @@ public class GetCoordinateByIdTask extends AsyncTask<String, Void, Coordinate> {
     @Override
     protected Coordinate doInBackground(String... params) {
         try {
-            ObjectMapper mapper = new ObjectMapper();
             String urlString = getURL(params[0]);
-            String response;
-            try {
-                response = NetworkController.establishGetConnection(urlString);
-                mapper.setDateFormat(Constants.serverDateFormat);
-                return mapper.readValue(response, Coordinate.class);
-            } catch (UnsupportedEncodingException | IllegalStateException | NullPointerException e) {
-                Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
-            }
+            return deserializeCoordinate(urlString);
         } catch (IOException e) {
             Log.e(Constants.LOG, e.getMessage());
+        }
+        return null;
+    }
+
+    private Coordinate deserializeCoordinate(String urlString) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        String response;
+        try {
+            response = NetworkController.establishGetConnection(urlString);
+            mapper.setDateFormat(Constants.serverDateFormat);
+            return mapper.readValue(response, Coordinate.class);
+        } catch (UnsupportedEncodingException | IllegalStateException | NullPointerException e) {
+            Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
         }
         return null;
     }
