@@ -10,7 +10,6 @@ import com.innopolis.maps.innomaps.network.NetworkController;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.text.SimpleDateFormat;
 
 /**
  * Created by alnedorezov on 7/4/16.
@@ -37,7 +36,7 @@ public class GetCoordinateByIdTask extends AsyncTask<String, Void, Coordinate> {
 
     // parameter id
     protected String getURL(String id) {
-        return Constants.CONNECTION_PROTOCOL + Constants.colon_and_two_slashes + Constants.IP + Constants.colon +
-                Constants.PORT + Constants.slash_resources_slash + Constants.coordinate + Constants.question_mark_id_equals + id;
+        return Constants.CONNECTION_PROTOCOL + Constants.COLON_AND_TWO_SLASHES + Constants.IP + Constants.COLON +
+                Constants.PORT + Constants.SLASH_RESOURCES_SLASH + Constants.COORDINATE + Constants.QUESTION_MARK_ID_EQUALS + id;
     }
 }

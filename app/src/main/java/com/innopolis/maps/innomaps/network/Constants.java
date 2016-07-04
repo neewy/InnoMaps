@@ -12,15 +12,15 @@ public interface Constants {
     char PARAMETER_DELIMITER = '&';
     char PARAMETER_EQUALS_CHAR = '=';
     String ENCODING = "UTF-8";
-    String colon_and_two_slashes = "://";
-    char colon = ':';
-    char question_mark = '?';
-    String slash_resources_slash = "/resources/";
-    String latitude = "latitude";
-    String longitude = "longitude";
-    String floor = "floor";
-    String closestPointFromGraph = "closestPointFromGraph";
-    String floor_calculation_error = "The error arises on calculation floor for the following coordinates:";
+    String COLON_AND_TWO_SLASHES = "://";
+    char COLON = ':';
+    char QUESTION_MARK = '?';
+    String SLASH_RESOURCES_SLASH = "/resources/";
+    String LATITUDE = "latitude";
+    String LONGITUDE = "longitude";
+    String FLOOR = "floor";
+    String CLOSEST_POINT_FROM_GRAPH = "closestPointFromGraph";
+    String FLOOR_CALCULATION_ERROR = "The error arises on calculation floor for the following coordinates:";
 
     String USER_AGENT = "User-Agent";
     String CONNECTION = "Connection";
@@ -28,9 +28,9 @@ public interface Constants {
     String CONTENT_TYPE = "Content-Type";
     String CONTENT_TYPE_VALUE = "application/x-www-form-urlencoded";
 
-    String question_mark_id_equals = "?id=";
-    String coordinate = "coordinate";
-    String shortest_path_url = "%1$s://%2$s:%3$s/resources/shortestPath";
+    String QUESTION_MARK_ID_EQUALS = "?id=";
+    String COORDINATE = "coordinate";
+    String SHORTEST_PATH_URL = "%1$s://%2$s:%3$s/resources/shortestPath";
 
     String VERTEX_ONE_LAT = "vertexOneLatitude";
     String VERTEX_ONE_LNG = "vertexOneLongitude";

@@ -14,7 +14,7 @@ import java.util.List;
 import static com.innopolis.maps.innomaps.network.Constants.CONNECTION_PROTOCOL;
 import static com.innopolis.maps.innomaps.network.Constants.IP;
 import static com.innopolis.maps.innomaps.network.Constants.PORT;
-import static com.innopolis.maps.innomaps.network.Constants.shortest_path_url;
+import static com.innopolis.maps.innomaps.network.Constants.SHORTEST_PATH_URL;
 
 /**
  * Created by alnedorezov on 6/15/16.
@@ -23,7 +23,7 @@ public class FindShortestPathTask extends AsyncTask<String, Void, List<LatLngGra
     @Override
     protected List<LatLngGraphVertex> doInBackground(String... params) {
         String response =
-                NetworkController.establishPostConnection(String.format(shortest_path_url,
+                NetworkController.establishPostConnection(String.format(SHORTEST_PATH_URL,
                         CONNECTION_PROTOCOL, IP, PORT), params[0]);
         ObjectMapper mapper = new ObjectMapper();
         if (response != null)

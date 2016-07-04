@@ -738,8 +738,8 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                         // To be honest, the error message should be shown. If there was no floor detection on server shortest path will work incorrectly.
                         // Since, as I hope, we will rewrite app and DB to support 3D coordinates and such floor detection won't be needed
                         // I will leave it as it is. But honestly, I understand that everything here holds on a hair.
-                        Log.e(LOG, String.format("%1$s %2$s: %3$s, %4$s: %5$s", Constants.floor_calculation_error, Constants.latitude,
-                                closest.latitude, Constants.longitude, closest.longitude));
+                        Log.e(LOG, String.format("%1$s %2$s: %3$s, %4$s: %5$s", Constants.FLOOR_CALCULATION_ERROR, Constants.LATITUDE,
+                                closest.latitude, Constants.LONGITUDE, closest.longitude));
                     }
                     cursor.close();
 

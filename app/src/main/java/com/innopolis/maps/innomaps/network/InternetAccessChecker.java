@@ -1,7 +1,6 @@
 package com.innopolis.maps.innomaps.network;
 
 
-
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -14,7 +13,8 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import static com.innopolis.maps.innomaps.network.Constants.*;
+import static com.innopolis.maps.innomaps.network.Constants.CONNECTION;
+import static com.innopolis.maps.innomaps.network.Constants.USER_AGENT;
 
 public class InternetAccessChecker {
 

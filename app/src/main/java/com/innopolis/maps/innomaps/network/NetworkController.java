@@ -5,7 +5,6 @@ import android.util.Log;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
-import com.innopolis.maps.innomaps.maps.LatLngFlr;
 import com.innopolis.maps.innomaps.maps.LatLngGraphVertex;
 import com.innopolis.maps.innomaps.network.clientServerCommunicationClasses.ClosestCoordinateWithDistance;
 import com.innopolis.maps.innomaps.network.tasks.FindClosestPointFromGraphTask;

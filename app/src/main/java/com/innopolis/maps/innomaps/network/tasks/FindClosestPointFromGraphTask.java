@@ -35,10 +35,10 @@ public class FindClosestPointFromGraphTask extends AsyncTask<String, Void, Close
 
     //parameter id
     protected String getURL(String latitude, String longitude, String floor) {
-        return Constants.CONNECTION_PROTOCOL + Constants.colon_and_two_slashes + Constants.IP + Constants.colon + Constants.PORT +
-                Constants.slash_resources_slash + Constants.closestPointFromGraph + Constants.question_mark +
-                Constants.latitude + Constants.PARAMETER_EQUALS_CHAR + latitude +
-                Constants.PARAMETER_DELIMITER + Constants.longitude + Constants.PARAMETER_EQUALS_CHAR + longitude +
-                Constants.PARAMETER_DELIMITER + Constants.floor + Constants.PARAMETER_EQUALS_CHAR + floor;
+        return Constants.CONNECTION_PROTOCOL + Constants.COLON_AND_TWO_SLASHES + Constants.IP + Constants.COLON + Constants.PORT +
+                Constants.SLASH_RESOURCES_SLASH + Constants.CLOSEST_POINT_FROM_GRAPH + Constants.QUESTION_MARK +
+                Constants.LATITUDE + Constants.PARAMETER_EQUALS_CHAR + latitude +
+                Constants.PARAMETER_DELIMITER + Constants.LONGITUDE + Constants.PARAMETER_EQUALS_CHAR + longitude +
+                Constants.PARAMETER_DELIMITER + Constants.FLOOR + Constants.PARAMETER_EQUALS_CHAR + floor;
     }
 }
