@@ -30,4 +30,17 @@ public class EdgeType {
     public String getName() {
         return name;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        } else if (!(o instanceof EdgeType)) {
+            return false;
+        } else {
+            EdgeType var2 = (EdgeType) o;
+            return getId() == var2.getId() &&
+                    getName().equals(var2.getName());
+        }
+    }
 }
