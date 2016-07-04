@@ -66,15 +66,21 @@ public class Edge {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Edge)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof Edge))
+            return false;
 
         Edge edge = (Edge) o;
 
-        if (getId() != edge.getId()) return false;
-        if (getType_id() != edge.getType_id()) return false;
-        if (getSource_id() != edge.getSource_id()) return false;
-        if (getTarget_id() != edge.getTarget_id()) return false;
+        if (getId() != edge.getId())
+            return false;
+        if (getType_id() != edge.getType_id())
+            return false;
+        if (getSource_id() != edge.getSource_id())
+            return false;
+        if (getTarget_id() != edge.getTarget_id())
+            return false;
         return getModified() != null ? getModified().equals(edge.getModified()) : edge.getModified() == null;
 
     }

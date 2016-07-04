@@ -90,16 +90,23 @@ public class Coordinate {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Coordinate)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof Coordinate))
+            return false;
 
         Coordinate that = (Coordinate) o;
 
-        if (getId() != that.getId()) return false;
-        if (Double.compare(that.getLatitude(), getLatitude()) != 0) return false;
-        if (Double.compare(that.getLongitude(), getLongitude()) != 0) return false;
-        if (getFloor() != that.getFloor()) return false;
-        if (getType_id() != that.getType_id()) return false;
+        if (getId() != that.getId())
+            return false;
+        if (Double.compare(that.getLatitude(), getLatitude()) != 0)
+            return false;
+        if (Double.compare(that.getLongitude(), getLongitude()) != 0)
+            return false;
+        if (getFloor() != that.getFloor())
+            return false;
+        if (getType_id() != that.getType_id())
+            return false;
         if (getName() != null ? !getName().equals(that.getName()) : that.getName() != null)
             return false;
         if (getDescription() != null ? !getDescription().equals(that.getDescription()) : that.getDescription() != null)
