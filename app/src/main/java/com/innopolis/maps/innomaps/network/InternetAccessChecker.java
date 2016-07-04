@@ -38,11 +38,7 @@ public class InternetAccessChecker {
                 urlc.setRequestProperty(CONNECTION, context.getString(R.string.close));
                 urlc.setConnectTimeout(1000); // mTimeout is in seconds
                 urlc.connect();
-                if (urlc.getResponseCode() == 200) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return urlc.getResponseCode() == 200;
             } catch (IOException e) {
                 Log.i(context.getString(R.string.warning), context.getString(R.string.connection_error), e);
                 return false;
@@ -70,7 +66,7 @@ public class InternetAccessChecker {
                     public void run() {
                         try {
                             responded = isConnected(context);
-                        } catch (Exception e) {
+                        } catch (Exception ignored) {
                         }
                     }
                 }.start();
@@ -83,7 +79,7 @@ public class InternetAccessChecker {
                             waited += 100;
                         }
                     }
-                } catch (InterruptedException e) {
+                } catch (InterruptedException ignored) {
                 } // do nothing
                 finally {
                     if (!responded) {
