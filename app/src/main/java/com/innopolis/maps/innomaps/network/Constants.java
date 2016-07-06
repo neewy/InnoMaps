@@ -40,6 +40,7 @@ public interface Constants {
     String EVENT = "event";
     String SCHEDULE = "schedule";
     String FLOOR_OVERLAY = "flooroverlay";
+    String APPOINTMENT = "appointment";
     char S_LOWERCASE = 's';
     String CREATED_AFTER_DATE = "createdAfterDate";
     String SHORTEST_PATH_URL = "%1$s://%2$s:%3$s/resources/shortestPath";

@@ -11,6 +11,7 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.Edge;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EdgeType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Event;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreator;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreatorAppointment;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventSchedule;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Photo;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
@@ -212,5 +213,15 @@ public class NetworkControllerTest extends AndroidTestCase {
         BuildingFloorOverlay receivedBuildingFloorOverlay = networkController.getBuildingFloorOverlayById(1);
 
         assertEquals(buildingFloorOverlayWithId1, receivedBuildingFloorOverlay);
+    }
+
+    @Test
+    public void testGetEventCreatorAppointmentsCreatedOnOrAfterDate() throws ParseException {
+        EventCreatorAppointment requiredFirstEventCreatorAppointmentInList = new EventCreatorAppointment(26, 8, "2016-07-06 21:35:20.159");
+
+        Date date = Constants.serverDateFormat.parse("2016-07-06 21:35:20.001");
+        EventCreatorAppointment receivedEventCreatorAppointment = networkController.getEventCreatorAppointmentsCreatedOnOrAfterDate(date).get(0);
+
+        assertEquals(requiredFirstEventCreatorAppointmentInList, receivedEventCreatorAppointment);
     }
 }
