@@ -38,6 +38,7 @@ public interface Constants {
     String PHOTO = "photo";
     String CREATOR = "creator";
     String EVENT = "event";
+    String SCHEDULE = "schedule";
     char S_LOWERCASE = 's';
     String CREATED_AFTER_DATE = "createdAfterDate";
     String SHORTEST_PATH_URL = "%1$s://%2$s:%3$s/resources/shortestPath";

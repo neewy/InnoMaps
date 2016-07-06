@@ -10,6 +10,7 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.Edge;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EdgeType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Event;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreator;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventSchedule;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Photo;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomPhoto;
@@ -190,5 +191,15 @@ public class NetworkControllerTest extends AndroidTestCase {
         Event receivedEvent = networkController.getEventById(1);
 
         assertEquals(eventWithId1, receivedEvent);
+    }
+
+    @Test
+    public void testGetEventScheduleById() throws ParseException {
+
+        EventSchedule eventScheduleWithId1 = new EventSchedule(1, "2016-07-19 01:23:45.7", "2016-07-19 02:23:45.7", 24, "", 1, "2016-07-01 11:26:54.224");
+
+        EventSchedule receivedEventSchedule = networkController.getEventScheduleById(1);
+
+        assertEquals(eventScheduleWithId1, receivedEventSchedule);
     }
 }
