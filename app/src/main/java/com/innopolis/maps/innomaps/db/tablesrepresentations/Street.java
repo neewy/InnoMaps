@@ -1,7 +1,11 @@
 package com.innopolis.maps.innomaps.db.tablesrepresentations;
 
+import com.innopolis.maps.innomaps.network.Constants;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+
+import java.text.ParseException;
+import java.util.Date;
 
 /**
  * Created by alnedorezov on 7/4/16.
@@ -12,10 +16,19 @@ public class Street {
     private int id;
     @DatabaseField(unique = true)
     private String name;
+    @DatabaseField
+    private Date modified = null;
 
-    public Street(int id, String name) {
+    public Street(int id, String name, String modifiedStr) throws ParseException {
         this.id = id;
         this.name = name;
+        this.modified = Constants.serverDateFormat.parse(modifiedStr);
+    }
+
+    public Street(int id, String name, Date modified) {
+        this.id = id;
+        this.name = name;
+        this.modified = modified;
     }
 
     // For deserialization with Jackson
@@ -31,6 +44,10 @@ public class Street {
         return name;
     }
 
+    public String getModified() {
+        return Constants.serverDateFormat.format(modified);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -42,7 +59,9 @@ public class Street {
 
         if (getId() != street.getId())
             return false;
-        return getName() != null ? getName().equals(street.getName()) : street.getName() == null;
+        if (getName() != null ? !getName().equals(street.getName()) : street.getName() != null)
+            return false;
+        return getModified() != null ? getModified().equals(street.getModified()) : street.getModified() == null;
 
     }
 
@@ -50,6 +69,7 @@ public class Street {
     public int hashCode() {
         int result = getId();
         result = 31 * result + (getName() != null ? getName().hashCode() : 0);
+        result = 31 * result + (getModified() != null ? getModified().hashCode() : 0);
         return result;
     }
 }

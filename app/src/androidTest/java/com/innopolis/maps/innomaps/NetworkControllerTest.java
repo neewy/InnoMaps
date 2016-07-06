@@ -118,7 +118,7 @@ public class NetworkControllerTest extends AndroidTestCase {
 
     @Test
     public void testGetStreetById() throws ParseException {
-        Street streetWithId1 = new Street(1, "Universitetskaya");
+        Street streetWithId1 = new Street(1, "Universitetskaya", modifiedDateTime);
 
         Street receivedStreet = networkController.getStreetById(1);
 
