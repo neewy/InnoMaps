@@ -36,11 +36,11 @@ public interface Constants {
     String STREET = "street";
     String BUILDING = "building";
     String PHOTO = "photo";
-    String ID = "id";
     char S_LOWERCASE = 's';
     String CREATED_AFTER_DATE = "createdAfterDate";
     String SHORTEST_PATH_URL = "%1$s://%2$s:%3$s/resources/shortestPath";
 
+    char SPACE = ' ';
     String ULR_ENCODED_SPACE = "%20";
     String URL_ENCODED_COLON = "%3A";
 

@@ -12,6 +12,7 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.Edge;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EdgeType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Photo;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomPhoto;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Street;
 import com.innopolis.maps.innomaps.maps.LatLngFlrGraphVertex;
@@ -26,6 +27,7 @@ import com.innopolis.maps.innomaps.network.tasks.GetEdgeByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetEdgeTypeByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetPhotoByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetRoomByIdTask;
+import com.innopolis.maps.innomaps.network.tasks.GetRoomPhotosCreatedOnOrAfterDateTask;
 import com.innopolis.maps.innomaps.network.tasks.GetRoomTypeByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetStreetByIdTask;
 
@@ -169,8 +171,8 @@ public class NetworkController {
 
     public static String urlEncodeDate(Date date) {
         String result = Constants.serverDateFormat.format(date);
-        result = result.replaceAll(" ", "%20");
-        result = result.replaceAll(":", "%3A");
+        result = result.replaceAll(String.valueOf(Constants.SPACE), Constants.ULR_ENCODED_SPACE);
+        result = result.replaceAll(String.valueOf(Constants.COLON), Constants.URL_ENCODED_COLON);
         return result;
     }
 
@@ -286,6 +288,15 @@ public class NetworkController {
     public List<BuildingPhoto> getBuildingPhotosCreatedOnOrAfterDate(Date date) {
         try {
             return new GetBuildingPhotosCreatedOnOrAfterDateTask().execute(urlEncodeDate(date)).get();
+        } catch (InterruptedException | ExecutionException e) {
+            Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
+        }
+        return Collections.emptyList();
+    }
+
+    public List<RoomPhoto> getRoomPhotosCreatedOnOrAfterDate(Date date) {
+        try {
+            return new GetRoomPhotosCreatedOnOrAfterDateTask().execute(urlEncodeDate(date)).get();
         } catch (InterruptedException | ExecutionException e) {
             Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
         }

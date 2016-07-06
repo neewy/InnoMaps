@@ -10,6 +10,7 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.Edge;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EdgeType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Photo;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomPhoto;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Street;
 import com.innopolis.maps.innomaps.maps.LatLngFlr;
@@ -160,5 +161,15 @@ public class NetworkControllerTest extends AndroidTestCase {
         BuildingPhoto receivedBuildingPhoto = networkController.getBuildingPhotosCreatedOnOrAfterDate(date).get(0);
 
         assertEquals(requiredFirstBuildingPhotoInList, receivedBuildingPhoto);
+    }
+
+    @Test
+    public void testGetRoomPhotosCreatedOnOrAfterDate() throws ParseException {
+        RoomPhoto requiredFirstRoomPhotoInList = new RoomPhoto(17, 1, "2016-07-06 18:33:44.291");
+
+        Date date = Constants.serverDateFormat.parse("2016-07-06 18:25:10.267");
+        RoomPhoto receivedRoomPhoto = networkController.getRoomPhotosCreatedOnOrAfterDate(date).get(0);
+
+        assertEquals(requiredFirstRoomPhotoInList, receivedRoomPhoto);
     }
 }
