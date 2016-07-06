@@ -77,9 +77,9 @@ public class NetworkControllerTest extends AndroidTestCase {
     }
 
     @Test
-    public void testGetCoordinateTypeById() {
+    public void testGetCoordinateTypeById() throws ParseException {
         // Coordinate_type=2 (DAFAULT)
-        CoordinateType coordinateTypeWithId2 = new CoordinateType(2, "DEFAULT");
+        CoordinateType coordinateTypeWithId2 = new CoordinateType(2, "DEFAULT", modifiedDateTime);
 
         CoordinateType receivedCoordinateType = networkController.getCoordinateTypeById(2);
 
@@ -87,9 +87,9 @@ public class NetworkControllerTest extends AndroidTestCase {
     }
 
     @Test
-    public void testGetEdgeTypeById() {
+    public void testGetEdgeTypeById() throws ParseException {
         // Edge_type=1 (DAFAULT)
-        EdgeType edgeTypeWithId1 = new EdgeType(1, "DEFAULT");
+        EdgeType edgeTypeWithId1 = new EdgeType(1, "DEFAULT", modifiedDateTime);
 
         EdgeType receivedEdgeType = networkController.getEdgeTypeById(1);
 
@@ -107,9 +107,9 @@ public class NetworkControllerTest extends AndroidTestCase {
     }
 
     @Test
-    public void testGetRoomTypeById() {
+    public void testGetRoomTypeById() throws ParseException {
         // Room_type=1 (ROOM)
-        RoomType roomTypeWithId1 = new RoomType(1, "ROOM");
+        RoomType roomTypeWithId1 = new RoomType(1, "ROOM", modifiedDateTime);
 
         RoomType receivedRoomType = networkController.getRoomTypeById(1);
 
