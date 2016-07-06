@@ -3,6 +3,7 @@ package com.innopolis.maps.innomaps;
 import android.test.AndroidTestCase;
 
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Building;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingFloorOverlay;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingPhoto;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.CoordinateType;
@@ -201,5 +202,15 @@ public class NetworkControllerTest extends AndroidTestCase {
         EventSchedule receivedEventSchedule = networkController.getEventScheduleById(1);
 
         assertEquals(eventScheduleWithId1, receivedEventSchedule);
+    }
+
+    @Test
+    public void testGetBuildingFloorOverlayById() throws ParseException {
+
+        BuildingFloorOverlay buildingFloorOverlayWithId1 = new BuildingFloorOverlay(1, 1, 2, 3, 4.0, 5.0, 6.0, 7.0, "2016-06-30 00:12:19.56");
+
+        BuildingFloorOverlay receivedBuildingFloorOverlay = networkController.getBuildingFloorOverlayById(1);
+
+        assertEquals(buildingFloorOverlayWithId1, receivedBuildingFloorOverlay);
     }
 }
