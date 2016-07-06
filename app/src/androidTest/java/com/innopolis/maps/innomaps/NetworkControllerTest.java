@@ -145,7 +145,7 @@ public class NetworkControllerTest extends AndroidTestCase {
 
     @Test
     public void testGetPhotoById() throws ParseException {
-        Photo photoWithId1 = new Photo(1, "http://www.djpurviswoodfloors.co.uk/Images/laminate.gif");
+        Photo photoWithId1 = new Photo(1, "http://www.djpurviswoodfloors.co.uk/Images/laminate.gif", "2016-07-06 12:34:22.69");
 
         Photo receivedPhoto = networkController.getPhotoById(1);
 
