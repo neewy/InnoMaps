@@ -8,6 +8,7 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.CoordinateType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Edge;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EdgeType;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Event;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreator;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Photo;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
@@ -180,5 +181,14 @@ public class NetworkControllerTest extends AndroidTestCase {
         EventCreator receivedEventCreator = networkController.getEventCreatorById(1);
 
         assertEquals(eventCreatorWithId1, receivedEventCreator);
+    }
+
+    @Test
+    public void testGetEventById() throws ParseException {
+        Event eventWithId1 = new Event(1, "Poedanie Pechenek Na Skorost", "you will love it", "", null, "2016-07-01 11:25:38.445");
+
+        Event receivedEvent = networkController.getEventById(1);
+
+        assertEquals(eventWithId1, receivedEvent);
     }
 }

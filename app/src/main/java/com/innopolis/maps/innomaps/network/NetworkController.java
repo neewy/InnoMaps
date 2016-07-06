@@ -10,6 +10,7 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.CoordinateType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Edge;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EdgeType;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Event;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreator;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Photo;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
@@ -26,6 +27,7 @@ import com.innopolis.maps.innomaps.network.tasks.GetCoordinateByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetCoordinateTypeByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetEdgeByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetEdgeTypeByIdTask;
+import com.innopolis.maps.innomaps.network.tasks.GetEventByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetEventCreatorByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetPhotoByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetRoomByIdTask;
@@ -308,6 +310,15 @@ public class NetworkController {
     public EventCreator getEventCreatorById(int id) {
         try {
             return new GetEventCreatorByIdTask().execute(String.valueOf(id)).get();
+        } catch (InterruptedException | ExecutionException e) {
+            Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
+        }
+        return null;
+    }
+
+    public Event getEventById(int id) {
+        try {
+            return new GetEventByIdTask().execute(String.valueOf(id)).get();
         } catch (InterruptedException | ExecutionException e) {
             Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
         }
