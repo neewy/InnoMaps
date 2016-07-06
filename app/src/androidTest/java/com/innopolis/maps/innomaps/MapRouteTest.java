@@ -61,5 +61,4 @@ public class MapRouteTest extends ActivityInstrumentationTestCase2<MainActivity>
     }
 
 
-
 }

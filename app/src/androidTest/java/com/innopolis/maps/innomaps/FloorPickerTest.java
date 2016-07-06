@@ -11,7 +11,7 @@ import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.maps.MapsFragment;
 import com.innopolis.maps.innomaps.utils.Utils;
 
-public class FloorPickerTest extends ActivityInstrumentationTestCase2<MainActivity>{
+public class FloorPickerTest extends ActivityInstrumentationTestCase2<MainActivity> {
 
     MainActivity activity;
     Fragment fragment;

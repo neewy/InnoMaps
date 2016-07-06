@@ -21,7 +21,6 @@ import com.innopolis.maps.innomaps.network.clientServerCommunicationClasses.Clos
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.Date;
 
