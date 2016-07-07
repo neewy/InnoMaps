@@ -37,17 +37,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
-    public Dao<Coordinate, Integer> getCoordinateDAO() {
-        if (null == coordinateDao) {
-            try {
-                coordinateDao = getDao(Coordinate.class);
-            } catch (java.sql.SQLException e) {
-                Log.d(DB_HELPER_ERROR, "SQL exception in database helper");
-            }
-        }
-        return coordinateDao;
-    }
-
     /**
      * This is called when the database is first created. Usually you should call createTable statements here to create
      * the tables that will store your data.
