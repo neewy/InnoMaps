@@ -24,10 +24,9 @@ import java.sql.SQLException;
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     // name of the database file for your application -- change to something appropriate for your app
-    private static final String DATABASE_NAME = "innomapsMobile0001.db";
+    private static final String DATABASE_NAME = Constants.DATABASE_NAME;
     // any time you make changes to your database objects, you may have to increase the database version
     private static final int DATABASE_VERSION = 1;
-    private static final String DB_HELPER_ERROR = "DB_HELPER_ERROR";
     // the DAO object we use to access the SimpleData table
     private RuntimeExceptionDao<Coordinate, Integer> simpleRuntimeDao = null;
 
@@ -44,10 +43,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
         try {
-            Log.d(DB_HELPER_ERROR, "onCreate");
+            Log.d(Constants.DB_HELPER_ERROR, Constants.ON_CREATE);
             TableUtils.createTable(connectionSource, Coordinate.class);
         } catch (SQLException e) {
-            Log.d(DB_HELPER_ERROR, "Can't create database", e);
+            Log.d(Constants.DB_HELPER_ERROR, Constants.CANNNOT_CREATE_DATABASE, e);
         }
     }
 
@@ -58,12 +57,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource, int oldVersion, int newVersion) {
         try {
-            Log.i(DatabaseHelper.class.getName(), "onUpgrade");
+            Log.i(DatabaseHelper.class.getName(), Constants.ON_UPGRADE);
             TableUtils.dropTable(connectionSource, Coordinate.class, true);
             // after we drop the old databases, we create the new ones
             onCreate(db, connectionSource);
         } catch (SQLException e) {
-            Log.e(DatabaseHelper.class.getName(), "Can't drop databases", e);
+            Log.e(DatabaseHelper.class.getName(), Constants.CANNOT_DROP_DATABASES, e);
         }
     }
 

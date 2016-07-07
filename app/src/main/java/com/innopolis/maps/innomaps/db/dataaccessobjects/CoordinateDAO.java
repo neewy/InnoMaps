@@ -3,6 +3,7 @@ package com.innopolis.maps.innomaps.db.dataaccessobjects;
 import android.content.Context;
 import android.util.Log;
 
+import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.db.DatabaseHelper;
 import com.innopolis.maps.innomaps.db.DatabaseManager;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
