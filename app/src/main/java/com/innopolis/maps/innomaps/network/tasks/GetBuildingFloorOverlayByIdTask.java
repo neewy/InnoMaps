@@ -42,6 +42,6 @@ public class GetBuildingFloorOverlayByIdTask extends AsyncTask<String, Void, Bui
     // parameter id
     protected String getURL(String id) {
         return Constants.CONNECTION_PROTOCOL + Constants.COLON_AND_TWO_SLASHES + Constants.IP + Constants.COLON + Constants.PORT +
-                Constants.SLASH_RESOURCES_SLASH + Constants.BUILDING + Constants.FLOOR_OVERLAY + Constants.QUESTION_MARK_ID_EQUALS + id;
+                Constants.SLASH_RESOURCES_SLASH + Constants.BUILDING + Constants.FLOOR + Constants.OVERLAY + Constants.QUESTION_MARK_ID_EQUALS + id;
     }
 }
