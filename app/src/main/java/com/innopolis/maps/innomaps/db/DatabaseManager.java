@@ -9,14 +9,14 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
  */
 public class DatabaseManager {
 
+    private static DatabaseHelper databaseHelper;
+
     // Utility classes, which are a collection of static members, are not meant to be instantiated
     private DatabaseManager() {
         // Even abstract utility classes, which can be extended, should not have public constructors.
         // Java adds an implicit public constructor to every class which does not define at least one explicitly.
         // Hence, at least one non-public constructor should be defined
     }
-
-    private static DatabaseHelper databaseHelper;
 
     public static DatabaseHelper getHelper() {
         return databaseHelper;
