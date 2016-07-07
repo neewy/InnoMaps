@@ -17,12 +17,12 @@ import java.util.List;
 public class DatabaseSyncTest extends AndroidTestCase {
 
     String modifiedDateTime;
-    String IU_description;
+    String universityDescription;
 
     @Before
     public void setUp() throws Exception {
         modifiedDateTime = "2016-02-03 04:05:06.7";
-        IU_description = "Specializing in the field " +
+        universityDescription = "Specializing in the field " +
                 "of modern information technologies, Innopolis University is not only one of Russia’s youngest universities," +
                 " but also the new city’s intellectual center.\n" +
                 "The teaching staff consists of leading Russian and foreign IT specialists and robotic science.\n" +
@@ -36,7 +36,7 @@ public class DatabaseSyncTest extends AndroidTestCase {
 
         List<Coordinate> coordinatesFromMobileDatabase;
 
-        Coordinate newCoordinate = new Coordinate(1, 55.7541793, 48.744085, 1, 2, "Innopolis University", IU_description, modifiedDateTime);
+        Coordinate newCoordinate = new Coordinate(1, 55.7541793, 48.744085, 1, 2, "Innopolis University", universityDescription, modifiedDateTime);
         coordinateDAO.create(newCoordinate);
 
         coordinatesFromMobileDatabase = (List<Coordinate>) coordinateDAO.findAll();

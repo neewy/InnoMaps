@@ -38,7 +38,7 @@ public class NetworkControllerTest extends AndroidTestCase {
     double testLatitude, testLongitude;
     int testFloor;
     String modifiedDateTime;
-    String IU_description;
+    String universityDescription;
 
     @Before
     public void setUp() throws Exception {
@@ -47,7 +47,7 @@ public class NetworkControllerTest extends AndroidTestCase {
         testLongitude = 48.7436814921;
         testFloor = 2;
         modifiedDateTime = "2016-02-03 04:05:06.7";
-        IU_description = "Specializing in the field " +
+        universityDescription = "Specializing in the field " +
                 "of modern information technologies, Innopolis University is not only one of Russia’s youngest universities," +
                 " but also the new city’s intellectual center.\n" +
                 "The teaching staff consists of leading Russian and foreign IT specialists and robotic science.\n" +
@@ -74,7 +74,7 @@ public class NetworkControllerTest extends AndroidTestCase {
     public void testGetCoordinateId() throws ParseException {
         // Coordinate for Innopolis University are taken from Google Maps
         // Coordinate_type=2 (DAFAULT)
-        Coordinate coordinateWithId1 = new Coordinate(1, 55.7541793, 48.744085, 1, 2, "Innopolis University", IU_description, modifiedDateTime);
+        Coordinate coordinateWithId1 = new Coordinate(1, 55.7541793, 48.744085, 1, 2, "Innopolis University", universityDescription, modifiedDateTime);
 
         Coordinate receivedCoordinate = networkController.getCoordinateById(1);
 
@@ -132,7 +132,7 @@ public class NetworkControllerTest extends AndroidTestCase {
 
     @Test
     public void testGetBuildingById() throws ParseException {
-        Building buildingWithId1 = new Building(1, String.valueOf(1), null, IU_description, 1, 1, modifiedDateTime);
+        Building buildingWithId1 = new Building(1, String.valueOf(1), null, universityDescription, 1, 1, modifiedDateTime);
 
         Building receivedBuilding = networkController.getBuildingById(1);
 

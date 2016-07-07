@@ -46,7 +46,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             Log.d(Constants.DB_HELPER_ERROR, Constants.ON_CREATE);
             TableUtils.createTable(connectionSource, Coordinate.class);
         } catch (SQLException e) {
-            Log.d(Constants.DB_HELPER_ERROR, Constants.CANNNOT_CREATE_DATABASE, e);
+            Log.d(Constants.DB_HELPER_ERROR, Constants.CANNOT_CREATE_DATABASE, e);
         }
     }
 
