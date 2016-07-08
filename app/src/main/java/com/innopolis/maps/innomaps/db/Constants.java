@@ -5,7 +5,7 @@ package com.innopolis.maps.innomaps.db;
  */
 public final class Constants {
     public static final int DATABASE_VERSION = 5;
-    public static final String DATABASE_NAME = "innomapsMobile" + String.valueOf(DATABASE_VERSION) + ".db";
+    public static final String DATABASE_NAME = "innomapsMobile" + DATABASE_VERSION + ".db";
 
     public static final String DAO_ERROR = "DAO_ERROR";
     public static final String SQL_EXCEPTION_IN = "SQL Exception in";
