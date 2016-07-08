@@ -2,7 +2,9 @@ package com.innopolis.maps.innomaps;
 
 import android.test.AndroidTestCase;
 
+import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateDAO;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Building;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 
 import org.junit.Before;
@@ -42,5 +44,19 @@ public class DatabaseSyncTest extends AndroidTestCase {
         coordinatesFromMobileDatabase = (List<Coordinate>) coordinateDAO.findAll();
 
         assertEquals(newCoordinate, coordinatesFromMobileDatabase.get(0));
+    }
+
+    @Test
+    public void testWritingNewBuildingDataToMobileDB() throws ParseException {
+        BuildingDAO buildingDAO = new BuildingDAO(this.getContext());
+
+        List<Building> buildingsFromMobileDatabase;
+
+        Building newBuilding = new Building(1, String.valueOf(1), null, universityDescription, 1, 1, modifiedDateTime);
+        buildingDAO.create(newBuilding);
+
+        buildingsFromMobileDatabase = (List<Building>) buildingDAO.findAll();
+
+        assertEquals(newBuilding, buildingsFromMobileDatabase.get(0));
     }
 }

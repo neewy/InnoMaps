@@ -4,10 +4,10 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Building;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
@@ -27,10 +27,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private static final String DATABASE_NAME = Constants.DATABASE_NAME;
     // any time you make changes to your database objects, you may have to increase the database version
     private static final int DATABASE_VERSION = 1;
-    // the DAO object we use to access the SimpleData table
-    private RuntimeExceptionDao<Coordinate, Integer> simpleRuntimeDao = null;
 
     private Dao<Coordinate, Integer> coordinateDao = null;
+    private Dao<Building, Integer> buildingDao = null;
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -45,6 +44,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         try {
             Log.d(Constants.DB_HELPER_ERROR, Constants.ON_CREATE);
             TableUtils.createTable(connectionSource, Coordinate.class);
+            TableUtils.createTable(connectionSource, Building.class);
         } catch (SQLException e) {
             Log.d(Constants.DB_HELPER_ERROR, Constants.CANNOT_CREATE_DATABASE, e);
         }
@@ -59,6 +59,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         try {
             Log.i(DatabaseHelper.class.getName(), Constants.ON_UPGRADE);
             TableUtils.dropTable(connectionSource, Coordinate.class, true);
+            TableUtils.dropTable(connectionSource, Building.class, true);
             // after we drop the old databases, we create the new ones
             onCreate(db, connectionSource);
         } catch (SQLException e) {
@@ -77,15 +78,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         return coordinateDao;
     }
 
-    /**
-     * Returns the RuntimeExceptionDao (Database Access Object) version of a Dao for our SimpleData class. It will
-     * create it or just give the cached value. RuntimeExceptionDao only through RuntimeExceptions.
-     */
-    public RuntimeExceptionDao<Coordinate, Integer> getSimpleDataDao() {
-        if (simpleRuntimeDao == null) {
-            simpleRuntimeDao = getRuntimeExceptionDao(Coordinate.class);
+    public Dao<Building, Integer> getBuildingDao() throws SQLException {
+        if (buildingDao == null) {
+            buildingDao = getDao(Building.class);
         }
-        return simpleRuntimeDao;
+        return buildingDao;
     }
 
     /**
@@ -94,6 +91,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     @Override
     public void close() {
         super.close();
-        simpleRuntimeDao = null;
+        coordinateDao = null;
+        buildingDao = null;
     }
 }
