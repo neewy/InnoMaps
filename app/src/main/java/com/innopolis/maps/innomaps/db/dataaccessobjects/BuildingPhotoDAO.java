@@ -77,12 +77,12 @@ public class BuildingPhotoDAO implements Crud {
 
     }
 
-    public Object findByIds(int building_id, int photo_id) {
+    public Object findByIds(int buildingId, int photoId) {
 
         BuildingPhoto buildingPhoto = null;
         try {
             QueryBuilder<BuildingPhoto, Integer> qb = helper.getBuildingPhotoDao().queryBuilder();
-            qb.where().eq("building_id", building_id).and().eq("photo_id", photo_id);
+            qb.where().eq("building_id", buildingId).and().eq("photo_id", photoId);
             PreparedQuery<BuildingPhoto> pc = qb.prepare();
             buildingPhoto = helper.getBuildingPhotoDao().query(pc).get(0);
         } catch (SQLException e) {
