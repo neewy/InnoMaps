@@ -82,7 +82,7 @@ public class EventCreatorAppointmentDAO implements Crud {
         EventCreatorAppointment eventCreatorAppointment = null;
         try {
             QueryBuilder<EventCreatorAppointment, Integer> qb = helper.getEventCreatorAppointmentDao().queryBuilder();
-            qb.where().eq("event_id", eventId).and().eq("event_creator_id", eventCreatorId);
+            qb.where().eq(Constants.EVENT_ID, eventId).and().eq(Constants.EVENT_CREATOR_ID, eventCreatorId);
             PreparedQuery<EventCreatorAppointment> pc = qb.prepare();
             eventCreatorAppointment = helper.getEventCreatorAppointmentDao().query(pc).get(0);
         } catch (SQLException e) {

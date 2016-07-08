@@ -17,6 +17,12 @@ public final class Constants {
     public static final String CANNOT_CREATE_DATABASE = "Can't create database";
     public static final String CANNOT_DROP_DATABASES = "Can't drop databases";
 
+    public static final String BUILDING_ID = "building_id";
+    public static final String PHOTO_ID = "photo_id";
+    public static final String EVENT_ID = "event_id";
+    public static final String EVENT_CREATOR_ID = "event_creator_id";
+    public static final String ROOM_ID = "room_id";
+
     // Utility classes, which are a collection of static members, are not meant to be instantiated
     private Constants() {
         // Even abstract utility classes, which can be extended, should not have public constructors.

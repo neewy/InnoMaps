@@ -82,7 +82,7 @@ public class RoomPhotoDAO implements Crud {
         RoomPhoto roomPhoto = null;
         try {
             QueryBuilder<RoomPhoto, Integer> qb = helper.getRoomPhotoDao().queryBuilder();
-            qb.where().eq("room_id", roomId).and().eq("photo_id", photoId);
+            qb.where().eq(Constants.ROOM_ID, roomId).and().eq(Constants.PHOTO_ID, photoId);
             PreparedQuery<RoomPhoto> pc = qb.prepare();
             roomPhoto = helper.getRoomPhotoDao().query(pc).get(0);
         } catch (SQLException e) {
