@@ -3,8 +3,10 @@ package com.innopolis.maps.innomaps;
 import android.test.AndroidTestCase;
 
 import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingFloorOverlayDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateDAO;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Building;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingFloorOverlay;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 
 import org.junit.Before;
@@ -58,5 +60,19 @@ public class DatabaseSyncTest extends AndroidTestCase {
         buildingsFromMobileDatabase = (List<Building>) buildingDAO.findAll();
 
         assertEquals(newBuilding, buildingsFromMobileDatabase.get(0));
+    }
+
+    @Test
+    public void testWritingNewBuildingFloorOverlayDataToMobileDB() throws ParseException {
+        BuildingFloorOverlayDAO buildingFloorOverlayDAO = new BuildingFloorOverlayDAO(this.getContext());
+
+        List<BuildingFloorOverlay> buildingFloorOverlaysFromMobileDatabase;
+
+        BuildingFloorOverlay newBuildingFloorOverlay = new BuildingFloorOverlay(1, 1, 2, 3, 4.0, 5.0, 6.0, 7.0, "2016-06-30 00:12:19.56");
+        buildingFloorOverlayDAO.create(newBuildingFloorOverlay);
+
+        buildingFloorOverlaysFromMobileDatabase = (List<BuildingFloorOverlay>) buildingFloorOverlayDAO.findAll();
+
+        assertEquals(newBuildingFloorOverlay, buildingFloorOverlaysFromMobileDatabase.get(0));
     }
 }

@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by alnedorezov on 7/7/16.
  */
-public class CoordinateDAO implements Crud {
+public class CoordinateDAO implements ExtendedCrud {
 
     private DatabaseHelper helper;
 
@@ -34,7 +34,7 @@ public class CoordinateDAO implements Crud {
             index = helper.getCoordinateDao().create(coordinate);
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
-                    Constants.COORDINATE_STARTING_FROM_CAPITAL_LETTER + Constants.SPACE + Constants.DAO);
+                    CoordinateDAO.class.getSimpleName());
         }
 
         return index;
@@ -51,7 +51,7 @@ public class CoordinateDAO implements Crud {
             helper.getCoordinateDao().update(coordinate);
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
-                    Constants.COORDINATE_STARTING_FROM_CAPITAL_LETTER + Constants.SPACE + Constants.DAO);
+                    CoordinateDAO.class.getSimpleName());
         }
 
         return index;
@@ -68,7 +68,7 @@ public class CoordinateDAO implements Crud {
             helper.getCoordinateDao().delete(coordinate);
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
-                    Constants.COORDINATE_STARTING_FROM_CAPITAL_LETTER + Constants.SPACE + Constants.DAO);
+                    CoordinateDAO.class.getSimpleName());
         }
 
         return index;
@@ -83,7 +83,7 @@ public class CoordinateDAO implements Crud {
             coordinate = helper.getCoordinateDao().queryForId(id);
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
-                    Constants.COORDINATE_STARTING_FROM_CAPITAL_LETTER + Constants.SPACE + Constants.DAO);
+                    CoordinateDAO.class.getSimpleName());
         }
         return coordinate;
     }
@@ -97,7 +97,7 @@ public class CoordinateDAO implements Crud {
             items = helper.getCoordinateDao().queryForAll();
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
-                    Constants.COORDINATE_STARTING_FROM_CAPITAL_LETTER + Constants.SPACE + Constants.DAO);
+                    CoordinateDAO.class.getSimpleName());
         }
 
         return items;

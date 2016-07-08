@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by alnedorezov on 7/8/16.
  */
-public class BuildingDAO implements Crud {
+public class BuildingDAO implements ExtendedCrud {
 
     private DatabaseHelper helper;
 
@@ -34,7 +34,7 @@ public class BuildingDAO implements Crud {
             index = helper.getBuildingDao().create(building);
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
-                    Constants.BUILDING_STARTING_FROM_CAPITAL_LETTER + Constants.SPACE + Constants.DAO);
+                    BuildingDAO.class.getSimpleName());
         }
 
         return index;
@@ -51,7 +51,7 @@ public class BuildingDAO implements Crud {
             helper.getBuildingDao().update(building);
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
-                    Constants.BUILDING_STARTING_FROM_CAPITAL_LETTER + Constants.SPACE + Constants.DAO);
+                    BuildingDAO.class.getSimpleName());
         }
 
         return index;
@@ -68,7 +68,7 @@ public class BuildingDAO implements Crud {
             helper.getBuildingDao().delete(building);
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
-                    Constants.BUILDING_STARTING_FROM_CAPITAL_LETTER + Constants.SPACE + Constants.DAO);
+                    BuildingDAO.class.getSimpleName());
         }
 
         return index;
@@ -83,7 +83,7 @@ public class BuildingDAO implements Crud {
             building = helper.getBuildingDao().queryForId(id);
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
-                    Constants.BUILDING_STARTING_FROM_CAPITAL_LETTER + Constants.SPACE + Constants.DAO);
+                    BuildingDAO.class.getSimpleName());
         }
         return building;
     }
@@ -97,7 +97,7 @@ public class BuildingDAO implements Crud {
             items = helper.getBuildingDao().queryForAll();
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
-                    Constants.BUILDING_STARTING_FROM_CAPITAL_LETTER + Constants.SPACE + Constants.DAO);
+                    BuildingDAO.class.getSimpleName());
         }
 
         return items;
