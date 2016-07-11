@@ -4,10 +4,18 @@ import android.test.AndroidTestCase;
 
 import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingFloorOverlayDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingPhotoDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateTypeDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EdgeDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EdgeTypeDAO;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Building;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingFloorOverlay;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingPhoto;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.CoordinateType;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Edge;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EdgeType;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -73,5 +81,61 @@ public class DatabaseSyncTest extends AndroidTestCase {
         buildingFloorOverlayFromMobileDatabaseWithMaxId = (BuildingFloorOverlay) buildingFloorOverlayDAO.getObjectWithMaxId();
 
         assertEquals(newBuildingFloorOverlay, buildingFloorOverlayFromMobileDatabaseWithMaxId);
+    }
+
+    @Test
+    public void testWritingNewBuildingPhotoDataToMobileDB() throws ParseException {
+        BuildingPhotoDAO buildingPhotoDAO = new BuildingPhotoDAO(this.getContext());
+
+        BuildingPhoto buildingPhotoFromMobileDatabase;
+
+        BuildingPhoto newBuildingPhoto = new BuildingPhoto(1, 2, "2016-07-04 23:28:37.363");
+        buildingPhotoDAO.create(newBuildingPhoto);
+
+        buildingPhotoFromMobileDatabase = (BuildingPhoto) buildingPhotoDAO.findByIds(1, 2);
+
+        assertEquals(newBuildingPhoto, buildingPhotoFromMobileDatabase);
+    }
+
+    @Test
+    public void testWritingNewCoordinateTypeDataToMobileDB() throws ParseException {
+        CoordinateTypeDAO coordinateTypeDAO = new CoordinateTypeDAO(this.getContext());
+
+        CoordinateType coordinateTypeFromMobileDatabaseWithMaxId;
+
+        CoordinateType newCoordinateType =  new CoordinateType(2, "DEFAULT", modifiedDateTime);
+        coordinateTypeDAO.create(newCoordinateType);
+
+        coordinateTypeFromMobileDatabaseWithMaxId = (CoordinateType) coordinateTypeDAO.getObjectWithMaxId();
+
+        assertEquals(newCoordinateType, coordinateTypeFromMobileDatabaseWithMaxId);
+    }
+
+    @Test
+    public void testWritingNewEdgeDataToMobileDB() throws ParseException {
+        EdgeDAO edgeDAO = new EdgeDAO(this.getContext());
+
+        Edge edgeFromMobileDatabaseWithMaxId;
+
+        Edge newEdge =  new Edge(1, 1, 112, 33, modifiedDateTime);
+        edgeDAO.create(newEdge);
+
+        edgeFromMobileDatabaseWithMaxId = (Edge) edgeDAO.getObjectWithMaxId();
+
+        assertEquals(newEdge, edgeFromMobileDatabaseWithMaxId);
+    }
+
+    @Test
+    public void testWritingNewEdgeTypeDataToMobileDB() throws ParseException {
+        EdgeTypeDAO edgeTypeDAO = new EdgeTypeDAO(this.getContext());
+
+        EdgeType edgeTypeFromMobileDatabaseWithMaxId;
+
+        EdgeType newEdgeType =  new EdgeType(1, "DEFAULT", modifiedDateTime);
+        edgeTypeDAO.create(newEdgeType);
+
+        edgeTypeFromMobileDatabaseWithMaxId = (EdgeType) edgeTypeDAO.getObjectWithMaxId();
+
+        assertEquals(newEdgeType, edgeTypeFromMobileDatabaseWithMaxId);
     }
 }
