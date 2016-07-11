@@ -129,7 +129,7 @@ public class DatabaseSyncTest extends AndroidTestCase {
 
         CoordinateType coordinateTypeFromMobileDatabaseWithMaxId;
 
-        CoordinateType newCoordinateType =  new CoordinateType(1, "DEMO", modifiedDateTime);
+        CoordinateType newCoordinateType = new CoordinateType(1, "DEMO", modifiedDateTime);
         coordinateTypeDAO.create(newCoordinateType);
 
         coordinateTypeFromMobileDatabaseWithMaxId = (CoordinateType) coordinateTypeDAO.getObjectWithMaxId();
@@ -145,7 +145,7 @@ public class DatabaseSyncTest extends AndroidTestCase {
 
         Edge edgeFromMobileDatabaseWithMaxId;
 
-        Edge newEdge =  new Edge(1, 1, 112, 33, modifiedDateTime);
+        Edge newEdge = new Edge(1, 1, 112, 33, modifiedDateTime);
         edgeDAO.create(newEdge);
 
         edgeFromMobileDatabaseWithMaxId = (Edge) edgeDAO.getObjectWithMaxId();
@@ -161,7 +161,7 @@ public class DatabaseSyncTest extends AndroidTestCase {
 
         EdgeType edgeTypeFromMobileDatabaseWithMaxId;
 
-        EdgeType newEdgeType =  new EdgeType(1, "DEFAULT", modifiedDateTime);
+        EdgeType newEdgeType = new EdgeType(1, "DEFAULT", modifiedDateTime);
         edgeTypeDAO.create(newEdgeType);
 
         edgeTypeFromMobileDatabaseWithMaxId = (EdgeType) edgeTypeDAO.getObjectWithMaxId();
@@ -193,7 +193,7 @@ public class DatabaseSyncTest extends AndroidTestCase {
 
         EventCreator eventCreatorFromMobileDatabaseWithMaxId;
 
-        EventCreator newEventCreator =  new EventCreator(1, "Chuvak", "gagaga@googlopochta.lol", "whatistelegramunywhay", modifiedDateTime);
+        EventCreator newEventCreator = new EventCreator(1, "Chuvak", "gagaga@googlopochta.lol", "whatistelegramunywhay", modifiedDateTime);
         eventCreatorDAO.create(newEventCreator);
 
         eventCreatorFromMobileDatabaseWithMaxId = (EventCreator) eventCreatorDAO.getObjectWithMaxId();
@@ -209,7 +209,7 @@ public class DatabaseSyncTest extends AndroidTestCase {
 
         Event eventFromMobileDatabaseWithMaxId;
 
-        Event newEvent =  new Event(1, "Poedanie Vafelek Na Skorost", "you will love it", "", null, modifiedDateTime);
+        Event newEvent = new Event(1, "Poedanie Vafelek Na Skorost", "you will love it", "", null, modifiedDateTime);
         eventDAO.create(newEvent);
 
         eventFromMobileDatabaseWithMaxId = (Event) eventDAO.getObjectWithMaxId();
@@ -225,7 +225,7 @@ public class DatabaseSyncTest extends AndroidTestCase {
 
         EventSchedule eventScheduleFromMobileDatabaseWithMaxId;
 
-        EventSchedule newEventSchedule =  new EventSchedule(1, "2016-07-19 01:23:46.7", "2016-07-19 02:23:46.7", 24, "", 1, modifiedDateTime);
+        EventSchedule newEventSchedule = new EventSchedule(1, "2016-07-19 01:23:46.7", "2016-07-19 02:23:46.7", 24, "", 1, modifiedDateTime);
         eventScheduleDAO.create(newEventSchedule);
 
         eventScheduleFromMobileDatabaseWithMaxId = (EventSchedule) eventScheduleDAO.getObjectWithMaxId();
@@ -241,7 +241,7 @@ public class DatabaseSyncTest extends AndroidTestCase {
 
         Photo photoFromMobileDatabaseWithMaxId;
 
-        Photo newPhoto =  new Photo(1, "http://www.djpurviswoodfloors.co.uk/Images/laminate2.gif", modifiedDateTime);
+        Photo newPhoto = new Photo(1, "http://www.djpurviswoodfloors.co.uk/Images/laminate2.gif", modifiedDateTime);
         photoDAO.create(newPhoto);
 
         photoFromMobileDatabaseWithMaxId = (Photo) photoDAO.getObjectWithMaxId();
@@ -257,7 +257,7 @@ public class DatabaseSyncTest extends AndroidTestCase {
 
         Room roomFromMobileDatabaseWithMaxId;
 
-        Room newRoom =  new Room(1, null, 1, 23432443, 6, modifiedDateTime);
+        Room newRoom = new Room(1, null, 1, 23432443, 6, modifiedDateTime);
         roomDAO.create(newRoom);
 
         roomFromMobileDatabaseWithMaxId = (Room) roomDAO.getObjectWithMaxId();
@@ -289,7 +289,7 @@ public class DatabaseSyncTest extends AndroidTestCase {
 
         RoomType roomTypeFromMobileDatabaseWithMaxId;
 
-        RoomType newRoomType =   new RoomType(1, "DEMO", modifiedDateTime);
+        RoomType newRoomType = new RoomType(1, "DEMO", modifiedDateTime);
         roomTypeDAO.create(newRoomType);
 
         roomTypeFromMobileDatabaseWithMaxId = (RoomType) roomTypeDAO.getObjectWithMaxId();
@@ -305,7 +305,7 @@ public class DatabaseSyncTest extends AndroidTestCase {
 
         Street streetFromMobileDatabaseWithMaxId;
 
-        Street newStreet =   new Street(1, "DEMO", modifiedDateTime);
+        Street newStreet = new Street(1, "DEMO", modifiedDateTime);
         streetDAO.create(newStreet);
 
         streetFromMobileDatabaseWithMaxId = (Street) streetDAO.getObjectWithMaxId();
