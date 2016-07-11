@@ -23,14 +23,15 @@ import java.util.List;
  */
 public class DatabaseSyncTest extends AndroidTestCase {
 
+    DatabaseSync databaseSync;
+
     @Before
     public void setUp() throws Exception {
-
+        databaseSync = new DatabaseSync(this.getContext());
     }
 
     @Test
     public void testTypesSync() throws ParseException {
-        DatabaseSync databaseSync = new DatabaseSync(this.getContext());
         databaseSync.saveLastSyncDate(com.innopolis.maps.innomaps.network.Constants.serverDateFormat.parse(Constants.DEFAULT_SYNC_DATE));
         CoordinateTypeDAO coordinateTypeDAO = new CoordinateTypeDAO(this.getContext());
         EdgeTypeDAO edgeTypeDAO = new EdgeTypeDAO(this.getContext());

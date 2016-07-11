@@ -1,6 +1,5 @@
 package com.innopolis.maps.innomaps.db;
 
-import android.app.Application;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
