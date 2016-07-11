@@ -7,6 +7,8 @@ import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.db.DatabaseHelper;
 import com.innopolis.maps.innomaps.db.DatabaseManager;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomPhoto;
+import com.j256.ormlite.stmt.DeleteBuilder;
+import com.j256.ormlite.stmt.PreparedDelete;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 
@@ -67,7 +69,10 @@ public class RoomPhotoDAO implements Crud {
         RoomPhoto roomPhoto = (RoomPhoto) item;
 
         try {
-            helper.getRoomPhotoDao().delete(roomPhoto);
+            DeleteBuilder<RoomPhoto, Integer> db = helper.getRoomPhotoDao().deleteBuilder();
+            db.where().eq(Constants.ROOM_ID, roomPhoto.getRoom_id()).and().eq(Constants.PHOTO_ID, roomPhoto.getPhoto_id());
+            PreparedDelete<RoomPhoto> preparedDelete = db.prepare();
+            helper.getRoomPhotoDao().delete(preparedDelete);
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
                     RoomPhotoDAO.class.getSimpleName());

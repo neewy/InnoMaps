@@ -32,7 +32,7 @@ public class DatabaseSyncTest extends AndroidTestCase {
 
     @Before
     public void setUp() throws Exception {
-        modifiedDateTime = "2016-02-03 04:05:06.7";
+        modifiedDateTime = "2015-01-02 03:04:05.6";
         universityDescription = "Specializing in the field " +
                 "of modern information technologies, Innopolis University is not only one of Russia’s youngest universities," +
                 " but also the new city’s intellectual center.\n" +
@@ -53,6 +53,8 @@ public class DatabaseSyncTest extends AndroidTestCase {
         coordinateFromMobileDatabaseWithMaxId = (Coordinate) coordinateDAO.getObjectWithMaxId();
 
         assertEquals(newCoordinate, coordinateFromMobileDatabaseWithMaxId);
+        coordinateDAO.delete(newCoordinate);
+        assertFalse(coordinateDAO.findAll().size() > 0 && newCoordinate == coordinateDAO.getObjectWithMaxId());
     }
 
     @Test
@@ -67,6 +69,8 @@ public class DatabaseSyncTest extends AndroidTestCase {
         buildingFromMobileDatabaseWithMaxId = (Building) buildingDAO.getObjectWithMaxId();
 
         assertEquals(newBuilding, buildingFromMobileDatabaseWithMaxId);
+        buildingDAO.delete(newBuilding);
+        assertFalse(buildingDAO.findAll().size() > 0 && newBuilding == buildingDAO.getObjectWithMaxId());
     }
 
     @Test
@@ -75,12 +79,14 @@ public class DatabaseSyncTest extends AndroidTestCase {
 
         BuildingFloorOverlay buildingFloorOverlayFromMobileDatabaseWithMaxId;
 
-        BuildingFloorOverlay newBuildingFloorOverlay = new BuildingFloorOverlay(1, 1, 2, 3, 4.0, 5.0, 6.0, 7.0, "2016-06-30 00:12:19.56");
+        BuildingFloorOverlay newBuildingFloorOverlay = new BuildingFloorOverlay(1, 1, 2, 3, 4.0, 5.0, 6.0, 7.0, modifiedDateTime);
         buildingFloorOverlayDAO.create(newBuildingFloorOverlay);
 
         buildingFloorOverlayFromMobileDatabaseWithMaxId = (BuildingFloorOverlay) buildingFloorOverlayDAO.getObjectWithMaxId();
 
         assertEquals(newBuildingFloorOverlay, buildingFloorOverlayFromMobileDatabaseWithMaxId);
+        buildingFloorOverlayDAO.delete(newBuildingFloorOverlay);
+        assertFalse(buildingFloorOverlayDAO.findAll().size() > 0 && newBuildingFloorOverlay == buildingFloorOverlayDAO.getObjectWithMaxId());
     }
 
     @Test
@@ -89,12 +95,14 @@ public class DatabaseSyncTest extends AndroidTestCase {
 
         BuildingPhoto buildingPhotoFromMobileDatabase;
 
-        BuildingPhoto newBuildingPhoto = new BuildingPhoto(1, 2, "2016-07-04 23:28:37.363");
+        BuildingPhoto newBuildingPhoto = new BuildingPhoto(1, 2, modifiedDateTime);
         buildingPhotoDAO.create(newBuildingPhoto);
 
         buildingPhotoFromMobileDatabase = (BuildingPhoto) buildingPhotoDAO.findByIds(1, 2);
 
         assertEquals(newBuildingPhoto, buildingPhotoFromMobileDatabase);
+        buildingPhotoDAO.delete(newBuildingPhoto);
+        assertTrue(buildingPhotoDAO.findAll().size() == 0 || buildingPhotoDAO.findByIds(1, 2) == null);
     }
 
     @Test
@@ -103,12 +111,14 @@ public class DatabaseSyncTest extends AndroidTestCase {
 
         CoordinateType coordinateTypeFromMobileDatabaseWithMaxId;
 
-        CoordinateType newCoordinateType =  new CoordinateType(2, "DEFAULT", modifiedDateTime);
+        CoordinateType newCoordinateType =  new CoordinateType(1, "DEFAULT", modifiedDateTime);
         coordinateTypeDAO.create(newCoordinateType);
 
         coordinateTypeFromMobileDatabaseWithMaxId = (CoordinateType) coordinateTypeDAO.getObjectWithMaxId();
 
         assertEquals(newCoordinateType, coordinateTypeFromMobileDatabaseWithMaxId);
+        coordinateTypeDAO.delete(newCoordinateType);
+        assertFalse(coordinateTypeDAO.findAll().size() > 0 && newCoordinateType == coordinateTypeDAO.getObjectWithMaxId());
     }
 
     @Test
@@ -123,6 +133,8 @@ public class DatabaseSyncTest extends AndroidTestCase {
         edgeFromMobileDatabaseWithMaxId = (Edge) edgeDAO.getObjectWithMaxId();
 
         assertEquals(newEdge, edgeFromMobileDatabaseWithMaxId);
+        edgeDAO.delete(newEdge);
+        assertFalse(edgeDAO.findAll().size() > 0 && newEdge == edgeDAO.getObjectWithMaxId());
     }
 
     @Test
@@ -137,5 +149,7 @@ public class DatabaseSyncTest extends AndroidTestCase {
         edgeTypeFromMobileDatabaseWithMaxId = (EdgeType) edgeTypeDAO.getObjectWithMaxId();
 
         assertEquals(newEdgeType, edgeTypeFromMobileDatabaseWithMaxId);
+        edgeTypeDAO.delete(newEdgeType);
+        assertFalse(edgeTypeDAO.findAll().size() > 0 && newEdgeType == edgeTypeDAO.getObjectWithMaxId());
     }
 }
