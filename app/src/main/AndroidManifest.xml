@@ -85,6 +85,9 @@
 
         </receiver>
 
+        <!-- For background database synchronization -->
+        <service android:name=".db.DatabaseSync" />
+
         <service android:name="com.google.android.gms.analytics.CampaignTrackingService" />
 
 

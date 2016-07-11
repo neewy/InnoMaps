@@ -4,7 +4,7 @@ package com.innopolis.maps.innomaps.db;
  * Created by alnedorezov on 7/7/16.
  */
 public final class Constants {
-    public static final int DATABASE_VERSION = 6;
+    public static final int DATABASE_VERSION = 7;
     public static final String DATABASE_NAME = "innomapsMobile" + DATABASE_VERSION + ".db";
 
     public static final String DAO_ERROR = "DAO_ERROR";
@@ -22,6 +22,23 @@ public final class Constants {
     public static final String EVENT_ID = "event_id";
     public static final String EVENT_CREATOR_ID = "event_creator_id";
     public static final String ROOM_ID = "room_id";
+
+    public static final String SYNC = "sync";
+    public static final String LAST = "last";
+    public static final String SYNC_DATE = "SyncDate";
+    public static final String TYPES = "Types";
+
+    public static final String LOG = "Exception";
+
+    public static final String DEFAULT_SYNC_DATE = "2015-07-26 15:00:00.0";
+
+    public static final String SYNC_ERROR = "SYNC_ERROR";
+
+    public static final int INTERNET_CHECK_TIMEOUT = 2000;
+
+    public static final int SYNCHRONIZATION_INTERVAL = 1000 * 60 * 2;
+
+    public static final String SYNC_FINISHED_ON = "Synchronization finished on: ";
 
     // Utility classes, which are a collection of static members, are not meant to be instantiated
     private Constants() {

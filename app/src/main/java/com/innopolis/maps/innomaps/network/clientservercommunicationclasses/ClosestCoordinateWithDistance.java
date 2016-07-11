@@ -1,4 +1,4 @@
-package com.innopolis.maps.innomaps.network.clientServerCommunicationClasses;
+package com.innopolis.maps.innomaps.network.clientservercommunicationclasses;
 
 import com.innopolis.maps.innomaps.maps.LatLngFlr;
 

@@ -1,7 +1,6 @@
 package com.innopolis.maps.innomaps.maps;
 
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
@@ -29,13 +28,12 @@ import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.app.CustomScrollView;
 import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.app.SearchableItem;
-import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.database.SQLQueries;
 import com.innopolis.maps.innomaps.events.Event;
 import com.innopolis.maps.innomaps.events.MapBottomEventListAdapter;
 import com.innopolis.maps.innomaps.events.TelegramOpenDialog;
 import com.innopolis.maps.innomaps.network.NetworkController;
-import com.innopolis.maps.innomaps.network.clientServerCommunicationClasses.ClosestCoordinateWithDistance;
+import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.ClosestCoordinateWithDistance;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -49,7 +47,6 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
-import static com.innopolis.maps.innomaps.database.SQLQueries.roomCursorQuery;
 import static com.innopolis.maps.innomaps.database.TableFields.DESCRIPTION;
 import static com.innopolis.maps.innomaps.database.TableFields.EMPTY;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT;
@@ -60,7 +57,6 @@ import static com.innopolis.maps.innomaps.database.TableFields.EVENT_TYPE;
 import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
-import static com.innopolis.maps.innomaps.database.TableFields.NAME;
 import static com.innopolis.maps.innomaps.database.TableFields.POI;
 import static com.innopolis.maps.innomaps.database.TableFields.POI_ID;
 import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;

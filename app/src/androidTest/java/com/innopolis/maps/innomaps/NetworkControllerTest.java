@@ -21,7 +21,8 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.Street;
 import com.innopolis.maps.innomaps.maps.LatLngFlr;
 import com.innopolis.maps.innomaps.network.Constants;
 import com.innopolis.maps.innomaps.network.NetworkController;
-import com.innopolis.maps.innomaps.network.clientServerCommunicationClasses.ClosestCoordinateWithDistance;
+import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.ClosestCoordinateWithDistance;
+import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.TypesSync;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -223,5 +224,18 @@ public class NetworkControllerTest extends AndroidTestCase {
         EventCreatorAppointment receivedEventCreatorAppointment = networkController.getEventCreatorAppointmentsCreatedOnOrAfterDate(date).get(0);
 
         assertEquals(requiredFirstEventCreatorAppointmentInList, receivedEventCreatorAppointment);
+    }
+
+    @Test
+    public void testTypesModifiedOnOrAfterDate() throws ParseException {
+        Date date = Constants.serverDateFormat.parse(modifiedDateTime);
+        TypesSync receivedTypesSync = networkController.getTypesModifiedOnOrAfterDate(date);
+
+        assertEquals(Integer.valueOf(1), receivedTypesSync.getCoordinateTypeId(0));
+        assertEquals(Integer.valueOf(1), receivedTypesSync.getEdgeTypeId(0));
+        assertEquals(Integer.valueOf(1), receivedTypesSync.getRoomTypeId(0));
+        assertTrue(receivedTypesSync.getCoordinateTypeIds().size() >= 11);
+        assertTrue(receivedTypesSync.getEdgeTypeIds().size() >= 2);
+        assertTrue(receivedTypesSync.getRoomTypeIds().size() >= 7);
     }
 }

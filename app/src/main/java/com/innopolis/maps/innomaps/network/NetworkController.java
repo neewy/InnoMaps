@@ -21,7 +21,8 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomPhoto;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Street;
 import com.innopolis.maps.innomaps.maps.LatLngFlrGraphVertex;
-import com.innopolis.maps.innomaps.network.clientServerCommunicationClasses.ClosestCoordinateWithDistance;
+import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.ClosestCoordinateWithDistance;
+import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.TypesSync;
 import com.innopolis.maps.innomaps.network.tasks.FindClosestPointFromGraphTask;
 import com.innopolis.maps.innomaps.network.tasks.FindShortestPathTask;
 import com.innopolis.maps.innomaps.network.tasks.GetBuildingByIdTask;
@@ -40,6 +41,7 @@ import com.innopolis.maps.innomaps.network.tasks.GetRoomByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetRoomPhotosCreatedOnOrAfterDateTask;
 import com.innopolis.maps.innomaps.network.tasks.GetRoomTypeByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetStreetByIdTask;
+import com.innopolis.maps.innomaps.network.tasks.GetTypesModifiedOnOrAfterDateTask;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
@@ -356,5 +358,14 @@ public class NetworkController {
             Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
         }
         return Collections.emptyList();
+    }
+
+    public TypesSync getTypesModifiedOnOrAfterDate(Date date) {
+        try {
+            return new GetTypesModifiedOnOrAfterDateTask().execute(urlEncodeDate(date)).get();
+        } catch (InterruptedException | ExecutionException e) {
+            Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
+        }
+        return null;
     }
 }
