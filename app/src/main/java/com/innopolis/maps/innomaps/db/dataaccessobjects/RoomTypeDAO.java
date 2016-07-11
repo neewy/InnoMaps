@@ -7,6 +7,7 @@ import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.db.DatabaseHelper;
 import com.innopolis.maps.innomaps.db.DatabaseManager;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomType;
+import com.j256.ormlite.stmt.QueryBuilder;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -101,6 +102,21 @@ public class RoomTypeDAO implements ExtendedCrud {
         }
 
         return items;
+    }
+
+    @Override
+    public Object getObjectWithMaxId() {
+        RoomType roomType = null;
+        try {
+            QueryBuilder<RoomType, Integer> qBuilder = helper.getRoomTypeDao().queryBuilder();
+            qBuilder.orderBy("id", false); // false for descending order
+            qBuilder.limit(1);
+            roomType = helper.getRoomTypeDao().queryForId(qBuilder.query().get(0).getId());
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    RoomTypeDAO.class.getSimpleName());
+        }
+        return roomType;
     }
 }
 

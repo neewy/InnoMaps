@@ -38,41 +38,41 @@ public class DatabaseSyncTest extends AndroidTestCase {
     public void testWritingNewCoordinateDataToMobileDB() throws ParseException {
         CoordinateDAO coordinateDAO = new CoordinateDAO(this.getContext());
 
-        List<Coordinate> coordinatesFromMobileDatabase;
+        Coordinate coordinateFromMobileDatabaseWithMaxId;
 
         Coordinate newCoordinate = new Coordinate(1, 55.7541793, 48.744085, 1, 2, "Innopolis University", universityDescription, modifiedDateTime);
         coordinateDAO.create(newCoordinate);
 
-        coordinatesFromMobileDatabase = (List<Coordinate>) coordinateDAO.findAll();
+        coordinateFromMobileDatabaseWithMaxId = (Coordinate) coordinateDAO.getObjectWithMaxId();
 
-        assertEquals(newCoordinate, coordinatesFromMobileDatabase.get(0));
+        assertEquals(newCoordinate, coordinateFromMobileDatabaseWithMaxId);
     }
 
     @Test
     public void testWritingNewBuildingDataToMobileDB() throws ParseException {
         BuildingDAO buildingDAO = new BuildingDAO(this.getContext());
 
-        List<Building> buildingsFromMobileDatabase;
+        Building buildingFromMobileDatabaseWithMaxId;
 
         Building newBuilding = new Building(1, String.valueOf(1), null, universityDescription, 1, 1, modifiedDateTime);
         buildingDAO.create(newBuilding);
 
-        buildingsFromMobileDatabase = (List<Building>) buildingDAO.findAll();
+        buildingFromMobileDatabaseWithMaxId = (Building) buildingDAO.getObjectWithMaxId();
 
-        assertEquals(newBuilding, buildingsFromMobileDatabase.get(0));
+        assertEquals(newBuilding, buildingFromMobileDatabaseWithMaxId);
     }
 
     @Test
     public void testWritingNewBuildingFloorOverlayDataToMobileDB() throws ParseException {
         BuildingFloorOverlayDAO buildingFloorOverlayDAO = new BuildingFloorOverlayDAO(this.getContext());
 
-        List<BuildingFloorOverlay> buildingFloorOverlaysFromMobileDatabase;
+        BuildingFloorOverlay buildingFloorOverlayFromMobileDatabaseWithMaxId;
 
         BuildingFloorOverlay newBuildingFloorOverlay = new BuildingFloorOverlay(1, 1, 2, 3, 4.0, 5.0, 6.0, 7.0, "2016-06-30 00:12:19.56");
         buildingFloorOverlayDAO.create(newBuildingFloorOverlay);
 
-        buildingFloorOverlaysFromMobileDatabase = (List<BuildingFloorOverlay>) buildingFloorOverlayDAO.findAll();
+        buildingFloorOverlayFromMobileDatabaseWithMaxId = (BuildingFloorOverlay) buildingFloorOverlayDAO.getObjectWithMaxId();
 
-        assertEquals(newBuildingFloorOverlay, buildingFloorOverlaysFromMobileDatabase.get(0));
+        assertEquals(newBuildingFloorOverlay, buildingFloorOverlayFromMobileDatabaseWithMaxId);
     }
 }

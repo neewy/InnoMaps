@@ -7,6 +7,7 @@ import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.db.DatabaseHelper;
 import com.innopolis.maps.innomaps.db.DatabaseManager;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Photo;
+import com.j256.ormlite.stmt.QueryBuilder;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -101,6 +102,21 @@ public class PhotoDAO implements ExtendedCrud {
         }
 
         return items;
+    }
+
+    @Override
+    public Object getObjectWithMaxId() {
+        Photo photo = null;
+        try {
+            QueryBuilder<Photo, Integer> qBuilder = helper.getPhotoDao().queryBuilder();
+            qBuilder.orderBy("id", false); // false for descending order
+            qBuilder.limit(1);
+            photo = helper.getPhotoDao().queryForId(qBuilder.query().get(0).getId());
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    PhotoDAO.class.getSimpleName());
+        }
+        return photo;
     }
 }
 

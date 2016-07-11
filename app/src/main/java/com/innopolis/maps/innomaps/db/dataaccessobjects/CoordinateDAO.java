@@ -7,6 +7,7 @@ import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.db.DatabaseHelper;
 import com.innopolis.maps.innomaps.db.DatabaseManager;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
+import com.j256.ormlite.stmt.QueryBuilder;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -101,5 +102,20 @@ public class CoordinateDAO implements ExtendedCrud {
         }
 
         return items;
+    }
+
+    @Override
+    public Object getObjectWithMaxId() {
+        Coordinate coordinate = null;
+        try {
+            QueryBuilder<Coordinate, Integer> qBuilder = helper.getCoordinateDao().queryBuilder();
+            qBuilder.orderBy("id", false); // false for descending order
+            qBuilder.limit(1);
+            coordinate = helper.getCoordinateDao().queryForId(qBuilder.query().get(0).getId());
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    CoordinateDAO.class.getSimpleName());
+        }
+        return coordinate;
     }
 }

@@ -15,4 +15,6 @@ public interface ExtendedCrud extends Crud {
     public Object findById(int id);
 
     public List findAll();
+
+    public Object getObjectWithMaxId();
 }

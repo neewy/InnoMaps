@@ -7,6 +7,7 @@ import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.db.DatabaseHelper;
 import com.innopolis.maps.innomaps.db.DatabaseManager;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingFloorOverlay;
+import com.j256.ormlite.stmt.QueryBuilder;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -101,5 +102,20 @@ public class BuildingFloorOverlayDAO implements ExtendedCrud {
         }
 
         return items;
+    }
+
+    @Override
+    public Object getObjectWithMaxId() {
+        BuildingFloorOverlay buildingFloorOverlay = null;
+        try {
+            QueryBuilder<BuildingFloorOverlay, Integer> qBuilder = helper.getBuildingFloorOverlayDao().queryBuilder();
+            qBuilder.orderBy("id", false); // false for descending order
+            qBuilder.limit(1);
+            buildingFloorOverlay = helper.getBuildingFloorOverlayDao().queryForId(qBuilder.query().get(0).getId());
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    PhotoDAO.class.getSimpleName());
+        }
+        return buildingFloorOverlay;
     }
 }
