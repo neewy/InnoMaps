@@ -39,6 +39,7 @@
     <string name="maps">Maps</string>
     <string name="events">Events</string>
     <string name="about">About</string>
+    <string name="logout">Log out</string>
     <string name="back_caps">BACK</string>
     <string name="go_caps">GO</string>
     <string name="marker_in_university">Please, select a room within the university</string>
@@ -112,6 +113,15 @@
 
     <!-- For logs -->
     <string name="supportedActionBarIsNull">Method getSupportActionBar() returns NULL value</string>
+    <string name="signup">Signup</string>
+    <string name="login">Login</string>
+    <string name="sign_up">Sign up</string>
+    <string name="log_in">Log in</string>
+    <string name="creating_acc">Creating Account...</string>
+    <string name="login_failed">Login failed</string>
+    <string name="mail_validation">enter a valid email address</string>
+    <string name="between_4_10">between 4 and 10 alphanumeric characters</string>
+    <string name="at_least_3">at least 3 characters</string>
 
     <!--     For network    -->
 

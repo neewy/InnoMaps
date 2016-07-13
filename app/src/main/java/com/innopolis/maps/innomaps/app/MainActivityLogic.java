@@ -45,6 +45,7 @@ public class MainActivityLogic extends AppCompatActivity {
     private final String fav = "Favourite";
     private final String events = "Events";
     private final String about = "About";
+    private final String log_in = "Log in";
     private final String detailed = "Detailed";
     protected Toolbar toolbar;
     protected SQLiteDatabase database;
@@ -147,17 +148,19 @@ public class MainActivityLogic extends AppCompatActivity {
                 int lastEntry = getSupportFragmentManager().getBackStackEntryCount() - 1;
                 FragmentManager.BackStackEntry last = getSupportFragmentManager().getBackStackEntryAt(lastEntry);
                 if (last.getName().equals(detailed)) {
-                    if(getSupportActionBar()!=null)
+                    if (getSupportActionBar() != null) {
                         getSupportActionBar().setTitle(getSupportFragmentManager().getBackStackEntryAt(lastEntry - 1).getName());
-                    getSupportFragmentManager().popBackStackImmediate();
-                } else {
+                        getSupportFragmentManager().popBackStackImmediate();
+                    }
+
+                }else{
                     //TODO: handle back press to update events in EventsFragment
                     getSupportFragmentManager().popBackStackImmediate(maps, 0);
                     getSupportActionBar().setTitle(maps);
                 }
             }
             setToggle(toolbar);
-            if(getSupportActionBar().getTitle()!=null)
+            if (getSupportActionBar().getTitle() != null)
                 highlightItemDrawer(getSupportActionBar().getTitle().toString());
         }
     }
@@ -191,7 +194,7 @@ public class MainActivityLogic extends AppCompatActivity {
     }
 
     protected void setToggle(Toolbar toolbar) {
-        if(getSupportActionBar()!=null)
+        if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -340,6 +343,13 @@ public class MainActivityLogic extends AppCompatActivity {
                 } else {
                     fragment = new About();
                 }
+            } else if (id == R.id.nav_auth) {
+                title = log_in;
+                if (getSupportFragmentManager().findFragmentByTag(log_in) != null) {
+                    getSupportFragmentManager().popBackStackImmediate(log_in, 0);
+                } else {
+                    fragment = new Login();
+                }
             }
         }
 
@@ -350,7 +360,7 @@ public class MainActivityLogic extends AppCompatActivity {
             ft.replace(R.id.content_frame, fragment, title).addToBackStack(title);
             ft.commit();
         }
-        if(getSupportActionBar()!=null)
+        if (getSupportActionBar() != null)
             getSupportActionBar().setTitle(getTitle());
         return true;
     }

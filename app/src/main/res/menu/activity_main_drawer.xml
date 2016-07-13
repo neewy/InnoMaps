@@ -21,4 +21,17 @@
             android:title="@string/about" />
     </group>
 
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_auth"
+            android:icon="@drawable/ic_login_24dp"
+            android:title="@string/login" />
+
+        <item
+            android:visible="false"
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_logout_24dp"
+            android:title="@string/logout" />
+    </group>
+
 </menu>
