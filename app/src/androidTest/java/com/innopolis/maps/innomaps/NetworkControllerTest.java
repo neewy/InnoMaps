@@ -22,6 +22,7 @@ import com.innopolis.maps.innomaps.maps.LatLngFlr;
 import com.innopolis.maps.innomaps.network.Constants;
 import com.innopolis.maps.innomaps.network.NetworkController;
 import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.ClosestCoordinateWithDistance;
+import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.EventsSync;
 import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.MapUnitsSync;
 import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.TypesSync;
 
@@ -255,5 +256,18 @@ public class NetworkControllerTest extends AndroidTestCase {
         assertTrue(receivedMapUnitsSync.getStreetIds().size() >= 1);
         assertTrue(receivedMapUnitsSync.getBuildingIds().size() >= 1);
         assertTrue(receivedMapUnitsSync.getRoomIds().size() >= 322);
+    }
+
+    @Test
+    public void testEventsModifiedOnOrAfterDate() throws ParseException {
+        Date date = Constants.serverDateFormat.parse(modifiedDateTime);
+        EventsSync receivedEvensSync = networkController.getEventsModifiedOnOrAfterDate(date);
+
+        assertEquals(Integer.valueOf(1), receivedEvensSync.getEventCreatorId(0));
+        assertEquals(Integer.valueOf(1), receivedEvensSync.getEventId(0));
+        assertEquals(Integer.valueOf(1), receivedEvensSync.getEventScheduleId(0));
+        assertTrue(receivedEvensSync.getEventCreatorIds().size() >= 15);
+        assertTrue(receivedEvensSync.getEventIds().size() >= 17);
+        assertTrue(receivedEvensSync.getEventScheduleIds().size() >= 50);
     }
 }
