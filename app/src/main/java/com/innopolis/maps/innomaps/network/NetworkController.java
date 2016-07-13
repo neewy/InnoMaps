@@ -22,6 +22,7 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Street;
 import com.innopolis.maps.innomaps.maps.LatLngFlrGraphVertex;
 import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.ClosestCoordinateWithDistance;
+import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.MapUnitsSync;
 import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.TypesSync;
 import com.innopolis.maps.innomaps.network.tasks.FindClosestPointFromGraphTask;
 import com.innopolis.maps.innomaps.network.tasks.FindShortestPathTask;
@@ -36,6 +37,7 @@ import com.innopolis.maps.innomaps.network.tasks.GetEventByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetEventCreatorAppointmentsCreatedOnOrAfterDateTask;
 import com.innopolis.maps.innomaps.network.tasks.GetEventCreatorByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetEventScheduleByIdTask;
+import com.innopolis.maps.innomaps.network.tasks.GetMapUnitsModifiedOnOrAfterDateTask;
 import com.innopolis.maps.innomaps.network.tasks.GetPhotoByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetRoomByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetRoomPhotosCreatedOnOrAfterDateTask;
@@ -363,6 +365,15 @@ public class NetworkController {
     public TypesSync getTypesModifiedOnOrAfterDate(Date date) {
         try {
             return new GetTypesModifiedOnOrAfterDateTask().execute(urlEncodeDate(date)).get();
+        } catch (InterruptedException | ExecutionException e) {
+            Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
+        }
+        return null;
+    }
+
+    public MapUnitsSync getMapUnitsModifiedOnOrAfterDate(Date date) {
+        try {
+            return new GetMapUnitsModifiedOnOrAfterDateTask().execute(urlEncodeDate(date)).get();
         } catch (InterruptedException | ExecutionException e) {
             Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
         }
