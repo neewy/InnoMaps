@@ -3,6 +3,7 @@ package com.innopolis.maps.innomaps.app;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -62,7 +63,11 @@ public class SignUp extends Fragment {
         loginLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: Finish da registration and return to the login
+                Fragment fragment = new Login();
+                FragmentTransaction fragTransaction = getFragmentManager().beginTransaction();
+                fragTransaction.replace(R.id.content_frame, fragment);
+                fragTransaction.addToBackStack(null);
+                fragTransaction.commit();
             }
         });
         return view;

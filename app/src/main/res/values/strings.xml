@@ -121,9 +121,14 @@
     <string name="login_failed">Login failed</string>
     <string name="mail_validation">enter a valid email address</string>
     <string name="between_4_10">between 4 and 10 alphanumeric characters</string>
+    <string name="be_6_numbers">must be 6 numbers</string>
     <string name="at_least_3">at least 3 characters</string>
     <string name="no_account_yet_create_one">No account yet? Create one</string>
     <string name="already_a_member_login">Already a member? Login</string>
+    <string name="confirming">Confirming...</string>
+    <string name="authenticating">Authenticating...</string>
+
+    <string name="auth">Authentication</string>
 
     <!--     For network    -->
 
