@@ -9,14 +9,29 @@ import android.os.Message;
 import android.util.Log;
 
 import com.innopolis.maps.innomaps.app.MainActivity;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingFloorOverlayDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateTypeDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EdgeDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.EdgeTypeDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.PhotoDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.RoomDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.RoomTypeDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.StreetDAO;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Building;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingFloorOverlay;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.CoordinateType;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Edge;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EdgeType;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Photo;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomType;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Street;
 import com.innopolis.maps.innomaps.network.InternetAccessChecker;
 import com.innopolis.maps.innomaps.network.NetworkController;
+import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.MapUnitsSync;
 import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.TypesSync;
 
 import java.text.ParseException;
@@ -89,6 +104,7 @@ public class DatabaseSync extends IntentService {
 
     public void performSyncWithServer() throws ParseException {
         synchronizeTypes();
+        synchronizeMapUnits();
     }
 
     private void synchronizeTypes() throws ParseException {
@@ -116,6 +132,74 @@ public class DatabaseSync extends IntentService {
         if (receivedTypesSync.getRoomTypeIds() != null && !receivedTypesSync.getRoomTypeIds().isEmpty()) {
             try {
                 addNewRoomTypes(receivedTypesSync.getRoomTypeIds());
+            } catch (ParseException e) {
+                Log.d(Constants.SYNC_ERROR, Arrays.toString(e.getStackTrace()));
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void synchronizeMapUnits() throws ParseException {
+        networkController = new NetworkController();
+        MapUnitsSync receivedMapUnits = networkController.getMapUnitsModifiedOnOrAfterDate(loadLastSyncDate());
+
+        if (receivedMapUnits.getCoordinateIds() != null && !receivedMapUnits.getCoordinateIds().isEmpty()) {
+            try {
+                addNewCoordinates(receivedMapUnits.getCoordinateIds());
+            } catch (ParseException e) {
+                Log.d(Constants.SYNC_ERROR, Arrays.toString(e.getStackTrace()));
+                e.printStackTrace();
+            }
+        }
+
+        if (receivedMapUnits.getEdgeIds() != null && !receivedMapUnits.getEdgeIds().isEmpty()) {
+            try {
+                addNewEdges(receivedMapUnits.getEdgeIds());
+            } catch (ParseException e) {
+                Log.d(Constants.SYNC_ERROR, Arrays.toString(e.getStackTrace()));
+                e.printStackTrace();
+            }
+        }
+
+        if (receivedMapUnits.getStreetIds() != null && !receivedMapUnits.getStreetIds().isEmpty()) {
+            try {
+                addNewStreets(receivedMapUnits.getStreetIds());
+            } catch (ParseException e) {
+                Log.d(Constants.SYNC_ERROR, Arrays.toString(e.getStackTrace()));
+                e.printStackTrace();
+            }
+        }
+
+        if (receivedMapUnits.getBuildingIds() != null && !receivedMapUnits.getBuildingIds().isEmpty()) {
+            try {
+                addNewBuildings(receivedMapUnits.getBuildingIds());
+            } catch (ParseException e) {
+                Log.d(Constants.SYNC_ERROR, Arrays.toString(e.getStackTrace()));
+                e.printStackTrace();
+            }
+        }
+
+        if (receivedMapUnits.getRoomIds() != null && !receivedMapUnits.getRoomIds().isEmpty()) {
+            try {
+                addNewRooms(receivedMapUnits.getRoomIds());
+            } catch (ParseException e) {
+                Log.d(Constants.SYNC_ERROR, Arrays.toString(e.getStackTrace()));
+                e.printStackTrace();
+            }
+        }
+
+        if (receivedMapUnits.getPhotoIds() != null && !receivedMapUnits.getPhotoIds().isEmpty()) {
+            try {
+                addNewPhotos(receivedMapUnits.getPhotoIds());
+            } catch (ParseException e) {
+                Log.d(Constants.SYNC_ERROR, Arrays.toString(e.getStackTrace()));
+                e.printStackTrace();
+            }
+        }
+
+        if (receivedMapUnits.getBuildingFloorOverlayIds() != null && !receivedMapUnits.getBuildingFloorOverlayIds().isEmpty()) {
+            try {
+                addNewBuildingFloorOverlays(receivedMapUnits.getBuildingFloorOverlayIds());
             } catch (ParseException e) {
                 Log.d(Constants.SYNC_ERROR, Arrays.toString(e.getStackTrace()));
                 e.printStackTrace();
@@ -152,6 +236,83 @@ public class DatabaseSync extends IntentService {
             if (roomTypeId != null) {
                 RoomType newRoomType = networkController.getRoomTypeById(roomTypeId);
                 roomTypeDAO.create(newRoomType);
+            }
+        }
+    }
+
+    private void addNewCoordinates(List<Integer> coordinateIds) throws ParseException {
+        CoordinateDAO coordinateDAO = new CoordinateDAO(context);
+        networkController = new NetworkController();
+        for (Integer coordinateId : coordinateIds) {
+            if (coordinateId != null) {
+                Coordinate newCoordinate = networkController.getCoordinateById(coordinateId);
+                coordinateDAO.create(newCoordinate);
+            }
+        }
+    }
+
+    private void addNewEdges(List<Integer> edgeIds) throws ParseException {
+        EdgeDAO edgeDAO = new EdgeDAO(context);
+        networkController = new NetworkController();
+        for (Integer edgeId : edgeIds) {
+            if (edgeId != null) {
+                Edge newEdge = networkController.getEdgeById(edgeId);
+                edgeDAO.create(newEdge);
+            }
+        }
+    }
+
+    private void addNewStreets(List<Integer> streetIds) throws ParseException {
+        StreetDAO streetDAO = new StreetDAO(context);
+        networkController = new NetworkController();
+        for (Integer streetId : streetIds) {
+            if (streetId != null) {
+                Street newStreet = networkController.getStreetById(streetId);
+                streetDAO.create(newStreet);
+            }
+        }
+    }
+
+    private void addNewBuildings(List<Integer> buildingIds) throws ParseException {
+        BuildingDAO buildingDAO = new BuildingDAO(context);
+        networkController = new NetworkController();
+        for (Integer buildingId : buildingIds) {
+            if (buildingId != null) {
+                Building newBuilding = networkController.getBuildingById(buildingId);
+                buildingDAO.create(newBuilding);
+            }
+        }
+    }
+
+    private void addNewRooms(List<Integer> roomIds) throws ParseException {
+        RoomDAO roomDAO = new RoomDAO(context);
+        networkController = new NetworkController();
+        for (Integer roomId : roomIds) {
+            if (roomId != null) {
+                Room newRoom = networkController.getRoomById(roomId);
+                roomDAO.create(newRoom);
+            }
+        }
+    }
+
+    private void addNewPhotos(List<Integer> photoIds) throws ParseException {
+        PhotoDAO photoDAO = new PhotoDAO(context);
+        networkController = new NetworkController();
+        for (Integer photoId : photoIds) {
+            if (photoId != null) {
+                Photo newPhoto = networkController.getPhotoById(photoId);
+                photoDAO.create(newPhoto);
+            }
+        }
+    }
+
+    private void addNewBuildingFloorOverlays(List<Integer> buildingFloorOverlayIds) throws ParseException {
+        BuildingFloorOverlayDAO buildingFloorOverlayDAO = new BuildingFloorOverlayDAO(context);
+        networkController = new NetworkController();
+        for (Integer buildingFloorOverlayId : buildingFloorOverlayIds) {
+            if (buildingFloorOverlayId != null) {
+                BuildingFloorOverlay newBuildingFloorOverlay = networkController.getBuildingFloorOverlayById(buildingFloorOverlayId);
+                buildingFloorOverlayDAO.create(newBuildingFloorOverlay);
             }
         }
     }
