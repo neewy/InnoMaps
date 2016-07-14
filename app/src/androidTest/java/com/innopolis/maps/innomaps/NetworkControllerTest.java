@@ -23,6 +23,7 @@ import com.innopolis.maps.innomaps.network.Constants;
 import com.innopolis.maps.innomaps.network.NetworkController;
 import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.ClosestCoordinateWithDistance;
 import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.EventsSync;
+import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.GeneralSync;
 import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.MapUnitsSync;
 import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.TypesSync;
 
@@ -269,5 +270,27 @@ public class NetworkControllerTest extends AndroidTestCase {
         assertTrue(receivedEvensSync.getEventCreatorIds().size() >= 15);
         assertTrue(receivedEvensSync.getEventIds().size() >= 17);
         assertTrue(receivedEvensSync.getEventScheduleIds().size() >= 50);
+    }
+
+    @Test
+    public void testGetGeneralData() throws ParseException {
+        GeneralSync generalData = networkController.getGeneralData();
+
+        assertTrue(generalData.getCoordinateTypes().size() >= 11);
+        assertTrue(generalData.getEdgeTypes().size() >= 2);
+        assertTrue(generalData.getRoomTypes().size() >= 7);
+        assertTrue(generalData.getCoordinates().size() >= 709);
+        assertTrue(generalData.getEdges().size() >= 788);
+        assertTrue(generalData.getStreets().size() >= 1);
+        assertTrue(generalData.getBuildings().size() >= 1);
+        assertTrue(generalData.getRooms().size() >= 322);
+        assertTrue(generalData.getPhotos().size() > 0);
+        assertTrue(generalData.getBuildingFloorOverlays().size() > 0);
+        assertTrue(generalData.getEventCreators().size() >= 15);
+        assertTrue(generalData.getEvents().size() >= 17);
+        assertTrue(generalData.getEventSchedules().size() >= 50);
+        assertTrue(generalData.getBuildingPhotos().size() > 0);
+        assertTrue(generalData.getRoomPhotos().size() > 0);
+        assertTrue(generalData.getEventCreatorAppointments().size() > 20);
     }
 }

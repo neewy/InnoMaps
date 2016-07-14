@@ -23,6 +23,7 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.Street;
 import com.innopolis.maps.innomaps.maps.LatLngFlrGraphVertex;
 import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.ClosestCoordinateWithDistance;
 import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.EventsSync;
+import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.GeneralSync;
 import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.MapUnitsSync;
 import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.TypesSync;
 import com.innopolis.maps.innomaps.network.tasks.FindClosestPointFromGraphTask;
@@ -39,6 +40,7 @@ import com.innopolis.maps.innomaps.network.tasks.GetEventCreatorAppointmentsCrea
 import com.innopolis.maps.innomaps.network.tasks.GetEventCreatorByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetEventScheduleByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetEventsModifiedOnOrAfterDateTask;
+import com.innopolis.maps.innomaps.network.tasks.GetGeneralDataTask;
 import com.innopolis.maps.innomaps.network.tasks.GetMapUnitsModifiedOnOrAfterDateTask;
 import com.innopolis.maps.innomaps.network.tasks.GetPhotoByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetRoomByIdTask;
@@ -385,6 +387,15 @@ public class NetworkController {
     public EventsSync getEventsModifiedOnOrAfterDate(Date date) {
         try {
             return new GetEventsModifiedOnOrAfterDateTask().execute(urlEncodeDate(date)).get();
+        } catch (InterruptedException | ExecutionException e) {
+            Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
+        }
+        return null;
+    }
+
+    public GeneralSync getGeneralData() {
+        try {
+            return new GetGeneralDataTask().execute().get();
         } catch (InterruptedException | ExecutionException e) {
             Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
         }

@@ -62,6 +62,7 @@ public final class Constants {
     public static final String SYNC = "sync";
     public static final String DATE = "date";
     public static final String MAP_UNITS = "mapunits";
+    public static final String GENERAL = "general";
 
     // Utility classes, which are a collection of static members, are not meant to be instantiated
     private Constants() {
