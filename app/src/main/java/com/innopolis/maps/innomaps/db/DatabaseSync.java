@@ -86,12 +86,12 @@ public class DatabaseSync extends IntentService {
                         Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
                     }
                     saveLastSyncDate(new Date());
+                    Log.d(Constants.SYNC, Constants.SYNC_FINISHED_ON + com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(new Date()));
                 }
             }
         };
 
         InternetAccessChecker.isNetworkAvailable(h, Constants.INTERNET_CHECK_TIMEOUT, getApplicationContext());
-        Log.d(Constants.SYNC, Constants.SYNC_FINISHED_ON + com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(new Date()));
 
         while (true) {
             final Handler finalHandler = h;
@@ -101,7 +101,6 @@ public class DatabaseSync extends IntentService {
                 public void run() {
                     // Actions to do after SYNCHRONIZATION_INTERVAL
                     InternetAccessChecker.isNetworkAvailable(finalHandler, Constants.INTERNET_CHECK_TIMEOUT, getApplicationContext());
-                    Log.d(Constants.SYNC, Constants.SYNC_FINISHED_ON + com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(new Date()));
                 }
             }, Constants.SYNCHRONIZATION_INTERVAL);
         }

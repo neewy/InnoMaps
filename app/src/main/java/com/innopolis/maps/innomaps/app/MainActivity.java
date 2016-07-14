@@ -14,6 +14,9 @@ import com.innopolis.maps.innomaps.db.DatabaseManager;
 import com.innopolis.maps.innomaps.db.DatabaseSync;
 import com.innopolis.maps.innomaps.utils.AnalyticsTrackers;
 
+import java.text.ParseException;
+import java.util.Date;
+
 
 public class MainActivity extends MainActivityLogic
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -73,8 +76,21 @@ public class MainActivity extends MainActivityLogic
             ed.putString(Constants.LAST + Constants.MAP_UNITS + Constants.SYNC_DATE, Constants.DEFAULT_SYNC_DATE);
             ed.putString(Constants.LAST + Constants.EVENTS + Constants.SYNC_DATE, Constants.DEFAULT_SYNC_DATE);
             ed.apply();
+
+            // TODO: uncomment or move to splash screen: firstDatabaseSync();
             // using the following line to edit/commit prefs
             prefs.edit().putBoolean("firstrun", false).apply();
+        }
+    }
+
+    void firstDatabaseSync() {
+        DatabaseSync databaseSync = new DatabaseSync(this.getApplicationContext());
+        try {
+            databaseSync.performSyncWithServer();
+            databaseSync.saveLastSyncDate(new Date());
+            Log.d(Constants.SYNC, Constants.SYNC_FINISHED_ON + com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(new Date()));
+        } catch (ParseException e) {
+            Log.e(com.innopolis.maps.innomaps.network.Constants.LOG, e.getMessage(), e.fillInStackTrace());
         }
     }
 
