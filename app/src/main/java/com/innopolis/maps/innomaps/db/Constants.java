@@ -28,6 +28,7 @@ public final class Constants {
     public static final String SYNC_DATE = "SyncDate";
     public static final String TYPES = "Types";
     public static final String MAP_UNITS = "MapUnits";
+    public static final String EVENTS = "Events";
 
     public static final String LOG = "Exception";
 

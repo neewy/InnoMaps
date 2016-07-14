@@ -15,6 +15,9 @@ import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateTypeDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.EdgeDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.EdgeTypeDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventCreatorDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventScheduleDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.PhotoDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.RoomDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.RoomTypeDAO;
@@ -25,12 +28,16 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.CoordinateType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Edge;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EdgeType;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Event;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreator;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventSchedule;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Photo;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Street;
 import com.innopolis.maps.innomaps.network.InternetAccessChecker;
 import com.innopolis.maps.innomaps.network.NetworkController;
+import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.EventsSync;
 import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.MapUnitsSync;
 import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.TypesSync;
 
@@ -47,6 +54,10 @@ public class DatabaseSync extends IntentService {
     private static Context context;
     private SharedPreferences sPref;
     private NetworkController networkController;
+
+    private enum syncTypes {
+        TYPES, MAP_UNITS, EVENTS
+    }
 
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
@@ -105,11 +116,12 @@ public class DatabaseSync extends IntentService {
     public void performSyncWithServer() throws ParseException {
         synchronizeTypes();
         synchronizeMapUnits();
+        synchronizeEvents();
     }
 
     private void synchronizeTypes() throws ParseException {
         networkController = new NetworkController();
-        TypesSync receivedTypesSync = networkController.getTypesModifiedOnOrAfterDate(loadLastSyncDate());
+        TypesSync receivedTypesSync = networkController.getTypesModifiedOnOrAfterDate(loadLastSyncDate(syncTypes.TYPES));
 
         if (receivedTypesSync.getCoordinateTypeIds() != null && !receivedTypesSync.getCoordinateTypeIds().isEmpty()) {
             try {
@@ -141,7 +153,7 @@ public class DatabaseSync extends IntentService {
 
     private void synchronizeMapUnits() throws ParseException {
         networkController = new NetworkController();
-        MapUnitsSync receivedMapUnits = networkController.getMapUnitsModifiedOnOrAfterDate(loadLastSyncDate());
+        MapUnitsSync receivedMapUnits = networkController.getMapUnitsModifiedOnOrAfterDate(loadLastSyncDate(syncTypes.MAP_UNITS));
 
         if (receivedMapUnits.getCoordinateIds() != null && !receivedMapUnits.getCoordinateIds().isEmpty()) {
             try {
@@ -200,6 +212,38 @@ public class DatabaseSync extends IntentService {
         if (receivedMapUnits.getBuildingFloorOverlayIds() != null && !receivedMapUnits.getBuildingFloorOverlayIds().isEmpty()) {
             try {
                 addNewBuildingFloorOverlays(receivedMapUnits.getBuildingFloorOverlayIds());
+            } catch (ParseException e) {
+                Log.d(Constants.SYNC_ERROR, Arrays.toString(e.getStackTrace()));
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void synchronizeEvents() throws ParseException {
+        networkController = new NetworkController();
+        EventsSync receivedEventsSync = networkController.getEventsModifiedOnOrAfterDate(loadLastSyncDate(syncTypes.EVENTS));
+
+        if (receivedEventsSync.getEventCreatorIds() != null && !receivedEventsSync.getEventCreatorIds().isEmpty()) {
+            try {
+                addNewEventCreators(receivedEventsSync.getEventCreatorIds());
+            } catch (ParseException e) {
+                Log.d(Constants.SYNC_ERROR, Arrays.toString(e.getStackTrace()));
+                e.printStackTrace();
+            }
+        }
+
+        if (receivedEventsSync.getEventIds() != null && !receivedEventsSync.getEventIds().isEmpty()) {
+            try {
+                addNewEvents(receivedEventsSync.getEventIds());
+            } catch (ParseException e) {
+                Log.d(Constants.SYNC_ERROR, Arrays.toString(e.getStackTrace()));
+                e.printStackTrace();
+            }
+        }
+
+        if (receivedEventsSync.getEventScheduleIds() != null && !receivedEventsSync.getEventScheduleIds().isEmpty()) {
+            try {
+                addNewEventSchedules(receivedEventsSync.getEventScheduleIds());
             } catch (ParseException e) {
                 Log.d(Constants.SYNC_ERROR, Arrays.toString(e.getStackTrace()));
                 e.printStackTrace();
@@ -317,16 +361,67 @@ public class DatabaseSync extends IntentService {
         }
     }
 
+    private void addNewEventCreators(List<Integer> eventCreatorIds) throws ParseException {
+        EventCreatorDAO eventCreatorDAO = new EventCreatorDAO(context);
+        networkController = new NetworkController();
+        for (Integer eventCreatorId : eventCreatorIds) {
+            if (eventCreatorId != null) {
+                EventCreator newEventCreator = networkController.getEventCreatorById(eventCreatorId);
+                eventCreatorDAO.create(newEventCreator);
+            }
+        }
+    }
+
+    private void addNewEvents(List<Integer> eventIds) throws ParseException {
+        EventDAO eventDAO = new EventDAO(context);
+        networkController = new NetworkController();
+        for (Integer eventId : eventIds) {
+            if (eventId != null) {
+                Event newEvent = networkController.getEventById(eventId);
+                eventDAO.create(newEvent);
+            }
+        }
+    }
+
+    private void addNewEventSchedules(List<Integer> eventScheduleIds) throws ParseException {
+        EventScheduleDAO eventScheduleDAO = new EventScheduleDAO(context);
+        networkController = new NetworkController();
+        for (Integer eventScheduleId : eventScheduleIds) {
+            if (eventScheduleId != null) {
+                EventSchedule newEventSchedule = networkController.getEventScheduleById(eventScheduleId);
+                eventScheduleDAO.create(newEventSchedule);
+            }
+        }
+    }
+
     public void saveLastSyncDate(Date lastSyncDate) {
         sPref = context.getSharedPreferences(Constants.SYNC, MODE_PRIVATE);
         SharedPreferences.Editor ed = sPref.edit();
         ed.putString(Constants.LAST + Constants.TYPES + Constants.SYNC_DATE, com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(lastSyncDate));
+        ed.putString(Constants.LAST + Constants.MAP_UNITS + Constants.SYNC_DATE, com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(lastSyncDate));
+        ed.putString(Constants.LAST + Constants.EVENTS + Constants.SYNC_DATE, com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(lastSyncDate));
         ed.apply();
     }
 
-    private Date loadLastSyncDate() throws ParseException {
+    private Date loadLastSyncDate(syncTypes type) throws ParseException {
         sPref = context.getSharedPreferences(Constants.SYNC, MODE_PRIVATE);
-        String lastSyncDate = sPref.getString(Constants.LAST + Constants.TYPES + Constants.SYNC_DATE, "");
+
+        String lastSyncDate;
+
+        switch (type) {
+            case TYPES:
+                lastSyncDate = sPref.getString(Constants.LAST + Constants.TYPES + Constants.SYNC_DATE, "");
+                break;
+            case MAP_UNITS:
+                lastSyncDate = sPref.getString(Constants.LAST + Constants.MAP_UNITS + Constants.SYNC_DATE, "");
+                break;
+            case EVENTS:
+                lastSyncDate = sPref.getString(Constants.LAST + Constants.EVENTS + Constants.SYNC_DATE, "");
+                break;
+            default:
+                lastSyncDate = sPref.getString(Constants.LAST + Constants.TYPES + Constants.SYNC_DATE, "");
+                break;
+        }
 
         if ("".equals(lastSyncDate))
             lastSyncDate = Constants.DEFAULT_SYNC_DATE;

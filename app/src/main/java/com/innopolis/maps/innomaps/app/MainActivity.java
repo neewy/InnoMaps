@@ -71,6 +71,7 @@ public class MainActivity extends MainActivityLogic
             SharedPreferences.Editor ed = sPref.edit();
             ed.putString(Constants.LAST + Constants.TYPES + Constants.SYNC_DATE, Constants.DEFAULT_SYNC_DATE);
             ed.putString(Constants.LAST + Constants.MAP_UNITS + Constants.SYNC_DATE, Constants.DEFAULT_SYNC_DATE);
+            ed.putString(Constants.LAST + Constants.EVENTS + Constants.SYNC_DATE, Constants.DEFAULT_SYNC_DATE);
             ed.apply();
             // using the following line to edit/commit prefs
             prefs.edit().putBoolean("firstrun", false).apply();

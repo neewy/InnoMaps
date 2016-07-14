@@ -10,6 +10,9 @@ import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateTypeDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.EdgeDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.EdgeTypeDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventCreatorDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventScheduleDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.PhotoDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.RoomDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.RoomTypeDAO;
@@ -20,6 +23,9 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.CoordinateType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Edge;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EdgeType;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Event;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreator;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventSchedule;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Photo;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomType;
@@ -57,6 +63,9 @@ public class DatabaseSyncTest extends AndroidTestCase {
         RoomDAO roomDAO = new RoomDAO(this.getContext());
         PhotoDAO photoDAO = new PhotoDAO(this.getContext());
         BuildingFloorOverlayDAO buildingFloorOverlayDAO = new BuildingFloorOverlayDAO(this.getContext());
+        EventCreatorDAO eventCreatorDAO = new EventCreatorDAO(this.getContext());
+        EventDAO eventDAO = new EventDAO(this.getContext());
+        EventScheduleDAO eventScheduleDAO = new EventScheduleDAO(this.getContext());
         databaseSync.performSyncWithServer();
         databaseSync.saveLastSyncDate(new Date());
 
@@ -70,6 +79,9 @@ public class DatabaseSyncTest extends AndroidTestCase {
         List<Room> rooms = (List<Room>) roomDAO.findAll();
         List<Photo> photos = (List<Photo>) photoDAO.findAll();
         List<BuildingFloorOverlay> buildingFloorOverlays = (List<BuildingFloorOverlay>) buildingFloorOverlayDAO.findAll();
+        List<EventCreator> eventCreators = (List<EventCreator>) eventCreatorDAO.findAll();
+        List<Event> events = (List<Event>) eventDAO.findAll();
+        List<EventSchedule> eventSchedules = (List<EventSchedule>) eventScheduleDAO.findAll();
 
         assertTrue(coordinateTypes.size() >= 11);
         assertTrue(edgeTypes.size() >= 2);
@@ -81,5 +93,8 @@ public class DatabaseSyncTest extends AndroidTestCase {
         assertTrue(rooms.size() >= 322);
         assertTrue(photos.size() > 0);
         assertTrue(buildingFloorOverlays.size() > 0);
+        assertTrue(eventCreators.size() >= 15);
+        assertTrue(events.size() >= 17);
+        assertTrue(eventSchedules.size() >= 50);
     }
 }
