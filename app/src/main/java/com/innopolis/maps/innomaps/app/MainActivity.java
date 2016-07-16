@@ -75,6 +75,8 @@ public class MainActivity extends MainActivityLogic
             ed.putString(Constants.LAST + Constants.TYPES + Constants.SYNC_DATE, Constants.DEFAULT_SYNC_DATE);
             ed.putString(Constants.LAST + Constants.MAP_UNITS + Constants.SYNC_DATE, Constants.DEFAULT_SYNC_DATE);
             ed.putString(Constants.LAST + Constants.EVENTS + Constants.SYNC_DATE, Constants.DEFAULT_SYNC_DATE);
+            ed.putString(Constants.LAST + Constants.ASSIGNMENTS + Constants.SYNC_DATE, Constants.DEFAULT_SYNC_DATE);
+            ed.putString(Constants.LAST + Constants.GENERAL + Constants.SYNC_DATE, Constants.DEFAULT_SYNC_DATE);
             ed.apply();
 
             // TODO: uncomment or move to splash screen: firstDatabaseSync();
@@ -87,7 +89,7 @@ public class MainActivity extends MainActivityLogic
         DatabaseSync databaseSync = new DatabaseSync(this.getApplicationContext());
         try {
             databaseSync.performSyncWithServer();
-            databaseSync.saveLastSyncDate(new Date());
+            databaseSync.saveLastSyncDate(new Date(), DatabaseSync.syncTypes.GENERAL);
             Log.d(Constants.SYNC, Constants.SYNC_FINISHED_ON + com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(new Date()));
         } catch (ParseException e) {
             Log.e(com.innopolis.maps.innomaps.network.Constants.LOG, e.getMessage(), e.fillInStackTrace());

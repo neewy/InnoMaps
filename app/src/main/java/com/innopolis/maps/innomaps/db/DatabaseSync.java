@@ -11,33 +11,40 @@ import android.util.Log;
 import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingFloorOverlayDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingPhotoDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateTypeDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.EdgeDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.EdgeTypeDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventCreatorAppointmentDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.EventCreatorDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.EventDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.EventScheduleDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.PhotoDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.RoomDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.RoomPhotoDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.RoomTypeDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.StreetDAO;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Building;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingFloorOverlay;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingPhoto;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.CoordinateType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Edge;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EdgeType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Event;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreator;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreatorAppointment;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventSchedule;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Photo;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomPhoto;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Street;
 import com.innopolis.maps.innomaps.network.InternetAccessChecker;
 import com.innopolis.maps.innomaps.network.NetworkController;
 import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.EventsSync;
+import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.GeneralSync;
 import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.MapUnitsSync;
 import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.TypesSync;
 
@@ -55,8 +62,8 @@ public class DatabaseSync extends IntentService {
     private SharedPreferences sPref;
     private NetworkController networkController;
 
-    private enum syncTypes {
-        TYPES, MAP_UNITS, EVENTS
+    public enum syncTypes {
+        TYPES, MAP_UNITS, EVENTS, ASSIGNMENTS, GENERAL
     }
 
     /**
@@ -85,7 +92,7 @@ public class DatabaseSync extends IntentService {
                     } catch (ParseException e) {
                         Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
                     }
-                    saveLastSyncDate(new Date());
+                    saveLastSyncDate(new Date(), syncTypes.GENERAL);
                     Log.d(Constants.SYNC, Constants.SYNC_FINISHED_ON + com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(new Date()));
                 }
             }
@@ -116,6 +123,7 @@ public class DatabaseSync extends IntentService {
         synchronizeTypes();
         synchronizeMapUnits();
         synchronizeEvents();
+        synchronizeAssignments();
     }
 
     private void synchronizeTypes() throws ParseException {
@@ -148,6 +156,8 @@ public class DatabaseSync extends IntentService {
                 e.printStackTrace();
             }
         }
+
+        saveLastSyncDate(new Date(), syncTypes.TYPES);
     }
 
     private void synchronizeMapUnits() throws ParseException {
@@ -216,6 +226,8 @@ public class DatabaseSync extends IntentService {
                 e.printStackTrace();
             }
         }
+
+        saveLastSyncDate(new Date(), syncTypes.MAP_UNITS);
     }
 
     private void synchronizeEvents() throws ParseException {
@@ -248,6 +260,32 @@ public class DatabaseSync extends IntentService {
                 e.printStackTrace();
             }
         }
+
+        saveLastSyncDate(new Date(), syncTypes.EVENTS);
+    }
+
+    private void synchronizeAssignments() throws ParseException {
+        networkController = new NetworkController();
+        BuildingPhotoDAO buildingPhotoDAO = new BuildingPhotoDAO(context);
+        RoomPhotoDAO roomPhotoDAO = new RoomPhotoDAO(context);
+        EventCreatorAppointmentDAO eventCreatorAppointmentDAO = new EventCreatorAppointmentDAO(context);
+        Date syncDate = loadLastSyncDate(syncTypes.ASSIGNMENTS);
+
+        List<BuildingPhoto> buildingPhotos = (List<BuildingPhoto>) networkController.getBuildingPhotosCreatedOnOrAfterDate(syncDate);
+        List<RoomPhoto> roomPhotos = (List<RoomPhoto>) networkController.getRoomPhotosCreatedOnOrAfterDate(syncDate);
+        List<EventCreatorAppointment> eventCreatorAppointments = (List<EventCreatorAppointment>) networkController.getEventCreatorAppointmentsCreatedOnOrAfterDate(syncDate);
+
+        for (int i = 0; i < buildingPhotos.size(); i++) {
+            buildingPhotoDAO.create(buildingPhotos.get(i));
+        }
+        for (int i = 0; i < roomPhotos.size(); i++) {
+            roomPhotoDAO.create(roomPhotos.get(i));
+        }
+        for (int i = 0; i < eventCreatorAppointments.size(); i++) {
+            eventCreatorAppointmentDAO.create(eventCreatorAppointments.get(i));
+        }
+
+        saveLastSyncDate(new Date(), syncTypes.ASSIGNMENTS);
     }
 
     private void addNewCoordinateTypes(List<Integer> coordinateTypeIds) throws ParseException {
@@ -393,12 +431,106 @@ public class DatabaseSync extends IntentService {
         }
     }
 
-    public void saveLastSyncDate(Date lastSyncDate) {
+    public void performGeneralSyncWithServer() {
+        GeneralSync generalData = networkController.getGeneralData();
+
+        CoordinateTypeDAO coordinateTypeDAO = new CoordinateTypeDAO(context);
+        EdgeTypeDAO edgeTypeDAO = new EdgeTypeDAO(context);
+        RoomTypeDAO roomTypeDAO = new RoomTypeDAO(context);
+        CoordinateDAO coordinateDAO = new CoordinateDAO(context);
+        EdgeDAO edgeDAO = new EdgeDAO(context);
+        StreetDAO streetDAO = new StreetDAO(context);
+        BuildingDAO buildingDAO = new BuildingDAO(context);
+        RoomDAO roomDAO = new RoomDAO(context);
+        PhotoDAO photoDAO = new PhotoDAO(context);
+        BuildingPhotoDAO buildingPhotoDAO = new BuildingPhotoDAO(context);
+        RoomPhotoDAO roomPhotoDAO = new RoomPhotoDAO(context);
+        BuildingFloorOverlayDAO buildingFloorOverlayDAO = new BuildingFloorOverlayDAO(context);
+        EventCreatorDAO eventCreatorDAO = new EventCreatorDAO(context);
+        EventDAO eventDAO = new EventDAO(context);
+        EventScheduleDAO eventScheduleDAO = new EventScheduleDAO(context);
+        EventCreatorAppointmentDAO eventCreatorAppointmentDAO = new EventCreatorAppointmentDAO(context);
+
+        for (int i = 0; i < generalData.getCoordinateTypes().size(); i++) {
+            coordinateTypeDAO.create(generalData.getCoordinateType(i));
+        }
+        for (int i = 0; i < generalData.getEdgeTypes().size(); i++) {
+            edgeTypeDAO.create(generalData.getEdgeType(i));
+        }
+        for (int i = 0; i < generalData.getRoomTypes().size(); i++) {
+            roomTypeDAO.create(generalData.getRoomType(i));
+        }
+        for (int i = 0; i < generalData.getCoordinates().size(); i++) {
+            coordinateDAO.create(generalData.getCoordinate(i));
+        }
+        for (int i = 0; i < generalData.getEdges().size(); i++) {
+            edgeDAO.create(generalData.getEdge(i));
+        }
+        for (int i = 0; i < generalData.getStreets().size(); i++) {
+            streetDAO.create(generalData.getStreet(i));
+        }
+        for (int i = 0; i < generalData.getBuildings().size(); i++) {
+            buildingDAO.create(generalData.getBuilding(i));
+        }
+        for (int i = 0; i < generalData.getRooms().size(); i++) {
+            roomDAO.create(generalData.getRoom(i));
+        }
+        for (int i = 0; i < generalData.getPhotos().size(); i++) {
+            photoDAO.create(generalData.getPhoto(i));
+        }
+        for (int i = 0; i < generalData.getBuildingPhotos().size(); i++) {
+            buildingPhotoDAO.create(generalData.getBuildingPhoto(i));
+        }
+        for (int i = 0; i < generalData.getRoomPhotos().size(); i++) {
+            roomPhotoDAO.create(generalData.getRoomPhoto(i));
+        }
+        for (int i = 0; i < generalData.getBuildingFloorOverlays().size(); i++) {
+            buildingFloorOverlayDAO.create(generalData.getBuildingFloorOverlay(i));
+        }
+        for (int i = 0; i < generalData.getEventCreators().size(); i++) {
+            eventCreatorDAO.create(generalData.getEventCreator(i));
+        }
+        for (int i = 0; i < generalData.getEvents().size(); i++) {
+            eventDAO.create(generalData.getEvent(i));
+        }
+        for (int i = 0; i < generalData.getEventSchedules().size(); i++) {
+            eventScheduleDAO.create(generalData.getEventSchedule(i));
+        }
+        for (int i = 0; i < generalData.getEventCreatorAppointments().size(); i++) {
+            eventCreatorAppointmentDAO.create(generalData.getEventCreatorAppointment(i));
+        }
+
+        saveLastSyncDate(new Date(), syncTypes.GENERAL);
+    }
+
+    public void saveLastSyncDate(Date lastSyncDate, syncTypes type) {
         sPref = context.getSharedPreferences(Constants.SYNC, MODE_PRIVATE);
         SharedPreferences.Editor ed = sPref.edit();
-        ed.putString(Constants.LAST + Constants.TYPES + Constants.SYNC_DATE, com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(lastSyncDate));
-        ed.putString(Constants.LAST + Constants.MAP_UNITS + Constants.SYNC_DATE, com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(lastSyncDate));
-        ed.putString(Constants.LAST + Constants.EVENTS + Constants.SYNC_DATE, com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(lastSyncDate));
+
+        switch (type) {
+            case TYPES:
+                ed.putString(Constants.LAST + Constants.TYPES + Constants.SYNC_DATE, com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(lastSyncDate));
+                break;
+            case MAP_UNITS:
+                ed.putString(Constants.LAST + Constants.MAP_UNITS + Constants.SYNC_DATE, com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(lastSyncDate));
+                break;
+            case EVENTS:
+                ed.putString(Constants.LAST + Constants.EVENTS + Constants.SYNC_DATE, com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(lastSyncDate));
+                break;
+            case ASSIGNMENTS:
+                ed.putString(Constants.LAST + Constants.ASSIGNMENTS + Constants.SYNC_DATE, com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(lastSyncDate));
+                break;
+            case GENERAL:
+                ed.putString(Constants.LAST + Constants.TYPES + Constants.SYNC_DATE, com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(lastSyncDate));
+                ed.putString(Constants.LAST + Constants.MAP_UNITS + Constants.SYNC_DATE, com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(lastSyncDate));
+                ed.putString(Constants.LAST + Constants.EVENTS + Constants.SYNC_DATE, com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(lastSyncDate));
+                ed.putString(Constants.LAST + Constants.ASSIGNMENTS + Constants.SYNC_DATE, com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(lastSyncDate));
+                ed.putString(Constants.LAST + Constants.GENERAL + Constants.SYNC_DATE, com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(lastSyncDate));
+            default:
+                ed.putString(Constants.LAST + Constants.GENERAL + Constants.SYNC_DATE, com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(lastSyncDate));
+                break;
+        }
+
         ed.apply();
     }
 
@@ -417,8 +549,11 @@ public class DatabaseSync extends IntentService {
             case EVENTS:
                 lastSyncDate = sPref.getString(Constants.LAST + Constants.EVENTS + Constants.SYNC_DATE, "");
                 break;
+            case ASSIGNMENTS:
+                lastSyncDate = sPref.getString(Constants.LAST + Constants.ASSIGNMENTS + Constants.SYNC_DATE, "");
+                break;
             default:
-                lastSyncDate = sPref.getString(Constants.LAST + Constants.TYPES + Constants.SYNC_DATE, "");
+                lastSyncDate = Constants.DEFAULT_SYNC_DATE;
                 break;
         }
 
