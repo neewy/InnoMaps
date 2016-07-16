@@ -526,6 +526,7 @@ public class DatabaseSync extends IntentService {
                 ed.putString(Constants.LAST + Constants.EVENTS + Constants.SYNC_DATE, com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(lastSyncDate));
                 ed.putString(Constants.LAST + Constants.ASSIGNMENTS + Constants.SYNC_DATE, com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(lastSyncDate));
                 ed.putString(Constants.LAST + Constants.GENERAL + Constants.SYNC_DATE, com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(lastSyncDate));
+                break;
             default:
                 ed.putString(Constants.LAST + Constants.GENERAL + Constants.SYNC_DATE, com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(lastSyncDate));
                 break;
