@@ -14,7 +14,6 @@ import com.innopolis.maps.innomaps.db.DatabaseManager;
 import com.innopolis.maps.innomaps.db.DatabaseSync;
 import com.innopolis.maps.innomaps.utils.AnalyticsTrackers;
 
-import java.text.ParseException;
 import java.util.Date;
 
 
