@@ -432,6 +432,7 @@ public class DatabaseSync extends IntentService {
     }
 
     public void performGeneralSyncWithServer() {
+        networkController = new NetworkController();
         GeneralSync generalData = networkController.getGeneralData();
 
         CoordinateTypeDAO coordinateTypeDAO = new CoordinateTypeDAO(context);

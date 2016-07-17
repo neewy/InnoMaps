@@ -87,13 +87,9 @@ public class MainActivity extends MainActivityLogic
 
     void firstDatabaseSync() {
         DatabaseSync databaseSync = new DatabaseSync(this.getApplicationContext());
-        try {
-            databaseSync.performSyncWithServer();
-            databaseSync.saveLastSyncDate(new Date(), DatabaseSync.syncTypes.GENERAL);
-            Log.d(Constants.SYNC, Constants.SYNC_FINISHED_ON + com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(new Date()));
-        } catch (ParseException e) {
-            Log.e(com.innopolis.maps.innomaps.network.Constants.LOG, e.getMessage(), e.fillInStackTrace());
-        }
+        databaseSync.performGeneralSyncWithServer();
+        databaseSync.saveLastSyncDate(new Date(), DatabaseSync.syncTypes.GENERAL);
+        Log.d(Constants.SYNC, Constants.SYNC_FINISHED_ON + com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(new Date()));
     }
 
 }

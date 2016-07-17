@@ -2,6 +2,8 @@ package com.innopolis.maps.innomaps;
 
 import android.test.AndroidTestCase;
 
+import com.innopolis.maps.innomaps.db.Constants;
+import com.innopolis.maps.innomaps.db.DatabaseSync;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingFloorOverlayDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingPhotoDAO;
@@ -41,6 +43,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -49,15 +52,17 @@ import java.util.List;
 public class GeneralSyncTest extends AndroidTestCase {
 
     NetworkController networkController;
+    DatabaseSync databaseSync;
 
     @Before
     public void setUp() throws Exception {
         networkController = new NetworkController();
+        databaseSync = new DatabaseSync(this.getContext());
     }
 
     @Test
     public void testGeneralDataSync() throws ParseException {
-        GeneralSync generalData = networkController.getGeneralData();
+        databaseSync.saveLastSyncDate(com.innopolis.maps.innomaps.network.Constants.serverDateFormat.parse(Constants.DEFAULT_SYNC_DATE), DatabaseSync.syncTypes.GENERAL);
 
         CoordinateTypeDAO coordinateTypeDAO = new CoordinateTypeDAO(this.getContext());
         EdgeTypeDAO edgeTypeDAO = new EdgeTypeDAO(this.getContext());
@@ -76,54 +81,8 @@ public class GeneralSyncTest extends AndroidTestCase {
         EventScheduleDAO eventScheduleDAO = new EventScheduleDAO(this.getContext());
         EventCreatorAppointmentDAO eventCreatorAppointmentDAO = new EventCreatorAppointmentDAO(this.getContext());
 
-        for (int i = 0; i < generalData.getCoordinateTypes().size(); i++) {
-            coordinateTypeDAO.create(generalData.getCoordinateType(i));
-        }
-        for (int i = 0; i < generalData.getEdgeTypes().size(); i++) {
-            edgeTypeDAO.create(generalData.getEdgeType(i));
-        }
-        for (int i = 0; i < generalData.getRoomTypes().size(); i++) {
-            roomTypeDAO.create(generalData.getRoomType(i));
-        }
-        for (int i = 0; i < generalData.getCoordinates().size(); i++) {
-            coordinateDAO.create(generalData.getCoordinate(i));
-        }
-        for (int i = 0; i < generalData.getEdges().size(); i++) {
-            edgeDAO.create(generalData.getEdge(i));
-        }
-        for (int i = 0; i < generalData.getStreets().size(); i++) {
-            streetDAO.create(generalData.getStreet(i));
-        }
-        for (int i = 0; i < generalData.getBuildings().size(); i++) {
-            buildingDAO.create(generalData.getBuilding(i));
-        }
-        for (int i = 0; i < generalData.getRooms().size(); i++) {
-            roomDAO.create(generalData.getRoom(i));
-        }
-        for (int i = 0; i < generalData.getPhotos().size(); i++) {
-            photoDAO.create(generalData.getPhoto(i));
-        }
-        for (int i = 0; i < generalData.getBuildingPhotos().size(); i++) {
-            buildingPhotoDAO.create(generalData.getBuildingPhoto(i));
-        }
-        for (int i = 0; i < generalData.getRoomPhotos().size(); i++) {
-            roomPhotoDAO.create(generalData.getRoomPhoto(i));
-        }
-        for (int i = 0; i < generalData.getBuildingFloorOverlays().size(); i++) {
-            buildingFloorOverlayDAO.create(generalData.getBuildingFloorOverlay(i));
-        }
-        for (int i = 0; i < generalData.getEventCreators().size(); i++) {
-            eventCreatorDAO.create(generalData.getEventCreator(i));
-        }
-        for (int i = 0; i < generalData.getEvents().size(); i++) {
-            eventDAO.create(generalData.getEvent(i));
-        }
-        for (int i = 0; i < generalData.getEventSchedules().size(); i++) {
-            eventScheduleDAO.create(generalData.getEventSchedule(i));
-        }
-        for (int i = 0; i < generalData.getEventCreatorAppointments().size(); i++) {
-            eventCreatorAppointmentDAO.create(generalData.getEventCreatorAppointment(i));
-        }
+        databaseSync.performGeneralSyncWithServer();
+        databaseSync.saveLastSyncDate(new Date(), DatabaseSync.syncTypes.GENERAL);
 
         GeneralSync dataFromDatabase;
         GeneralSync.GeneralSyncBuilder generalSyncBuilder = new GeneralSync.GeneralSyncBuilder();
