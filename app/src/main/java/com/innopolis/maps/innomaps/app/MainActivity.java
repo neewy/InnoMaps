@@ -79,7 +79,8 @@ public class MainActivity extends MainActivityLogic
             ed.putString(Constants.LAST + Constants.GENERAL + Constants.SYNC_DATE, Constants.DEFAULT_SYNC_DATE);
             ed.apply();
 
-            // TODO: uncomment or move to splash screen: firstDatabaseSync();
+            // TODO: move first sync on whole forFirstRun method to activity where will be message like "Please, wait until the data will be loaded"
+            firstDatabaseSync();
             // using the following line to edit/commit prefs
             prefs.edit().putBoolean("firstrun", false).apply();
         }
