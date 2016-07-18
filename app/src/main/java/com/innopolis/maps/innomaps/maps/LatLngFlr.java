@@ -37,24 +37,25 @@ public class LatLngFlr extends LatLng {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof LatLngFlr))
+            return false;
+        if (!super.equals(o))
+            return false;
+
+        LatLngFlr latLngFlr = (LatLngFlr) o;
+
+        return getFloor() == latLngFlr.getFloor();
+
+    }
+
+    @Override
     public int hashCode() {
         int result = super.hashCode();
         result = 31 * result + getFloor();
         return result;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        } else if (!(o instanceof LatLngFlr)) {
-            return false;
-        } else {
-            LatLngFlr var2 = (LatLngFlr) o;
-            return Double.doubleToLongBits(getLatitude()) == Double.doubleToLongBits(var2.getLatitude()) &&
-                    Double.doubleToLongBits(getLongitude()) == Double.doubleToLongBits(var2.getLongitude()) &&
-                    getFloor() == var2.getFloor();
-        }
     }
 
     @Override
