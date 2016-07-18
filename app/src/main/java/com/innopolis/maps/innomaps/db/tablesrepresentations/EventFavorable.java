@@ -1,6 +1,5 @@
 package com.innopolis.maps.innomaps.db.tablesrepresentations;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.innopolis.maps.innomaps.network.Constants;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -9,10 +8,11 @@ import java.text.ParseException;
 import java.util.Date;
 
 /**
- * Created by alnedorezov on 7/6/16.
+ * Created by alnedorezov on 7/19/16.
  */
+
 @DatabaseTable(tableName = "Events")
-public class Event {
+public class EventFavorable {
     @DatabaseField(generatedId = true, unique = true)
     private int id;
     @DatabaseField
@@ -25,27 +25,41 @@ public class Event {
     private String gcals_event_id; // Google calendar's event id or null
     @DatabaseField
     private Date modified = null;
+    @DatabaseField
+    private boolean favourite;
 
-    public Event(int id, String name, String description, String link, String gcals_event_id, String modifiedStr) throws ParseException {
+    public EventFavorable(int id, String name, String description, String link, String gcals_event_id, String modifiedStr, boolean favourite) throws ParseException {
         this.id = id;
         this.name = name;
         this.description = description;
         this.link = link;
         this.gcals_event_id = gcals_event_id;
         this.modified = Constants.serverDateFormat.parse(modifiedStr);
+        this.favourite = favourite;
     }
 
-    public Event(int id, String name, String description, String link, String gcals_event_id, Date modified) {
+    public EventFavorable(int id, String name, String description, String link, String gcals_event_id, Date modified, boolean favourite) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.link = link;
         this.gcals_event_id = gcals_event_id;
         this.modified = modified;
+        this.favourite = favourite;
+    }
+
+    public EventFavorable(Event event, boolean favourite) {
+        this.id = event.getId();
+        this.name = event.getName();
+        this.description = event.getDescription();
+        this.link = event.getLink();
+        this.gcals_event_id = event.getGcals_event_id();
+        this.modified = event.getModifiedDate();
+        this.favourite = favourite;
     }
 
     // For deserialization with Jackson
-    public Event() {
+    public EventFavorable() {
         // all persisted classes must define a no-arg constructor with at least package visibility
     }
 
@@ -69,35 +83,36 @@ public class Event {
         return gcals_event_id;
     }
 
-    public String getModified() {
-        return Constants.serverDateFormat.format(modified);
+    public Date getModified() {
+        return modified;
     }
 
-    @JsonIgnore
-    public Date getModifiedDate() {
-        return modified;
+    public boolean isFavourite() {
+        return favourite;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o)
             return true;
-        if (!(o instanceof Event))
+        if (!(o instanceof EventFavorable))
             return false;
 
-        Event event = (Event) o;
+        EventFavorable that = (EventFavorable) o;
 
-        if (getId() != event.getId())
+        if (getId() != that.getId())
             return false;
-        if (getName() != null ? !getName().equals(event.getName()) : event.getName() != null)
+        if (isFavourite() != that.isFavourite())
             return false;
-        if (getDescription() != null ? !getDescription().equals(event.getDescription()) : event.getDescription() != null)
+        if (getName() != null ? !getName().equals(that.getName()) : that.getName() != null)
             return false;
-        if (getLink() != null ? !getLink().equals(event.getLink()) : event.getLink() != null)
+        if (getDescription() != null ? !getDescription().equals(that.getDescription()) : that.getDescription() != null)
             return false;
-        if (getGcals_event_id() != null ? !getGcals_event_id().equals(event.getGcals_event_id()) : event.getGcals_event_id() != null)
+        if (getLink() != null ? !getLink().equals(that.getLink()) : that.getLink() != null)
             return false;
-        return getModified() != null ? getModified().equals(event.getModified()) : event.getModified() == null;
+        if (getGcals_event_id() != null ? !getGcals_event_id().equals(that.getGcals_event_id()) : that.getGcals_event_id() != null)
+            return false;
+        return getModified() != null ? getModified().equals(that.getModified()) : that.getModified() == null;
 
     }
 
@@ -109,6 +124,7 @@ public class Event {
         result = 31 * result + (getLink() != null ? getLink().hashCode() : 0);
         result = 31 * result + (getGcals_event_id() != null ? getGcals_event_id().hashCode() : 0);
         result = 31 * result + (getModified() != null ? getModified().hashCode() : 0);
+        result = 31 * result + (isFavourite() ? 1 : 0);
         return result;
     }
 }

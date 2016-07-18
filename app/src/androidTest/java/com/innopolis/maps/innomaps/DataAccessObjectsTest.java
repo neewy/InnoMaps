@@ -28,6 +28,7 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.EdgeType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Event;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreator;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreatorAppointment;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventFavorable;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventSchedule;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Photo;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
@@ -39,6 +40,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.text.ParseException;
+import java.util.List;
 
 /**
  * Created by alnedorezov on 7/12/16.
@@ -208,16 +210,28 @@ public class DataAccessObjectsTest extends AndroidTestCase {
     public void testWritingNewEventDataToMobileDB() throws ParseException {
         EventDAO eventDAO = new EventDAO(this.getContext());
 
-        Event eventFromMobileDatabaseWithMaxId;
+        EventFavorable eventFromMobileDatabaseWithMaxId;
 
         Event newEvent = new Event(1, "Poedanie Vafelek Na Skorost", "you will love it", "", null, modifiedDateTime);
         eventDAO.create(newEvent);
 
-        eventFromMobileDatabaseWithMaxId = (Event) eventDAO.getObjectWithMaxId();
+        eventFromMobileDatabaseWithMaxId = (EventFavorable) eventDAO.getObjectWithMaxId();
+        EventFavorable newFavourableEvent = new EventFavorable(newEvent, false);
 
-        assertEquals(newEvent, eventFromMobileDatabaseWithMaxId);
-        eventDAO.delete(newEvent);
-        assertFalse(eventDAO.findAll().size() > 0 && newEvent == eventDAO.getObjectWithMaxId());
+        assertEquals(newFavourableEvent, eventFromMobileDatabaseWithMaxId);
+        eventDAO.delete(newFavourableEvent);
+        assertFalse(eventDAO.findAll().size() > 0 && newFavourableEvent == eventDAO.getObjectWithMaxId());
+
+        List<EventFavorable> favorableEvents = (List<EventFavorable>) eventDAO.findAll();
+
+        newFavourableEvent = new EventFavorable(2, "Poedanie Vafelek Na Skorost", "you will love it", "", null, modifiedDateTime, true);
+        eventDAO.create(newFavourableEvent);
+
+        eventFromMobileDatabaseWithMaxId = (EventFavorable) eventDAO.getObjectWithMaxId();
+
+        assertEquals(newFavourableEvent, eventFromMobileDatabaseWithMaxId);
+        eventDAO.delete(newFavourableEvent);
+        assertFalse(eventDAO.findAll().size() > 0 && newFavourableEvent == eventDAO.getObjectWithMaxId());
     }
 
     @Test

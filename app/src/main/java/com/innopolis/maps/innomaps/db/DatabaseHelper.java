@@ -14,6 +14,7 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.EdgeType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Event;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreator;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreatorAppointment;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventFavorable;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventSchedule;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Photo;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
@@ -54,7 +55,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private Dao<BuildingPhoto, Integer> buildingPhotoDao = null;
     private Dao<RoomPhoto, Integer> roomPhotoDao = null;
     private Dao<EventCreator, Integer> eventCreatorDao = null;
-    private Dao<Event, Integer> eventDao = null;
+    private Dao<EventFavorable, Integer> eventDao = null;
     private Dao<EventSchedule, Integer> eventScheduleDao = null;
     private Dao<BuildingFloorOverlay, Integer> buildingFloorOverlayDao = null;
     private Dao<EventCreatorAppointment, Integer> eventCreatorAppointmentDao = null;
@@ -84,7 +85,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable(connectionSource, BuildingPhoto.class);
             TableUtils.createTable(connectionSource, RoomPhoto.class);
             TableUtils.createTable(connectionSource, EventCreator.class);
-            TableUtils.createTable(connectionSource, Event.class);
+            TableUtils.createTable(connectionSource, EventFavorable.class);
             TableUtils.createTable(connectionSource, EventSchedule.class);
             TableUtils.createTable(connectionSource, BuildingFloorOverlay.class);
             TableUtils.createTable(connectionSource, EventCreatorAppointment.class);
@@ -105,7 +106,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.dropTable(connectionSource, EventCreatorAppointment.class, true);
             TableUtils.dropTable(connectionSource, BuildingFloorOverlay.class, true);
             TableUtils.dropTable(connectionSource, EventSchedule.class, true);
-            TableUtils.dropTable(connectionSource, Event.class, true);
+            TableUtils.dropTable(connectionSource, EventFavorable.class, true);
             TableUtils.dropTable(connectionSource, EventCreator.class, true);
             TableUtils.dropTable(connectionSource, RoomPhoto.class, true);
             TableUtils.dropTable(connectionSource, BuildingPhoto.class, true);
@@ -214,9 +215,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         return eventCreatorDao;
     }
 
-    public Dao<Event, Integer> getEventDao() throws SQLException {
+    public Dao<EventFavorable, Integer> getEventDao() throws SQLException {
         if (eventDao == null) {
-            eventDao = getDao(Event.class);
+            eventDao = getDao(EventFavorable.class);
         }
         return eventDao;
     }

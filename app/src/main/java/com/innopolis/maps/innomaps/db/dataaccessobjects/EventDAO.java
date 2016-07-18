@@ -7,9 +7,13 @@ import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.db.DatabaseHelper;
 import com.innopolis.maps.innomaps.db.DatabaseManager;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Event;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventFavorable;
+import com.j256.ormlite.stmt.DeleteBuilder;
+import com.j256.ormlite.stmt.PreparedDelete;
 import com.j256.ormlite.stmt.QueryBuilder;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,9 +34,15 @@ public class EventDAO implements ExtendedCrud {
 
         int index = -1;
 
-        Event event = (Event) item;
+        EventFavorable eventFavorable;
         try {
-            index = helper.getEventDao().create(event);
+            if (item instanceof Event) {
+                Event event = (Event) item;
+                eventFavorable = new EventFavorable(event, false);
+            }
+            else
+                eventFavorable = (EventFavorable) item;
+            index = helper.getEventDao().create(eventFavorable);
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
                     EventDAO.class.getSimpleName());
@@ -46,7 +56,7 @@ public class EventDAO implements ExtendedCrud {
 
         int index = -1;
 
-        Event event = (Event) item;
+        EventFavorable event = (EventFavorable) item;
 
         try {
             helper.getEventDao().update(event);
@@ -63,7 +73,7 @@ public class EventDAO implements ExtendedCrud {
 
         int index = -1;
 
-        Event event = (Event) item;
+        EventFavorable event = (EventFavorable) item;
 
         try {
             helper.getEventDao().delete(event);
@@ -79,7 +89,7 @@ public class EventDAO implements ExtendedCrud {
     @Override
     public Object findById(int id) {
 
-        Event event = null;
+        EventFavorable event = null;
         try {
             event = helper.getEventDao().queryForId(id);
         } catch (SQLException e) {
@@ -92,7 +102,7 @@ public class EventDAO implements ExtendedCrud {
     @Override
     public List<?> findAll() {
 
-        List<Event> items = new ArrayList<>();
+        List<EventFavorable> items = new ArrayList<>();
 
         try {
             items = helper.getEventDao().queryForAll();
@@ -106,9 +116,9 @@ public class EventDAO implements ExtendedCrud {
 
     @Override
     public Object getObjectWithMaxId() {
-        Event event = null;
+        EventFavorable event = null;
         try {
-            QueryBuilder<Event, Integer> qBuilder = helper.getEventDao().queryBuilder();
+            QueryBuilder<EventFavorable, Integer> qBuilder = helper.getEventDao().queryBuilder();
             qBuilder.orderBy("id", false); // false for descending order
             qBuilder.limit(1);
             event = helper.getEventDao().queryForId(qBuilder.query().get(0).getId());
