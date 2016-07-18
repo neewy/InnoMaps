@@ -70,7 +70,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
         try {
-            Log.d(Constants.DB_HELPER_ERROR, Constants.ON_CREATE);
+            Log.d(Constants.DB_HELPER, Constants.ON_CREATE);
             // when tables are created and only then alter table fields that need to be altered
             TableUtils.createTable(connectionSource, CoordinateType.class);
             TableUtils.createTable(connectionSource, EdgeType.class);
@@ -89,7 +89,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable(connectionSource, BuildingFloorOverlay.class);
             TableUtils.createTable(connectionSource, EventCreatorAppointment.class);
         } catch (SQLException e) {
-            Log.d(Constants.DB_HELPER_ERROR, Constants.CANNOT_CREATE_DATABASE, e);
+            Log.d(Constants.DB_HELPER + Constants.UNDERSCORE + Constants.ERROR, Constants.CANNOT_CREATE_DATABASE, e);
         }
     }
 
