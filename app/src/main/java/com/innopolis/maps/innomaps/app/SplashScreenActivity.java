@@ -2,43 +2,77 @@ package com.innopolis.maps.innomaps.app;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.Window;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.innopolis.maps.innomaps.R;
-import com.innopolis.maps.innomaps.utils.Utils;
 
 public class SplashScreenActivity extends Activity {
+
+    private ProgressBar mProgressBar;
+    private TextView text_loading;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Remove the Title Bar
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        // Get the view from splash_screen.xml
-        setContentView(R.layout.splash_screen);
+        new LoadViewTask().execute();
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
+    private class LoadViewTask extends AsyncTask<Void, Integer, Void>
+    {
+        @Override
+        protected void onPreExecute()
+        {
 
-        // TODO: Why do you create database access and preferences only when network is availabale?
-        if (Utils.isNetworkAvailable(SplashScreenActivity.this)) {
-            new com.innopolis.maps.innomaps.database.DBUpdater(SplashScreenActivity.this);
+            requestWindowFeature(Window.FEATURE_NO_TITLE);
+            setContentView(R.layout.splash_screen);
+            mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
+            text_loading = (TextView) findViewById(R.id.text_loading);
+
+            mProgressBar.setMax(100);
+            mProgressBar.setProgress(0);
         }
 
-        long delay = 500;
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // Executed after timer is finished (Opens MainActivity)
-                Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
-                startActivity(intent);
-
-                finish();
+        @Override
+        protected Void doInBackground(Void... params)
+        {
+            try
+            {
+                synchronized (this)
+                {
+                    int counter = 0;
+                    while(counter < 20)
+                    {
+                        this.wait(200);
+                        counter++;
+                        publishProgress(counter*5);
+                    }
+                }
             }
-        }, delay);
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values)
+        {
+            mProgressBar.setProgress(values[0]);
+            text_loading.setText(String.format(getString(R.string.loadingplus), values[0]) + "%");
+
+        }
+
+        @Override
+        protected void onPostExecute(Void result)
+        {
+            Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
+            startActivity(intent);
+
+        }
     }
 }

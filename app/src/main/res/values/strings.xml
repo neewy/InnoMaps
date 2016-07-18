@@ -129,6 +129,8 @@
     <string name="authenticating">Authenticating...</string>
 
     <string name="auth">Authentication</string>
+    <string name="loading">Loading...</string>
+    <string name="loadingplus">Loading...%s</string>
 
     <!--     For network    -->
 
