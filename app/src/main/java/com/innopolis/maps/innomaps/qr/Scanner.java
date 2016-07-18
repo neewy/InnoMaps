@@ -15,6 +15,7 @@ import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.database.SQLQueries;
+import com.innopolis.maps.innomaps.maps.LatLngFlr;
 import com.innopolis.maps.innomaps.maps.MapsFragment;
 import com.innopolis.maps.innomaps.network.Constants;
 
@@ -81,8 +82,8 @@ public class Scanner extends AppCompatActivity implements ZXingScannerView.Resul
             String longitude = cursor.getString(cursor.getColumnIndex(LONGITUDE));
             int floorSource = Integer.parseInt(cursor.getString(cursor.getColumnIndex(FLOOR)).substring(0, 1));
             int floorDestination = 1;
-            LatLng destination = new LatLng(destinationLatitude, destinationLongitude);
-            cursor = database.rawQuery(SQLQueries.selectFloorForCoordinate(destination), null);
+            LatLng destinationLatLng = new LatLng(destinationLatitude, destinationLongitude);
+            cursor = database.rawQuery(SQLQueries.selectFloorForCoordinate(destinationLatLng), null);
             if (cursor.moveToFirst())
                 floorDestination = Integer.parseInt(cursor.getString(cursor.getColumnIndex(FLOOR)).substring(0, 1));
             else {
@@ -91,10 +92,14 @@ public class Scanner extends AppCompatActivity implements ZXingScannerView.Resul
                 // Since, as I hope, we will rewrite app and DB to support 3D coordinates and such floor detection won't be needed
                 // I will leave it as it is. But honestly, I understand that everything here holds on a hair.
                 Log.e(LOG, String.format("%1$s %2$s: %3$s, %4$s: %5$s", Constants.FLOOR_CALCULATION_ERROR, Constants.LATITUDE,
-                        destination.latitude, Constants.LONGITUDE, destination.longitude));
+                        destinationLatLng.latitude, Constants.LONGITUDE, destinationLatLng.longitude));
             }
             cursor.close();
-            maps.showRoute(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)), floorSource, destination, floorDestination);
+
+            LatLngFlr source = new LatLngFlr(Double.parseDouble(latitude), Double.parseDouble(longitude), floorSource);
+            LatLngFlr destination = new LatLngFlr(destinationLatLng.latitude, destinationLatLng.longitude, floorDestination);
+
+            maps.showRoute(source, destination);
             maps.currentDialog.cancel();
             this.finish();
         } else {

@@ -73,7 +73,6 @@ import com.innopolis.maps.innomaps.qr.Scanner;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -496,24 +495,13 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         scrollView.setVisibility(View.GONE);
     }
 
-    private void getAndDrawPath(LatLng source, int sourceFloor, LatLng destination, int targetFloor) {
-        FileInputStream inputStream = null;
-        try {
-            // TODO: KILL!!! +
-            // :D
-            inputStream = getContext().openFileInput(getContext().getString(R.string.graph_filename));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (inputStream == null) {
-            return;
-        }
+    private void getAndDrawPath(LatLngFlr source, LatLngFlr destination) {
         ArrayList<LatLngGraphVertex> path = new ArrayList<>();
         NetworkController networkController = new NetworkController();
 
         // TODO: Remove temporary fix when app will be fully supporting 3D coordinates. Made path of type ArrayList<LatLngFlrGraphVertex>
-        ArrayList<LatLngFlrGraphVertex> pathWithFloors = (ArrayList<LatLngFlrGraphVertex>) networkController.findShortestPath(source.latitude, source.longitude,
-                sourceFloor, destination.latitude, destination.longitude, targetFloor);
+        ArrayList<LatLngFlrGraphVertex> pathWithFloors = (ArrayList<LatLngFlrGraphVertex>) networkController.findShortestPath(source.getLatitude(), source.getLongitude(),
+                source.getFloor(), destination.getLatitude(), destination.getLongitude(), destination.getFloor());
         for (int i = 0; i < pathWithFloors.size(); i++) {
             path.add(new LatLngGraphVertex(pathWithFloors.get(i).getVertex().getLatLng(), pathWithFloors.get(i).getVertex().getFloor(), pathWithFloors.get(i).getGraphVertexType()));
         }
@@ -672,8 +660,8 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         cursor.close();
     }
 
-    public void showRoute(LatLng source, int sourceFloor, LatLng destination, int targetFloor) {
-        getAndDrawPath(source, sourceFloor, destination, targetFloor);
+    public void showRoute(LatLngFlr source, LatLngFlr destination) {
+        getAndDrawPath(source, destination);
     }
 
     private void sortClearAdd(int num) {
@@ -681,7 +669,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         filterList.add(num);
     }
 
-    public void allowSelection(final Dialog dialog, final LatLng destination) {
+    public void allowSelection(final Dialog dialog, final LatLng destinationLatLng) {
         // TODO: this is so wrong!
         dialog.hide();
 
@@ -743,7 +731,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                                 closest.latitude, Constants.LONGITUDE, closest.longitude));
                     }
                     cursor.close();
-                    cursor = database.rawQuery(SQLQueries.selectFloorForCoordinate(destination), null);
+                    cursor = database.rawQuery(SQLQueries.selectFloorForCoordinate(destinationLatLng), null);
                     if (cursor.moveToFirst())
                         floorDestination = Integer.parseInt(cursor.getString(cursor.getColumnIndex(FLOOR)).substring(0, 1));
                     else {
@@ -752,11 +740,14 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                         // Since, as I hope, we will rewrite app and DB to support 3D coordinates and such floor detection won't be needed
                         // I will leave it as it is. But honestly, I understand that everything here holds on a hair.
                         Log.e(LOG, String.format("%1$s %2$s: %3$s, %4$s: %5$s", Constants.FLOOR_CALCULATION_ERROR, Constants.LATITUDE,
-                                destination.latitude, Constants.LONGITUDE, destination.longitude));
+                                destinationLatLng.latitude, Constants.LONGITUDE, destinationLatLng.longitude));
                     }
                     cursor.close();
 
-                    showRoute(closest, floorSource, destination, floorDestination);
+                    LatLngFlr source = new LatLngFlr(closest.latitude, closest.longitude, floorSource);
+                    LatLngFlr destination = new LatLngFlr(destinationLatLng.latitude, destinationLatLng.longitude, floorDestination);
+
+                    showRoute(source, destination);
                     dialog.cancel();
                 } else {
                     Toast.makeText(getContext(), R.string.marker_in_university, Toast.LENGTH_SHORT).show();

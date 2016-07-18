@@ -23,6 +23,7 @@ import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.database.SQLQueries;
+import com.innopolis.maps.innomaps.maps.LatLngFlr;
 import com.innopolis.maps.innomaps.maps.MapsFragment;
 import com.innopolis.maps.innomaps.utils.Utils;
 
@@ -209,15 +210,17 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
                             displayMapsFragment();
                         }
 
-                        LatLng destination = new LatLng(Double.parseDouble(latitudeDest), Double.parseDouble(longitudeDest));
-                        Cursor dbCursor = database.rawQuery(SQLQueries.selectFloorForCoordinate(destination), null);
+                        LatLng destinationLatLng = new LatLng(Double.parseDouble(latitudeDest), Double.parseDouble(longitudeDest));
+                        Cursor dbCursor = database.rawQuery(SQLQueries.selectFloorForCoordinate(destinationLatLng), null);
                         int floorDestination = 1;
                         if (dbCursor.moveToFirst())
                             floorDestination = Integer.parseInt(dbCursor.getString(dbCursor.getColumnIndex(FLOOR)).substring(0, 1));
                         dbCursor.close();
 
-                        maps.showRoute(new LatLng(Double.parseDouble(latitudeSource), Double.parseDouble(longitudeSource)),
-                                floorSource, destination, floorDestination);
+                        LatLngFlr source = new LatLngFlr(Double.parseDouble(latitudeSource), Double.parseDouble(longitudeSource), floorSource);
+                        LatLngFlr destination = new LatLngFlr(destinationLatLng.latitude, destinationLatLng.longitude, floorDestination);
+
+                        maps.showRoute(source, destination);
 
                         MapFragmentAskForRouteDialog.this.getDialog().cancel();
                     }
