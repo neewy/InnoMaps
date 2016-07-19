@@ -275,7 +275,7 @@ public class BottomSheet extends Fragment {
         if (title != null && !"".equals(title) && firstTimeFlag) {
             boolean found = false;
             for (SearchableItem item : ((MainActivity) getActivity()).searchItems) {
-                if (item.getName().toLowerCase().contains(title.toLowerCase()) && item.getCoordinate().equals(latLng)) {
+                if (item.getName().toLowerCase().contains(title.toLowerCase()) && item.getCoordinate().getLatLng().equals(latLng)) {
                     inSearchBottomList(item, title);
                     scrollView.setVisibility(View.VISIBLE);
                     found = true;

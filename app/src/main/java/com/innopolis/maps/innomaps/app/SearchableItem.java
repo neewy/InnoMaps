@@ -3,6 +3,7 @@ package com.innopolis.maps.innomaps.app;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.common.base.Predicate;
 import com.innopolis.maps.innomaps.events.Event;
+import com.innopolis.maps.innomaps.maps.LatLngFlr;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +29,7 @@ public class SearchableItem implements Comparable<SearchableItem> {
     public String building;
     public String floor;
     public String room;
-    public LatLng coordinate;
+    public LatLngFlr coordinate;
 
     public SearchableItem() {
     }
@@ -81,11 +82,11 @@ public class SearchableItem implements Comparable<SearchableItem> {
         this.room = room;
     }
 
-    public LatLng getCoordinate() {
+    public LatLngFlr getCoordinate() {
         return coordinate;
     }
 
-    public void setCoordinate(LatLng coordinate) {
+    public void setCoordinate(LatLngFlr coordinate) {
         this.coordinate = coordinate;
     }
 
@@ -103,12 +104,11 @@ public class SearchableItem implements Comparable<SearchableItem> {
             searchableItem.setBuilding(event.getBuilding());
             searchableItem.setFloor(event.getFloor());
             searchableItem.setRoom(event.getRoom());
-            searchableItem.setCoordinate(new LatLng(Double.parseDouble(event.getLatitude()), Double.parseDouble(event.getLongitude())));
+            searchableItem.setCoordinate(new LatLngFlr(Double.parseDouble(event.getLatitude()), Double.parseDouble(event.getLongitude()), Integer.parseInt(event.getFloor().substring(0, 1))));
             items.add(searchableItem);
         }
     }
 
-    // TODO: Extract string constants +
     // Add Rooms
     public static void addPois(List<SearchableItem> items, List<HashMap<String, String>> pois) {
         for (HashMap<String, String> poi : pois) {
@@ -127,7 +127,7 @@ public class SearchableItem implements Comparable<SearchableItem> {
             searchableItem.setBuilding(poi.get(BUILDING));
             searchableItem.setFloor(poi.get(FLOOR));
             searchableItem.setRoom(poi.get(ROOM));
-            searchableItem.setCoordinate(new LatLng(Double.parseDouble(poi.get(LATITUDE)), Double.parseDouble(poi.get(LONGITUDE))));
+            searchableItem.setCoordinate(new LatLngFlr(Double.parseDouble(poi.get(LATITUDE)), Double.parseDouble(poi.get(LONGITUDE)), Integer.parseInt(poi.get(FLOOR).substring(0, 1))));
             items.add(searchableItem);
         }
     }
