@@ -8,12 +8,9 @@ import com.innopolis.maps.innomaps.db.DatabaseHelper;
 import com.innopolis.maps.innomaps.db.DatabaseManager;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Event;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventFavorable;
-import com.j256.ormlite.stmt.DeleteBuilder;
-import com.j256.ormlite.stmt.PreparedDelete;
 import com.j256.ormlite.stmt.QueryBuilder;
 
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,8 +36,7 @@ public class EventDAO implements ExtendedCrud {
             if (item instanceof Event) {
                 Event event = (Event) item;
                 eventFavorable = new EventFavorable(event, false);
-            }
-            else
+            } else
                 eventFavorable = (EventFavorable) item;
             index = helper.getEventDao().create(eventFavorable);
         } catch (SQLException e) {

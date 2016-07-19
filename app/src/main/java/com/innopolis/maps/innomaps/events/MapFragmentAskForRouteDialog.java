@@ -217,10 +217,10 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
                             floorDestination = Integer.parseInt(dbCursor.getString(dbCursor.getColumnIndex(FLOOR)).substring(0, 1));
                         dbCursor.close();
 
-                        LatLngFlr source = new LatLngFlr(Double.parseDouble(latitudeSource), Double.parseDouble(longitudeSource), floorSource);
+                        LatLngFlr start = new LatLngFlr(Double.parseDouble(latitudeSource), Double.parseDouble(longitudeSource), floorSource);
                         LatLngFlr destination = new LatLngFlr(destinationLatLng.latitude, destinationLatLng.longitude, floorDestination);
 
-                        maps.showRoute(source, destination);
+                        maps.showRoute(start, destination);
 
                         MapFragmentAskForRouteDialog.this.getDialog().cancel();
                     }

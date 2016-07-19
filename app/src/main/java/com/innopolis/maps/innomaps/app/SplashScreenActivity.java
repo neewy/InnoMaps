@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.view.Window;
 
 import com.innopolis.maps.innomaps.R;
-import com.innopolis.maps.innomaps.utils.Utils;
 
 public class SplashScreenActivity extends Activity {
 

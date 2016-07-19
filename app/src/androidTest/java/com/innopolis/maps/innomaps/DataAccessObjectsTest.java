@@ -52,7 +52,7 @@ public class DataAccessObjectsTest extends AndroidTestCase {
 
     @Before
     public void setUp() throws Exception {
-        // If tests do not pass, increment DATABASE_VERSION in db/Constants.java
+        // If tests do not pass, increment DATABASE_VERSION in db/Constants.java or delete current db version through adb shell
         modifiedDateTime = "2015-01-02 03:04:05.6";
         universityDescription = "Specializing in the field " +
                 "of modern information technologies, Innopolis University is not only one of Russia’s youngest universities," +
@@ -221,8 +221,6 @@ public class DataAccessObjectsTest extends AndroidTestCase {
         assertEquals(newFavourableEvent, eventFromMobileDatabaseWithMaxId);
         eventDAO.delete(newFavourableEvent);
         assertFalse(eventDAO.findAll().size() > 0 && newFavourableEvent == eventDAO.getObjectWithMaxId());
-
-        List<EventFavorable> favorableEvents = (List<EventFavorable>) eventDAO.findAll();
 
         newFavourableEvent = new EventFavorable(2, "Poedanie Vafelek Na Skorost", "you will love it", "", null, modifiedDateTime, true);
         eventDAO.create(newFavourableEvent);

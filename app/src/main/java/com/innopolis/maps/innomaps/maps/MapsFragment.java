@@ -71,8 +71,6 @@ import com.innopolis.maps.innomaps.network.Constants;
 import com.innopolis.maps.innomaps.network.NetworkController;
 import com.innopolis.maps.innomaps.qr.Scanner;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;

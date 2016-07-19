@@ -121,11 +121,11 @@ public class MainActivity extends MainActivityLogic
                     while (counter < 25) {
                         this.wait(25);
                         counter++;
-                        publishProgress("" + counter * 4);
+                        publishProgress(Integer.toString(counter * 4));
                     }
                 }
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
             }
             return null;
         }
@@ -150,20 +150,20 @@ public class MainActivity extends MainActivityLogic
 
     @Override
     protected Dialog onCreateDialog(int id) {
-        switch (id) {
-            case Progress_Dialog_Progress:
-
-                progressdialog = new ProgressDialog(MainActivity.this);
-                progressdialog.setMessage("Downloading Data From Server...");
-                progressdialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                progressdialog.setCancelable(false);
-                progressdialog.show();
-                return progressdialog;
-
-            default:
-
-                return null;
+        if (id == Progress_Dialog_Progress) {
+            instantiateProgressDialog();
+            return progressdialog;
+        } else {
+            return null;
         }
+    }
+
+    private void instantiateProgressDialog() {
+        progressdialog = new ProgressDialog(MainActivity.this);
+        progressdialog.setMessage("Downloading Data From Server...");
+        progressdialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressdialog.setCancelable(false);
+        progressdialog.show();
     }
 
 
