@@ -79,7 +79,6 @@ public class MainActivity extends MainActivityLogic
 
         // Do first run stuff here then set 'firstrun' as false
 
-        new FirstRunProgressDialog().execute();
         sPref = getSharedPreferences(Constants.SYNC, MODE_PRIVATE);
         SharedPreferences.Editor ed = sPref.edit();
         ed.putString(Constants.LAST + Constants.TYPES + Constants.SYNC_DATE, Constants.DEFAULT_SYNC_DATE);
@@ -89,11 +88,9 @@ public class MainActivity extends MainActivityLogic
         ed.putString(Constants.LAST + Constants.GENERAL + Constants.SYNC_DATE, Constants.DEFAULT_SYNC_DATE);
         ed.apply();
 
-        // TODO: move first sync on whole forFirstRun method to activity where will be message like "Please, wait until the data will be loaded"
-        firstDatabaseSync();
+
         // using the following line to edit/commit prefs
         prefs.edit().putBoolean("firstrun", false).apply();
-
     }
 
     void firstDatabaseSync() {
@@ -122,7 +119,7 @@ public class MainActivity extends MainActivityLogic
                 synchronized (this) {
                     int counter = 0;
                     while (counter < 25) {
-                        this.wait(100);
+                        this.wait(25);
                         counter++;
                         publishProgress("" + counter * 4);
                     }
@@ -141,6 +138,7 @@ public class MainActivity extends MainActivityLogic
 
         @Override
         protected void onPostExecute(String unused) {
+            firstDatabaseSync();
 
             dismissDialog(Progress_Dialog_Progress);
 
