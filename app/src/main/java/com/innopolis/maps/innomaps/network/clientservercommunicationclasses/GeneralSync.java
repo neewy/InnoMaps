@@ -1,6 +1,7 @@
 package com.innopolis.maps.innomaps.network.clientservercommunicationclasses;
 
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Building;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingAuxiliaryCoordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingFloorOverlay;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingPhoto;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
@@ -40,12 +41,14 @@ public class GeneralSync {
     private List<Event> events;
     private List<EventSchedule> eventSchedules;
     private List<EventCreatorAppointment> eventCreatorAppointments;
+    private List<BuildingAuxiliaryCoordinate> buildingAuxiliaryCoordinates;
 
     private GeneralSync(List<CoordinateType> coordinateTypes, List<EdgeType> edgeTypes, List<RoomType> roomTypes,
                         List<Coordinate> coordinates, List<Edge> edges, List<Street> streets, List<Building> buildings,
                         List<Room> rooms, List<Photo> photos, List<BuildingPhoto> buildingPhotos, List<RoomPhoto> roomPhotos,
                         List<BuildingFloorOverlay> buildingFloorOverlays, List<EventCreator> eventCreators, List<Event> events,
-                        List<EventSchedule> eventSchedules, List<EventCreatorAppointment> eventCreatorAppointments) {
+                        List<EventSchedule> eventSchedules, List<EventCreatorAppointment> eventCreatorAppointments,
+                        List<BuildingAuxiliaryCoordinate> buildingAuxiliaryCoordinates) {
         this.coordinateTypes = coordinateTypes;
         this.edgeTypes = edgeTypes;
         this.roomTypes = roomTypes;
@@ -62,6 +65,7 @@ public class GeneralSync {
         this.events = events;
         this.eventSchedules = eventSchedules;
         this.eventCreatorAppointments = eventCreatorAppointments;
+        this.buildingAuxiliaryCoordinates = buildingAuxiliaryCoordinates;
     }
 
     // For deserialization with Jackson
@@ -86,6 +90,7 @@ public class GeneralSync {
         private List<Event> events;
         private List<EventSchedule> eventSchedules;
         private List<EventCreatorAppointment> eventCreatorAppointments;
+        private List<BuildingAuxiliaryCoordinate> buildingAuxiliaryCoordinates;
 
         public GeneralSyncBuilder() {
             // Empty constructor for builder class
@@ -117,16 +122,20 @@ public class GeneralSync {
             return this;
         }
 
-        public GeneralSyncBuilder setAssignments(List<BuildingPhoto> buildingPhotos, List<RoomPhoto> roomPhotos, List<EventCreatorAppointment> eventCreatorAppointments) {
+        public GeneralSyncBuilder setAssignments(List<BuildingPhoto> buildingPhotos, List<RoomPhoto> roomPhotos,
+                                                 List<EventCreatorAppointment> eventCreatorAppointments,
+                                                 List<BuildingAuxiliaryCoordinate> buildingAuxiliaryCoordinates) {
             this.buildingPhotos = buildingPhotos;
             this.roomPhotos = roomPhotos;
             this.eventCreatorAppointments = eventCreatorAppointments;
+            this.buildingAuxiliaryCoordinates = buildingAuxiliaryCoordinates;
             return this;
         }
 
         public GeneralSync build() {
-            return new GeneralSync(coordinateTypes, edgeTypes, roomTypes, coordinates, edges, streets, buildings, rooms, photos,
-                    buildingPhotos, roomPhotos, buildingFloorOverlays, eventCreators, events, eventSchedules, eventCreatorAppointments);
+            return new GeneralSync(coordinateTypes, edgeTypes, roomTypes, coordinates, edges, streets, buildings,
+                    rooms, photos, buildingPhotos, roomPhotos, buildingFloorOverlays, eventCreators, events,
+                    eventSchedules, eventCreatorAppointments, buildingAuxiliaryCoordinates);
         }
     }
 
@@ -463,5 +472,26 @@ public class GeneralSync {
 
     public List<EventCreatorAppointment> getEventCreatorAppointments() {
         return eventCreatorAppointments;
+    }
+
+
+    public void addBuildingAuxiliaryCoordinate(BuildingAuxiliaryCoordinate buildingAuxiliaryCoordinate) {
+        this.buildingAuxiliaryCoordinates.add(buildingAuxiliaryCoordinate);
+    }
+
+    public void setBuildingAuxiliaryCoordinate(int index, BuildingAuxiliaryCoordinate buildingAuxiliaryCoordinate) {
+        this.buildingAuxiliaryCoordinates.set(index, buildingAuxiliaryCoordinate);
+    }
+
+    public BuildingAuxiliaryCoordinate getBuildingAuxiliaryCoordinate(int index) {
+        return this.buildingAuxiliaryCoordinates.get(index);
+    }
+
+    public void removeBuildingAuxiliaryCoordinate(int index) {
+        this.buildingAuxiliaryCoordinates.remove(index);
+    }
+
+    public List<BuildingAuxiliaryCoordinate> getBuildingAuxiliaryCoordinates() {
+        return buildingAuxiliaryCoordinates;
     }
 }

@@ -41,6 +41,7 @@ public final class Constants {
     public static final String SCHEDULE = "schedule";
     public static final String OVERLAY = "overlay";
     public static final String APPOINTMENT = "appointment";
+    public static final String AUXILIARY_COORDINATE = "auxiliarycoordinate";
     public static final char S_LOWERCASE = 's';
     public static final String CREATED_AFTER_DATE = "createdAfterDate";
     public static final String SHORTEST_PATH_URL = "%1$s://%2$s:%3$s/resources/shortestPath";

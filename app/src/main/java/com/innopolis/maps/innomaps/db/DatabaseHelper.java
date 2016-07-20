@@ -5,13 +5,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Building;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingAuxiliaryCoordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingFloorOverlay;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingPhoto;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.CoordinateType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Edge;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EdgeType;
-import com.innopolis.maps.innomaps.db.tablesrepresentations.Event;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreator;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreatorAppointment;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventFavorable;
@@ -59,6 +59,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private Dao<EventSchedule, Integer> eventScheduleDao = null;
     private Dao<BuildingFloorOverlay, Integer> buildingFloorOverlayDao = null;
     private Dao<EventCreatorAppointment, Integer> eventCreatorAppointmentDao = null;
+    private Dao<BuildingAuxiliaryCoordinate, Integer> buildingAuxiliaryCoordinateDao = null;
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -89,6 +90,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable(connectionSource, EventSchedule.class);
             TableUtils.createTable(connectionSource, BuildingFloorOverlay.class);
             TableUtils.createTable(connectionSource, EventCreatorAppointment.class);
+            TableUtils.createTable(connectionSource, BuildingAuxiliaryCoordinate.class);
         } catch (SQLException e) {
             Log.d(Constants.DB_HELPER + Constants.UNDERSCORE + Constants.ERROR, Constants.CANNOT_CREATE_DATABASE, e);
         }
@@ -103,6 +105,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         try {
             Log.i(DatabaseHelper.class.getName(), Constants.ON_UPGRADE);
 
+            TableUtils.dropTable(connectionSource, BuildingAuxiliaryCoordinate.class, true);
             TableUtils.dropTable(connectionSource, EventCreatorAppointment.class, true);
             TableUtils.dropTable(connectionSource, BuildingFloorOverlay.class, true);
             TableUtils.dropTable(connectionSource, EventSchedule.class, true);
@@ -243,12 +246,20 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         return eventCreatorAppointmentDao;
     }
 
+    public Dao<BuildingAuxiliaryCoordinate, Integer> getBuildingAuxiliaryCoordinateDao() throws SQLException {
+        if (buildingAuxiliaryCoordinateDao == null) {
+            buildingAuxiliaryCoordinateDao = getDao(BuildingAuxiliaryCoordinate.class);
+        }
+        return buildingAuxiliaryCoordinateDao;
+    }
+
     /**
      * Close the database connections and clear any cached DAOs.
      */
     @Override
     public void close() {
         super.close();
+        buildingAuxiliaryCoordinateDao = null;
         eventCreatorAppointmentDao = null;
         buildingFloorOverlayDao = null;
         eventScheduleDao = null;

@@ -4,6 +4,7 @@ import android.test.AndroidTestCase;
 
 import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.db.DatabaseSync;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingAuxiliaryCoordinateDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingFloorOverlayDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingPhotoDAO;
@@ -21,6 +22,7 @@ import com.innopolis.maps.innomaps.db.dataaccessobjects.RoomPhotoDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.RoomTypeDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.StreetDAO;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Building;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingAuxiliaryCoordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingFloorOverlay;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingPhoto;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
@@ -76,6 +78,7 @@ public class DatabaseSyncTest extends AndroidTestCase {
         EventDAO eventDAO = new EventDAO(this.getContext());
         EventScheduleDAO eventScheduleDAO = new EventScheduleDAO(this.getContext());
         EventCreatorAppointmentDAO eventCreatorAppointmentDAO = new EventCreatorAppointmentDAO(this.getContext());
+        BuildingAuxiliaryCoordinateDAO buildingAuxiliaryCoordinateDAO = new BuildingAuxiliaryCoordinateDAO(this.getContext());
         databaseSync.performSyncWithServer();
         databaseSync.saveLastSyncDate(new Date(), DatabaseSync.syncTypes.GENERAL);
 
@@ -87,7 +90,7 @@ public class DatabaseSyncTest extends AndroidTestCase {
                 (List<Building>) buildingDAO.findAll(), (List<Room>) roomDAO.findAll(), (List<Photo>) photoDAO.findAll(), (List<BuildingFloorOverlay>) buildingFloorOverlayDAO.findAll());
         generalSyncBuilder.setEvents((List<EventCreator>) eventCreatorDAO.findAll(), (List<Event>) eventDAO.findAll(), (List<EventSchedule>) eventScheduleDAO.findAll());
         generalSyncBuilder.setAssignments((List<BuildingPhoto>) buildingPhotoDAO.findAll(), (List<RoomPhoto>) roomPhotoDAO.findAll(),
-                (List<EventCreatorAppointment>) eventCreatorAppointmentDAO.findAll());
+                (List<EventCreatorAppointment>) eventCreatorAppointmentDAO.findAll(), (List<BuildingAuxiliaryCoordinate>) buildingAuxiliaryCoordinateDAO.findAll());
         dataFromDatabase = generalSyncBuilder.build();
 
 
@@ -107,5 +110,6 @@ public class DatabaseSyncTest extends AndroidTestCase {
         assertTrue(dataFromDatabase.getBuildingPhotos().size() > 0);
         assertTrue(dataFromDatabase.getRoomPhotos().size() > 0);
         assertTrue(dataFromDatabase.getEventCreatorAppointments().size() > 20);
+        assertTrue(dataFromDatabase.getBuildingAuxiliaryCoordinates().size() >= 187);
     }
 }

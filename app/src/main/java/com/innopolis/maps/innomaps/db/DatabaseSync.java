@@ -9,6 +9,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.innopolis.maps.innomaps.app.MainActivity;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingAuxiliaryCoordinateDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingFloorOverlayDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingPhotoDAO;
@@ -26,6 +27,7 @@ import com.innopolis.maps.innomaps.db.dataaccessobjects.RoomPhotoDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.RoomTypeDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.StreetDAO;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Building;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingAuxiliaryCoordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingFloorOverlay;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingPhoto;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
@@ -269,11 +271,14 @@ public class DatabaseSync extends IntentService {
         BuildingPhotoDAO buildingPhotoDAO = new BuildingPhotoDAO(context);
         RoomPhotoDAO roomPhotoDAO = new RoomPhotoDAO(context);
         EventCreatorAppointmentDAO eventCreatorAppointmentDAO = new EventCreatorAppointmentDAO(context);
+        BuildingAuxiliaryCoordinateDAO buildingAuxiliaryCoordinateDAO = new BuildingAuxiliaryCoordinateDAO(context);
         Date syncDate = loadLastSyncDate(syncTypes.ASSIGNMENTS);
 
         List<BuildingPhoto> buildingPhotos = (List<BuildingPhoto>) networkController.getBuildingPhotosCreatedOnOrAfterDate(syncDate);
         List<RoomPhoto> roomPhotos = (List<RoomPhoto>) networkController.getRoomPhotosCreatedOnOrAfterDate(syncDate);
         List<EventCreatorAppointment> eventCreatorAppointments = (List<EventCreatorAppointment>) networkController.getEventCreatorAppointmentsCreatedOnOrAfterDate(syncDate);
+        List<BuildingAuxiliaryCoordinate> buildingAuxiliaryCoordinates =
+                (List<BuildingAuxiliaryCoordinate>) networkController.getBuildingAuxiliaryCoordinatesCreatedOnOrAfterDate(syncDate);
 
         for (int i = 0; i < buildingPhotos.size(); i++) {
             buildingPhotoDAO.create(buildingPhotos.get(i));
@@ -283,6 +288,9 @@ public class DatabaseSync extends IntentService {
         }
         for (int i = 0; i < eventCreatorAppointments.size(); i++) {
             eventCreatorAppointmentDAO.create(eventCreatorAppointments.get(i));
+        }
+        for (int i = 0; i < buildingAuxiliaryCoordinates.size(); i++) {
+            buildingAuxiliaryCoordinateDAO.create(buildingAuxiliaryCoordinates.get(i));
         }
 
         saveLastSyncDate(new Date(), syncTypes.ASSIGNMENTS);
@@ -451,6 +459,7 @@ public class DatabaseSync extends IntentService {
         EventDAO eventDAO = new EventDAO(context);
         EventScheduleDAO eventScheduleDAO = new EventScheduleDAO(context);
         EventCreatorAppointmentDAO eventCreatorAppointmentDAO = new EventCreatorAppointmentDAO(context);
+        BuildingAuxiliaryCoordinateDAO buildingAuxiliaryCoordinateDAO = new BuildingAuxiliaryCoordinateDAO(context);
 
         for (int i = 0; i < generalData.getCoordinateTypes().size(); i++) {
             coordinateTypeDAO.create(generalData.getCoordinateType(i));
@@ -499,6 +508,9 @@ public class DatabaseSync extends IntentService {
         }
         for (int i = 0; i < generalData.getEventCreatorAppointments().size(); i++) {
             eventCreatorAppointmentDAO.create(generalData.getEventCreatorAppointment(i));
+        }
+        for (int i = 0; i < generalData.getBuildingAuxiliaryCoordinates().size(); i++) {
+            buildingAuxiliaryCoordinateDAO.create(generalData.getBuildingAuxiliaryCoordinate(i));
         }
 
         saveLastSyncDate(new Date(), syncTypes.GENERAL);

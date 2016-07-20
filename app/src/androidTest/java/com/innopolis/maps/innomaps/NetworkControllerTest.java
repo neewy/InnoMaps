@@ -3,6 +3,7 @@ package com.innopolis.maps.innomaps;
 import android.test.AndroidTestCase;
 
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Building;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingAuxiliaryCoordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingFloorOverlay;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingPhoto;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
@@ -230,6 +231,16 @@ public class NetworkControllerTest extends AndroidTestCase {
     }
 
     @Test
+    public void testGetBuildingAuxiliaryCoordinatesCreatedOnOrAfterDate() throws ParseException {
+        BuildingAuxiliaryCoordinate requiredFirstBuildingAuxiliaryCoordinateInList = new BuildingAuxiliaryCoordinate(1, 2, modifiedDateTime);
+
+        Date date = Constants.serverDateFormat.parse(modifiedDateTime);
+        BuildingAuxiliaryCoordinate receivedBuildingAuxiliaryCoordinate = networkController.getBuildingAuxiliaryCoordinatesCreatedOnOrAfterDate(date).get(0);
+
+        assertEquals(requiredFirstBuildingAuxiliaryCoordinateInList, receivedBuildingAuxiliaryCoordinate);
+    }
+
+    @Test
     public void testTypesModifiedOnOrAfterDate() throws ParseException {
         Date date = Constants.serverDateFormat.parse(modifiedDateTime);
         TypesSync receivedTypesSync = networkController.getTypesModifiedOnOrAfterDate(date);
@@ -292,5 +303,6 @@ public class NetworkControllerTest extends AndroidTestCase {
         assertTrue(generalData.getBuildingPhotos().size() > 0);
         assertTrue(generalData.getRoomPhotos().size() > 0);
         assertTrue(generalData.getEventCreatorAppointments().size() > 20);
+        assertTrue(generalData.getBuildingAuxiliaryCoordinates().size() >= 187);
     }
 }

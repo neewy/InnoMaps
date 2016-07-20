@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Building;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingAuxiliaryCoordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingFloorOverlay;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingPhoto;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
@@ -28,6 +29,7 @@ import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.MapU
 import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.TypesSync;
 import com.innopolis.maps.innomaps.network.tasks.FindClosestPointFromGraphTask;
 import com.innopolis.maps.innomaps.network.tasks.FindShortestPathTask;
+import com.innopolis.maps.innomaps.network.tasks.GetBuildingAuxiliaryCoordinatesCreatedOnOrAfterDateTask;
 import com.innopolis.maps.innomaps.network.tasks.GetBuildingByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetBuildingFloorOverlayByIdTask;
 import com.innopolis.maps.innomaps.network.tasks.GetBuildingPhotosCreatedOnOrAfterDateTask;
@@ -360,6 +362,15 @@ public class NetworkController {
     public List<EventCreatorAppointment> getEventCreatorAppointmentsCreatedOnOrAfterDate(Date date) {
         try {
             return new GetEventCreatorAppointmentsCreatedOnOrAfterDateTask().execute(urlEncodeDate(date)).get();
+        } catch (InterruptedException | ExecutionException e) {
+            Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
+        }
+        return Collections.emptyList();
+    }
+
+    public List<BuildingAuxiliaryCoordinate> getBuildingAuxiliaryCoordinatesCreatedOnOrAfterDate(Date date) {
+        try {
+            return new GetBuildingAuxiliaryCoordinatesCreatedOnOrAfterDateTask().execute(urlEncodeDate(date)).get();
         } catch (InterruptedException | ExecutionException e) {
             Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
         }

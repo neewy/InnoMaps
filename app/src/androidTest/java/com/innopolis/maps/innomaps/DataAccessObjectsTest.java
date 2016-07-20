@@ -2,6 +2,7 @@ package com.innopolis.maps.innomaps;
 
 import android.test.AndroidTestCase;
 
+import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingAuxiliaryCoordinateDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingFloorOverlayDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingPhotoDAO;
@@ -19,6 +20,7 @@ import com.innopolis.maps.innomaps.db.dataaccessobjects.RoomPhotoDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.RoomTypeDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.StreetDAO;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Building;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingAuxiliaryCoordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingFloorOverlay;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingPhoto;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
@@ -325,5 +327,21 @@ public class DataAccessObjectsTest extends AndroidTestCase {
         assertEquals(newStreet, streetFromMobileDatabaseWithMaxId);
         streetDAO.delete(newStreet);
         assertFalse(streetDAO.findAll().size() > 0 && newStreet == streetDAO.getObjectWithMaxId());
+    }
+
+    @Test
+    public void testWritingNewBuildingAuxiliaryCoordinateDataToMobileDB() throws ParseException {
+        BuildingAuxiliaryCoordinateDAO buildingAuxiliaryCoordinateDAO = new BuildingAuxiliaryCoordinateDAO(this.getContext());
+
+        BuildingAuxiliaryCoordinate buildingAuxiliaryCoordinateFromMobileDatabase;
+
+        BuildingAuxiliaryCoordinate newBuildingAuxiliaryCoordinate = new BuildingAuxiliaryCoordinate(111341, 1231321, modifiedDateTime);
+        buildingAuxiliaryCoordinateDAO.create(newBuildingAuxiliaryCoordinate);
+
+        buildingAuxiliaryCoordinateFromMobileDatabase = (BuildingAuxiliaryCoordinate) buildingAuxiliaryCoordinateDAO.findByIds(111341, 1231321);
+
+        assertEquals(newBuildingAuxiliaryCoordinate, buildingAuxiliaryCoordinateFromMobileDatabase);
+        buildingAuxiliaryCoordinateDAO.delete(newBuildingAuxiliaryCoordinate);
+        assertTrue(buildingAuxiliaryCoordinateDAO.findAll().size() == 0 || buildingAuxiliaryCoordinateDAO.findByIds(111341, 1231321) == null);
     }
 }

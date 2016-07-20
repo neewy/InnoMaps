@@ -4,7 +4,7 @@ package com.innopolis.maps.innomaps.db;
  * Created by alnedorezov on 7/7/16.
  */
 public final class Constants {
-    public static final int DATABASE_VERSION = 8;
+    public static final int DATABASE_VERSION = 9;
     public static final String DATABASE_NAME = "innomapsMobile" + DATABASE_VERSION + ".db";
 
     public static final String DAO_ERROR = "DAO_ERROR";
@@ -21,6 +21,7 @@ public final class Constants {
 
     public static final String BUILDING_ID = "building_id";
     public static final String PHOTO_ID = "photo_id";
+    public static final String COORDINATE_ID = "coordinate_id";
     public static final String EVENT_ID = "event_id";
     public static final String EVENT_CREATOR_ID = "event_creator_id";
     public static final String ROOM_ID = "room_id";
