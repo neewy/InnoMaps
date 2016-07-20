@@ -4,8 +4,6 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 
 import com.innopolis.maps.innomaps.app.MainActivity;
@@ -43,12 +41,12 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomPhoto;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Street;
-import com.innopolis.maps.innomaps.network.InternetAccessChecker;
 import com.innopolis.maps.innomaps.network.NetworkController;
 import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.EventsSync;
 import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.GeneralSync;
 import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.MapUnitsSync;
 import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.TypesSync;
+import com.innopolis.maps.innomaps.utils.Utils;
 
 import java.text.ParseException;
 import java.util.Arrays;
@@ -83,42 +81,15 @@ public class DatabaseSync extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-
-        Handler h = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-
-                if (msg.what == 1) { // code if connected
-                    try {
-                        performSyncWithServer();
-                    } catch (ParseException e) {
-                        Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
-                    }
-                    saveLastSyncDate(new Date(), syncTypes.GENERAL);
-                    Log.d(Constants.SYNC, Constants.SYNC_FINISHED_ON + com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(new Date()));
-                }
+        if (Utils.isNetworkAvailable(context)) {
+            try {
+                performSyncWithServer();
+            } catch (ParseException e) {
+                Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
             }
-        };
-
-        InternetAccessChecker.isNetworkAvailable(h, Constants.INTERNET_CHECK_TIMEOUT, getApplicationContext());
-
-        while (true) {
-            final Handler finalHandler = h;
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    // Actions to do after SYNCHRONIZATION_INTERVAL
-                    InternetAccessChecker.isNetworkAvailable(finalHandler, Constants.INTERNET_CHECK_TIMEOUT, getApplicationContext());
-                }
-            }, Constants.SYNCHRONIZATION_INTERVAL);
+            saveLastSyncDate(new Date(), syncTypes.GENERAL);
+            Log.d(Constants.SYNC, Constants.SYNC_FINISHED_ON + com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(new Date()));
         }
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        super.onStartCommand(intent, flags, startId);
-        return START_STICKY;
     }
 
     public void performSyncWithServer() throws ParseException {
@@ -571,7 +542,7 @@ public class DatabaseSync extends IntentService {
                 break;
         }
 
-        if ("".equals(lastSyncDate))
+        if (Constants.EMPTY_STRING.equals(lastSyncDate))
             lastSyncDate = Constants.DEFAULT_SYNC_DATE;
 
         return com.innopolis.maps.innomaps.network.Constants.serverDateFormat.parse(lastSyncDate);

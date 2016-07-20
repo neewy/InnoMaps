@@ -1,7 +1,10 @@
 package com.innopolis.maps.innomaps.app;
 
+import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -18,6 +21,7 @@ import com.innopolis.maps.innomaps.db.DatabaseManager;
 import com.innopolis.maps.innomaps.db.DatabaseSync;
 import com.innopolis.maps.innomaps.utils.AnalyticsTrackers;
 
+import java.util.Calendar;
 import java.util.Date;
 
 
@@ -25,8 +29,8 @@ public class MainActivity extends MainActivityLogic
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static MainActivity mInstance;
-    SharedPreferences sPref, prefs = null;
-    ProgressDialog progressdialog;
+    private SharedPreferences sPref, prefs = null;
+    private ProgressDialog progressdialog;
     public static final int Progress_Dialog_Progress = 0;
 
 
@@ -55,20 +59,22 @@ public class MainActivity extends MainActivityLogic
         DBHelper dbHelper = new DBHelper(MainActivity.this);
         database = dbHelper.getReadableDatabase();
 
+        int secondsToFirstSynchronization = 5;
         prefs = getSharedPreferences("firstRun", MODE_PRIVATE);
         if (prefs.getBoolean("firstrun", true)) {
+            secondsToFirstSynchronization = 60;
             new FirstRunProgressDialog().execute();
         }
 
         AnalyticsTrackers.initialize(this);
         AnalyticsTrackers.getInstance().get(AnalyticsTrackers.Target.APP);
 
-        //Start synchronization service
-        Intent intent = new Intent(this, DatabaseSync.class);
-        startService(intent);
-
         //Init the database manager
         DatabaseManager.setHelper(this);
+
+        //Start synchronization service
+        int syncIntervalInSeconds = 150;
+        startSynchronizationService(secondsToFirstSynchronization, syncIntervalInSeconds);
     }
 
     public static synchronized MainActivity getInstance() {
@@ -166,5 +172,15 @@ public class MainActivity extends MainActivityLogic
         progressdialog.show();
     }
 
+    private void startSynchronizationService(int secondsToFirstSynchronization, int syncIntervalInSeconds) {
+        Intent myIntent = new Intent(this, DatabaseSync.class);
+        PendingIntent pendingIntent = PendingIntent.getService(this, 0, myIntent, 0);
 
+        AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.add(Calendar.SECOND, secondsToFirstSynchronization); // first time
+        long frequency = syncIntervalInSeconds * 1000; // in ms
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), frequency, pendingIntent);
+    }
 }
