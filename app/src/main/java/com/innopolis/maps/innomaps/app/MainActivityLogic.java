@@ -246,7 +246,7 @@ public class MainActivityLogic extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 adapterList.clear();
                 for (SearchableItem item : searchItems) {
-                    if (item.getType().equals(getString(R.string.room)) &&
+                    if (item.getType() == SearchableItem.SearchableItemType.ROOM &&
                             (item.getName().toLowerCase().contains(s.toString().toLowerCase()) ||
                                     item.getBuilding().toLowerCase().contains(s.toString().toLowerCase()) ||
                                     item.getFloor().toLowerCase().contains(s.toString().toLowerCase()) ||

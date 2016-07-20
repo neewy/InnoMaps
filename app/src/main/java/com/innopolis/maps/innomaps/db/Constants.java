@@ -46,6 +46,11 @@ public final class Constants {
 
     public static final String SYNC_FINISHED_ON = "Synchronization finished on: ";
 
+    // For SearchableItem
+    public static final String ROOM_STARTING_FROM_CAPITAL_LETTER = "Room";
+    public static final String FLOOR_LOWERCASE = "floor";
+    public static final String EMPTY_STRING = "";
+
     // Utility classes, which are a collection of static members, are not meant to be instantiated
     private Constants() {
         // Even abstract utility classes, which can be extended, should not have public constructors.

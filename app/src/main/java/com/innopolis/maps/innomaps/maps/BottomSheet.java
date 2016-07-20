@@ -115,7 +115,7 @@ public class BottomSheet extends Fragment {
             relatedLayout.removeView(relatedLayout.getChildAt(0));
         }
 
-        if (item.getType().equals(EVENT)) {
+        if (item.getType() == SearchableItem.SearchableItemType.EVENT) {
             typeEvent(text);
             idPoi.setText(EVENT);
         } else {
