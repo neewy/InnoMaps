@@ -77,6 +77,19 @@ public class DataAccessObjectsTest extends AndroidTestCase {
         assertEquals(newCoordinate, coordinateFromMobileDatabaseWithMaxId);
         coordinateDAO.delete(newCoordinate);
         assertFalse(coordinateDAO.findAll().size() > 0 && newCoordinate == coordinateDAO.getObjectWithMaxId());
+
+        coordinateDAO.createOrUpdateIfExists(newCoordinate);
+        coordinateFromMobileDatabaseWithMaxId = (Coordinate) coordinateDAO.getObjectWithMaxId();
+        assertEquals(newCoordinate, coordinateFromMobileDatabaseWithMaxId);
+
+        // change floor to 2
+        newCoordinate = new Coordinate(1, 55.75417935, 48.7440855, 2, 2, "Innopolis University", universityDescription, modifiedDateTime);
+        coordinateDAO.createOrUpdateIfExists(newCoordinate);
+        coordinateFromMobileDatabaseWithMaxId = (Coordinate) coordinateDAO.getObjectWithMaxId();
+        assertEquals(coordinateFromMobileDatabaseWithMaxId.getFloor(), 2);
+        assertEquals(newCoordinate, coordinateFromMobileDatabaseWithMaxId);
+        coordinateDAO.delete(newCoordinate);
+        assertFalse(coordinateDAO.findAll().size() > 0 && newCoordinate == coordinateDAO.getObjectWithMaxId());
     }
 
     @Test
