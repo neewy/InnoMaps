@@ -82,12 +82,12 @@ public class BuildingAuxiliaryCoordinateDAO implements Crud {
 
     }
 
-    public Object findByIds(int roomId, int photoId) {
+    public Object findByIds(int buildingId, int coordinateId) {
 
         BuildingAuxiliaryCoordinate buildingAuxiliaryCoordinate = null;
         try {
             QueryBuilder<BuildingAuxiliaryCoordinate, Integer> qb = helper.getBuildingAuxiliaryCoordinateDao().queryBuilder();
-            qb.where().eq(Constants.ROOM_ID, roomId).and().eq(Constants.PHOTO_ID, photoId);
+            qb.where().eq(Constants.BUILDING_ID, buildingId).and().eq(Constants.COORDINATE_ID, coordinateId);
             PreparedQuery<BuildingAuxiliaryCoordinate> pc = qb.prepare();
             buildingAuxiliaryCoordinate = helper.getBuildingAuxiliaryCoordinateDao().query(pc).get(0);
         } catch (SQLException e) {
