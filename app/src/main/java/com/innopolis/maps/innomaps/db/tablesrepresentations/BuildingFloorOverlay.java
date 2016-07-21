@@ -12,7 +12,7 @@ import java.util.Date;
  */
 @DatabaseTable(tableName = "Building_floor_overlays")
 public class BuildingFloorOverlay {
-    @DatabaseField(unique = true)
+    @DatabaseField(id = true, unique = true)
     private int id;
     @DatabaseField(uniqueCombo = true)
     private int building_id;
