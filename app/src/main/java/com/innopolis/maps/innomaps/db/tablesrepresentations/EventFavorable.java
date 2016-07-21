@@ -13,7 +13,7 @@ import java.util.Date;
 
 @DatabaseTable(tableName = "Events")
 public class EventFavorable {
-    @DatabaseField(generatedId = true, unique = true)
+    @DatabaseField(unique = true)
     private int id;
     @DatabaseField
     private String name;

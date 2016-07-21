@@ -12,7 +12,7 @@ import java.util.Date;
  */
 @DatabaseTable(tableName = "Event_schedules")
 public class EventSchedule {
-    @DatabaseField(generatedId = true, unique = true)
+    @DatabaseField(unique = true)
     private int id;
     @DatabaseField(uniqueCombo = true)
     private Date start_datetime = null;

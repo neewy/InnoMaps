@@ -12,7 +12,7 @@ import java.util.Date;
  */
 @DatabaseTable(tableName = "Event_creators")
 public class EventCreator {
-    @DatabaseField(generatedId = true, unique = true)
+    @DatabaseField(unique = true)
     private int id;
     @DatabaseField
     private String name;

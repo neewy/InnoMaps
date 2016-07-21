@@ -12,7 +12,7 @@ import java.util.Date;
  */
 @DatabaseTable(tableName = "Rooms")
 public class Room {
-    @DatabaseField(generatedId = true, unique = true)
+    @DatabaseField(unique = true)
     private int id;
     @DatabaseField
     private Integer number;

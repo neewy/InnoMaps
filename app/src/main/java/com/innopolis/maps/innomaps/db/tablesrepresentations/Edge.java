@@ -12,7 +12,7 @@ import java.util.Date;
  */
 @DatabaseTable(tableName = "Edges")
 public class Edge {
-    @DatabaseField(generatedId = true, unique = true)
+    @DatabaseField(unique = true)
     private int id;
     @DatabaseField
     private int type_id;
