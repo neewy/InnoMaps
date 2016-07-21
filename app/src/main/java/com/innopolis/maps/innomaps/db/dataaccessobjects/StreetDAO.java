@@ -124,7 +124,7 @@ public class StreetDAO implements ExtendedCrud {
         int index = -1;
         Street street = (Street) item;
         try {
-            if(helper.getStreetDao().idExists(street.getId()))
+            if (helper.getStreetDao().idExists(street.getId()))
                 index = helper.getStreetDao().update(street);
             else
                 index = helper.getStreetDao().create(street);

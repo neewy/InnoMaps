@@ -130,7 +130,7 @@ public class EventDAO implements ExtendedCrud {
         int index = -1;
         EventFavorable event = (EventFavorable) item;
         try {
-            if(helper.getEventDao().idExists(event.getId()))
+            if (helper.getEventDao().idExists(event.getId()))
                 index = helper.getEventDao().update(event);
             else
                 index = helper.getEventDao().create(event);

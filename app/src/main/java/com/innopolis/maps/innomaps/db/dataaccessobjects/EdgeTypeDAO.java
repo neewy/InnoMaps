@@ -124,7 +124,7 @@ public class EdgeTypeDAO implements ExtendedCrud {
         int index = -1;
         EdgeType edgeType = (EdgeType) item;
         try {
-            if(helper.getEdgeTypeDao().idExists(edgeType.getId()))
+            if (helper.getEdgeTypeDao().idExists(edgeType.getId()))
                 index = helper.getEdgeTypeDao().update(edgeType);
             else
                 index = helper.getEdgeTypeDao().create(edgeType);

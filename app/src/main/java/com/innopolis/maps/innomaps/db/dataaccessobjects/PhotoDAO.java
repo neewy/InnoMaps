@@ -124,7 +124,7 @@ public class PhotoDAO implements ExtendedCrud {
         int index = -1;
         Photo photo = (Photo) item;
         try {
-            if(helper.getPhotoDao().idExists(photo.getId()))
+            if (helper.getPhotoDao().idExists(photo.getId()))
                 index = helper.getPhotoDao().update(photo);
             else
                 index = helper.getPhotoDao().create(photo);

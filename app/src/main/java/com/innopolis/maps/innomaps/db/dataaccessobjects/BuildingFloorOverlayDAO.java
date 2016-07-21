@@ -124,7 +124,7 @@ public class BuildingFloorOverlayDAO implements ExtendedCrud {
         int index = -1;
         BuildingFloorOverlay buildingFloorOverlay = (BuildingFloorOverlay) item;
         try {
-            if(helper.getBuildingFloorOverlayDao().idExists(buildingFloorOverlay.getId()))
+            if (helper.getBuildingFloorOverlayDao().idExists(buildingFloorOverlay.getId()))
                 index = helper.getBuildingFloorOverlayDao().update(buildingFloorOverlay);
             else
                 index = helper.getBuildingFloorOverlayDao().create(buildingFloorOverlay);

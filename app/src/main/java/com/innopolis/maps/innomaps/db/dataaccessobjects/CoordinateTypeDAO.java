@@ -124,7 +124,7 @@ public class CoordinateTypeDAO implements ExtendedCrud {
         int index = -1;
         CoordinateType coordinateType = (CoordinateType) item;
         try {
-            if(helper.getCoordinateTypeDao().idExists(coordinateType.getId()))
+            if (helper.getCoordinateTypeDao().idExists(coordinateType.getId()))
                 index = helper.getCoordinateTypeDao().update(coordinateType);
             else
                 index = helper.getCoordinateTypeDao().create(coordinateType);

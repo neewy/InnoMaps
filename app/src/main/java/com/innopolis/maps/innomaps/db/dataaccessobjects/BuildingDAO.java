@@ -124,7 +124,7 @@ public class BuildingDAO implements ExtendedCrud {
         int index = -1;
         Building building = (Building) item;
         try {
-            if(helper.getBuildingDao().idExists(building.getId()))
+            if (helper.getBuildingDao().idExists(building.getId()))
                 index = helper.getBuildingDao().update(building);
             else
                 index = helper.getBuildingDao().create(building);

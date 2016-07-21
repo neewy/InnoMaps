@@ -124,7 +124,7 @@ public class EventScheduleDAO implements ExtendedCrud {
         int index = -1;
         EventSchedule eventSchedule = (EventSchedule) item;
         try {
-            if(helper.getEventScheduleDao().idExists(eventSchedule.getId()))
+            if (helper.getEventScheduleDao().idExists(eventSchedule.getId()))
                 index = helper.getEventScheduleDao().update(eventSchedule);
             else
                 index = helper.getEventScheduleDao().create(eventSchedule);

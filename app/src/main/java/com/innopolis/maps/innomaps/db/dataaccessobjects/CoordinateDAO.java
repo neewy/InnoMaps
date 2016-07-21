@@ -139,7 +139,7 @@ public class CoordinateDAO implements ExtendedCrud {
         int index = -1;
         Coordinate coordinate = (Coordinate) item;
         try {
-            if(helper.getCoordinateDao().idExists(coordinate.getId()))
+            if (helper.getCoordinateDao().idExists(coordinate.getId()))
                 index = helper.getCoordinateDao().update(coordinate);
             else
                 index = helper.getCoordinateDao().create(coordinate);

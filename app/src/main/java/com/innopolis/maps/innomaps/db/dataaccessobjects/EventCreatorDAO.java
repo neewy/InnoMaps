@@ -124,7 +124,7 @@ public class EventCreatorDAO implements ExtendedCrud {
         int index = -1;
         EventCreator eventCreator = (EventCreator) item;
         try {
-            if(helper.getEventCreatorDao().idExists(eventCreator.getId()))
+            if (helper.getEventCreatorDao().idExists(eventCreator.getId()))
                 index = helper.getEventCreatorDao().update(eventCreator);
             else
                 index = helper.getEventCreatorDao().create(eventCreator);

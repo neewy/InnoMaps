@@ -124,7 +124,7 @@ public class RoomDAO implements ExtendedCrud {
         int index = -1;
         Room room = (Room) item;
         try {
-            if(helper.getRoomDao().idExists(room.getId()))
+            if (helper.getRoomDao().idExists(room.getId()))
                 index = helper.getRoomDao().update(room);
             else
                 index = helper.getRoomDao().create(room);
