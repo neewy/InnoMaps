@@ -10,10 +10,14 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingAuxiliaryCoo
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.PreparedDelete;
 import com.j256.ormlite.stmt.PreparedQuery;
+import com.j256.ormlite.stmt.PreparedUpdate;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.UpdateBuilder;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -110,5 +114,32 @@ public class BuildingAuxiliaryCoordinateDAO implements Crud {
         }
 
         return items;
+    }
+
+    @Override
+    public int createOrUpdateIfExists(Object item) {
+        int index = -1;
+        BuildingAuxiliaryCoordinate buildingAuxiliaryCoordinate = (BuildingAuxiliaryCoordinate) item;
+        try {
+            QueryBuilder<BuildingAuxiliaryCoordinate, Integer> qb = helper.getBuildingAuxiliaryCoordinateDao().queryBuilder();
+            qb.where().eq(Constants.BUILDING_ID, buildingAuxiliaryCoordinate.getBuilding_id()).and().eq(Constants.COORDINATE_ID, buildingAuxiliaryCoordinate.getCoordinate_id());
+            PreparedQuery<BuildingAuxiliaryCoordinate> pc = qb.prepare();
+            if (helper.getBuildingAuxiliaryCoordinateDao().query(pc).size() > 0) {
+                UpdateBuilder<BuildingAuxiliaryCoordinate, Integer> ub = helper.getBuildingAuxiliaryCoordinateDao().updateBuilder();
+                Date newCreated = com.innopolis.maps.innomaps.network.Constants.serverDateFormat.parse(buildingAuxiliaryCoordinate.getCreated());
+                ub.updateColumnValue(Constants.CREATED, newCreated);
+                PreparedUpdate<BuildingAuxiliaryCoordinate> preparedUpdate = ub.prepare();
+                index = helper.getBuildingAuxiliaryCoordinateDao().update(preparedUpdate);
+            }
+            else
+                index = helper.getBuildingAuxiliaryCoordinateDao().create(buildingAuxiliaryCoordinate);
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    BuildingAuxiliaryCoordinateDAO.class.getSimpleName());
+        } catch (ParseException e) {
+            Log.e(Constants.DAO_ERROR, e.getMessage(), e.fillInStackTrace());
+        }
+
+        return index;
     }
 }

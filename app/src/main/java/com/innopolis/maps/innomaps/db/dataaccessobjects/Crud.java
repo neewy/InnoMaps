@@ -13,4 +13,6 @@ public interface Crud {
     public int delete(Object item);
 
     public List findAll();
+
+    public int createOrUpdateIfExists(Object item);
 }

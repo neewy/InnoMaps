@@ -10,10 +10,14 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomPhoto;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.PreparedDelete;
 import com.j256.ormlite.stmt.PreparedQuery;
+import com.j256.ormlite.stmt.PreparedUpdate;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.UpdateBuilder;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -110,6 +114,33 @@ public class RoomPhotoDAO implements Crud {
         }
 
         return items;
+    }
+
+    @Override
+    public int createOrUpdateIfExists(Object item) {
+        int index = -1;
+        RoomPhoto roomPhoto = (RoomPhoto) item;
+        try {
+            QueryBuilder<RoomPhoto, Integer> qb = helper.getRoomPhotoDao().queryBuilder();
+            qb.where().eq(Constants.ROOM_ID, roomPhoto.getRoom_id()).and().eq(Constants.PHOTO_ID, roomPhoto.getPhoto_id());
+            PreparedQuery<RoomPhoto> pc = qb.prepare();
+            if (helper.getRoomPhotoDao().query(pc).size() > 0) {
+                UpdateBuilder<RoomPhoto, Integer> ub = helper.getRoomPhotoDao().updateBuilder();
+                Date newCreated = com.innopolis.maps.innomaps.network.Constants.serverDateFormat.parse(roomPhoto.getCreated());
+                ub.updateColumnValue(Constants.CREATED, newCreated);
+                PreparedUpdate<RoomPhoto> preparedUpdate = ub.prepare();
+                index = helper.getRoomPhotoDao().update(preparedUpdate);
+            }
+            else
+                index = helper.getRoomPhotoDao().create(roomPhoto);
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    RoomPhotoDAO.class.getSimpleName());
+        } catch (ParseException e) {
+            Log.e(Constants.DAO_ERROR, e.getMessage(), e.fillInStackTrace());
+        }
+
+        return index;
     }
 }
 

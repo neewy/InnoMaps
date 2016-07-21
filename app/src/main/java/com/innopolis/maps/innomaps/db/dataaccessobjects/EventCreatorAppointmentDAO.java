@@ -10,10 +10,14 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreatorAppointm
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.PreparedDelete;
 import com.j256.ormlite.stmt.PreparedQuery;
+import com.j256.ormlite.stmt.PreparedUpdate;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.UpdateBuilder;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -110,6 +114,33 @@ public class EventCreatorAppointmentDAO implements Crud {
         }
 
         return items;
+    }
+
+    @Override
+    public int createOrUpdateIfExists(Object item) {
+        int index = -1;
+        EventCreatorAppointment eventCreatorAppointment = (EventCreatorAppointment) item;
+        try {
+            QueryBuilder<EventCreatorAppointment, Integer> qb = helper.getEventCreatorAppointmentDao().queryBuilder();
+            qb.where().eq(Constants.EVENT_ID, eventCreatorAppointment.getEvent_id()).and().eq(Constants.EVENT_CREATOR_ID, eventCreatorAppointment.getEvent_creator_id());
+            PreparedQuery<EventCreatorAppointment> pc = qb.prepare();
+            if (helper.getEventCreatorAppointmentDao().query(pc).size() > 0) {
+                UpdateBuilder<EventCreatorAppointment, Integer> ub = helper.getEventCreatorAppointmentDao().updateBuilder();
+                Date newCreated = com.innopolis.maps.innomaps.network.Constants.serverDateFormat.parse(eventCreatorAppointment.getCreated());
+                ub.updateColumnValue(Constants.CREATED, newCreated);
+                PreparedUpdate<EventCreatorAppointment> preparedUpdate = ub.prepare();
+                index = helper.getEventCreatorAppointmentDao().update(preparedUpdate);
+            }
+            else
+                index = helper.getEventCreatorAppointmentDao().create(eventCreatorAppointment);
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    EventCreatorAppointmentDAO.class.getSimpleName());
+        } catch (ParseException e) {
+            Log.e(Constants.DAO_ERROR, e.getMessage(), e.fillInStackTrace());
+        }
+
+        return index;
     }
 }
 

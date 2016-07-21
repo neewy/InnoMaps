@@ -356,5 +356,20 @@ public class DataAccessObjectsTest extends AndroidTestCase {
         assertEquals(newBuildingAuxiliaryCoordinate, buildingAuxiliaryCoordinateFromMobileDatabase);
         buildingAuxiliaryCoordinateDAO.delete(newBuildingAuxiliaryCoordinate);
         assertTrue(buildingAuxiliaryCoordinateDAO.findAll().size() == 0 || buildingAuxiliaryCoordinateDAO.findByIds(111341, 1231321) == null);
+
+
+        buildingAuxiliaryCoordinateDAO.createOrUpdateIfExists(newBuildingAuxiliaryCoordinate);
+        buildingAuxiliaryCoordinateFromMobileDatabase = (BuildingAuxiliaryCoordinate) buildingAuxiliaryCoordinateDAO.findByIds(111341, 1231321);
+        assertEquals(newBuildingAuxiliaryCoordinate, buildingAuxiliaryCoordinateFromMobileDatabase);
+
+        String newDateTime = "2016-01-02 3:04:05.6";
+        // change created to 2016-01-02 3:04:05.6
+        newBuildingAuxiliaryCoordinate = new BuildingAuxiliaryCoordinate(111341, 1231321, newDateTime);
+        buildingAuxiliaryCoordinateDAO.createOrUpdateIfExists(newBuildingAuxiliaryCoordinate);
+        buildingAuxiliaryCoordinateFromMobileDatabase = (BuildingAuxiliaryCoordinate) buildingAuxiliaryCoordinateDAO.findByIds(111341, 1231321);
+        assertEquals(buildingAuxiliaryCoordinateFromMobileDatabase.getCreated(), newDateTime);
+        assertEquals(newBuildingAuxiliaryCoordinate, buildingAuxiliaryCoordinateFromMobileDatabase);
+        buildingAuxiliaryCoordinateDAO.delete(newBuildingAuxiliaryCoordinate);
+        assertTrue(buildingAuxiliaryCoordinateDAO.findAll().size() == 0 || buildingAuxiliaryCoordinateDAO.findByIds(111341, 1231321) == null);
     }
 }
