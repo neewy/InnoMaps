@@ -125,11 +125,15 @@ public class BuildingPhotoDAO implements Crud {
             qb.where().eq(Constants.BUILDING_ID, buildingPhoto.getBuilding_id()).and().eq(Constants.PHOTO_ID, buildingPhoto.getPhoto_id());
             PreparedQuery<BuildingPhoto> pc = qb.prepare();
             if (helper.getBuildingPhotoDao().query(pc).size() > 0) {
-                UpdateBuilder<BuildingPhoto, Integer> ub = helper.getBuildingPhotoDao().updateBuilder();
-                Date newCreated = com.innopolis.maps.innomaps.network.Constants.serverDateFormat.parse(buildingPhoto.getCreated());
-                ub.updateColumnValue(Constants.CREATED, newCreated);
-                PreparedUpdate<BuildingPhoto> preparedUpdate = ub.prepare();
-                index = helper.getBuildingPhotoDao().update(preparedUpdate);
+                if(helper.getBuildingPhotoDao().query(pc).get(0).equals(buildingPhoto))
+                    index = 0;
+                else {
+                    UpdateBuilder<BuildingPhoto, Integer> ub = helper.getBuildingPhotoDao().updateBuilder();
+                    Date newCreated = com.innopolis.maps.innomaps.network.Constants.serverDateFormat.parse(buildingPhoto.getCreated());
+                    ub.updateColumnValue(Constants.CREATED, newCreated);
+                    PreparedUpdate<BuildingPhoto> preparedUpdate = ub.prepare();
+                    index = helper.getBuildingPhotoDao().update(preparedUpdate);
+                }
             } else
                 index = helper.getBuildingPhotoDao().create(buildingPhoto);
         } catch (SQLException e) {

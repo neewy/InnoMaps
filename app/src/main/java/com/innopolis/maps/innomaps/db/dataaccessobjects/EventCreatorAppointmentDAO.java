@@ -125,11 +125,15 @@ public class EventCreatorAppointmentDAO implements Crud {
             qb.where().eq(Constants.EVENT_ID, eventCreatorAppointment.getEvent_id()).and().eq(Constants.EVENT_CREATOR_ID, eventCreatorAppointment.getEvent_creator_id());
             PreparedQuery<EventCreatorAppointment> pc = qb.prepare();
             if (helper.getEventCreatorAppointmentDao().query(pc).size() > 0) {
-                UpdateBuilder<EventCreatorAppointment, Integer> ub = helper.getEventCreatorAppointmentDao().updateBuilder();
-                Date newCreated = com.innopolis.maps.innomaps.network.Constants.serverDateFormat.parse(eventCreatorAppointment.getCreated());
-                ub.updateColumnValue(Constants.CREATED, newCreated);
-                PreparedUpdate<EventCreatorAppointment> preparedUpdate = ub.prepare();
-                index = helper.getEventCreatorAppointmentDao().update(preparedUpdate);
+                if(helper.getEventCreatorAppointmentDao().query(pc).get(0).equals(eventCreatorAppointment))
+                    index = 0;
+                else {
+                    UpdateBuilder<EventCreatorAppointment, Integer> ub = helper.getEventCreatorAppointmentDao().updateBuilder();
+                    Date newCreated = com.innopolis.maps.innomaps.network.Constants.serverDateFormat.parse(eventCreatorAppointment.getCreated());
+                    ub.updateColumnValue(Constants.CREATED, newCreated);
+                    PreparedUpdate<EventCreatorAppointment> preparedUpdate = ub.prepare();
+                    index = helper.getEventCreatorAppointmentDao().update(preparedUpdate);
+                }
             } else
                 index = helper.getEventCreatorAppointmentDao().create(eventCreatorAppointment);
         } catch (SQLException e) {

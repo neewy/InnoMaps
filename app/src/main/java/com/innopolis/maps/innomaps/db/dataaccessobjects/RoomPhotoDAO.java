@@ -125,11 +125,15 @@ public class RoomPhotoDAO implements Crud {
             qb.where().eq(Constants.ROOM_ID, roomPhoto.getRoom_id()).and().eq(Constants.PHOTO_ID, roomPhoto.getPhoto_id());
             PreparedQuery<RoomPhoto> pc = qb.prepare();
             if (helper.getRoomPhotoDao().query(pc).size() > 0) {
-                UpdateBuilder<RoomPhoto, Integer> ub = helper.getRoomPhotoDao().updateBuilder();
-                Date newCreated = com.innopolis.maps.innomaps.network.Constants.serverDateFormat.parse(roomPhoto.getCreated());
-                ub.updateColumnValue(Constants.CREATED, newCreated);
-                PreparedUpdate<RoomPhoto> preparedUpdate = ub.prepare();
-                index = helper.getRoomPhotoDao().update(preparedUpdate);
+                if(helper.getRoomPhotoDao().query(pc).get(0).equals(roomPhoto))
+                    index = 0;
+                else {
+                    UpdateBuilder<RoomPhoto, Integer> ub = helper.getRoomPhotoDao().updateBuilder();
+                    Date newCreated = com.innopolis.maps.innomaps.network.Constants.serverDateFormat.parse(roomPhoto.getCreated());
+                    ub.updateColumnValue(Constants.CREATED, newCreated);
+                    PreparedUpdate<RoomPhoto> preparedUpdate = ub.prepare();
+                    index = helper.getRoomPhotoDao().update(preparedUpdate);
+                }
             } else
                 index = helper.getRoomPhotoDao().create(roomPhoto);
         } catch (SQLException e) {
