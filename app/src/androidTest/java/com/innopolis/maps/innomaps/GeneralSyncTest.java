@@ -58,6 +58,7 @@ public class GeneralSyncTest extends AndroidTestCase {
 
     @Before
     public void setUp() throws Exception {
+        // TODO: increment DATABASE_VERSION in db/Constants.java or delete current db version through adb shell before running the test
         networkController = new NetworkController();
         databaseSync = new DatabaseSync(this.getContext());
     }

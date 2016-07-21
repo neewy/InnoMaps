@@ -53,7 +53,7 @@ public class DataAccessObjectsTest extends AndroidTestCase {
 
     @Before
     public void setUp() throws Exception {
-        // If tests do not pass, increment DATABASE_VERSION in db/Constants.java or delete current db version through adb shell
+        // TODO: increment DATABASE_VERSION in db/Constants.java or delete current db version through adb shell before running the test
         modifiedDateTime = "2015-01-02 03:04:05.6";
         universityDescription = "Specializing in the field " +
                 "of modern information technologies, Innopolis University is not only one of Russia’s youngest universities," +
