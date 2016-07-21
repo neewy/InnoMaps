@@ -130,8 +130,7 @@ public class RoomPhotoDAO implements Crud {
                 ub.updateColumnValue(Constants.CREATED, newCreated);
                 PreparedUpdate<RoomPhoto> preparedUpdate = ub.prepare();
                 index = helper.getRoomPhotoDao().update(preparedUpdate);
-            }
-            else
+            } else
                 index = helper.getRoomPhotoDao().create(roomPhoto);
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +

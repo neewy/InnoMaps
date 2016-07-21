@@ -8,6 +8,7 @@ import com.innopolis.maps.innomaps.db.DatabaseHelper;
 import com.innopolis.maps.innomaps.db.DatabaseManager;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Event;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventFavorable;
+import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 
 import java.sql.SQLException;
@@ -128,12 +129,11 @@ public class EventDAO implements ExtendedCrud {
     @Override
     public int createOrUpdateIfExists(Object item) {
         int index = -1;
+        Dao.CreateOrUpdateStatus createOrUpdateStatus;
         EventFavorable event = (EventFavorable) item;
         try {
-            if (helper.getEventDao().idExists(event.getId()))
-                index = helper.getEventDao().update(event);
-            else
-                index = helper.getEventDao().create(event);
+            createOrUpdateStatus = helper.getEventDao().createOrUpdate(event);
+            index = createOrUpdateStatus.getNumLinesChanged();
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
                     EventDAO.class.getSimpleName());

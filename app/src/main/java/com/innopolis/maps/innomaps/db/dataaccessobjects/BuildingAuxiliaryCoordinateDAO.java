@@ -130,8 +130,7 @@ public class BuildingAuxiliaryCoordinateDAO implements Crud {
                 ub.updateColumnValue(Constants.CREATED, newCreated);
                 PreparedUpdate<BuildingAuxiliaryCoordinate> preparedUpdate = ub.prepare();
                 index = helper.getBuildingAuxiliaryCoordinateDao().update(preparedUpdate);
-            }
-            else
+            } else
                 index = helper.getBuildingAuxiliaryCoordinateDao().create(buildingAuxiliaryCoordinate);
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +

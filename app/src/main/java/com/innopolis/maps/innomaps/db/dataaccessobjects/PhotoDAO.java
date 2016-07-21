@@ -7,6 +7,7 @@ import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.db.DatabaseHelper;
 import com.innopolis.maps.innomaps.db.DatabaseManager;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Photo;
+import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 
 import java.sql.SQLException;
@@ -122,12 +123,11 @@ public class PhotoDAO implements ExtendedCrud {
     @Override
     public int createOrUpdateIfExists(Object item) {
         int index = -1;
+        Dao.CreateOrUpdateStatus createOrUpdateStatus;
         Photo photo = (Photo) item;
         try {
-            if (helper.getPhotoDao().idExists(photo.getId()))
-                index = helper.getPhotoDao().update(photo);
-            else
-                index = helper.getPhotoDao().create(photo);
+            createOrUpdateStatus = helper.getPhotoDao().createOrUpdate(photo);
+            index = createOrUpdateStatus.getNumLinesChanged();
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
                     PhotoDAO.class.getSimpleName());

@@ -7,6 +7,7 @@ import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.db.DatabaseHelper;
 import com.innopolis.maps.innomaps.db.DatabaseManager;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
+import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 
 import java.sql.SQLException;
@@ -122,12 +123,11 @@ public class RoomDAO implements ExtendedCrud {
     @Override
     public int createOrUpdateIfExists(Object item) {
         int index = -1;
+        Dao.CreateOrUpdateStatus createOrUpdateStatus;
         Room room = (Room) item;
         try {
-            if (helper.getRoomDao().idExists(room.getId()))
-                index = helper.getRoomDao().update(room);
-            else
-                index = helper.getRoomDao().create(room);
+            createOrUpdateStatus = helper.getRoomDao().createOrUpdate(room);
+            index = createOrUpdateStatus.getNumLinesChanged();
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
                     RoomDAO.class.getSimpleName());

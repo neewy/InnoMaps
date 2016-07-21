@@ -130,8 +130,7 @@ public class EventCreatorAppointmentDAO implements Crud {
                 ub.updateColumnValue(Constants.CREATED, newCreated);
                 PreparedUpdate<EventCreatorAppointment> preparedUpdate = ub.prepare();
                 index = helper.getEventCreatorAppointmentDao().update(preparedUpdate);
-            }
-            else
+            } else
                 index = helper.getEventCreatorAppointmentDao().create(eventCreatorAppointment);
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +

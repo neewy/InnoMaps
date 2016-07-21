@@ -7,6 +7,7 @@ import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.db.DatabaseHelper;
 import com.innopolis.maps.innomaps.db.DatabaseManager;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingFloorOverlay;
+import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 
 import java.sql.SQLException;
@@ -122,12 +123,11 @@ public class BuildingFloorOverlayDAO implements ExtendedCrud {
     @Override
     public int createOrUpdateIfExists(Object item) {
         int index = -1;
+        Dao.CreateOrUpdateStatus createOrUpdateStatus;
         BuildingFloorOverlay buildingFloorOverlay = (BuildingFloorOverlay) item;
         try {
-            if (helper.getBuildingFloorOverlayDao().idExists(buildingFloorOverlay.getId()))
-                index = helper.getBuildingFloorOverlayDao().update(buildingFloorOverlay);
-            else
-                index = helper.getBuildingFloorOverlayDao().create(buildingFloorOverlay);
+            createOrUpdateStatus = helper.getBuildingFloorOverlayDao().createOrUpdate(buildingFloorOverlay);
+            index = createOrUpdateStatus.getNumLinesChanged();
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
                     BuildingFloorOverlayDAO.class.getSimpleName());
