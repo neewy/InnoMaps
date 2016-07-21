@@ -35,6 +35,7 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.EdgeType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Event;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreator;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreatorAppointment;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventFavorable;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventSchedule;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Photo;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
@@ -87,7 +88,6 @@ public class DatabaseSync extends IntentService {
             } catch (ParseException e) {
                 Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
             }
-            saveLastSyncDate(new Date(), syncTypes.GENERAL);
             Log.d(Constants.SYNC, Constants.SYNC_FINISHED_ON + com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(new Date()));
         }
     }
@@ -97,6 +97,9 @@ public class DatabaseSync extends IntentService {
         synchronizeMapUnits();
         synchronizeEvents();
         synchronizeAssignments();
+        deleteRecordsDeletedFromServerDatabase();
+
+        saveLastSyncDate(new Date(), syncTypes.GENERAL);
     }
 
     private void synchronizeTypes() throws ParseException {
@@ -267,6 +270,29 @@ public class DatabaseSync extends IntentService {
         saveLastSyncDate(new Date(), syncTypes.ASSIGNMENTS);
     }
 
+    private void deleteRecordsDeletedFromServerDatabase() {
+        networkController = new NetworkController();
+        GeneralSync generalData = networkController.getGeneralData();
+
+        deleteCoordinateTypesDeletedFromTheServerDatabase(generalData.getCoordinateTypes());
+        deleteEdgeTypesDeletedFromTheServerDatabase(generalData.getEdgeTypes());
+        deleteRoomTypesDeletedFromTheServerDatabase(generalData.getRoomTypes());
+        deleteCoordinatesDeletedFromTheServerDatabase(generalData.getCoordinates());
+        deleteEdgesDeletedFromTheServerDatabase(generalData.getEdges());
+        deleteStreetsDeletedFromTheServerDatabase(generalData.getStreets());
+        deleteBuildingsDeletedFromTheServerDatabase(generalData.getBuildings());
+        deleteRoomsDeletedFromTheServerDatabase(generalData.getRooms());
+        deletePhotosDeletedFromTheServerDatabase(generalData.getPhotos());
+        deleteBuildingPhotosDeletedFromTheServerDatabase(generalData.getBuildingPhotos());
+        deleteRoomPhotosDeletedFromTheServerDatabase(generalData.getRoomPhotos());
+        deleteBuildingFloorOverlaysDeletedFromTheServerDatabase(generalData.getBuildingFloorOverlays());
+        deleteEventCreatorsDeletedFromTheServerDatabase(generalData.getEventCreators());
+        deleteEventsDeletedFromTheServerDatabase(generalData.getEvents());
+        deleteEventSchedulesDeletedFromTheServerDatabase(generalData.getEventSchedules());
+        deleteEventCreatorAppointmentsDeletedFromTheServerDatabase(generalData.getEventCreatorAppointments());
+        deleteBuildingAuxiliaryCoordinatesDeletedFromTheServerDatabase(generalData.getBuildingAuxiliaryCoordinates());
+    }
+
     private void addNewCoordinateTypes(List<Integer> coordinateTypeIds) throws ParseException {
         CoordinateTypeDAO coordinateTypeDAO = new CoordinateTypeDAO(context);
         networkController = new NetworkController();
@@ -408,6 +434,213 @@ public class DatabaseSync extends IntentService {
                 eventScheduleDAO.createOrUpdateIfExists(newEventSchedule);
             }
         }
+    }
+
+    private void deleteCoordinateTypesDeletedFromTheServerDatabase(List<CoordinateType> coordinateTypesOnTheServer) {
+        CoordinateTypeDAO coordinateTypeDAO = new CoordinateTypeDAO(context);
+        List<CoordinateType> coordinateTypes = (List<CoordinateType>) coordinateTypeDAO.findAll();
+        // Find CoordinateTypes that exists in the local db but not on the server
+        for (CoordinateType coordinateType : coordinateTypesOnTheServer)
+            coordinateTypes.remove((CoordinateType) coordinateTypeDAO.findById(coordinateType.getId()));
+
+        // Delete CoordinateTypes that exists in the local db but not on the server
+        for (CoordinateType coordinateType : coordinateTypes)
+            coordinateTypeDAO.delete(coordinateType);
+    }
+
+    private void deleteEdgeTypesDeletedFromTheServerDatabase(List<EdgeType> edgeTypesOnTheServer) {
+        EdgeTypeDAO edgeTypeDAO = new EdgeTypeDAO(context);
+        List<EdgeType> edgeTypes = (List<EdgeType>) edgeTypeDAO.findAll();
+        // Find EdgeTypes that exists in the local db but not on the server
+        for (EdgeType edgeType : edgeTypesOnTheServer)
+            edgeTypes.remove((EdgeType) edgeTypeDAO.findById(edgeType.getId()));
+
+        // Delete EdgeTypes that exists in the local db but not on the server
+        for (EdgeType edgeType : edgeTypes)
+            edgeTypeDAO.delete(edgeType);
+    }
+
+    private void deleteRoomTypesDeletedFromTheServerDatabase(List<RoomType> roomTypesOnTheServer) {
+        RoomTypeDAO roomTypeDAO = new RoomTypeDAO(context);
+        List<RoomType> roomTypes = (List<RoomType>) roomTypeDAO.findAll();
+        // Find RoomTypes that exists in the local db but not on the server
+        for (RoomType roomType : roomTypesOnTheServer)
+            roomTypes.remove((RoomType) roomTypeDAO.findById(roomType.getId()));
+
+        // Delete RoomTypes that exists in the local db but not on the server
+        for (RoomType roomType : roomTypes)
+            roomTypeDAO.delete(roomType);
+    }
+
+    private void deleteCoordinatesDeletedFromTheServerDatabase(List<Coordinate> coordinatesOnTheServer) {
+        CoordinateDAO coordinateDAO = new CoordinateDAO(context);
+        List<Coordinate> coordinates = (List<Coordinate>) coordinateDAO.findAll();
+        // Find Coordinates that exists in the local db but not on the server
+        for (Coordinate coordinate : coordinatesOnTheServer)
+            coordinates.remove((Coordinate) coordinateDAO.findById(coordinate.getId()));
+
+        // Delete Coordinates that exists in the local db but not on the server
+        for (Coordinate coordinate : coordinates)
+            coordinateDAO.delete(coordinate);
+    }
+
+    private void deleteEdgesDeletedFromTheServerDatabase(List<Edge> edgesOnTheServer) {
+        EdgeDAO edgeDAO = new EdgeDAO(context);
+        List<Edge> edges = (List<Edge>) edgeDAO.findAll();
+        // Find Edges that exists in the local db but not on the server
+        for (Edge edge : edgesOnTheServer)
+            edges.remove((Edge) edgeDAO.findById(edge.getId()));
+
+        // Delete Edges that exists in the local db but not on the server
+        for (Edge edge : edges)
+            edgeDAO.delete(edge);
+    }
+
+    private void deleteStreetsDeletedFromTheServerDatabase(List<Street> streetsOnTheServer) {
+        StreetDAO streetDAO = new StreetDAO(context);
+        List<Street> streets = (List<Street>) streetDAO.findAll();
+        // Find Streets that exists in the local db but not on the server
+        for (Street street : streetsOnTheServer)
+            streets.remove((Street) streetDAO.findById(street.getId()));
+
+        // Delete Streets that exists in the local db but not on the server
+        for (Street street : streets)
+            streetDAO.delete(street);
+    }
+
+
+    private void deleteBuildingsDeletedFromTheServerDatabase(List<Building> buildingsOnTheServer) {
+        BuildingDAO buildingDAO = new BuildingDAO(context);
+        List<Building> buildings = (List<Building>) buildingDAO.findAll();
+        // Find Buildings that exists in the local db but not on the server
+        for (Building building : buildingsOnTheServer)
+            buildings.remove((Building) buildingDAO.findById(building.getId()));
+
+        // Delete Buildings that exists in the local db but not on the server
+        for (Building building : buildings)
+            buildingDAO.delete(building);
+    }
+
+    private void deleteRoomsDeletedFromTheServerDatabase(List<Room> roomsOnTheServer) {
+        RoomDAO roomDAO = new RoomDAO(context);
+        List<Room> rooms = (List<Room>) roomDAO.findAll();
+        // Find Rooms that exists in the local db but not on the server
+        for (Room room : roomsOnTheServer)
+            rooms.remove((Room) roomDAO.findById(room.getId()));
+
+        // Delete Rooms that exists in the local db but not on the server
+        for (Room room : rooms)
+            roomDAO.delete(room);
+    }
+
+    private void deletePhotosDeletedFromTheServerDatabase(List<Photo> photosOnTheServer) {
+        PhotoDAO photoDAO = new PhotoDAO(context);
+        List<Photo> photos = (List<Photo>) photoDAO.findAll();
+        // Find Photos that exists in the local db but not on the server
+        for (Photo photo : photosOnTheServer)
+            photos.remove((Photo) photoDAO.findById(photo.getId()));
+
+        // Delete Photos that exists in the local db but not on the server
+        for (Photo photo : photos)
+            photoDAO.delete(photo);
+    }
+
+    private void deleteBuildingPhotosDeletedFromTheServerDatabase(List<BuildingPhoto> buildingPhotosOnTheServer) {
+        BuildingPhotoDAO buildingPhotoDAO = new BuildingPhotoDAO(context);
+        List<BuildingPhoto> buildingPhotos = (List<BuildingPhoto>) buildingPhotoDAO.findAll();
+        // Find BuildingPhotos that exists in the local db but not on the server
+        for (BuildingPhoto buildingPhoto : buildingPhotosOnTheServer)
+            buildingPhotos.remove((BuildingPhoto) buildingPhotoDAO.findByIds(buildingPhoto.getBuilding_id(), buildingPhoto.getPhoto_id()));
+
+        // Delete BuildingPhotos that exists in the local db but not on the server
+        for (BuildingPhoto buildingPhoto : buildingPhotos)
+            buildingPhotoDAO.delete(buildingPhoto);
+    }
+
+    private void deleteRoomPhotosDeletedFromTheServerDatabase(List<RoomPhoto> roomPhotosOnTheServer) {
+        RoomPhotoDAO roomPhotoDAO = new RoomPhotoDAO(context);
+        List<RoomPhoto> roomPhotos = (List<RoomPhoto>) roomPhotoDAO.findAll();
+        // Find RoomPhotos that exists in the local db but not on the server
+        for (RoomPhoto roomPhoto : roomPhotosOnTheServer)
+            roomPhotos.remove((RoomPhoto) roomPhotoDAO.findByIds(roomPhoto.getRoom_id(), roomPhoto.getPhoto_id()));
+
+        // Delete RoomPhotos that exists in the local db but not on the server
+        for (RoomPhoto roomPhoto : roomPhotos)
+            roomPhotoDAO.delete(roomPhoto);
+    }
+
+    private void deleteBuildingFloorOverlaysDeletedFromTheServerDatabase(List<BuildingFloorOverlay> buildingFloorOverlaysOnTheServer) {
+        BuildingFloorOverlayDAO buildingFloorOverlayDAO = new BuildingFloorOverlayDAO(context);
+        List<BuildingFloorOverlay> buildingFloorOverlays = (List<BuildingFloorOverlay>) buildingFloorOverlayDAO.findAll();
+        // Find BuildingFloorOverlays that exists in the local db but not on the server
+        for (BuildingFloorOverlay buildingFloorOverlay : buildingFloorOverlaysOnTheServer)
+            buildingFloorOverlays.remove((BuildingFloorOverlay) buildingFloorOverlayDAO.findById(buildingFloorOverlay.getId()));
+
+        // Delete BuildingFloorOverlays that exists in the local db but not on the server
+        for (BuildingFloorOverlay buildingFloorOverlay : buildingFloorOverlays)
+            buildingFloorOverlayDAO.delete(buildingFloorOverlay);
+    }
+
+    private void deleteEventCreatorsDeletedFromTheServerDatabase(List<EventCreator> eventCreatorsOnTheServer) {
+        EventCreatorDAO eventCreatorDAO = new EventCreatorDAO(context);
+        List<EventCreator> eventCreators = (List<EventCreator>) eventCreatorDAO.findAll();
+        // Find EventCreators that exists in the local db but not on the server
+        for (EventCreator eventCreator : eventCreatorsOnTheServer)
+            eventCreators.remove((EventCreator) eventCreatorDAO.findById(eventCreator.getId()));
+
+        // Delete EventCreators that exists in the local db but not on the server
+        for (EventCreator eventCreator : eventCreators)
+            eventCreatorDAO.delete(eventCreator);
+    }
+
+    private void deleteEventsDeletedFromTheServerDatabase(List<Event> eventsOnTheServer) {
+        EventDAO eventDAO = new EventDAO(context);
+        List<EventFavorable> events = (List<EventFavorable>) eventDAO.findAll();
+        // Find Events that exists in the local db but not on the server
+        for (Event event : eventsOnTheServer)
+            events.remove((EventFavorable) eventDAO.findById(event.getId()));
+
+        // Delete Events that exists in the local db but not on the server
+        for (EventFavorable event : events)
+            eventDAO.delete(event);
+    }
+
+    private void deleteEventSchedulesDeletedFromTheServerDatabase(List<EventSchedule> eventSchedulesOnTheServer) {
+        EventScheduleDAO eventScheduleDAO = new EventScheduleDAO(context);
+        List<EventSchedule> eventSchedules = (List<EventSchedule>) eventScheduleDAO.findAll();
+        // Find EventSchedules that exists in the local db but not on the server
+        for (EventSchedule eventSchedule : eventSchedulesOnTheServer)
+            eventSchedules.remove((EventSchedule) eventScheduleDAO.findById(eventSchedule.getId()));
+
+        // Delete EventSchedules that exists in the local db but not on the server
+        for (EventSchedule eventSchedule : eventSchedules)
+            eventScheduleDAO.delete(eventSchedule);
+    }
+
+    private void deleteEventCreatorAppointmentsDeletedFromTheServerDatabase(List<EventCreatorAppointment> eventCreatorAppointmentsOnTheServer) {
+        EventCreatorAppointmentDAO eventCreatorAppointmentDAO = new EventCreatorAppointmentDAO(context);
+        List<EventCreatorAppointment> eventCreatorAppointments = (List<EventCreatorAppointment>) eventCreatorAppointmentDAO.findAll();
+        // Find EventCreatorAppointments that exists in the local db but not on the server
+        for (EventCreatorAppointment eventCreatorAppointment : eventCreatorAppointmentsOnTheServer)
+            eventCreatorAppointments.remove((EventCreatorAppointment) eventCreatorAppointmentDAO.findByIds(eventCreatorAppointment.getEvent_id(),
+                    eventCreatorAppointment.getEvent_creator_id()));
+
+        // Delete EventCreatorAppointments that exists in the local db but not on the server
+        for (EventCreatorAppointment eventCreatorAppointment : eventCreatorAppointments)
+            eventCreatorAppointmentDAO.delete(eventCreatorAppointment);
+    }
+
+    private void deleteBuildingAuxiliaryCoordinatesDeletedFromTheServerDatabase(List<BuildingAuxiliaryCoordinate> buildingAuxiliaryCoordinatesOnTheServer) {
+        BuildingAuxiliaryCoordinateDAO buildingAuxiliaryCoordinateDAO = new BuildingAuxiliaryCoordinateDAO(context);
+        List<BuildingAuxiliaryCoordinate> buildingAuxiliaryCoordinates = (List<BuildingAuxiliaryCoordinate>) buildingAuxiliaryCoordinateDAO.findAll();
+        // Find BuildingAuxiliaryCoordinates that exists in the local db but not on the server
+        for (BuildingAuxiliaryCoordinate buildingAuxiliaryCoordinate : buildingAuxiliaryCoordinatesOnTheServer)
+            buildingAuxiliaryCoordinates.remove((BuildingAuxiliaryCoordinate) buildingAuxiliaryCoordinateDAO.findByIds(buildingAuxiliaryCoordinate.getBuilding_id(),
+                    buildingAuxiliaryCoordinate.getCoordinate_id()));
+
+        // Delete BuildingAuxiliaryCoordinates that exists in the local db but not on the server
+        for (BuildingAuxiliaryCoordinate buildingAuxiliaryCoordinate : buildingAuxiliaryCoordinates)
+            buildingAuxiliaryCoordinateDAO.delete(buildingAuxiliaryCoordinate);
     }
 
     public void performGeneralSyncWithServer() {

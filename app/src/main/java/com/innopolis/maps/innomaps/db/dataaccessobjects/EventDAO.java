@@ -53,10 +53,18 @@ public class EventDAO implements ExtendedCrud {
 
         int index = -1;
 
-        EventFavorable event = (EventFavorable) item;
+        EventFavorable eventFavorable;
 
         try {
-            helper.getEventDao().update(event);
+            if (item instanceof Event) {
+                Event event = (Event) item;
+                if (helper.getEventDao().idExists(event.getId()))
+                    eventFavorable = new EventFavorable(event, helper.getEventDao().queryForId(event.getId()).isFavourite());
+                else
+                    eventFavorable = new EventFavorable(event, false);
+            } else
+                eventFavorable = (EventFavorable) item;
+            index = helper.getEventDao().update(eventFavorable);
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
                     EventDAO.class.getSimpleName());
@@ -70,10 +78,15 @@ public class EventDAO implements ExtendedCrud {
 
         int index = -1;
 
-        EventFavorable event = (EventFavorable) item;
+        EventFavorable eventFavorable;
 
         try {
-            helper.getEventDao().delete(event);
+            if (item instanceof Event) {
+                Event event = (Event) item;
+                eventFavorable = helper.getEventDao().queryForId(event.getId());
+            } else
+                eventFavorable = (EventFavorable) item;
+            index = helper.getEventDao().delete(eventFavorable);
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
                     EventDAO.class.getSimpleName());
@@ -134,7 +147,10 @@ public class EventDAO implements ExtendedCrud {
         try {
             if (item instanceof Event) {
                 Event event = (Event) item;
-                eventFavorable = new EventFavorable(event, false);
+                if (helper.getEventDao().idExists(event.getId()))
+                    eventFavorable = new EventFavorable(event, helper.getEventDao().queryForId(event.getId()).isFavourite());
+                else
+                    eventFavorable = new EventFavorable(event, false);
             } else
                 eventFavorable = (EventFavorable) item;
             createOrUpdateStatus = helper.getEventDao().createOrUpdate(eventFavorable);

@@ -202,6 +202,22 @@ public class DataAccessObjectsTest extends AndroidTestCase {
         assertEquals(newEventCreatorAppointment, eventCreatorAppointmentFromMobileDatabase);
         eventCreatorAppointmentDAO.delete(newEventCreatorAppointment);
         assertTrue(eventCreatorAppointmentDAO.findAll().size() == 0 || eventCreatorAppointmentDAO.findByIds(1, 1231321) == null);
+
+
+        newEventCreatorAppointment = new EventCreatorAppointment(111341, 1231321, modifiedDateTime);
+        eventCreatorAppointmentDAO.createOrUpdateIfExists(newEventCreatorAppointment);
+        eventCreatorAppointmentFromMobileDatabase = (EventCreatorAppointment) eventCreatorAppointmentDAO.findByIds(111341, 1231321);
+        assertEquals(newEventCreatorAppointment, eventCreatorAppointmentFromMobileDatabase);
+
+        String newDateTime = "2016-01-02 3:04:05.6";
+        // change created to 2016-01-02 3:04:05.6
+        newEventCreatorAppointment = new EventCreatorAppointment(111341, 1231321, newDateTime);
+        eventCreatorAppointmentDAO.createOrUpdateIfExists(newEventCreatorAppointment);
+        eventCreatorAppointmentFromMobileDatabase = (EventCreatorAppointment) eventCreatorAppointmentDAO.findByIds(111341, 1231321);
+        assertEquals(eventCreatorAppointmentFromMobileDatabase.getCreated(), newDateTime);
+        assertEquals(newEventCreatorAppointment, eventCreatorAppointmentFromMobileDatabase);
+        eventCreatorAppointmentDAO.delete(newEventCreatorAppointment);
+        assertTrue(eventCreatorAppointmentDAO.findAll().size() == 0 || eventCreatorAppointmentDAO.findByIds(111341, 1231321) == null);
     }
 
     @Test
@@ -239,6 +255,37 @@ public class DataAccessObjectsTest extends AndroidTestCase {
         newFavourableEvent = new EventFavorable(2, "Poedanie Vafelek Na Skorost", "you will love it", "", null, modifiedDateTime, true);
         eventDAO.create(newFavourableEvent);
 
+        eventFromMobileDatabaseWithMaxId = (EventFavorable) eventDAO.getObjectWithMaxId();
+
+        assertEquals(newFavourableEvent, eventFromMobileDatabaseWithMaxId);
+        eventDAO.delete(newFavourableEvent);
+        assertFalse(eventDAO.findAll().size() > 0 && newFavourableEvent == eventDAO.getObjectWithMaxId());
+
+        eventDAO.createOrUpdateIfExists(newEvent);
+        newFavourableEvent = new EventFavorable(newEvent, false);
+        eventFromMobileDatabaseWithMaxId = (EventFavorable) eventDAO.getObjectWithMaxId();
+        assertEquals(newFavourableEvent, eventFromMobileDatabaseWithMaxId);
+
+        String newName = "Poedanie Pechenek Na Skorost";
+        // change name to "Poedanie Pechenek Na Skorost"
+        newFavourableEvent = new EventFavorable(2, newName, "you will love it", "", null, modifiedDateTime, true);
+        eventDAO.createOrUpdateIfExists(newFavourableEvent);
+        eventFromMobileDatabaseWithMaxId = (EventFavorable) eventDAO.getObjectWithMaxId();
+        assertEquals(eventFromMobileDatabaseWithMaxId.getName(), newName);
+        assertEquals(newFavourableEvent, eventFromMobileDatabaseWithMaxId);
+        eventDAO.delete(newFavourableEvent);
+        assertFalse(eventDAO.findAll().size() > 0 && newFavourableEvent == eventDAO.getObjectWithMaxId());
+
+        newFavourableEvent = new EventFavorable(2, "Poedanie Vafelek Na Skorost", "you will love it", "", null, modifiedDateTime, true);
+        eventDAO.create(newFavourableEvent);
+
+        eventFromMobileDatabaseWithMaxId = (EventFavorable) eventDAO.getObjectWithMaxId();
+
+        assertEquals(newFavourableEvent, eventFromMobileDatabaseWithMaxId);
+
+        newEvent = new Event(2, newName, "you will love it", "", null, modifiedDateTime);
+        eventDAO.update(newEvent);
+        newFavourableEvent = new EventFavorable(newEvent, true);
         eventFromMobileDatabaseWithMaxId = (EventFavorable) eventDAO.getObjectWithMaxId();
 
         assertEquals(newFavourableEvent, eventFromMobileDatabaseWithMaxId);

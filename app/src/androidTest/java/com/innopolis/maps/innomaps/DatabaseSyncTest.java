@@ -44,7 +44,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -80,7 +79,6 @@ public class DatabaseSyncTest extends AndroidTestCase {
         EventCreatorAppointmentDAO eventCreatorAppointmentDAO = new EventCreatorAppointmentDAO(this.getContext());
         BuildingAuxiliaryCoordinateDAO buildingAuxiliaryCoordinateDAO = new BuildingAuxiliaryCoordinateDAO(this.getContext());
         databaseSync.performSyncWithServer();
-        databaseSync.saveLastSyncDate(new Date(), DatabaseSync.syncTypes.GENERAL);
 
         GeneralSync dataFromDatabase;
         GeneralSync.GeneralSyncBuilder generalSyncBuilder = new GeneralSync.GeneralSyncBuilder();
