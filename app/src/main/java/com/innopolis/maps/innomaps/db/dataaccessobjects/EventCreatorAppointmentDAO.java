@@ -125,7 +125,7 @@ public class EventCreatorAppointmentDAO implements Crud {
             qb.where().eq(Constants.EVENT_ID, eventCreatorAppointment.getEvent_id()).and().eq(Constants.EVENT_CREATOR_ID, eventCreatorAppointment.getEvent_creator_id());
             PreparedQuery<EventCreatorAppointment> pc = qb.prepare();
             if (helper.getEventCreatorAppointmentDao().query(pc).size() > 0) {
-                if(helper.getEventCreatorAppointmentDao().query(pc).get(0).equals(eventCreatorAppointment))
+                if (helper.getEventCreatorAppointmentDao().query(pc).get(0).equals(eventCreatorAppointment))
                     index = 0;
                 else {
                     UpdateBuilder<EventCreatorAppointment, Integer> ub = helper.getEventCreatorAppointmentDao().updateBuilder();

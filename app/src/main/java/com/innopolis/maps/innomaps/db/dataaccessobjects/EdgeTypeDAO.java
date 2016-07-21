@@ -7,7 +7,6 @@ import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.db.DatabaseHelper;
 import com.innopolis.maps.innomaps.db.DatabaseManager;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EdgeType;
-import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 
 import java.sql.SQLException;
@@ -123,11 +122,15 @@ public class EdgeTypeDAO implements ExtendedCrud {
     @Override
     public int createOrUpdateIfExists(Object item) {
         int index = -1;
-        Dao.CreateOrUpdateStatus createOrUpdateStatus;
         EdgeType edgeType = (EdgeType) item;
         try {
-            createOrUpdateStatus = helper.getEdgeTypeDao().createOrUpdate(edgeType);
-            index = createOrUpdateStatus.getNumLinesChanged();
+            if (helper.getEdgeTypeDao().idExists(edgeType.getId())) {
+                if (helper.getEdgeTypeDao().queryForId(edgeType.getId()).equals(edgeType))
+                    index = edgeType.getId();
+                else
+                    index = helper.getEdgeTypeDao().update(edgeType);
+            } else
+                index = helper.getEdgeTypeDao().create(edgeType);
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
                     EdgeTypeDAO.class.getSimpleName());

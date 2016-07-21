@@ -125,7 +125,7 @@ public class RoomPhotoDAO implements Crud {
             qb.where().eq(Constants.ROOM_ID, roomPhoto.getRoom_id()).and().eq(Constants.PHOTO_ID, roomPhoto.getPhoto_id());
             PreparedQuery<RoomPhoto> pc = qb.prepare();
             if (helper.getRoomPhotoDao().query(pc).size() > 0) {
-                if(helper.getRoomPhotoDao().query(pc).get(0).equals(roomPhoto))
+                if (helper.getRoomPhotoDao().query(pc).get(0).equals(roomPhoto))
                     index = 0;
                 else {
                     UpdateBuilder<RoomPhoto, Integer> ub = helper.getRoomPhotoDao().updateBuilder();

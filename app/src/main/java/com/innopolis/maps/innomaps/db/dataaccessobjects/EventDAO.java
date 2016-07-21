@@ -8,7 +8,6 @@ import com.innopolis.maps.innomaps.db.DatabaseHelper;
 import com.innopolis.maps.innomaps.db.DatabaseManager;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Event;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventFavorable;
-import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 
 import java.sql.SQLException;
@@ -142,19 +141,27 @@ public class EventDAO implements ExtendedCrud {
     @Override
     public int createOrUpdateIfExists(Object item) {
         int index = -1;
-        Dao.CreateOrUpdateStatus createOrUpdateStatus;
         EventFavorable eventFavorable;
         try {
+            boolean skipUpdate = false;
             if (item instanceof Event) {
                 Event event = (Event) item;
                 if (helper.getEventDao().idExists(event.getId()))
                     eventFavorable = new EventFavorable(event, helper.getEventDao().queryForId(event.getId()).isFavourite());
-                else
+                else {
                     eventFavorable = new EventFavorable(event, false);
+                    skipUpdate = true;
+                }
             } else
                 eventFavorable = (EventFavorable) item;
-            createOrUpdateStatus = helper.getEventDao().createOrUpdate(eventFavorable);
-            index = createOrUpdateStatus.getNumLinesChanged();
+
+            if (!skipUpdate && helper.getEventDao().idExists(eventFavorable.getId())) {
+                if (helper.getEventDao().queryForId(eventFavorable.getId()).equals(eventFavorable))
+                    index = eventFavorable.getId();
+                else
+                    index = helper.getEventDao().update(eventFavorable);
+            } else
+                index = helper.getEventDao().create(eventFavorable);
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
                     EventDAO.class.getSimpleName());

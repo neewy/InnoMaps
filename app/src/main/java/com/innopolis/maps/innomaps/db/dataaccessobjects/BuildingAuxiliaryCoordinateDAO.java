@@ -125,7 +125,7 @@ public class BuildingAuxiliaryCoordinateDAO implements Crud {
             qb.where().eq(Constants.BUILDING_ID, buildingAuxiliaryCoordinate.getBuilding_id()).and().eq(Constants.COORDINATE_ID, buildingAuxiliaryCoordinate.getCoordinate_id());
             PreparedQuery<BuildingAuxiliaryCoordinate> pc = qb.prepare();
             if (helper.getBuildingAuxiliaryCoordinateDao().query(pc).size() > 0) {
-                if(helper.getBuildingAuxiliaryCoordinateDao().query(pc).get(0).equals(buildingAuxiliaryCoordinate))
+                if (helper.getBuildingAuxiliaryCoordinateDao().query(pc).get(0).equals(buildingAuxiliaryCoordinate))
                     index = 0;
                 else {
                     UpdateBuilder<BuildingAuxiliaryCoordinate, Integer> ub = helper.getBuildingAuxiliaryCoordinateDao().updateBuilder();

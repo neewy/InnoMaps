@@ -125,7 +125,7 @@ public class BuildingPhotoDAO implements Crud {
             qb.where().eq(Constants.BUILDING_ID, buildingPhoto.getBuilding_id()).and().eq(Constants.PHOTO_ID, buildingPhoto.getPhoto_id());
             PreparedQuery<BuildingPhoto> pc = qb.prepare();
             if (helper.getBuildingPhotoDao().query(pc).size() > 0) {
-                if(helper.getBuildingPhotoDao().query(pc).get(0).equals(buildingPhoto))
+                if (helper.getBuildingPhotoDao().query(pc).get(0).equals(buildingPhoto))
                     index = 0;
                 else {
                     UpdateBuilder<BuildingPhoto, Integer> ub = helper.getBuildingPhotoDao().updateBuilder();

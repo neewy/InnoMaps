@@ -7,7 +7,6 @@ import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.db.DatabaseHelper;
 import com.innopolis.maps.innomaps.db.DatabaseManager;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventSchedule;
-import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 
 import java.sql.SQLException;
@@ -123,11 +122,15 @@ public class EventScheduleDAO implements ExtendedCrud {
     @Override
     public int createOrUpdateIfExists(Object item) {
         int index = -1;
-        Dao.CreateOrUpdateStatus createOrUpdateStatus;
         EventSchedule eventSchedule = (EventSchedule) item;
         try {
-            createOrUpdateStatus = helper.getEventScheduleDao().createOrUpdate(eventSchedule);
-            index = createOrUpdateStatus.getNumLinesChanged();
+            if (helper.getEventScheduleDao().idExists(eventSchedule.getId())) {
+                if (helper.getEventScheduleDao().queryForId(eventSchedule.getId()).equals(eventSchedule))
+                    index = eventSchedule.getId();
+                else
+                    index = helper.getEventScheduleDao().update(eventSchedule);
+            } else
+                index = helper.getEventScheduleDao().create(eventSchedule);
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
                     EventScheduleDAO.class.getSimpleName());

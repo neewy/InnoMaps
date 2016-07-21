@@ -7,7 +7,6 @@ import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.db.DatabaseHelper;
 import com.innopolis.maps.innomaps.db.DatabaseManager;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
-import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 
 import java.sql.SQLException;
@@ -138,11 +137,15 @@ public class CoordinateDAO implements ExtendedCrud {
     @Override
     public int createOrUpdateIfExists(Object item) {
         int index = -1;
-        Dao.CreateOrUpdateStatus createOrUpdateStatus;
         Coordinate coordinate = (Coordinate) item;
         try {
-            createOrUpdateStatus = helper.getCoordinateDao().createOrUpdate(coordinate);
-            index = createOrUpdateStatus.getNumLinesChanged();
+            if (helper.getCoordinateDao().idExists(coordinate.getId())) {
+                if (helper.getCoordinateDao().queryForId(coordinate.getId()).equals(coordinate))
+                    index = coordinate.getId();
+                else
+                    index = helper.getCoordinateDao().update(coordinate);
+            } else
+                index = helper.getCoordinateDao().create(coordinate);
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
                     CoordinateDAO.class.getSimpleName());
