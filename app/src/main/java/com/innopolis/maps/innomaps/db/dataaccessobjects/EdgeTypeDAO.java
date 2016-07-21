@@ -118,4 +118,21 @@ public class EdgeTypeDAO implements ExtendedCrud {
         }
         return edgeType;
     }
+
+    @Override
+    public int createOrUpdateIfExists(Object item) {
+        int index = -1;
+        EdgeType edgeType = (EdgeType) item;
+        try {
+            if(helper.getEdgeTypeDao().idExists(edgeType.getId()))
+                index = helper.getEdgeTypeDao().update(edgeType);
+            else
+                index = helper.getEdgeTypeDao().create(edgeType);
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    EdgeTypeDAO.class.getSimpleName());
+        }
+
+        return index;
+    }
 }

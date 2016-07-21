@@ -118,4 +118,21 @@ public class StreetDAO implements ExtendedCrud {
         }
         return street;
     }
+
+    @Override
+    public int createOrUpdateIfExists(Object item) {
+        int index = -1;
+        Street street = (Street) item;
+        try {
+            if(helper.getStreetDao().idExists(street.getId()))
+                index = helper.getStreetDao().update(street);
+            else
+                index = helper.getStreetDao().create(street);
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    StreetDAO.class.getSimpleName());
+        }
+
+        return index;
+    }
 }

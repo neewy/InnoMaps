@@ -118,4 +118,21 @@ public class EventScheduleDAO implements ExtendedCrud {
         }
         return eventSchedule;
     }
+
+    @Override
+    public int createOrUpdateIfExists(Object item) {
+        int index = -1;
+        EventSchedule eventSchedule = (EventSchedule) item;
+        try {
+            if(helper.getEventScheduleDao().idExists(eventSchedule.getId()))
+                index = helper.getEventScheduleDao().update(eventSchedule);
+            else
+                index = helper.getEventScheduleDao().create(eventSchedule);
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    EventScheduleDAO.class.getSimpleName());
+        }
+
+        return index;
+    }
 }

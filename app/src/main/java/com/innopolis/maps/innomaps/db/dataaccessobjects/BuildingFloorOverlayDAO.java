@@ -118,4 +118,21 @@ public class BuildingFloorOverlayDAO implements ExtendedCrud {
         }
         return buildingFloorOverlay;
     }
+
+    @Override
+    public int createOrUpdateIfExists(Object item) {
+        int index = -1;
+        BuildingFloorOverlay buildingFloorOverlay = (BuildingFloorOverlay) item;
+        try {
+            if(helper.getBuildingFloorOverlayDao().idExists(buildingFloorOverlay.getId()))
+                index = helper.getBuildingFloorOverlayDao().update(buildingFloorOverlay);
+            else
+                index = helper.getBuildingFloorOverlayDao().create(buildingFloorOverlay);
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    BuildingFloorOverlayDAO.class.getSimpleName());
+        }
+
+        return index;
+    }
 }

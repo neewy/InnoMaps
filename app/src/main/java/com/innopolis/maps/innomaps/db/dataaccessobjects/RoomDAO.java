@@ -118,4 +118,21 @@ public class RoomDAO implements ExtendedCrud {
         }
         return room;
     }
+
+    @Override
+    public int createOrUpdateIfExists(Object item) {
+        int index = -1;
+        Room room = (Room) item;
+        try {
+            if(helper.getRoomDao().idExists(room.getId()))
+                index = helper.getRoomDao().update(room);
+            else
+                index = helper.getRoomDao().create(room);
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    RoomDAO.class.getSimpleName());
+        }
+
+        return index;
+    }
 }

@@ -118,5 +118,22 @@ public class PhotoDAO implements ExtendedCrud {
         }
         return photo;
     }
+
+    @Override
+    public int createOrUpdateIfExists(Object item) {
+        int index = -1;
+        Photo photo = (Photo) item;
+        try {
+            if(helper.getPhotoDao().idExists(photo.getId()))
+                index = helper.getPhotoDao().update(photo);
+            else
+                index = helper.getPhotoDao().create(photo);
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    PhotoDAO.class.getSimpleName());
+        }
+
+        return index;
+    }
 }
 

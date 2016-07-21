@@ -118,4 +118,21 @@ public class EventCreatorDAO implements ExtendedCrud {
         }
         return eventCreator;
     }
+
+    @Override
+    public int createOrUpdateIfExists(Object item) {
+        int index = -1;
+        EventCreator eventCreator = (EventCreator) item;
+        try {
+            if(helper.getEventCreatorDao().idExists(eventCreator.getId()))
+                index = helper.getEventCreatorDao().update(eventCreator);
+            else
+                index = helper.getEventCreatorDao().create(eventCreator);
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    EventCreatorDAO.class.getSimpleName());
+        }
+
+        return index;
+    }
 }

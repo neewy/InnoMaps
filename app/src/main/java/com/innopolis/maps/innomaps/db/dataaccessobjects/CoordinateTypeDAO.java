@@ -118,4 +118,21 @@ public class CoordinateTypeDAO implements ExtendedCrud {
         }
         return coordinateType;
     }
+
+    @Override
+    public int createOrUpdateIfExists(Object item) {
+        int index = -1;
+        CoordinateType coordinateType = (CoordinateType) item;
+        try {
+            if(helper.getCoordinateTypeDao().idExists(coordinateType.getId()))
+                index = helper.getCoordinateTypeDao().update(coordinateType);
+            else
+                index = helper.getCoordinateTypeDao().create(coordinateType);
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    CoordinateTypeDAO.class.getSimpleName());
+        }
+
+        return index;
+    }
 }

@@ -133,4 +133,21 @@ public class CoordinateDAO implements ExtendedCrud {
 
         return coordinates;
     }
+
+    @Override
+    public int createOrUpdateIfExists(Object item) {
+        int index = -1;
+        Coordinate coordinate = (Coordinate) item;
+        try {
+            if(helper.getCoordinateDao().idExists(coordinate.getId()))
+                index = helper.getCoordinateDao().update(coordinate);
+            else
+                index = helper.getCoordinateDao().create(coordinate);
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    CoordinateDAO.class.getSimpleName());
+        }
+
+        return index;
+    }
 }

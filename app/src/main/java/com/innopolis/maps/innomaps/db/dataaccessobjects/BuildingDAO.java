@@ -118,4 +118,21 @@ public class BuildingDAO implements ExtendedCrud {
         }
         return building;
     }
+
+    @Override
+    public int createOrUpdateIfExists(Object item) {
+        int index = -1;
+        Building building = (Building) item;
+        try {
+            if(helper.getBuildingDao().idExists(building.getId()))
+                index = helper.getBuildingDao().update(building);
+            else
+                index = helper.getBuildingDao().create(building);
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    BuildingDAO.class.getSimpleName());
+        }
+
+        return index;
+    }
 }
