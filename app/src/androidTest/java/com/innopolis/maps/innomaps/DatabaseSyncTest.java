@@ -56,7 +56,6 @@ public class DatabaseSyncTest extends AndroidTestCase {
 
     @Before
     public void setUp() throws Exception {
-        // TODO: increment DATABASE_VERSION in db/Constants.java or delete current db version through adb shell before running the test
         databaseSync = new DatabaseSync(this.getContext());
     }
 
