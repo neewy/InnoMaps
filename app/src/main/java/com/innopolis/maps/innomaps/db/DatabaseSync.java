@@ -720,6 +720,11 @@ public class DatabaseSync extends IntentService {
         saveLastSyncDate(new Date(), syncTypes.GENERAL);
     }
 
+    public void performGeneralSyncWithServerAndDeleteRecordsDeletedFromServerDatabase() {
+        performGeneralSyncWithServer();
+        deleteRecordsDeletedFromServerDatabase();
+    }
+
     public void saveLastSyncDate(Date lastSyncDate, syncTypes type) {
         sPref = context.getSharedPreferences(Constants.SYNC, MODE_PRIVATE);
         SharedPreferences.Editor ed = sPref.edit();

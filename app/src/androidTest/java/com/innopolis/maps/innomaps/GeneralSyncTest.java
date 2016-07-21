@@ -116,4 +116,59 @@ public class GeneralSyncTest extends AndroidTestCase {
         assertTrue(dataFromDatabase.getBuildingAuxiliaryCoordinates().size() >= 187);
     }
 
+    @Test
+    public void testGeneralDataSyncWithDeletingRecordsDeletedFromServerDatabase() throws ParseException {
+        databaseSync.saveLastSyncDate(com.innopolis.maps.innomaps.network.Constants.serverDateFormat.parse(Constants.DEFAULT_SYNC_DATE), DatabaseSync.syncTypes.GENERAL);
+
+        CoordinateTypeDAO coordinateTypeDAO = new CoordinateTypeDAO(this.getContext());
+        EdgeTypeDAO edgeTypeDAO = new EdgeTypeDAO(this.getContext());
+        RoomTypeDAO roomTypeDAO = new RoomTypeDAO(this.getContext());
+        CoordinateDAO coordinateDAO = new CoordinateDAO(this.getContext());
+        EdgeDAO edgeDAO = new EdgeDAO(this.getContext());
+        StreetDAO streetDAO = new StreetDAO(this.getContext());
+        BuildingDAO buildingDAO = new BuildingDAO(this.getContext());
+        RoomDAO roomDAO = new RoomDAO(this.getContext());
+        PhotoDAO photoDAO = new PhotoDAO(this.getContext());
+        BuildingPhotoDAO buildingPhotoDAO = new BuildingPhotoDAO(this.getContext());
+        RoomPhotoDAO roomPhotoDAO = new RoomPhotoDAO(this.getContext());
+        BuildingFloorOverlayDAO buildingFloorOverlayDAO = new BuildingFloorOverlayDAO(this.getContext());
+        EventCreatorDAO eventCreatorDAO = new EventCreatorDAO(this.getContext());
+        EventDAO eventDAO = new EventDAO(this.getContext());
+        EventScheduleDAO eventScheduleDAO = new EventScheduleDAO(this.getContext());
+        EventCreatorAppointmentDAO eventCreatorAppointmentDAO = new EventCreatorAppointmentDAO(this.getContext());
+        BuildingAuxiliaryCoordinateDAO buildingAuxiliaryCoordinateDAO = new BuildingAuxiliaryCoordinateDAO(this.getContext());
+
+        databaseSync.performGeneralSyncWithServerAndDeleteRecordsDeletedFromServerDatabase();
+
+        GeneralSync dataFromDatabase;
+        GeneralSync.GeneralSyncBuilder generalSyncBuilder = new GeneralSync.GeneralSyncBuilder();
+
+        generalSyncBuilder.setTypes((List<CoordinateType>) coordinateTypeDAO.findAll(), (List<EdgeType>) edgeTypeDAO.findAll(), (List<RoomType>) roomTypeDAO.findAll());
+        generalSyncBuilder.setMapUnits((List<Coordinate>) coordinateDAO.findAll(), (List<Edge>) edgeDAO.findAll(), (List<Street>) streetDAO.findAll(),
+                (List<Building>) buildingDAO.findAll(), (List<Room>) roomDAO.findAll(), (List<Photo>) photoDAO.findAll(), (List<BuildingFloorOverlay>) buildingFloorOverlayDAO.findAll());
+        generalSyncBuilder.setEvents((List<EventCreator>) eventCreatorDAO.findAll(), (List<Event>) eventDAO.findAll(), (List<EventSchedule>) eventScheduleDAO.findAll());
+        generalSyncBuilder.setAssignments((List<BuildingPhoto>) buildingPhotoDAO.findAll(), (List<RoomPhoto>) roomPhotoDAO.findAll(),
+                (List<EventCreatorAppointment>) eventCreatorAppointmentDAO.findAll(), (List<BuildingAuxiliaryCoordinate>) buildingAuxiliaryCoordinateDAO.findAll());
+        dataFromDatabase = generalSyncBuilder.build();
+
+
+        assertTrue(dataFromDatabase.getCoordinateTypes().size() >= 11);
+        assertTrue(dataFromDatabase.getEdgeTypes().size() >= 2);
+        assertTrue(dataFromDatabase.getRoomTypes().size() >= 7);
+        assertTrue(dataFromDatabase.getCoordinates().size() >= 709);
+        assertTrue(dataFromDatabase.getEdges().size() >= 788);
+        assertTrue(dataFromDatabase.getStreets().size() >= 1);
+        assertTrue(dataFromDatabase.getBuildings().size() >= 1);
+        assertTrue(dataFromDatabase.getRooms().size() >= 322);
+        assertTrue(dataFromDatabase.getPhotos().size() > 0);
+        assertTrue(dataFromDatabase.getBuildingFloorOverlays().size() > 0);
+        assertTrue(dataFromDatabase.getEventCreators().size() >= 15);
+        assertTrue(dataFromDatabase.getEvents().size() >= 17);
+        assertTrue(dataFromDatabase.getEventSchedules().size() >= 50);
+        assertTrue(dataFromDatabase.getBuildingPhotos().size() > 0);
+        assertTrue(dataFromDatabase.getRoomPhotos().size() > 0);
+        assertTrue(dataFromDatabase.getEventCreatorAppointments().size() > 20);
+        assertTrue(dataFromDatabase.getBuildingAuxiliaryCoordinates().size() >= 187);
+    }
+
 }
