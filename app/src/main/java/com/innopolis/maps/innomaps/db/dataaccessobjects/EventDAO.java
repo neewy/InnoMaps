@@ -130,9 +130,14 @@ public class EventDAO implements ExtendedCrud {
     public int createOrUpdateIfExists(Object item) {
         int index = -1;
         Dao.CreateOrUpdateStatus createOrUpdateStatus;
-        EventFavorable event = (EventFavorable) item;
+        EventFavorable eventFavorable;
         try {
-            createOrUpdateStatus = helper.getEventDao().createOrUpdate(event);
+            if (item instanceof Event) {
+                Event event = (Event) item;
+                eventFavorable = new EventFavorable(event, false);
+            } else
+                eventFavorable = (EventFavorable) item;
+            createOrUpdateStatus = helper.getEventDao().createOrUpdate(eventFavorable);
             index = createOrUpdateStatus.getNumLinesChanged();
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +

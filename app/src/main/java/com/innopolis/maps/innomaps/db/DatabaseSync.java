@@ -252,16 +252,16 @@ public class DatabaseSync extends IntentService {
                 (List<BuildingAuxiliaryCoordinate>) networkController.getBuildingAuxiliaryCoordinatesCreatedOnOrAfterDate(syncDate);
 
         for (int i = 0; i < buildingPhotos.size(); i++) {
-            buildingPhotoDAO.create(buildingPhotos.get(i));
+            buildingPhotoDAO.createOrUpdateIfExists(buildingPhotos.get(i));
         }
         for (int i = 0; i < roomPhotos.size(); i++) {
-            roomPhotoDAO.create(roomPhotos.get(i));
+            roomPhotoDAO.createOrUpdateIfExists(roomPhotos.get(i));
         }
         for (int i = 0; i < eventCreatorAppointments.size(); i++) {
-            eventCreatorAppointmentDAO.create(eventCreatorAppointments.get(i));
+            eventCreatorAppointmentDAO.createOrUpdateIfExists(eventCreatorAppointments.get(i));
         }
         for (int i = 0; i < buildingAuxiliaryCoordinates.size(); i++) {
-            buildingAuxiliaryCoordinateDAO.create(buildingAuxiliaryCoordinates.get(i));
+            buildingAuxiliaryCoordinateDAO.createOrUpdateIfExists(buildingAuxiliaryCoordinates.get(i));
         }
 
         saveLastSyncDate(new Date(), syncTypes.ASSIGNMENTS);
@@ -273,7 +273,7 @@ public class DatabaseSync extends IntentService {
         for (Integer coordinateTypeId : coordinateTypeIds) {
             if (coordinateTypeId != null) {
                 CoordinateType newCoordinateType = networkController.getCoordinateTypeById(coordinateTypeId);
-                coordinateTypeDAO.create(newCoordinateType);
+                coordinateTypeDAO.createOrUpdateIfExists(newCoordinateType);
             }
         }
     }
@@ -284,7 +284,7 @@ public class DatabaseSync extends IntentService {
         for (Integer edgeTypeId : edgeTypeIds) {
             if (edgeTypeId != null) {
                 EdgeType newEdgeType = networkController.getEdgeTypeById(edgeTypeId);
-                edgeTypeDAO.create(newEdgeType);
+                edgeTypeDAO.createOrUpdateIfExists(newEdgeType);
             }
         }
     }
@@ -295,7 +295,7 @@ public class DatabaseSync extends IntentService {
         for (Integer roomTypeId : roomTypeIds) {
             if (roomTypeId != null) {
                 RoomType newRoomType = networkController.getRoomTypeById(roomTypeId);
-                roomTypeDAO.create(newRoomType);
+                roomTypeDAO.createOrUpdateIfExists(newRoomType);
             }
         }
     }
@@ -306,7 +306,7 @@ public class DatabaseSync extends IntentService {
         for (Integer coordinateId : coordinateIds) {
             if (coordinateId != null) {
                 Coordinate newCoordinate = networkController.getCoordinateById(coordinateId);
-                coordinateDAO.create(newCoordinate);
+                coordinateDAO.createOrUpdateIfExists(newCoordinate);
             }
         }
     }
@@ -317,7 +317,7 @@ public class DatabaseSync extends IntentService {
         for (Integer edgeId : edgeIds) {
             if (edgeId != null) {
                 Edge newEdge = networkController.getEdgeById(edgeId);
-                edgeDAO.create(newEdge);
+                edgeDAO.createOrUpdateIfExists(newEdge);
             }
         }
     }
@@ -328,7 +328,7 @@ public class DatabaseSync extends IntentService {
         for (Integer streetId : streetIds) {
             if (streetId != null) {
                 Street newStreet = networkController.getStreetById(streetId);
-                streetDAO.create(newStreet);
+                streetDAO.createOrUpdateIfExists(newStreet);
             }
         }
     }
@@ -339,7 +339,7 @@ public class DatabaseSync extends IntentService {
         for (Integer buildingId : buildingIds) {
             if (buildingId != null) {
                 Building newBuilding = networkController.getBuildingById(buildingId);
-                buildingDAO.create(newBuilding);
+                buildingDAO.createOrUpdateIfExists(newBuilding);
             }
         }
     }
@@ -350,7 +350,7 @@ public class DatabaseSync extends IntentService {
         for (Integer roomId : roomIds) {
             if (roomId != null) {
                 Room newRoom = networkController.getRoomById(roomId);
-                roomDAO.create(newRoom);
+                roomDAO.createOrUpdateIfExists(newRoom);
             }
         }
     }
@@ -361,7 +361,7 @@ public class DatabaseSync extends IntentService {
         for (Integer photoId : photoIds) {
             if (photoId != null) {
                 Photo newPhoto = networkController.getPhotoById(photoId);
-                photoDAO.create(newPhoto);
+                photoDAO.createOrUpdateIfExists(newPhoto);
             }
         }
     }
@@ -372,7 +372,7 @@ public class DatabaseSync extends IntentService {
         for (Integer buildingFloorOverlayId : buildingFloorOverlayIds) {
             if (buildingFloorOverlayId != null) {
                 BuildingFloorOverlay newBuildingFloorOverlay = networkController.getBuildingFloorOverlayById(buildingFloorOverlayId);
-                buildingFloorOverlayDAO.create(newBuildingFloorOverlay);
+                buildingFloorOverlayDAO.createOrUpdateIfExists(newBuildingFloorOverlay);
             }
         }
     }
@@ -383,7 +383,7 @@ public class DatabaseSync extends IntentService {
         for (Integer eventCreatorId : eventCreatorIds) {
             if (eventCreatorId != null) {
                 EventCreator newEventCreator = networkController.getEventCreatorById(eventCreatorId);
-                eventCreatorDAO.create(newEventCreator);
+                eventCreatorDAO.createOrUpdateIfExists(newEventCreator);
             }
         }
     }
@@ -394,7 +394,7 @@ public class DatabaseSync extends IntentService {
         for (Integer eventId : eventIds) {
             if (eventId != null) {
                 Event newEvent = networkController.getEventById(eventId);
-                eventDAO.create(newEvent);
+                eventDAO.createOrUpdateIfExists(newEvent);
             }
         }
     }
@@ -405,7 +405,7 @@ public class DatabaseSync extends IntentService {
         for (Integer eventScheduleId : eventScheduleIds) {
             if (eventScheduleId != null) {
                 EventSchedule newEventSchedule = networkController.getEventScheduleById(eventScheduleId);
-                eventScheduleDAO.create(newEventSchedule);
+                eventScheduleDAO.createOrUpdateIfExists(newEventSchedule);
             }
         }
     }
@@ -433,55 +433,55 @@ public class DatabaseSync extends IntentService {
         BuildingAuxiliaryCoordinateDAO buildingAuxiliaryCoordinateDAO = new BuildingAuxiliaryCoordinateDAO(context);
 
         for (int i = 0; i < generalData.getCoordinateTypes().size(); i++) {
-            coordinateTypeDAO.create(generalData.getCoordinateType(i));
+            coordinateTypeDAO.createOrUpdateIfExists(generalData.getCoordinateType(i));
         }
         for (int i = 0; i < generalData.getEdgeTypes().size(); i++) {
-            edgeTypeDAO.create(generalData.getEdgeType(i));
+            edgeTypeDAO.createOrUpdateIfExists(generalData.getEdgeType(i));
         }
         for (int i = 0; i < generalData.getRoomTypes().size(); i++) {
-            roomTypeDAO.create(generalData.getRoomType(i));
+            roomTypeDAO.createOrUpdateIfExists(generalData.getRoomType(i));
         }
         for (int i = 0; i < generalData.getCoordinates().size(); i++) {
-            coordinateDAO.create(generalData.getCoordinate(i));
+            coordinateDAO.createOrUpdateIfExists(generalData.getCoordinate(i));
         }
         for (int i = 0; i < generalData.getEdges().size(); i++) {
-            edgeDAO.create(generalData.getEdge(i));
+            edgeDAO.createOrUpdateIfExists(generalData.getEdge(i));
         }
         for (int i = 0; i < generalData.getStreets().size(); i++) {
-            streetDAO.create(generalData.getStreet(i));
+            streetDAO.createOrUpdateIfExists(generalData.getStreet(i));
         }
         for (int i = 0; i < generalData.getBuildings().size(); i++) {
-            buildingDAO.create(generalData.getBuilding(i));
+            buildingDAO.createOrUpdateIfExists(generalData.getBuilding(i));
         }
         for (int i = 0; i < generalData.getRooms().size(); i++) {
-            roomDAO.create(generalData.getRoom(i));
+            roomDAO.createOrUpdateIfExists(generalData.getRoom(i));
         }
         for (int i = 0; i < generalData.getPhotos().size(); i++) {
-            photoDAO.create(generalData.getPhoto(i));
+            photoDAO.createOrUpdateIfExists(generalData.getPhoto(i));
         }
         for (int i = 0; i < generalData.getBuildingPhotos().size(); i++) {
-            buildingPhotoDAO.create(generalData.getBuildingPhoto(i));
+            buildingPhotoDAO.createOrUpdateIfExists(generalData.getBuildingPhoto(i));
         }
         for (int i = 0; i < generalData.getRoomPhotos().size(); i++) {
-            roomPhotoDAO.create(generalData.getRoomPhoto(i));
+            roomPhotoDAO.createOrUpdateIfExists(generalData.getRoomPhoto(i));
         }
         for (int i = 0; i < generalData.getBuildingFloorOverlays().size(); i++) {
-            buildingFloorOverlayDAO.create(generalData.getBuildingFloorOverlay(i));
+            buildingFloorOverlayDAO.createOrUpdateIfExists(generalData.getBuildingFloorOverlay(i));
         }
         for (int i = 0; i < generalData.getEventCreators().size(); i++) {
-            eventCreatorDAO.create(generalData.getEventCreator(i));
+            eventCreatorDAO.createOrUpdateIfExists(generalData.getEventCreator(i));
         }
         for (int i = 0; i < generalData.getEvents().size(); i++) {
-            eventDAO.create(generalData.getEvent(i));
+            eventDAO.createOrUpdateIfExists(generalData.getEvent(i));
         }
         for (int i = 0; i < generalData.getEventSchedules().size(); i++) {
-            eventScheduleDAO.create(generalData.getEventSchedule(i));
+            eventScheduleDAO.createOrUpdateIfExists(generalData.getEventSchedule(i));
         }
         for (int i = 0; i < generalData.getEventCreatorAppointments().size(); i++) {
-            eventCreatorAppointmentDAO.create(generalData.getEventCreatorAppointment(i));
+            eventCreatorAppointmentDAO.createOrUpdateIfExists(generalData.getEventCreatorAppointment(i));
         }
         for (int i = 0; i < generalData.getBuildingAuxiliaryCoordinates().size(); i++) {
-            buildingAuxiliaryCoordinateDAO.create(generalData.getBuildingAuxiliaryCoordinate(i));
+            buildingAuxiliaryCoordinateDAO.createOrUpdateIfExists(generalData.getBuildingAuxiliaryCoordinate(i));
         }
 
         saveLastSyncDate(new Date(), syncTypes.GENERAL);
