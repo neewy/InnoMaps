@@ -85,10 +85,10 @@ public class DatabaseSync extends IntentService {
         if (Utils.isNetworkAvailable(context)) {
             try {
                 performSyncWithServer();
+                Log.d(Constants.SYNC, Constants.SYNC_FINISHED_ON + com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(new Date()));
             } catch (ParseException e) {
-                Log.e(Constants.LOG, e.getMessage(), e.fillInStackTrace());
+                Log.e(Constants.SYNC_ERROR, e.getMessage(), e.fillInStackTrace());
             }
-            Log.d(Constants.SYNC, Constants.SYNC_FINISHED_ON + com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(new Date()));
         }
     }
 
