@@ -145,4 +145,18 @@ public class BuildingAuxiliaryCoordinateDAO implements Crud {
 
         return index;
     }
+
+    public BuildingAuxiliaryCoordinate getFirstRecordByCoordinateId(int coordinateId) {
+        BuildingAuxiliaryCoordinate buildingAuxiliaryCoordinate = null;
+        try {
+            QueryBuilder<BuildingAuxiliaryCoordinate, Integer> qb = helper.getBuildingAuxiliaryCoordinateDao().queryBuilder();
+            qb.where().eq(Constants.COORDINATE_ID, coordinateId);
+            PreparedQuery<BuildingAuxiliaryCoordinate> pc = qb.prepare();
+            buildingAuxiliaryCoordinate = helper.getBuildingAuxiliaryCoordinateDao().query(pc).get(0);
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    BuildingAuxiliaryCoordinateDAO.class.getSimpleName());
+        }
+        return buildingAuxiliaryCoordinate;
+    }
 }

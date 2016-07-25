@@ -153,7 +153,7 @@ public class MainActivityLogic extends AppCompatActivity {
                         getSupportFragmentManager().popBackStackImmediate();
                     }
 
-                }else{
+                } else {
                     //TODO: handle back press to update events in EventsFragment
                     getSupportFragmentManager().popBackStackImmediate(maps, 0);
                     getSupportActionBar().setTitle(maps);
@@ -204,22 +204,6 @@ public class MainActivityLogic extends AppCompatActivity {
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
     }
 
-    /**
-     * Methods used for accessing database by two different parameters.
-     * Depending on them DBhelper use "room" in table POI or other.
-     *
-     * @return Integer
-     */
-
-
-    private Integer getRoomPoi() {
-        return 0;
-    }
-
-    private Integer getOtherPoi() {
-        return 1;
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -229,9 +213,8 @@ public class MainActivityLogic extends AppCompatActivity {
 
         // TODO: Unclear what do they mean, and how they are used +
 
-        SearchableItem.addEvents(searchItems, DBHelper.readUniqueEvents(this, false));
-        SearchableItem.addPois(searchItems, DBHelper.readPois(database, getRoomPoi()));
-        SearchableItem.addPois(searchItems, DBHelper.readPois(database, getOtherPoi()));
+        SearchableItem.addEvents(searchItems, DBHelper.readUniqueEvents(this, false), this);
+        SearchableItem.addPois(searchItems, this);
         final List<SearchableItem> adapterList = new LinkedList<>(searchItems);
         final SearchView.SearchAutoComplete searchBox = (SearchView.SearchAutoComplete)
                 searchView.findViewById(R.id.search_src_text);
