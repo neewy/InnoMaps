@@ -10,14 +10,8 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.v7.view.menu.MenuBuilder;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Menu;
 import android.widget.Toast;
 
 import com.innopolis.maps.innomaps.R;
@@ -26,12 +20,9 @@ import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.db.DatabaseManager;
 import com.innopolis.maps.innomaps.db.DatabaseSync;
 import com.innopolis.maps.innomaps.utils.AnalyticsTrackers;
-import com.innopolis.maps.innomaps.utils.Utils;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 
 
 public class MainActivity extends MainActivityLogic
