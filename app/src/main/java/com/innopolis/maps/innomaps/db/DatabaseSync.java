@@ -82,7 +82,7 @@ public class DatabaseSync extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        if (Utils.isNetworkAvailable(context)) {
+        if (context != null && Utils.isNetworkAvailable(context)) {
             try {
                 performSyncWithServer();
                 Log.d(Constants.SYNC, Constants.SYNC_FINISHED_ON + com.innopolis.maps.innomaps.network.Constants.serverDateFormat.format(new Date()));
