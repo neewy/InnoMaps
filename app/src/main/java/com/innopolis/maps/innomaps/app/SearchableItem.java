@@ -258,8 +258,10 @@ public class SearchableItem implements Comparable<SearchableItem> {
         for (CoordinateType coordinateType : coordinateTypes) {
             coordinateTypesMap.put(determineSearchableItemType(coordinateType.getName()), coordinateType.getId());
         }
-        stairsAndElevatorsCoordinates.addAll(coordinateDAO.getCoordinatesByTypeId(coordinateTypesMap.get(SearchableItemType.STAIRS)));
-        stairsAndElevatorsCoordinates.addAll(coordinateDAO.getCoordinatesByTypeId(coordinateTypesMap.get(SearchableItemType.ELEVATOR)));
+        if(coordinateTypesMap.get(SearchableItemType.STAIRS) != null)
+            stairsAndElevatorsCoordinates.addAll(coordinateDAO.getCoordinatesByTypeId(coordinateTypesMap.get(SearchableItemType.STAIRS)));
+        if(coordinateTypesMap.get(SearchableItemType.ELEVATOR) != null)
+            stairsAndElevatorsCoordinates.addAll(coordinateDAO.getCoordinatesByTypeId(coordinateTypesMap.get(SearchableItemType.ELEVATOR)));
 
         return stairsAndElevatorsCoordinates;
     }
