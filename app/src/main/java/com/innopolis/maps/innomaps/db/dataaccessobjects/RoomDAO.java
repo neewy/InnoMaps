@@ -7,6 +7,7 @@ import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.db.DatabaseHelper;
 import com.innopolis.maps.innomaps.db.DatabaseManager;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
+import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 
 import java.sql.SQLException;
@@ -152,5 +153,23 @@ public class RoomDAO implements ExtendedCrud {
                     RoomDAO.class.getSimpleName());
         }
         return room;
+    }
+
+    public List<Room> findRoomsExceptWithFollowingTypes(List<Integer> roomTypeIds) {
+
+        List<Room> rooms = new ArrayList<>();
+
+        try {
+            QueryBuilder<Room, Integer> qBuilder = helper.getRoomDao().queryBuilder();
+            qBuilder.where().notIn(Constants.TYPE_ID, roomTypeIds);
+            PreparedQuery<Room> pc = qBuilder.prepare();
+            if (helper.getRoomDao().query(pc).size() > 0)
+                rooms = helper.getRoomDao().query(pc);
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    RoomDAO.class.getSimpleName());
+        }
+
+        return rooms;
     }
 }

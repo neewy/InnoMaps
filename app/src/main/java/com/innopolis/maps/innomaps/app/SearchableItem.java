@@ -28,7 +28,7 @@ import java.util.List;
 
 public class SearchableItem implements Comparable<SearchableItem> {
     public enum SearchableItemType {
-        ELEVATOR, STAIRS, ROOM, FOOD, WC, CLINIC, READING, LIBRARY, EASTER_EGG, EVENT, DEFAULT
+        DOOR, ELEVATOR, STAIRS, ROOM, FOOD, WC, CLINIC, READING, LIBRARY, EASTER_EGG, EVENT, DEFAULT
     }
 
     public String name;
@@ -155,6 +155,7 @@ public class SearchableItem implements Comparable<SearchableItem> {
         initializeDAOs(context);
         HashMap<Integer, SearchableItemType> coordinateTypesMap = new HashMap<>();
         HashMap<Integer, SearchableItemType> roomTypesMap = new HashMap<>();
+        HashMap<SearchableItemType, Integer> inverseRoomTypesMap = new HashMap<>();
         List<CoordinateType> coordinateTypes = (List<CoordinateType>) coordinateTypeDAO.findAll();
         List<RoomType> roomTypes = (List<RoomType>) roomTypeDAO.findAll();
         for (CoordinateType coordinateType : coordinateTypes) {
@@ -162,9 +163,12 @@ public class SearchableItem implements Comparable<SearchableItem> {
         }
         for (RoomType roomType : roomTypes) {
             roomTypesMap.put(roomType.getId(), determineSearchableItemType(roomType.getName()));
+            inverseRoomTypesMap.put(roomTypesMap.get(roomType.getId()), roomType.getId());
         }
 
-        List<Room> rooms = (List<Room>) roomDAO.findAll();
+        List<Integer> ignoredRoomTypes = new ArrayList<>();
+        ignoredRoomTypes.add(inverseRoomTypesMap.get(SearchableItemType.DOOR));
+        List<Room> rooms = roomDAO.findRoomsExceptWithFollowingTypes(ignoredRoomTypes);
         List<Coordinate> coordinates = getCoordinatesOfStairsAndElevators();
 
         for (Room room : rooms) {
@@ -211,6 +215,8 @@ public class SearchableItem implements Comparable<SearchableItem> {
 
     public static SearchableItemType determineSearchableItemType(String typeStr) {
         switch (typeStr) {
+            case "DOOR":
+                return SearchableItemType.DOOR;
             case "STAIRS":
                 return SearchableItemType.STAIRS;
             case "ELEVATOR":
