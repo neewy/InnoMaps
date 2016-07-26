@@ -173,4 +173,22 @@ public class EventScheduleDAO implements ExtendedCrud {
 
         return eventSchedules;
     }
+
+    public List<EventSchedule> findUpcomingAndOngoingScheduledEventsInSpecifiedLocation(int location_id) {
+
+        List<EventSchedule> eventSchedules = new ArrayList<>();
+
+        try {
+            QueryBuilder<EventSchedule, Integer> qb = helper.getEventScheduleDao().queryBuilder();
+            qb.where().gt(Constants.END_DATETIME, new Date()).and().eq(Constants.LOCATION_ID, location_id);
+            PreparedQuery<EventSchedule> pc = qb.prepare();
+            if (helper.getEventScheduleDao().query(pc).size() > 0)
+                eventSchedules = helper.getEventScheduleDao().query(pc);
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    EventScheduleDAO.class.getSimpleName());
+        }
+
+        return eventSchedules;
+    }
 }

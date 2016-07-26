@@ -35,11 +35,13 @@ import com.innopolis.maps.innomaps.db.dataaccessobjects.EventCreatorAppointmentD
 import com.innopolis.maps.innomaps.db.dataaccessobjects.EventCreatorDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.EventDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.EventScheduleDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.RoomDAO;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreator;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreatorAppointment;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventFavorable;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventSchedule;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
 import com.innopolis.maps.innomaps.events.Event;
 import com.innopolis.maps.innomaps.events.MapBottomEventListAdapter;
 import com.innopolis.maps.innomaps.events.TelegramOpenDialog;
@@ -55,23 +57,17 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 import static com.innopolis.maps.innomaps.database.TableFields.EMPTY;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT;
-import static com.innopolis.maps.innomaps.database.TableFields.EVENTS;
-import static com.innopolis.maps.innomaps.database.TableFields.EVENT_ID;
-import static com.innopolis.maps.innomaps.database.TableFields.EVENT_POI;
 import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.POI;
-import static com.innopolis.maps.innomaps.database.TableFields.POI_ID;
 import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
-import static com.innopolis.maps.innomaps.database.TableFields.START;
-import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY;
-import static com.innopolis.maps.innomaps.database.TableFields._ID;
 
 
 public class BottomSheet extends Fragment {
@@ -127,8 +123,8 @@ public class BottomSheet extends Fragment {
             typeEvent(item.getId());
             idPoi.setText(EVENT);
         } else {
-            idPoi.setText(item.getId());
-            typeEventNon(item.getId());
+            idPoi.setText(String.format(Locale.ENGLISH, "%d", item.getId()));
+            typeEventNon(item);
         }
         locationText.setText(StringUtils.join(locationArray, ", "));
         if (scrollView.getVisibility() == View.GONE) {
@@ -240,52 +236,55 @@ public class BottomSheet extends Fragment {
     }
 
 
-    public void typeEventNon(int poi_id) {
+    public void typeEventNon(SearchableItem item) {
 
-        String sqlQuery = SQLQueries.typeEventNoneQuery(POI, EVENT_POI, EVENTS, _ID, POI_ID, EVENT_ID, EVENT_ID);
+        CoordinateDAO coordinateDAO = new CoordinateDAO(this.getContext());
+        RoomDAO roomDAO = new RoomDAO(this.getContext());
+        EventScheduleDAO eventScheduleDAO = new EventScheduleDAO(this.getContext());
+        EventDAO eventDAO = new EventDAO(this.getContext());
 
-        Cursor cursor = MarkersAdapter.database.rawQuery(sqlQuery, new String[]{Integer.toString(poi_id)});
-        String poi_name, latitude, longitude;
+        Coordinate coordinate;
+        if (item.getType() == SearchableItem.SearchableItemType.ELEVATOR || item.getType() == SearchableItem.SearchableItemType.STAIRS) // then id is coordinateId
+            coordinate = (Coordinate) coordinateDAO.findById(item.getId());
+        else { // then id is roomId
+            Room room = (Room) roomDAO.findById(item.getId());
+            coordinate = (Coordinate) coordinateDAO.findById(room.getCoordinate_id());
+        }
 
         durationLayout.setVisibility(View.GONE);
         startLayout.setVisibility(View.GONE);
 
-        if (cursor.moveToFirst()) {
-            poi_name = cursor.getString(cursor.getColumnIndex(POI_NAME));
-            latitude = cursor.getString(cursor.getColumnIndex(LATITUDE));
-            longitude = cursor.getString(cursor.getColumnIndex(LONGITUDE));
-            List<Event> events = new LinkedList<>();
-            do {
-                Event event = new Event();
-                event.setSummary(cursor.getString(cursor.getColumnIndex(SUMMARY)));
-                try {
-                    if (cursor.getString(cursor.getColumnIndex(START)) != null) {
-                        event.setStart(Utils.googleTimeFormat.parse(cursor.getString(cursor.getColumnIndex(START))));
-                    }
-                } catch (ParseException e) {
-                    Log.e(getContext().getString(R.string.maps), getContext().getString(R.string.date_parse_exception), e);
-                }
-                event.setEventID(cursor.getString(cursor.getColumnIndex(EVENT_ID)));
-                if (event.getEventID() != null) {
-                    events.add(event);
-                }
-            } while (cursor.moveToNext());
-            if (events.size() == 0) {
-                TextView noEvents = new TextView(getContext());
-                noEvents.setText(R.string.no_events);
-                relatedLayout.addView(noEvents);
-            } else {
-                final ListView eventList = new ListView(getContext());
-                eventList.setAdapter(new MapBottomEventListAdapter(getContext(), events, getActivity()));
-                relatedLayout.addView(eventList);
+        List<Event> events = new LinkedList<>();
+
+        List<EventSchedule> eventSchedules = eventScheduleDAO.findUpcomingAndOngoingScheduledEventsInSpecifiedLocation(coordinate.getId());
+        for (EventSchedule eventSchedule : eventSchedules) {
+            Event eventForGUI = new Event();
+            EventFavorable eventFavorable = (EventFavorable) eventDAO.findById(eventSchedule.getEvent_id());
+            eventForGUI.setSummary(eventSchedule.getComment());
+            try {
+                eventForGUI.setStart(com.innopolis.maps.innomaps.network.Constants.serverDateFormat.parse(eventSchedule.getStart_datetime()));
+            } catch (ParseException e) {
+                Log.e(getContext().getString(R.string.maps), getContext().getString(R.string.date_parse_exception), e);
             }
-            cursor.close();
-            headerText.setText(poi_name);
-            LatLng place = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
-            pinMarker(place, false);
-            map.animateCamera(CameraUpdateFactory.newLatLng(place));
-            setPeekHeight(POI);
+            eventForGUI.setEventID(Integer.toString(eventFavorable.getId()));
+            if (eventForGUI.getEventID() != null) {
+                events.add(eventForGUI);
+            }
         }
+        if (events.size() == 0) {
+            TextView noEvents = new TextView(getContext());
+            noEvents.setText(R.string.no_events);
+            relatedLayout.addView(noEvents);
+        } else {
+            final ListView eventList = new ListView(getContext());
+            eventList.setAdapter(new MapBottomEventListAdapter(getContext(), events, getActivity()));
+            relatedLayout.addView(eventList);
+        }
+        headerText.setText(item.getName());
+        LatLng place = new LatLng(coordinate.getLatitude(), coordinate.getLongitude());
+        pinMarker(place, false);
+        map.animateCamera(CameraUpdateFactory.newLatLng(place));
+        setPeekHeight(POI);
     }
 
 
