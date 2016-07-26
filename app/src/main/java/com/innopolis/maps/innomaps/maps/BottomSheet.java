@@ -254,13 +254,15 @@ public class BottomSheet extends Fragment {
         durationLayout.setVisibility(View.GONE);
         startLayout.setVisibility(View.GONE);
 
+        // TODO: Discuss whether or not to keep events.Event class or rewrite everything based on db.tablesrepresentations.EventFavorable
+        // (events.Event is good for GUI, but have many seemingly unassigned parameters)
         List<Event> events = new LinkedList<>();
 
         List<EventSchedule> eventSchedules = eventScheduleDAO.findUpcomingAndOngoingScheduledEventsInSpecifiedLocation(coordinate.getId());
         for (EventSchedule eventSchedule : eventSchedules) {
             Event eventForGUI = new Event();
             EventFavorable eventFavorable = (EventFavorable) eventDAO.findById(eventSchedule.getEvent_id());
-            eventForGUI.setSummary(eventSchedule.getComment());
+            eventForGUI.setSummary(eventFavorable.getName());
             try {
                 eventForGUI.setStart(com.innopolis.maps.innomaps.network.Constants.serverDateFormat.parse(eventSchedule.getStart_datetime()));
             } catch (ParseException e) {
