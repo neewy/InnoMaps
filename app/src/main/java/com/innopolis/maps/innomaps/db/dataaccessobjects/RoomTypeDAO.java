@@ -109,7 +109,7 @@ public class RoomTypeDAO implements ExtendedCrud {
         RoomType roomType = null;
         try {
             QueryBuilder<RoomType, Integer> qBuilder = helper.getRoomTypeDao().queryBuilder();
-            qBuilder.orderBy("id", false); // false for descending order
+            qBuilder.orderBy(Constants.ID, false); // false for descending order
             qBuilder.limit(1);
             roomType = helper.getRoomTypeDao().queryForId(qBuilder.query().get(0).getId());
         } catch (SQLException e) {

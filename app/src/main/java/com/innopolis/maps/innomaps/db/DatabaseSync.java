@@ -77,7 +77,10 @@ public class DatabaseSync extends IntentService {
 
     public DatabaseSync() {
         super("DatabaseSync");
-        DatabaseSync.context = MainActivity.getInstance().getApplicationContext();
+        if (MainActivity.getInstance() != null)
+            DatabaseSync.context = MainActivity.getInstance().getApplicationContext();
+        else
+            DatabaseSync.context = null;
     }
 
     @Override

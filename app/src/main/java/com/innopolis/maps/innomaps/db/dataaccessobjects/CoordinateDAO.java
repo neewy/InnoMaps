@@ -109,7 +109,7 @@ public class CoordinateDAO implements ExtendedCrud {
         Coordinate coordinate = null;
         try {
             QueryBuilder<Coordinate, Integer> qBuilder = helper.getCoordinateDao().queryBuilder();
-            qBuilder.orderBy("id", false); // false for descending order
+            qBuilder.orderBy(Constants.ID, false); // false for descending order
             qBuilder.limit(1);
             coordinate = helper.getCoordinateDao().queryForId(qBuilder.query().get(0).getId());
         } catch (SQLException e) {
@@ -124,7 +124,7 @@ public class CoordinateDAO implements ExtendedCrud {
 
         try {
             QueryBuilder<Coordinate, Integer> queryBuilder = helper.getCoordinateDao().queryBuilder();
-            queryBuilder.where().eq("type_id", coordinateTypeId);
+            queryBuilder.where().eq(Constants.TYPE_ID, coordinateTypeId);
             coordinates = queryBuilder.query();
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +

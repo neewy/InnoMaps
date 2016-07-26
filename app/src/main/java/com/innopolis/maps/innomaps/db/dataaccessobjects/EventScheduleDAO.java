@@ -7,6 +7,7 @@ import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.db.DatabaseHelper;
 import com.innopolis.maps.innomaps.db.DatabaseManager;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventSchedule;
+import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 
 import java.sql.SQLException;
@@ -109,7 +110,7 @@ public class EventScheduleDAO implements ExtendedCrud {
         EventSchedule eventSchedule = null;
         try {
             QueryBuilder<EventSchedule, Integer> qBuilder = helper.getEventScheduleDao().queryBuilder();
-            qBuilder.orderBy("id", false); // false for descending order
+            qBuilder.orderBy(Constants.ID, false); // false for descending order
             qBuilder.limit(1);
             eventSchedule = helper.getEventScheduleDao().queryForId(qBuilder.query().get(0).getId());
         } catch (SQLException e) {
@@ -137,5 +138,20 @@ public class EventScheduleDAO implements ExtendedCrud {
         }
 
         return index;
+    }
+
+    public EventSchedule findByEventId(int eventId) {
+        EventSchedule eventSchedule = null;
+        try {
+            QueryBuilder<EventSchedule, Integer> qb = helper.getEventScheduleDao().queryBuilder();
+            qb.where().eq(Constants.EVENT_ID, eventId);
+            PreparedQuery<EventSchedule> pc = qb.prepare();
+            if (helper.getEventScheduleDao().query(pc).size() > 0)
+                eventSchedule = helper.getEventScheduleDao().query(pc).get(0);
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    EventScheduleDAO.class.getSimpleName());
+        }
+        return eventSchedule;
     }
 }

@@ -109,7 +109,7 @@ public class BuildingFloorOverlayDAO implements ExtendedCrud {
         BuildingFloorOverlay buildingFloorOverlay = null;
         try {
             QueryBuilder<BuildingFloorOverlay, Integer> qBuilder = helper.getBuildingFloorOverlayDao().queryBuilder();
-            qBuilder.orderBy("id", false); // false for descending order
+            qBuilder.orderBy(Constants.ID, false); // false for descending order
             qBuilder.limit(1);
             buildingFloorOverlay = helper.getBuildingFloorOverlayDao().queryForId(qBuilder.query().get(0).getId());
         } catch (SQLException e) {

@@ -109,7 +109,7 @@ public class RoomDAO implements ExtendedCrud {
         Room room = null;
         try {
             QueryBuilder<Room, Integer> qBuilder = helper.getRoomDao().queryBuilder();
-            qBuilder.orderBy("id", false); // false for descending order
+            qBuilder.orderBy(Constants.ID, false); // false for descending order
             qBuilder.limit(1);
             room = helper.getRoomDao().queryForId(qBuilder.query().get(0).getId());
         } catch (SQLException e) {
@@ -137,5 +137,20 @@ public class RoomDAO implements ExtendedCrud {
         }
 
         return index;
+    }
+
+    public Room getFirstRecordByCoordinateId(int coordinateId) {
+        Room room = null;
+        try {
+            QueryBuilder<Room, Integer> qBuilder = helper.getRoomDao().queryBuilder();
+            qBuilder.orderBy(Constants.COORDINATE_ID, false); // false for descending order
+            qBuilder.limit(1);
+            if (qBuilder.query().size() > 0)
+                room = helper.getRoomDao().queryForId(qBuilder.query().get(0).getId());
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    RoomDAO.class.getSimpleName());
+        }
+        return room;
     }
 }

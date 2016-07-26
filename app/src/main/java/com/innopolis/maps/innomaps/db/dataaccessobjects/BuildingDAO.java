@@ -109,7 +109,7 @@ public class BuildingDAO implements ExtendedCrud {
         Building building = null;
         try {
             QueryBuilder<Building, Integer> qBuilder = helper.getBuildingDao().queryBuilder();
-            qBuilder.orderBy("id", false); // false for descending order
+            qBuilder.orderBy(Constants.ID, false); // false for descending order
             qBuilder.limit(1);
             building = helper.getBuildingDao().queryForId(qBuilder.query().get(0).getId());
         } catch (SQLException e) {

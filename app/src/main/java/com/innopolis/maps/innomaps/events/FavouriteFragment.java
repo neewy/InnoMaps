@@ -83,7 +83,7 @@ public class FavouriteFragment extends EventsFragment {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 favouriteNames.clear();
-                SearchableItem.addEvents(favouriteNames, DBHelper.readUniqueEvents(getContext(), true), getContext());
+                SearchableItem.addEvents(favouriteNames, getContext());
             }
 
             @Override

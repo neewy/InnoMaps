@@ -109,7 +109,7 @@ public class EdgeDAO implements ExtendedCrud {
         Edge edge = null;
         try {
             QueryBuilder<Edge, Integer> qBuilder = helper.getEdgeDao().queryBuilder();
-            qBuilder.orderBy("id", false); // false for descending order
+            qBuilder.orderBy(Constants.ID, false); // false for descending order
             qBuilder.limit(1);
             edge = helper.getEdgeDao().queryForId(qBuilder.query().get(0).getId());
         } catch (SQLException e) {

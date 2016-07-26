@@ -163,7 +163,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 eventNames.clear();
-                SearchableItem.addEvents(eventNames, DBHelper.readUniqueEvents(getContext(), false), getContext());
+                SearchableItem.addEvents(eventNames, getContext());
             }
 
             @Override

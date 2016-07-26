@@ -25,7 +25,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.innopolis.maps.innomaps.R;
-import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.events.EventsFragment;
 import com.innopolis.maps.innomaps.events.FavouriteFragment;
 import com.innopolis.maps.innomaps.events.MapFragmentAskForRouteDialog;
@@ -213,7 +212,7 @@ public class MainActivityLogic extends AppCompatActivity {
 
         // TODO: Unclear what do they mean, and how they are used +
 
-        SearchableItem.addEvents(searchItems, DBHelper.readUniqueEvents(this, false), this);
+        SearchableItem.addEvents(searchItems, this);
         SearchableItem.addPois(searchItems, this);
         final List<SearchableItem> adapterList = new LinkedList<>(searchItems);
         final SearchView.SearchAutoComplete searchBox = (SearchView.SearchAutoComplete)
@@ -236,8 +235,8 @@ public class MainActivityLogic extends AppCompatActivity {
                                     item.getRoom().toLowerCase().contains(s.toString().toLowerCase()))) {
                         adapterList.add(item);
                     } else if (item.getName().toLowerCase().contains(s.toString().toLowerCase()) ||
-                            item.getBuilding().toLowerCase().contains(s.toString().toLowerCase()) ||
-                            item.getFloor().toLowerCase().contains(s.toString().toLowerCase())) {
+                            (item.getBuilding() != null && item.getBuilding().toLowerCase().contains(s.toString().toLowerCase())) ||
+                            (item.getFloor() != null && item.getFloor().toLowerCase().contains(s.toString().toLowerCase()))) {
                         adapterList.add(item);
                     }
                 }

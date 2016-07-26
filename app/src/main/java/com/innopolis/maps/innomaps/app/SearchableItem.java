@@ -8,15 +8,18 @@ import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingAuxiliaryCoordin
 import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateTypeDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventScheduleDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.RoomDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.RoomTypeDAO;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Building;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingAuxiliaryCoordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.CoordinateType;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventFavorable;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventSchedule;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomType;
-import com.innopolis.maps.innomaps.events.Event;
 import com.innopolis.maps.innomaps.maps.LatLngFlr;
 
 import java.util.ArrayList;
@@ -42,6 +45,8 @@ public class SearchableItem implements Comparable<SearchableItem> {
     private static RoomDAO roomDAO;
     private static BuildingDAO buildingDAO;
     private static BuildingAuxiliaryCoordinateDAO buildingAuxiliaryCoordinateDAO;
+    private static EventDAO eventDAO;
+    private static EventScheduleDAO eventScheduleDAO;
 
     public SearchableItem(Context context) {
         initializeDAOs(context);
@@ -54,6 +59,8 @@ public class SearchableItem implements Comparable<SearchableItem> {
         roomDAO = new RoomDAO(context);
         buildingDAO = new BuildingDAO(context);
         buildingAuxiliaryCoordinateDAO = new BuildingAuxiliaryCoordinateDAO(context);
+        eventDAO = new EventDAO(context);
+        eventScheduleDAO = new EventScheduleDAO(context);
     }
 
     public String getName() {
@@ -117,17 +124,31 @@ public class SearchableItem implements Comparable<SearchableItem> {
         return this.getName().compareTo(another.getName());
     }
 
-    public static void addEvents(List<SearchableItem> items, List<Event> events, Context context) {
+    public static void addEvents(List<SearchableItem> items, Context context) {
         initializeDAOs(context);
-        for (Event event : events) {
+        List<EventFavorable> events = (List<EventFavorable>) eventDAO.findAll();
+        for (EventFavorable event : events) {
             SearchableItem searchableItem = new SearchableItem(context);
-            searchableItem.setName(event.getSummary());
+            searchableItem.setName(event.getName());
             searchableItem.setType(SearchableItemType.EVENT);
-            searchableItem.setId(event.getEventID());
-            searchableItem.setBuilding(event.getBuilding());
-            searchableItem.setFloor(event.getFloor());
-            searchableItem.setRoom(event.getRoom());
-            searchableItem.setCoordinate(new LatLngFlr(Double.parseDouble(event.getLatitude()), Double.parseDouble(event.getLongitude()), Integer.parseInt(event.getFloor().substring(0, 1))));
+            searchableItem.setId(Integer.toString(event.getId()));
+            EventSchedule eventSchedule = eventScheduleDAO.findByEventId(event.getId());
+            Coordinate eventsCoordinate;
+            if (eventSchedule != null && eventSchedule.getLocation_id() != null) {
+                eventsCoordinate = (Coordinate) coordinateDAO.findById(eventSchedule.getLocation_id());
+                searchableItem.setBuilding(getBuildingNameForEvent(eventsCoordinate.getId()));
+                searchableItem.setFloor(Integer.toString(eventsCoordinate.getFloor()) + Constants.SPACE + Constants.FLOOR_LOWERCASE);
+                if (eventsCoordinate.getType_id() == 3 /*if type is ROOM*/ && null != eventsCoordinate.getName() && !Constants.EMPTY_STRING.equals(eventsCoordinate.getName()))
+                    searchableItem.setRoom(eventsCoordinate.getName());
+                else
+                    searchableItem.setRoom(null);
+                searchableItem.setCoordinate(new LatLngFlr(eventsCoordinate.getLatitude(), eventsCoordinate.getLongitude(), eventsCoordinate.getFloor()));
+            } else {
+                searchableItem.setBuilding(null);
+                searchableItem.setFloor(null);
+                searchableItem.setRoom(null);
+                searchableItem.setCoordinate(null);
+            }
             items.add(searchableItem);
         }
     }
@@ -151,15 +172,13 @@ public class SearchableItem implements Comparable<SearchableItem> {
 
         for (Room room : rooms) {
             SearchableItem searchableItem = new SearchableItem(context);
-            boolean toAdd = true;
             Coordinate roomsCoordinate = (Coordinate) coordinateDAO.findById(room.getCoordinate_id());
             if (null != roomsCoordinate.getName() && !Constants.EMPTY_STRING.equals(roomsCoordinate.getName()))
                 searchableItem.setName(roomsCoordinate.getName());
             else if (null != room.getNumber())
                 searchableItem.setName(Constants.ROOM_STARTING_FROM_CAPITAL_LETTER + Constants.SPACE + Integer.toString(room.getNumber()));
             else {
-                toAdd = false;
-                searchableItem.setName(Constants.EMPTY_STRING);
+                searchableItem.setName(null);
             }
 
             searchableItem.setType(roomTypesMap.get(room.getType_id()));
@@ -170,18 +189,16 @@ public class SearchableItem implements Comparable<SearchableItem> {
             searchableItem.setRoom(searchableItem.getName());
             searchableItem.setCoordinate(new LatLngFlr(roomsCoordinate.getLatitude(), roomsCoordinate.getLongitude(), roomsCoordinate.getFloor()));
 
-            if (toAdd)
+            if (searchableItem.getName() != null)
                 items.add(searchableItem);
         }
 
         for (Coordinate coordinate : coordinates) {
             SearchableItem searchableItem = new SearchableItem(context);
-            boolean toAdd = true;
             if (null != coordinate.getName() && !Constants.EMPTY_STRING.equals(coordinate.getName()))
                 searchableItem.setName(coordinate.getName());
             else {
-                toAdd = false;
-                searchableItem.setName(Constants.EMPTY_STRING);
+                searchableItem.setName(null);
             }
 
             searchableItem.setType(coordinateTypesMap.get(coordinate.getType_id()));
@@ -192,7 +209,7 @@ public class SearchableItem implements Comparable<SearchableItem> {
             searchableItem.setRoom(searchableItem.getName());
             searchableItem.setCoordinate(new LatLngFlr(coordinate.getLatitude(), coordinate.getLongitude(), coordinate.getFloor()));
 
-            if (toAdd)
+            if (searchableItem.getName() != null)
                 items.add(searchableItem);
         }
     }
@@ -241,6 +258,15 @@ public class SearchableItem implements Comparable<SearchableItem> {
             Building coordinatesBuilding = (Building) buildingDAO.findById(buildingAuxiliaryCoordinateWithSpecifiedCoordinateId.getBuilding_id());
             Coordinate buildingsCoordinate = (Coordinate) coordinateDAO.findById(coordinatesBuilding.getCoordinate_id());
             return buildingsCoordinate.getName();
+        }
+    }
+
+    private static String getBuildingNameForEvent(int coordinateId) {
+        Room room = roomDAO.getFirstRecordByCoordinateId(coordinateId);
+        if (room == null)
+            return getBuildingNameForCoordinate(coordinateId);
+        else {
+            return getBuildingNameForRoom(room.getBuilding_id());
         }
     }
 

@@ -128,7 +128,7 @@ public class EventDAO implements ExtendedCrud {
         EventFavorable event = null;
         try {
             QueryBuilder<EventFavorable, Integer> qBuilder = helper.getEventDao().queryBuilder();
-            qBuilder.orderBy("id", false); // false for descending order
+            qBuilder.orderBy(Constants.ID, false); // false for descending order
             qBuilder.limit(1);
             event = helper.getEventDao().queryForId(qBuilder.query().get(0).getId());
         } catch (SQLException e) {

@@ -109,7 +109,7 @@ public class EventCreatorDAO implements ExtendedCrud {
         EventCreator eventCreator = null;
         try {
             QueryBuilder<EventCreator, Integer> qBuilder = helper.getEventCreatorDao().queryBuilder();
-            qBuilder.orderBy("id", false); // false for descending order
+            qBuilder.orderBy(Constants.ID, false); // false for descending order
             qBuilder.limit(1);
             eventCreator = helper.getEventCreatorDao().queryForId(qBuilder.query().get(0).getId());
         } catch (SQLException e) {

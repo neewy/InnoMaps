@@ -109,7 +109,7 @@ public class CoordinateTypeDAO implements ExtendedCrud {
         CoordinateType coordinateType = null;
         try {
             QueryBuilder<CoordinateType, Integer> qBuilder = helper.getCoordinateTypeDao().queryBuilder();
-            qBuilder.orderBy("id", false); // false for descending order
+            qBuilder.orderBy(Constants.ID, false); // false for descending order
             qBuilder.limit(1);
             coordinateType = helper.getCoordinateTypeDao().queryForId(qBuilder.query().get(0).getId());
         } catch (SQLException e) {

@@ -26,6 +26,8 @@ public final class Constants {
     public static final String EVENT_CREATOR_ID = "event_creator_id";
     public static final String ROOM_ID = "room_id";
     public static final String CREATED = "created";
+    public static final String TYPE_ID = "type_id";
+    public static final String ID = "id";
 
     public static final String SYNC = "sync";
     public static final String LAST = "last";
