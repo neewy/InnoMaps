@@ -138,7 +138,7 @@ public class BottomSheet extends Fragment {
     }
 
 
-    protected void typeEvent(String eventScheduleId) {
+    protected void typeEvent(int eventScheduleId) {
 
         EventDAO eventDAO = new EventDAO(this.getContext());
         EventScheduleDAO eventScheduleDAO = new EventScheduleDAO(this.getContext());
@@ -149,7 +149,7 @@ public class BottomSheet extends Fragment {
         durationLayout.setVisibility(View.VISIBLE);
         startLayout.setVisibility(View.VISIBLE);
 
-        EventSchedule eventSchedule = (EventSchedule) eventScheduleDAO.findById(Integer.parseInt(eventScheduleId));
+        EventSchedule eventSchedule = (EventSchedule) eventScheduleDAO.findById(eventScheduleId);
         EventFavorable event = (EventFavorable) eventDAO.findById(eventSchedule.getEvent_id());
         Coordinate eventCoordinate = (Coordinate) coordinateDAO.findById(eventSchedule.getLocation_id());
         if (event != null && eventSchedule != null) {
@@ -189,23 +189,38 @@ public class BottomSheet extends Fragment {
             descriptionText.setTextSize(16);
             descriptionText.setPadding(0, 20, 10, 10);
 
+            String description = event.getDescription();
+            if (!Constants.EMPTY_STRING.equals(description))
+                description += Constants.NEW_LINE + eventSchedule.getComment();
+            else
+                description += eventSchedule.getComment();
+
             String linksToEventCreatorsTelegramAccountsOrGroups = Constants.EMPTY_STRING;
+            boolean groupLinkAdded = false;
             if (null != event.getLink() && !Constants.EMPTY_STRING.equals(event.getLink())) {
+                linksToEventCreatorsTelegramAccountsOrGroups += Constants.GROUP_LINK;
                 linksToEventCreatorsTelegramAccountsOrGroups += event.getLink();
                 linksToEventCreatorsTelegramAccountsOrGroups += Constants.SPACE;
+                groupLinkAdded = true;
             }
 
             List<EventCreatorAppointment> eventCreatorAppointments = eventCreatorAppointmentDAO.findByEventId(event.getId());
-            for (EventCreatorAppointment eventCreatorAppointment : eventCreatorAppointments) {
-                EventCreator eventCreator = (EventCreator) eventCreatorDAO.findById(eventCreatorAppointment.getEvent_creator_id());
+
+            for (int i = 0; i < eventCreatorAppointments.size(); i++) {
+                EventCreator eventCreator = (EventCreator) eventCreatorDAO.findById(eventCreatorAppointments.get(i).getEvent_creator_id());
+                if (groupLinkAdded && i == 0)
+                    linksToEventCreatorsTelegramAccountsOrGroups += Constants.NEW_LINE;
+                if (i == 0)
+                    linksToEventCreatorsTelegramAccountsOrGroups += Constants.CONTACT;
+
                 linksToEventCreatorsTelegramAccountsOrGroups += Constants.AT_SIGN;
                 linksToEventCreatorsTelegramAccountsOrGroups += eventCreator.getTelegram_username();
                 linksToEventCreatorsTelegramAccountsOrGroups += Constants.SPACE;
             }
-            if (!Constants.EMPTY_STRING.equals(linksToEventCreatorsTelegramAccountsOrGroups))
+            if (!Constants.EMPTY_STRING.equals(linksToEventCreatorsTelegramAccountsOrGroups) && !Constants.EMPTY_STRING.equals(description))
                 linksToEventCreatorsTelegramAccountsOrGroups = Constants.NEW_LINE + linksToEventCreatorsTelegramAccountsOrGroups;
 
-            descriptionText.setText(event.getDescription() + Constants.NEW_LINE + eventSchedule.getComment() + linksToEventCreatorsTelegramAccountsOrGroups).addLinks(links).build();
+            descriptionText.setText(description + linksToEventCreatorsTelegramAccountsOrGroups).addLinks(links).build();
             relatedLayout.addView(descriptionText);
             LatLng place = new LatLng(eventCoordinate.getLatitude(), eventCoordinate.getLongitude());
             pinMarker(place, false);
@@ -225,11 +240,11 @@ public class BottomSheet extends Fragment {
     }
 
 
-    public void typeEventNon(String poi_id) {
+    public void typeEventNon(int poi_id) {
 
         String sqlQuery = SQLQueries.typeEventNoneQuery(POI, EVENT_POI, EVENTS, _ID, POI_ID, EVENT_ID, EVENT_ID);
 
-        Cursor cursor = MarkersAdapter.database.rawQuery(sqlQuery, new String[]{poi_id});
+        Cursor cursor = MarkersAdapter.database.rawQuery(sqlQuery, new String[]{Integer.toString(poi_id)});
         String poi_name, latitude, longitude;
 
         durationLayout.setVisibility(View.GONE);

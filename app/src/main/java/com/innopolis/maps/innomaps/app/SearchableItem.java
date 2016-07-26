@@ -33,7 +33,7 @@ public class SearchableItem implements Comparable<SearchableItem> {
 
     public String name;
     public SearchableItemType type;
-    public String id;
+    public int id;
     public String building;
     public String floor;
     public String room;
@@ -79,11 +79,11 @@ public class SearchableItem implements Comparable<SearchableItem> {
         this.type = type;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -134,7 +134,7 @@ public class SearchableItem implements Comparable<SearchableItem> {
             searchableItem.setType(SearchableItemType.EVENT);
             Coordinate eventsCoordinate;
             if (eventSchedule.getLocation_id() != null) {
-                searchableItem.setId(Integer.toString(eventSchedule.getId()));
+                searchableItem.setId(eventSchedule.getId());
                 eventsCoordinate = (Coordinate) coordinateDAO.findById(eventSchedule.getLocation_id());
                 searchableItem.setBuilding(getBuildingNameForEvent(eventsCoordinate.getId()));
                 searchableItem.setFloor(Integer.toString(eventsCoordinate.getFloor()) + Constants.SPACE + Constants.FLOOR_LOWERCASE);
@@ -179,8 +179,7 @@ public class SearchableItem implements Comparable<SearchableItem> {
             }
 
             searchableItem.setType(roomTypesMap.get(room.getType_id()));
-            // TODO: Find out what really should be set as id and WHY
-            searchableItem.setId(Integer.toString(room.getId()));
+            searchableItem.setId(room.getId());
             searchableItem.setBuilding(getBuildingNameForRoom(room.getBuilding_id()));
             searchableItem.setFloor(Integer.toString(roomsCoordinate.getFloor()) + Constants.SPACE + Constants.FLOOR_LOWERCASE);
             searchableItem.setRoom(searchableItem.getName());
@@ -199,8 +198,7 @@ public class SearchableItem implements Comparable<SearchableItem> {
             }
 
             searchableItem.setType(coordinateTypesMap.get(coordinate.getType_id()));
-            // TODO: Find out what really should be set as id and WHY
-            searchableItem.setId(Integer.toString(coordinate.getId()));
+            searchableItem.setId(coordinate.getId());
             searchableItem.setBuilding(getBuildingNameForCoordinate(coordinate.getId()));
             searchableItem.setFloor(Integer.toString(coordinate.getFloor()) + Constants.SPACE + Constants.FLOOR_LOWERCASE);
             searchableItem.setRoom(searchableItem.getName());

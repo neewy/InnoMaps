@@ -59,6 +59,8 @@ public final class Constants {
     // For BottomSheet
     public static final String NEW_LINE = "\n";
     public static final char AT_SIGN = '@';
+    public static final String GROUP_LINK = "Group link: ";
+    public static final String CONTACT = "Contact: ";
 
     // Utility classes, which are a collection of static members, are not meant to be instantiated
     private Constants() {
