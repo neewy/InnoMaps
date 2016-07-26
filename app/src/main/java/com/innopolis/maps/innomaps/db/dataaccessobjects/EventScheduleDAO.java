@@ -12,6 +12,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -153,5 +154,23 @@ public class EventScheduleDAO implements ExtendedCrud {
                     EventScheduleDAO.class.getSimpleName());
         }
         return eventSchedule;
+    }
+
+    public List<EventSchedule> findUpcomingAndOngoingScheduledEvents() {
+
+        List<EventSchedule> eventSchedules = new ArrayList<>();
+
+        try {
+            QueryBuilder<EventSchedule, Integer> qb = helper.getEventScheduleDao().queryBuilder();
+            qb.where().gt(Constants.END_DATETIME, new Date());
+            PreparedQuery<EventSchedule> pc = qb.prepare();
+            if (helper.getEventScheduleDao().query(pc).size() > 0)
+                eventSchedules = helper.getEventScheduleDao().query(pc);
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    EventScheduleDAO.class.getSimpleName());
+        }
+
+        return eventSchedules;
     }
 }

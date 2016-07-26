@@ -131,10 +131,10 @@ public class SearchableItem implements Comparable<SearchableItem> {
             SearchableItem searchableItem = new SearchableItem(context);
             searchableItem.setName(event.getName());
             searchableItem.setType(SearchableItemType.EVENT);
-            searchableItem.setId(Integer.toString(event.getId()));
             EventSchedule eventSchedule = eventScheduleDAO.findByEventId(event.getId());
             Coordinate eventsCoordinate;
             if (eventSchedule != null && eventSchedule.getLocation_id() != null) {
+                searchableItem.setId(Integer.toString(eventSchedule.getId()));
                 eventsCoordinate = (Coordinate) coordinateDAO.findById(eventSchedule.getLocation_id());
                 searchableItem.setBuilding(getBuildingNameForEvent(eventsCoordinate.getId()));
                 searchableItem.setFloor(Integer.toString(eventsCoordinate.getFloor()) + Constants.SPACE + Constants.FLOOR_LOWERCASE);
@@ -143,13 +143,10 @@ public class SearchableItem implements Comparable<SearchableItem> {
                 else
                     searchableItem.setRoom(null);
                 searchableItem.setCoordinate(new LatLngFlr(eventsCoordinate.getLatitude(), eventsCoordinate.getLongitude(), eventsCoordinate.getFloor()));
-            } else {
-                searchableItem.setBuilding(null);
-                searchableItem.setFloor(null);
-                searchableItem.setRoom(null);
-                searchableItem.setCoordinate(null);
+
+
+                items.add(searchableItem);
             }
-            items.add(searchableItem);
         }
     }
 
