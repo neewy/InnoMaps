@@ -145,5 +145,22 @@ public class EventCreatorAppointmentDAO implements Crud {
 
         return index;
     }
+
+    public List<EventCreatorAppointment> findByEventId(int eventId) {
+
+        List<EventCreatorAppointment> eventCreatorAppointments = new ArrayList<>();
+
+        try {
+            QueryBuilder<EventCreatorAppointment, Integer> qb = helper.getEventCreatorAppointmentDao().queryBuilder();
+            qb.where().eq(Constants.EVENT_ID, eventId);
+            PreparedQuery<EventCreatorAppointment> pc = qb.prepare();
+            eventCreatorAppointments = helper.getEventCreatorAppointmentDao().query(pc);
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    EventCreatorAppointmentDAO.class.getSimpleName());
+        }
+
+        return eventCreatorAppointments;
+    }
 }
 

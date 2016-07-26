@@ -29,6 +29,17 @@ import com.innopolis.maps.innomaps.app.CustomScrollView;
 import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.app.SearchableItem;
 import com.innopolis.maps.innomaps.database.SQLQueries;
+import com.innopolis.maps.innomaps.db.Constants;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventCreatorAppointmentDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventCreatorDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventScheduleDAO;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreator;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreatorAppointment;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventFavorable;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventSchedule;
 import com.innopolis.maps.innomaps.events.Event;
 import com.innopolis.maps.innomaps.events.MapBottomEventListAdapter;
 import com.innopolis.maps.innomaps.events.TelegramOpenDialog;
@@ -47,13 +58,11 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
-import static com.innopolis.maps.innomaps.database.TableFields.DESCRIPTION;
 import static com.innopolis.maps.innomaps.database.TableFields.EMPTY;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENTS;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_ID;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_POI;
-import static com.innopolis.maps.innomaps.database.TableFields.EVENT_TYPE;
 import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
@@ -62,7 +71,6 @@ import static com.innopolis.maps.innomaps.database.TableFields.POI_ID;
 import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
 import static com.innopolis.maps.innomaps.database.TableFields.START;
 import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY;
-import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY_EQUAL;
 import static com.innopolis.maps.innomaps.database.TableFields._ID;
 
 
@@ -116,7 +124,7 @@ public class BottomSheet extends Fragment {
         }
 
         if (item.getType() == SearchableItem.SearchableItemType.EVENT) {
-            typeEvent(text);
+            typeEvent(item.getId());
             idPoi.setText(EVENT);
         } else {
             idPoi.setText(item.getId());
@@ -130,30 +138,21 @@ public class BottomSheet extends Fragment {
     }
 
 
-    protected void typeEvent(String summary) {
-        String sqlQuery = SQLQueries.innerJoinDouble(EVENTS, EVENT_POI, POI, EVENT_ID, EVENT_ID, _ID, POI_ID) +
-                SQLQueries.where(EVENTS, SUMMARY_EQUAL);
+    protected void typeEvent(String eventId) {
 
-        String name = "", latitude = "", longitude = "", startDateText = "", description = "";
-        Date startDate = null;
-
-        Cursor cursor = MarkersAdapter.database.rawQuery(sqlQuery, new String[]{summary});
+        EventDAO eventDAO = new EventDAO(this.getContext());
+        EventScheduleDAO eventScheduleDAO = new EventScheduleDAO(this.getContext());
+        EventCreatorDAO eventCreatorDAO = new EventCreatorDAO(this.getContext());
+        CoordinateDAO coordinateDAO = new CoordinateDAO(this.getContext());
+        EventCreatorAppointmentDAO eventCreatorAppointmentDAO = new EventCreatorAppointmentDAO(this.getContext());
 
         durationLayout.setVisibility(View.VISIBLE);
         startLayout.setVisibility(View.VISIBLE);
 
-        if (cursor.moveToFirst()) {
-            latitude = cursor.getString(cursor.getColumnIndex(LATITUDE));
-            longitude = cursor.getString(cursor.getColumnIndex(LONGITUDE));
-            startDateText = cursor.getString(cursor.getColumnIndex(START));
-            name = cursor.getString(cursor.getColumnIndex(SUMMARY));
-
-            Cursor cursor_type = MarkersAdapter.database.query(EVENT_TYPE, null, SUMMARY_EQUAL, new String[]{summary}, null, null, null);
-            if (cursor_type.moveToFirst()) {
-                description = cursor_type.getString(cursor_type.getColumnIndex(DESCRIPTION));
-            }
-            cursor_type.close();
-            cursor.close();
+        EventFavorable event = (EventFavorable) eventDAO.findById(Integer.parseInt(eventId));
+        EventSchedule eventSchedule = (EventSchedule) eventScheduleDAO.findByEventId(event.getId());
+        Coordinate eventCoordinate = (Coordinate) coordinateDAO.findById(eventSchedule.getLocation_id());
+        if (event != null && eventSchedule != null) {
             LinkableTextView descriptionText = new LinkableTextView(getContext());
 
             Link.OnClickListener telegramLinkListener = new Link.OnClickListener() {
@@ -189,19 +188,37 @@ public class BottomSheet extends Fragment {
 
             descriptionText.setTextSize(16);
             descriptionText.setPadding(0, 20, 10, 10);
-            descriptionText.setText(description).addLinks(links).build();
-            relatedLayout.addView(descriptionText);
-            try {
-                startDate = Utils.googleTimeFormat.parse(startDateText);
-            } catch (ParseException e) {
-                Log.e(getContext().getString(R.string.maps), getContext().getString(R.string.time_parse_exception), e);
+
+            String linksToEventCreatorsTelegramAccountsOrGroups = Constants.EMPTY_STRING;
+            if (null != event.getLink() && !Constants.EMPTY_STRING.equals(event.getLink())) {
+                linksToEventCreatorsTelegramAccountsOrGroups += event.getLink();
+                linksToEventCreatorsTelegramAccountsOrGroups += Constants.SPACE;
             }
-            LatLng place = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
+
+            List<EventCreatorAppointment> eventCreatorAppointments = eventCreatorAppointmentDAO.findByEventId(event.getId());
+            for (EventCreatorAppointment eventCreatorAppointment : eventCreatorAppointments) {
+                EventCreator eventCreator = (EventCreator) eventCreatorDAO.findById(eventCreatorAppointment.getEvent_creator_id());
+                linksToEventCreatorsTelegramAccountsOrGroups += Constants.AT_SIGN;
+                linksToEventCreatorsTelegramAccountsOrGroups += eventCreator.getTelegram_username();
+                linksToEventCreatorsTelegramAccountsOrGroups += Constants.SPACE;
+            }
+            if (!Constants.EMPTY_STRING.equals(linksToEventCreatorsTelegramAccountsOrGroups))
+                linksToEventCreatorsTelegramAccountsOrGroups = Constants.NEW_LINE + linksToEventCreatorsTelegramAccountsOrGroups;
+
+            descriptionText.setText(event.getDescription() + Constants.NEW_LINE + eventSchedule.getComment() + linksToEventCreatorsTelegramAccountsOrGroups).addLinks(links).build();
+            relatedLayout.addView(descriptionText);
+            LatLng place = new LatLng(eventCoordinate.getLatitude(), eventCoordinate.getLongitude());
             pinMarker(place, false);
             map.animateCamera(CameraUpdateFactory.newLatLng(place));
         }
 
-        headerText.setText(name);
+        headerText.setText(event.getName());
+        Date startDate = null;
+        try {
+            startDate = com.innopolis.maps.innomaps.network.Constants.serverDateFormat.parse(eventSchedule.getStart_datetime());
+        } catch (ParseException e) {
+            Log.e(getContext().getString(R.string.maps), getContext().getString(R.string.time_parse_exception), e);
+        }
         startText.setText(Utils.commonTime.format(startDate));
         durationText.setText(Utils.prettyTime.format(startDate));
         setPeekHeight(EVENT);
