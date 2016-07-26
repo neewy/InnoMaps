@@ -126,14 +126,14 @@ public class SearchableItem implements Comparable<SearchableItem> {
 
     public static void addEvents(List<SearchableItem> items, Context context) {
         initializeDAOs(context);
-        List<EventFavorable> events = (List<EventFavorable>) eventDAO.findAll();
-        for (EventFavorable event : events) {
+        List<EventSchedule> eventSchedules = eventScheduleDAO.findUpcomingAndOngoingScheduledEvents();
+        for (EventSchedule eventSchedule : eventSchedules) {
+            EventFavorable event = (EventFavorable) eventDAO.findById(eventSchedule.getEvent_id());
             SearchableItem searchableItem = new SearchableItem(context);
             searchableItem.setName(event.getName());
             searchableItem.setType(SearchableItemType.EVENT);
-            EventSchedule eventSchedule = eventScheduleDAO.findByEventId(event.getId());
             Coordinate eventsCoordinate;
-            if (eventSchedule != null && eventSchedule.getLocation_id() != null) {
+            if (eventSchedule.getLocation_id() != null) {
                 searchableItem.setId(Integer.toString(eventSchedule.getId()));
                 eventsCoordinate = (Coordinate) coordinateDAO.findById(eventSchedule.getLocation_id());
                 searchableItem.setBuilding(getBuildingNameForEvent(eventsCoordinate.getId()));

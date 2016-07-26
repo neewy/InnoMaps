@@ -138,7 +138,7 @@ public class BottomSheet extends Fragment {
     }
 
 
-    protected void typeEvent(String eventId) {
+    protected void typeEvent(String eventScheduleId) {
 
         EventDAO eventDAO = new EventDAO(this.getContext());
         EventScheduleDAO eventScheduleDAO = new EventScheduleDAO(this.getContext());
@@ -149,8 +149,8 @@ public class BottomSheet extends Fragment {
         durationLayout.setVisibility(View.VISIBLE);
         startLayout.setVisibility(View.VISIBLE);
 
-        EventFavorable event = (EventFavorable) eventDAO.findById(Integer.parseInt(eventId));
-        EventSchedule eventSchedule = (EventSchedule) eventScheduleDAO.findByEventId(event.getId());
+        EventSchedule eventSchedule = (EventSchedule) eventScheduleDAO.findById(Integer.parseInt(eventScheduleId));
+        EventFavorable event = (EventFavorable) eventDAO.findById(eventSchedule.getEvent_id());
         Coordinate eventCoordinate = (Coordinate) coordinateDAO.findById(eventSchedule.getLocation_id());
         if (event != null && eventSchedule != null) {
             LinkableTextView descriptionText = new LinkableTextView(getContext());
