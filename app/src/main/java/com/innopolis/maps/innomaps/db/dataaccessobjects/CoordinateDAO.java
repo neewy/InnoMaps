@@ -183,4 +183,20 @@ public class CoordinateDAO implements ExtendedCrud {
         }
         return coordinate;
     }
+
+    public List<Coordinate> getCoordinatesByFloor(int floor) {
+        List<Coordinate> coordinates = new ArrayList<>();
+
+        try {
+            QueryBuilder<Coordinate, Integer> queryBuilder = helper.getCoordinateDao().queryBuilder();
+            queryBuilder.where().eq(Constants.FLOOR, floor);
+            if (queryBuilder.query().size() > 0)
+                coordinates = queryBuilder.query();
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    CoordinateDAO.class.getSimpleName());
+        }
+
+        return coordinates;
+    }
 }

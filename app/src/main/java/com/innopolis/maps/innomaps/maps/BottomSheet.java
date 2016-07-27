@@ -20,7 +20,6 @@ import com.apradanas.simplelinkabletext.Link;
 import com.apradanas.simplelinkabletext.LinkableTextView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.innopolis.maps.innomaps.R;
@@ -52,7 +51,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -67,7 +65,7 @@ import static com.innopolis.maps.innomaps.database.TableFields.POI;
 public class BottomSheet extends Fragment {
     protected BottomSheetBehavior mBottomSheetBehavior;
     protected GoogleMap map;
-    protected HashMap<String, String> latLngMap;
+    protected List<LatLngFlr> latLngFlrList; //
 
     private double closestDistance;
 
@@ -212,9 +210,9 @@ public class BottomSheet extends Fragment {
 
             descriptionText.setText(description + linksToEventCreatorsTelegramAccountsOrGroups).addLinks(links).build();
             relatedLayout.addView(descriptionText);
-            LatLng place = new LatLng(eventCoordinate.getLatitude(), eventCoordinate.getLongitude());
+            LatLngFlr place = new LatLngFlr(eventCoordinate.getLatitude(), eventCoordinate.getLongitude(), eventCoordinate.getFloor());
             pinMarker(place, false);
-            map.animateCamera(CameraUpdateFactory.newLatLng(place));
+            map.animateCamera(CameraUpdateFactory.newLatLng(place.getAndroidGMSLatLng()));
         }
 
         headerText.setText(event.getName());
@@ -277,9 +275,9 @@ public class BottomSheet extends Fragment {
             relatedLayout.addView(eventList);
         }
         headerText.setText(item.getName());
-        LatLng place = new LatLng(coordinate.getLatitude(), coordinate.getLongitude());
+        LatLngFlr place = new LatLngFlr(coordinate.getLatitude(), coordinate.getLongitude(), coordinate.getFloor());
         pinMarker(place, false);
-        map.animateCamera(CameraUpdateFactory.newLatLng(place));
+        map.animateCamera(CameraUpdateFactory.newLatLng(place.getAndroidGMSLatLng()));
         setPeekHeight(POI);
     }
 
@@ -294,15 +292,15 @@ public class BottomSheet extends Fragment {
     }
 
 
-    public void pinMarker(LatLng latLng, boolean firstTimeFlag) {
+    public void pinMarker(LatLngFlr latLngFlr, boolean firstTimeFlag) {
         clearMarkerList();
         MarkerOptions markerOptions = new MarkerOptions();
-        String title = findClosestPOI(latLng).firstKey();
+        String title = findClosestPOI(latLngFlr).firstKey();
         markerOptions.title(title);
         if (title != null && !"".equals(title) && firstTimeFlag) {
             boolean found = false;
             for (SearchableItem item : ((MainActivity) getActivity()).searchItems) {
-                if (item.getName().toLowerCase().contains(title.toLowerCase()) && item.getCoordinate().getLatLng().equals(latLng)) {
+                if (item.getName().toLowerCase().contains(title.toLowerCase()) && item.getCoordinate().equals(latLngFlr)) {
                     inSearchBottomList(item);
                     scrollView.setVisibility(View.VISIBLE);
                     found = true;
@@ -313,7 +311,7 @@ public class BottomSheet extends Fragment {
         } else {
             scrollView.setVisibility(View.GONE);
         }
-        markerOptions.position(closest == null || closestDistance > 0.012 ? latLng : closest.getAndroidGMSLatLng());
+        markerOptions.position(closest == null || closestDistance > 0.012 ? latLngFlr.getAndroidGMSLatLng() : closest.getAndroidGMSLatLng());
         Marker marker = map.addMarker(markerOptions);
         marker.showInfoWindow();
         markerList.add(marker);
@@ -321,20 +319,17 @@ public class BottomSheet extends Fragment {
 
     // TODO: Fix. Works incorrectly, usually takes point from the first floor if it is not a room
     // It will work correctly when we will move to 3D coordinates and new database structure
-    private TreeMap<String, LatLngFlr> findClosestPOI(LatLng latLng) {
+    private TreeMap<String, LatLngFlr> findClosestPOI(LatLngFlr latLngFlr) {
         TreeMap<String, LatLngFlr> result = new TreeMap<>();
-        if (latLngMap != null) {
+        if (latLngFlrList != null) {
             NetworkController networkController = new NetworkController();
             CoordinateDAO coordinateDAO = new CoordinateDAO(this.getContext());
-            int floor = coordinateDAO.getFloorByLatitudeAndLongitudeIfSuchCoordinateExistsOrOne(latLng.latitude, latLng.longitude);
-            // Selecting floor doesn't always work
-            // TODO: Rewrite pinMarker method to use LatLngFlr as a parameter instead of LatLng
 
             ClosestCoordinateWithDistance closestCoordinateWithDistance = null;
 
-            // TODO: Find out if we need to get rid of latLngMap and check if latLng!=null instead
-            if (!latLngMap.entrySet().isEmpty()) {
-                closestCoordinateWithDistance = networkController.findClosestPointFromGraph(latLng.latitude, latLng.longitude, floor);
+            // TODO: Find out if we need to get rid of latLngFlrList and check if latLng!=null instead
+            if (!latLngFlrList.isEmpty()) {
+                closestCoordinateWithDistance = networkController.findClosestPointFromGraph(latLngFlr.getLatitude(), latLngFlr.getLongitude(), latLngFlr.getFloor());
                 closestDistance = closestCoordinateWithDistance.getDistance();
             } else
                 closestDistance = Double.MAX_VALUE;

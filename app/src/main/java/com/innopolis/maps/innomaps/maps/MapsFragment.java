@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -64,14 +63,13 @@ import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.app.SearchableItem;
 import com.innopolis.maps.innomaps.app.SuggestionAdapter;
 import com.innopolis.maps.innomaps.database.DBHelper;
-import com.innopolis.maps.innomaps.database.SQLQueries;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateDAO;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 import com.innopolis.maps.innomaps.network.NetworkController;
 import com.innopolis.maps.innomaps.qr.Scanner;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -86,7 +84,6 @@ import static com.innopolis.maps.innomaps.database.TableFields.ALL_CAPITAL;
 import static com.innopolis.maps.innomaps.database.TableFields.ALL_FILTER;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENTS_CAPITAL;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENTS_FILTER;
-import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
 import static com.innopolis.maps.innomaps.database.TableFields.FOOD_CAPITAL;
 import static com.innopolis.maps.innomaps.database.TableFields.FOOD_FILTER;
 import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
@@ -294,7 +291,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                                         return true;
 
                                     } else {
-                                        pinMarker(marker.getPosition(), true);
+                                        pinMarker(new LatLngFlr(marker.getPosition().latitude, marker.getPosition().longitude, getFloorFromFloorPicker()), true);
                                         return true;
                                     }
                                 }
@@ -380,17 +377,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
 
             @Override
             public void onTabSelected(int position, boolean wasSelected) {
-                int floor;
-                if (floorPicker.getCheckedRadioButtonId() != -1) {
-                    int id = floorPicker.getCheckedRadioButtonId();
-                    View radioButton = floorPicker.findViewById(id);
-                    int radioId = floorPicker.indexOfChild(radioButton);
-                    RadioButton btn = (RadioButton) floorPicker.getChildAt(radioId);
-                    String selection = (String) btn.getText();
-                    floor = Integer.parseInt(selection);
-                } else {
-                    floor = 1;
-                }
+                int floor = getFloorFromFloorPicker();
 
                 List<SearchableItem> items = ((MainActivity) getActivity()).searchItems;
                 Collection<SearchableItem> input;
@@ -631,19 +618,17 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         imageOverlay = map.addGroundOverlay(groundOverlayOptions);
     }
 
-    // TODO: check if this method is used or not, because it is useless (it affects BottomSheet.findClosestPOI method... for some reason)
-    private void setFloorPOIHashMap(Integer floor) {
-        latLngMap = new HashMap<>();
-        String sqlQuery = SQLQueries.selectFloorPoiHashmapQuery();
-        Cursor cursor = database.rawQuery(sqlQuery, new String[]{floor + FLOOR});
-        if (cursor.moveToFirst()) {
-            do {
-                latLngMap.put(cursor.getString(cursor.getColumnIndex(LATITUDE)), cursor.getString(cursor.getColumnIndex(LONGITUDE)));
-            } while (cursor.moveToNext());
+    // TODO: check if this method is used or not, because it is useless (it affects BottomSheet.findClosestPOI method... for some reason (not to request database while using maps with the same floor?))
+    private void setFloorPOIHashMap(int floor) {
+        latLngFlrList = new ArrayList<>();
+        CoordinateDAO coordinateDAO = new CoordinateDAO(getContext());
+        List<Coordinate> coordinatesOnSpecifiedFloor = coordinateDAO.getCoordinatesByFloor(floor);
+        if (coordinatesOnSpecifiedFloor.size() > 0) {
+            for (Coordinate coordinate : coordinatesOnSpecifiedFloor)
+                latLngFlrList.add(new LatLngFlr(coordinate.getLatitude(), coordinate.getLongitude(), coordinate.getFloor()));
         } else {
-            latLngMap = null;
+            latLngFlrList = null;
         }
-        cursor.close();
     }
 
     public void showRoute(LatLngFlr source, LatLngFlr destination) {
@@ -780,7 +765,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     OnMapClickListener mapClickListener = new OnMapClickListener() {
         @Override
         public void onMapClick(LatLng latLng) {
-            pinMarker(latLng, true);
+            pinMarker(new LatLngFlr(latLng.latitude, latLng.longitude, getFloorFromFloorPicker()), true);
             hideSoftKeyboard(getActivity());
         }
     };
@@ -795,5 +780,20 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
 
     private void zoomToUniversityAlways() {
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(UI_LAT, UI_LNG), (float) 17.7));
+    }
+
+    private int getFloorFromFloorPicker() {
+        int floor;
+        if (floorPicker.getCheckedRadioButtonId() != -1) {
+            int id = floorPicker.getCheckedRadioButtonId();
+            View radioButton = floorPicker.findViewById(id);
+            int radioId = floorPicker.indexOfChild(radioButton);
+            RadioButton btn = (RadioButton) floorPicker.getChildAt(radioId);
+            String selection = (String) btn.getText();
+            floor = Integer.parseInt(selection);
+        } else {
+            floor = 1;
+        }
+        return floor;
     }
 }
