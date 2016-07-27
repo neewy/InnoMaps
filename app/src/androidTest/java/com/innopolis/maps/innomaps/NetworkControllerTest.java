@@ -20,6 +20,7 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomPhoto;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomType;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Street;
 import com.innopolis.maps.innomaps.maps.LatLngFlr;
+import com.innopolis.maps.innomaps.maps.LatLngFlrGraphVertex;
 import com.innopolis.maps.innomaps.network.Constants;
 import com.innopolis.maps.innomaps.network.NetworkController;
 import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.ClosestCoordinateWithDistance;
@@ -32,6 +33,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -73,6 +75,19 @@ public class NetworkControllerTest extends AndroidTestCase {
                 new ClosestCoordinateWithDistance(new LatLngFlr(expectedLatitude, expectedLongitude, expectedFloor), expectedDistance);
         assertNotNull(response);
         assertEquals(expectedClosestCoordinateWithDistance, response);
+    }
+
+    @Test
+    public void testShortestPath() {
+        LatLngFlr source = new LatLngFlr(55.75305394526869, 48.744045943021774, 1);
+        LatLngFlr destination = new LatLngFlr(55.753250360950176, 48.743498772382736, 1);
+        ArrayList<LatLngFlrGraphVertex> path = (ArrayList<LatLngFlrGraphVertex>) networkController.findShortestPath(source.getLatitude(), source.getLongitude(),
+                source.getFloor(), destination.getLatitude(), destination.getLongitude(), destination.getFloor());
+        LatLngFlrGraphVertex sourceLatLngFlrVertex = new LatLngFlrGraphVertex(source, 2, LatLngFlrGraphVertex.GraphElementType.DEFAULT);
+        LatLngFlrGraphVertex destinationLatLngFlrVertex = new LatLngFlrGraphVertex(destination, 65, LatLngFlrGraphVertex.GraphElementType.DEFAULT);
+
+        assertTrue(path.get(0).equals(sourceLatLngFlrVertex));
+        assertTrue(path.get(path.size() - 1).equals(destinationLatLngFlrVertex));
     }
 
     @Test

@@ -493,15 +493,10 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     }
 
     private void getAndDrawPath(LatLngFlr source, LatLngFlr destination) {
-        ArrayList<LatLngGraphVertex> path = new ArrayList<>();
         NetworkController networkController = new NetworkController();
 
-        // TODO: Remove temporary fix when app will be fully supporting 3D coordinates. Made path of type ArrayList<LatLngFlrGraphVertex>
-        ArrayList<LatLngFlrGraphVertex> pathWithFloors = (ArrayList<LatLngFlrGraphVertex>) networkController.findShortestPath(source.getLatitude(), source.getLongitude(),
+        ArrayList<LatLngFlrGraphVertex> path = (ArrayList<LatLngFlrGraphVertex>) networkController.findShortestPath(source.getLatitude(), source.getLongitude(),
                 source.getFloor(), destination.getLatitude(), destination.getLongitude(), destination.getFloor());
-        for (int i = 0; i < pathWithFloors.size(); i++) {
-            path.add(new LatLngGraphVertex(pathWithFloors.get(i).getVertex().getLatLng(), pathWithFloors.get(i).getVertex().getFloor(), pathWithFloors.get(i).getGraphVertexType()));
-        }
 
             /*Creation and start of a new route*/
         if (path != null && !path.isEmpty()) {

@@ -6,11 +6,15 @@ package com.innopolis.maps.innomaps.maps;
  * Created by alnedorezov on 7/4/16.
  */
 public class LatLngFlrGraphVertex {
-    private LatLngGraphVertex.GraphElementType graphVertexType;
+    public enum GraphElementType {
+        DEFAULT, ELEVATOR, STAIRS
+    }
+
+    private GraphElementType graphVertexType;
     private LatLngFlr vertex;
     private int vertexId;
 
-    public LatLngFlrGraphVertex(LatLngFlr vertex, int vertexId, LatLngGraphVertex.GraphElementType graphVertexType) {
+    public LatLngFlrGraphVertex(LatLngFlr vertex, int vertexId, GraphElementType graphVertexType) {
         this.vertex = vertex;
         this.vertexId = vertexId;
         this.graphVertexType = graphVertexType;
@@ -34,17 +38,31 @@ public class LatLngFlrGraphVertex {
         return vertexId;
     }
 
-    public LatLngGraphVertex.GraphElementType getGraphVertexType() {
+    public GraphElementType getGraphVertexType() {
         return graphVertexType;
     }
 
     @Override
     public boolean equals(Object o) {
-        return getClass() == o.getClass() && ((LatLngGraphVertex) o).getVertex().equals(getVertex());
+        if (this == o) return true;
+        if (!(o instanceof LatLngFlrGraphVertex))
+            return false;
+
+        LatLngFlrGraphVertex that = (LatLngFlrGraphVertex) o;
+
+        if (getVertexId() != that.getVertexId())
+            return false;
+        if (getGraphVertexType() != that.getGraphVertexType())
+            return false;
+        return getVertex() != null ? getVertex().equals(that.getVertex()) : that.getVertex() == null;
+
     }
 
     @Override
     public int hashCode() {
-        return vertex.hashCode();
+        int result = getGraphVertexType() != null ? getGraphVertexType().hashCode() : 0;
+        result = 31 * result + (getVertex() != null ? getVertex().hashCode() : 0);
+        result = 31 * result + getVertexId();
+        return result;
     }
 }
