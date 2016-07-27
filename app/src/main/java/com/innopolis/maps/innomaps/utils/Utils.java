@@ -172,10 +172,10 @@ public class Utils {
         return bitmap;
     }
 
-    public static void selectSpinnerItemByValue(Spinner spnr, String value) {
-        ArrayAdapter<String> adapter = (ArrayAdapter<String>) spnr.getAdapter();
+    public static void selectSpinnerItemByValue(Spinner spnr, int value) {
+        ArrayAdapter<Integer> adapter = (ArrayAdapter<Integer>) spnr.getAdapter();
         for (int position = 0; position < adapter.getCount(); position++) {
-            if (adapter.getItem(position).equals(value)) {
+            if (adapter.getItem(position) == value) {
                 spnr.setSelection(position, true);
                 return;
             }

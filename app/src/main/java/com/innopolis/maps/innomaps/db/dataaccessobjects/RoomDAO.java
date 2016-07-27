@@ -160,16 +160,41 @@ public class RoomDAO implements ExtendedCrud {
         List<Room> rooms = new ArrayList<>();
 
         try {
-            QueryBuilder<Room, Integer> qBuilder = helper.getRoomDao().queryBuilder();
-            qBuilder.where().notIn(Constants.TYPE_ID, roomTypeIds);
-            PreparedQuery<Room> pc = qBuilder.prepare();
-            if (helper.getRoomDao().query(pc).size() > 0)
-                rooms = helper.getRoomDao().query(pc);
+            if(null != roomTypeIds && !roomTypeIds.isEmpty()) {
+                if(roomTypeIds.contains(null))
+                    roomTypeIds.remove(null);
+                QueryBuilder<Room, Integer> qBuilder = helper.getRoomDao().queryBuilder();
+                qBuilder.where().notIn(Constants.TYPE_ID, roomTypeIds);
+                PreparedQuery<Room> pc = qBuilder.prepare();
+                if (helper.getRoomDao().query(pc).size() > 0)
+                    rooms = helper.getRoomDao().query(pc);
+            }
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
                     RoomDAO.class.getSimpleName());
         }
 
         return rooms;
+    }
+
+    public List<Integer> getFloorsListForBuilding(int buildingId) {
+        List<Integer> floors = new ArrayList<>();
+        try {
+            QueryBuilder<Room, Integer> roomQueryBuilder = helper.getRoomDao().queryBuilder();
+            roomQueryBuilder.where().eq(Constants.BUILDING_ID, buildingId);
+            PreparedQuery<Room> pc = roomQueryBuilder.prepare();
+            if (helper.getRoomDao().query(pc).size() > 0) {
+                List<Room> rooms = helper.getRoomDao().query(pc);
+                for (Room room : rooms) {
+                    int floor = helper.getCoordinateDao().queryForId(room.getCoordinate_id()).getFloor();
+                    if (!floors.contains(floor))
+                        floors.add(floor);
+                }
+            }
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    RoomDAO.class.getSimpleName());
+        }
+        return floors;
     }
 }

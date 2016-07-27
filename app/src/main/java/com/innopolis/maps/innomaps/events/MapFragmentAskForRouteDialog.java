@@ -2,10 +2,9 @@ package com.innopolis.maps.innomaps.events;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -20,8 +19,14 @@ import android.widget.TextView;
 
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.app.MainActivity;
-import com.innopolis.maps.innomaps.database.DBHelper;
-import com.innopolis.maps.innomaps.database.SQLQueries;
+import com.innopolis.maps.innomaps.app.SearchableItem;
+import com.innopolis.maps.innomaps.db.Constants;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventScheduleDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.RoomDAO;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventSchedule;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
 import com.innopolis.maps.innomaps.maps.LatLngFlr;
 import com.innopolis.maps.innomaps.maps.MapsFragment;
 import com.innopolis.maps.innomaps.utils.Utils;
@@ -30,26 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
-
-import static com.innopolis.maps.innomaps.database.SQLQueries.roomCursorQuery;
-import static com.innopolis.maps.innomaps.database.SQLQueries.selectAllLike;
-import static com.innopolis.maps.innomaps.database.SQLQueries.selectDistinct;
-import static com.innopolis.maps.innomaps.database.SQLQueries.sourceEqualsDetailedEvent;
-import static com.innopolis.maps.innomaps.database.SQLQueries.typeEqualsEventNone;
-import static com.innopolis.maps.innomaps.database.TableFields.EMPTY;
-import static com.innopolis.maps.innomaps.database.TableFields.EVENT;
-import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
-import static com.innopolis.maps.innomaps.database.TableFields.ID;
-import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
-import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
-import static com.innopolis.maps.innomaps.database.TableFields.NAME;
-import static com.innopolis.maps.innomaps.database.TableFields.POI;
-import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
-import static com.innopolis.maps.innomaps.database.TableFields.ROOM;
-import static com.innopolis.maps.innomaps.database.TableFields.TYPE;
-import static com.innopolis.maps.innomaps.database.TableFields._ID;
 
 public class MapFragmentAskForRouteDialog extends DialogFragment {
 
@@ -71,8 +57,12 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
 
     String source;
     String type;
+    int id;
 
     LatLngFlr destination;
+
+    private static List<SearchableItem> roomsAsSearchableItems;
+    private static HashMap<String, SearchableItem> roomNameSearchableItemHashMap;
 
 
     @Override
@@ -81,8 +71,8 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
         sPref = PreferenceManager.getDefaultSharedPreferences(getContext());
         setHasOptionsMenu(true);
         activity = (MainActivity) getActivity();
-        currentLocation = sPref.getString(activity.getString(R.string.current_location), EMPTY);
-        currentLocationType = sPref.getString(activity.getString(R.string.current_location_type), EMPTY);
+        currentLocation = sPref.getString(activity.getString(R.string.current_location), Constants.EMPTY_STRING);
+        currentLocationType = sPref.getString(activity.getString(R.string.current_location_type), Constants.EMPTY_STRING);
     }
 
     @NonNull
@@ -96,44 +86,28 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
         mapSelect = (AppCompatButton) view.findViewById(R.id.mapSelect);
         qrSelect = (AppCompatButton) view.findViewById(R.id.qrSelect);
 
-        DBHelper dbHelper = new DBHelper(getContext());
-        final SQLiteDatabase database = dbHelper.getReadableDatabase();
+        setRoomsFromSearchableItems();
+
         final Bundle arguments = getArguments();
 
         source = arguments.getString(activity.getString(R.string.dialogSource));
-        type = arguments.getString(TYPE);
+        type = arguments.getString(Constants.TYPE);
+        id = Integer.parseInt(arguments.getString(Constants.ID));
 
-        setDestination(arguments, database);
+        setDestination(getContext());
 
-        List<String> floors = new LinkedList<>();
-        final HashMap<String, List<String>> roomsMap = new LinkedHashMap<>();
+        RoomDAO roomDAO = new RoomDAO(getContext());
+
+        List<Integer> floors;
+
+        // TODO: Rewrite method to work with buildings, at the moment we only have university building which has id = 1
+        floors = roomDAO.getFloorsListForBuilding(1);
 
         /* Populating roomsMap, where every key is the floor and the value is corresponding rooms */
-        Cursor floorCursor = database.rawQuery(selectDistinct(POI, FLOOR), null);
-        if (floorCursor.moveToFirst()) {
-            do {
-                String floor = floorCursor.getString(floorCursor.getColumnIndex(FLOOR));
-                floors.add(floor);
-            } while (floorCursor.moveToNext());
-        }
-        floorCursor.close();
 
-        for (String floor : floors) {
-            Cursor roomCursor = database.rawQuery(roomCursorQuery(POI, TYPE, ROOM, FLOOR, floor), null);
-            List<String> rooms = new ArrayList<>();
-            if (roomCursor.moveToFirst()) {
-                do {
-                    String room = roomCursor.getString(roomCursor.getColumnIndex(POI_NAME));
-                    rooms.add(room);
-                } while (roomCursor.moveToNext());
-            }
-            roomCursor.close();
-            Collections.sort(rooms);
-            roomsMap.put(floor, rooms);
-        }
+        final HashMap<Integer, List<String>> roomsMap = populateRoomsHashMap(floors);
 
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row, floors);
+        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row, floors);
         adapter.setDropDownViewResource(R.layout.spinner_row);
         floorSpinner.setAdapter(adapter);
 
@@ -141,7 +115,7 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 TextView textView = (TextView) view.findViewById(R.id.row);
-                ArrayAdapter<String> roomAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row, roomsMap.get(textView.getText()));
+                ArrayAdapter<String> roomAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_row, roomsMap.get(Integer.parseInt(textView.getText().toString())));
                 roomAdapter.setDropDownViewResource(R.layout.spinner_row);
                 sourceFloor = textView.getText().toString();
                 roomSpinner.setAdapter(roomAdapter);
@@ -168,7 +142,7 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
 
         /*Saving user destination as his source location on next search
         * Room saving doesn't work due to SDK bug */
-        saveUserDestination(arguments, database);
+        saveUserDestination(arguments, getContext());
 
 
         mapSelect.setOnClickListener(new View.OnClickListener() {
@@ -195,21 +169,11 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
                 .setPositiveButton(R.string.route, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
 
-                        String latitudeSource = "", longitudeSource = "";
-                        int floorSource = 1;
-                        Cursor cursorSource = database.rawQuery(roomCursorQuery(POI, FLOOR, sourceFloor, NAME, sourceRoom), null);
-                        if (cursorSource.moveToFirst()) {
-                            latitudeSource = cursorSource.getString(cursorSource.getColumnIndex(LATITUDE));
-                            longitudeSource = cursorSource.getString(cursorSource.getColumnIndex(LONGITUDE));
-                            floorSource = Integer.parseInt(cursorSource.getString(cursorSource.getColumnIndex(FLOOR)).substring(0, 1));
-                        }
-                        cursorSource.close();
-
                         if (source.equals(activity.getString(R.string.detailed_event))) {
                             displayMapsFragment();
                         }
 
-                        LatLngFlr start = new LatLngFlr(Double.parseDouble(latitudeSource), Double.parseDouble(longitudeSource), floorSource);
+                        LatLngFlr start = roomNameSearchableItemHashMap.get(sourceRoom).getCoordinate();
 
                         maps.showRoute(start, destination);
 
@@ -225,59 +189,60 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
                 .create();
     }
 
-    private void setDestination(Bundle arguments, SQLiteDatabase database) {
-        Cursor cursorDest = null;
-        String[] destinationArray = arguments.getString(activity.getString(R.string.destination)).split(", ");
+    private void setDestination(Context context) {
+        EventScheduleDAO eventScheduleDAO = new EventScheduleDAO(context);
+        RoomDAO roomDAO = new RoomDAO(context);
+        CoordinateDAO coordinateDAO = new CoordinateDAO(context);
 
-        if (source.equals(activity.getString(R.string.maps_fragment))) {
-            if (type.equals(EVENT)) {
-                cursorDest = database.rawQuery(SQLQueries.typeEqualsEvent(destinationArray), null);
-            } else {
-                String idPoi = arguments.getString(ID);
-                cursorDest = database.rawQuery(typeEqualsEventNone(idPoi), null);
-            }
-        } else if (source.equals(activity.getString(R.string.detailed_event))) {
-            cursorDest = database.rawQuery(sourceEqualsDetailedEvent(destinationArray), null);
+        Coordinate coordinate = null;
+
+        switch (type) {
+            case Constants.EVENT:
+                EventSchedule eventSchedule = (EventSchedule) eventScheduleDAO.findById(id);
+                coordinate = (Coordinate) coordinateDAO.findById(eventSchedule.getLocation_id());
+                break;
+            case Constants.ROOM:
+                Room room = (Room) roomDAO.findById(id);
+                coordinate = (Coordinate) coordinateDAO.findById(room.getCoordinate_id());
+                break;
+            case Constants.COORDINATE:
+                coordinate = (Coordinate) coordinateDAO.findById(id);
+                break;
         }
 
-        if (cursorDest.moveToFirst()) {
-            destination = new LatLngFlr(Double.parseDouble(cursorDest.getString(cursorDest.getColumnIndex(LATITUDE))),
-                    Double.parseDouble(cursorDest.getString(cursorDest.getColumnIndex(LONGITUDE))),
-                    Integer.parseInt(cursorDest.getString(cursorDest.getColumnIndex(FLOOR))));
-        }
-        cursorDest.close();
-
+        if (null != coordinate)
+            destination = new LatLngFlr(coordinate.getLatitude(), coordinate.getLongitude(), coordinate.getFloor());
     }
 
-    public void saveUserDestination(Bundle arguments, SQLiteDatabase database) {
+    public void saveUserDestination(Bundle arguments, Context context) {
         SharedPreferences.Editor ed = sPref.edit();
-        if (currentLocationType.equals(EMPTY)) {
+        EventScheduleDAO eventScheduleDAO = new EventScheduleDAO(context);
+        RoomDAO roomDAO = new RoomDAO(context);
+        CoordinateDAO coordinateDAO = new CoordinateDAO(context);
+
+        if (currentLocationType.equals(Constants.EMPTY_STRING)) {
             ed.putString(activity.getString(R.string.current_location_type), type);
-            if (type.equals(EVENT)) {
-                ed.putString(activity.getString(R.string.current_location), arguments.getString(activity.getString(R.string.destination)));
-            } else {
-                ed.putString(activity.getString(R.string.current_location), arguments.getString(ID));
-            }
+            ed.putString(activity.getString(R.string.current_location), arguments.getString(Constants.ID));
             ed.apply();
         } else {
-            if (currentLocationType.equals(EVENT)) {
-                String[] currentLocationArray = currentLocation.split(", ");
-                Utils.selectSpinnerItemByValue(floorSpinner, currentLocationArray[1]);
-                ed.putString(activity.getString(R.string.current_location), arguments.getString(activity.getString(R.string.destination)));
-                //Utils.selectSpinnerItemByValue(roomSpinner, currentLocationArray[2]);
-            } else {
-                Cursor cursor = database.rawQuery(selectAllLike(POI, _ID, currentLocation), null);
-                String floor = null;
-                //String room = null;
-                if (cursor.moveToFirst()) {
-                    floor = cursor.getString(cursor.getColumnIndex(FLOOR));
-                    //room = cursor.getString(cursor.getColumnIndex(ROOM));
-                }
-                if (floor != null) Utils.selectSpinnerItemByValue(floorSpinner, floor);
-                //if (room != null) Utils.selectSpinnerItemByValue(roomSpinner, room);
-                ed.putString(activity.getString(R.string.current_location), arguments.getString(ID));
-                cursor.close();
+            Coordinate coordinate;
+            switch (currentLocationType) {
+                case Constants.EVENT:
+                    EventSchedule eventSchedule = (EventSchedule) eventScheduleDAO.findById(id);
+                    coordinate = (Coordinate) coordinateDAO.findById(eventSchedule.getLocation_id());
+                    break;
+                case Constants.ROOM:
+                    Room room = (Room) roomDAO.findById(id);
+                    coordinate = (Coordinate) coordinateDAO.findById(room.getCoordinate_id());
+                    break;
+                default: // Coordinate
+                    coordinate = (Coordinate) coordinateDAO.findById(id);
+                    break;
             }
+
+            int floor = coordinate.getFloor();
+            Utils.selectSpinnerItemByValue(floorSpinner, floor);
+            ed.putString(activity.getString(R.string.current_location), arguments.getString(Constants.ID));
             ed.apply();
         }
     }
@@ -287,5 +252,36 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
         activity.getSupportActionBar().setTitle(activity.getString(R.string.maps));
         activity.setActivityDrawerToggle();
         activity.highlightItemDrawer(activity.getString(R.string.maps));
+    }
+
+    private static HashMap<Integer, List<String>> populateRoomsHashMap(List<Integer> floors) {
+        HashMap<Integer, List<String>> roomsMap = new LinkedHashMap<>();
+        for (Integer floor : floors) {
+            roomsMap.put(floor, new ArrayList<String>());
+        }
+        for (SearchableItem searchableItem : roomsAsSearchableItems) {
+            roomsMap.get(searchableItem.getCoordinate().getFloor()).add(searchableItem.getName());
+        }
+
+        for (Integer floor : floors) {
+            List<String> rooms = roomsMap.get(floor);
+            Collections.sort(rooms);
+            roomsMap.put(floor, rooms);
+        }
+
+        return roomsMap;
+    }
+
+    private static void setRoomsFromSearchableItems() {
+        roomsAsSearchableItems = new ArrayList<>();
+        roomNameSearchableItemHashMap = new LinkedHashMap<>();
+        for (SearchableItem searchableItem : MainActivity.searchItems) {
+            if (searchableItem.getType() != SearchableItem.SearchableItemType.EVENT && // Taking only rooms
+                    searchableItem.getType() != SearchableItem.SearchableItemType.STAIRS &&
+                    searchableItem.getType() != SearchableItem.SearchableItemType.ELEVATOR) {
+                roomsAsSearchableItems.add(searchableItem);
+                roomNameSearchableItemHashMap.put(searchableItem.getName(), searchableItem);
+            }
+        }
     }
 }

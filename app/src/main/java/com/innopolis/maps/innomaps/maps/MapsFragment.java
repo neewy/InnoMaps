@@ -379,7 +379,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             public void onTabSelected(int position, boolean wasSelected) {
                 int floor = getFloorFromFloorPicker();
 
-                List<SearchableItem> items = ((MainActivity) getActivity()).searchItems;
+                List<SearchableItem> items = MainActivity.searchItems;
                 Collection<SearchableItem> input;
                 String snackbarText;
                 if (!wasSelected) {

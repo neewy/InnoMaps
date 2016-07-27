@@ -38,7 +38,8 @@ import java.util.List;
 public class MainActivityLogic extends AppCompatActivity {
     private static TextView locationText;
     private static TextView idPoi;
-    public final List<SearchableItem> searchItems = new LinkedList<>();
+    private static TextView typePoi;
+    public static final List<SearchableItem> searchItems = new LinkedList<>();
     protected final String maps = "Maps";
     private final MainAnalytics mainAnalytics = new MainAnalytics();
     private final String fav = "Favourite";
@@ -61,6 +62,7 @@ public class MainActivityLogic extends AppCompatActivity {
         routeButton = (FloatingActionButton) findViewById(R.id.goto_fab);
         locationText = (TextView) scrollView.findViewById(R.id.locationText);
         idPoi = (TextView) scrollView.findViewById(R.id.idPoi);
+        typePoi = (TextView) scrollView.findViewById(R.id.typePoi);
     }
 
     protected void initializeFragment() {
@@ -167,6 +169,7 @@ public class MainActivityLogic extends AppCompatActivity {
     protected void routeButtonClickListener() {
         final TextView locationText = MainActivityLogic.locationText;
         final TextView finalIdPoi = MainActivityLogic.idPoi;
+        final TextView finalTypePoi = MainActivityLogic.typePoi;
 
         routeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -174,12 +177,8 @@ public class MainActivityLogic extends AppCompatActivity {
                 DialogFragment newFragment = new MapFragmentAskForRouteDialog();
                 Bundle bundle = new Bundle();
                 bundle.putString(getString(R.string.dialogSource), getString(R.string.MapsFragment));
-                if (finalIdPoi.getText().toString().equals(getString(R.string.event))) {
-                    bundle.putString(getString(R.string.type), getString(R.string.event));
-                } else {
-                    bundle.putString(getString(R.string.type), getString(R.string.poi));
-                    bundle.putString(getString(R.string.id), finalIdPoi.getText().toString());
-                }
+                bundle.putString(getString(R.string.type), finalTypePoi.getText().toString());
+                bundle.putString(getString(R.string.id), finalIdPoi.getText().toString());
 
                 bundle.putString(getString(R.string.destination), locationText.getText().toString());
                 newFragment.setArguments(bundle);

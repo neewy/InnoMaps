@@ -65,6 +65,13 @@ public final class Constants {
     public static final char AT_SIGN = '@';
     public static final String GROUP_LINK = "Group link: ";
     public static final String CONTACT = "Contact: ";
+    public static final String ROOM = "room";
+    public static final String COORDINATE = "coordinate";
+    public static final String EVENT = "event";
+
+    // For MapFragmentAskForRouteDialog
+    public static final String TYPE = "type";
+
 
     // Utility classes, which are a collection of static members, are not meant to be instantiated
     private Constants() {

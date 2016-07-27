@@ -43,6 +43,7 @@ import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.database.SQLQueries;
+import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -59,7 +60,6 @@ import xyz.hanks.library.SmallBang;
 import static com.innopolis.maps.innomaps.database.TableFields.BUILDING;
 import static com.innopolis.maps.innomaps.database.TableFields.DESCRIPTION;
 import static com.innopolis.maps.innomaps.database.TableFields.END;
-import static com.innopolis.maps.innomaps.database.TableFields.EVENT;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENTS;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_ID;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_ID_EQUAL;
@@ -76,7 +76,6 @@ import static com.innopolis.maps.innomaps.database.TableFields.ROOM;
 import static com.innopolis.maps.innomaps.database.TableFields.START;
 import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY;
 import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY_EQUAL;
-import static com.innopolis.maps.innomaps.database.TableFields.TYPE;
 import static com.innopolis.maps.innomaps.database.TableFields._ID;
 
 
@@ -290,8 +289,9 @@ public class DetailedEvent extends Fragment {
                 DialogFragment newFragment = new MapFragmentAskForRouteDialog();
                 Bundle bundle = new Bundle();
                 bundle.putString(getString(R.string.dialogSource), context.getString(R.string.detailed_event));
-                bundle.putString(TYPE, EVENT);
+                bundle.putString(getString(R.string.type), Constants.EVENT);
                 bundle.putString(getString(R.string.destination), location.getText().toString());
+                bundle.putString(getString(R.string.id), eventID);
                 newFragment.setArguments(bundle);
                 newFragment.show(getActivity().getSupportFragmentManager(), context.getString(R.string.FindRoute));
 

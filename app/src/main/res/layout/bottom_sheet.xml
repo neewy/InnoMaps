@@ -56,6 +56,14 @@
                     />
 
                 <TextView
+                    android:id="@+id/typePoi"
+                    style="@style/TextAppearance.AppCompat.Headline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    />
+
+                <TextView
                     android:id="@+id/headerText"
                     style="@style/TextAppearance.AppCompat.Headline"
                     android:layout_width="254dp"

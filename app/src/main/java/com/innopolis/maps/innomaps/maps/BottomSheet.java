@@ -79,6 +79,7 @@ public class BottomSheet extends Fragment {
     TextView durationText;
     FrameLayout relatedLayout;
     TextView idPoi;
+    TextView typePoi;
     LinearLayout durationLayout;
     LinearLayout startLayout;
 
@@ -106,18 +107,27 @@ public class BottomSheet extends Fragment {
         durationText = (TextView) scrollView.findViewById(R.id.durationText);
         relatedLayout = (FrameLayout) scrollView.findViewById(R.id.relatedLayout);
         idPoi = (TextView) scrollView.findViewById(R.id.idPoi);
+        typePoi = (TextView) scrollView.findViewById(R.id.typePoi);
 
         if (relatedLayout.getChildCount() != 0) {
             relatedLayout.removeView(relatedLayout.getChildAt(0));
         }
 
+        idPoi.setText(String.format(Locale.ENGLISH, "%d", item.getId()));
+
+        if (item.getType() == SearchableItem.SearchableItemType.STAIRS || item.getType() == SearchableItem.SearchableItemType.ELEVATOR)
+            typePoi.setText(Constants.COORDINATE);
+        else if (item.getType() == SearchableItem.SearchableItemType.EVENT)
+            typePoi.setText(Constants.EVENT);
+        else
+            typePoi.setText(Constants.ROOM);
+
         if (item.getType() == SearchableItem.SearchableItemType.EVENT) {
             typeEvent(item.getId());
-            idPoi.setText(EVENT);
         } else {
-            idPoi.setText(String.format(Locale.ENGLISH, "%d", item.getId()));
             typeEventNon(item);
         }
+
         locationText.setText(StringUtils.join(locationArray, ", "));
         if (scrollView.getVisibility() == View.GONE) {
             scrollView.setVisibility(View.VISIBLE);
@@ -299,7 +309,7 @@ public class BottomSheet extends Fragment {
         markerOptions.title(title);
         if (title != null && !"".equals(title) && firstTimeFlag) {
             boolean found = false;
-            for (SearchableItem item : ((MainActivity) getActivity()).searchItems) {
+            for (SearchableItem item : MainActivity.searchItems) {
                 if (item.getName().toLowerCase().contains(title.toLowerCase()) && item.getCoordinate().equals(latLngFlr)) {
                     inSearchBottomList(item);
                     scrollView.setVisibility(View.VISIBLE);
