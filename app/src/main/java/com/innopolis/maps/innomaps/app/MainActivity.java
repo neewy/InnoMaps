@@ -81,6 +81,10 @@ public class MainActivity extends MainActivityLogic
         return mInstance != null ? mInstance : new MainActivity();
     }
 
+    public static Context getMainActivityContext() {
+        return mInstance != null ? mInstance.getApplicationContext() : null;
+    }
+
     void forFirstRun() {
 
         // Do first run stuff here then set 'firstrun' as false
