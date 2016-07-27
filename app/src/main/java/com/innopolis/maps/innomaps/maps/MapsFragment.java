@@ -25,7 +25,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -66,7 +65,7 @@ import com.innopolis.maps.innomaps.app.SearchableItem;
 import com.innopolis.maps.innomaps.app.SuggestionAdapter;
 import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.database.SQLQueries;
-import com.innopolis.maps.innomaps.network.Constants;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateDAO;
 import com.innopolis.maps.innomaps.network.NetworkController;
 import com.innopolis.maps.innomaps.qr.Scanner;
 
@@ -126,7 +125,6 @@ import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.UI_OUTLINE_L
 import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.UI_OUTLINE_LAT_TOP;
 import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.UI_OUTLINE_LNG_LEFT;
 import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.UI_OUTLINE_LNG_RIGHT;
-import static com.innopolis.maps.innomaps.network.Constants.LOG;
 
 public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -507,7 +505,6 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             mapRoute = new MapRoute(map, path, getActivity(), floorPicker);
             mapRoute.startRoute();
         } else {
-            // TODO: use resource string here +
             Toast.makeText(getContext(), R.string.already_there, Toast.LENGTH_SHORT).show();
         }
     }
@@ -515,7 +512,6 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     private void displayPromptForEnablingGPS(Activity activity) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         final String action = Settings.ACTION_LOCATION_SOURCE_SETTINGS;
-        // TODO: string resource
         final String message = activity.getString(R.string.navigation_location_message);
 
         builder.setMessage(message)
@@ -637,7 +633,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         imageOverlay = map.addGroundOverlay(groundOverlayOptions);
     }
 
-    // TODO: check if this method is used or not, because it is useless
+    // TODO: check if this method is used or not, because it is useless (it affects BottomSheet.findClosestPOI method... for some reason)
     private void setFloorPOIHashMap(Integer floor) {
         latLngMap = new HashMap<>();
         String sqlQuery = SQLQueries.selectFloorPoiHashmapQuery();
@@ -709,34 +705,16 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                     // Currently everything works fine because there are no coordinates with the same
                     // latitude and longitude but with different floor numbers and because the floor for
                     // given latitude and longitude is detected on the server side
-                    Cursor cursor = database.rawQuery(SQLQueries.selectFloorForCoordinate(closest), null);
-                    int floorSource = 1;
-                    int floorDestination = 1;
-                    if (cursor.moveToFirst())
-                        floorSource = Integer.parseInt(cursor.getString(cursor.getColumnIndex(FLOOR)).substring(0, 1));
-                    else {
-                        // TODO: Remove commented code after and only after the app will work with 3D coordinates and the DB will support them
-                        // To be honest, the error message should be shown. If there was no floor detection on server shortest path will work incorrectly.
-                        // Since, as I hope, we will rewrite app and DB to support 3D coordinates and such floor detection won't be needed
-                        // I will leave it as it is. But honestly, I understand that everything here holds on a hair.
-                        Log.e(LOG, String.format("%1$s %2$s: %3$s, %4$s: %5$s", Constants.FLOOR_CALCULATION_ERROR, Constants.LATITUDE,
-                                closest.latitude, Constants.LONGITUDE, closest.longitude));
-                    }
-                    cursor.close();
-                    cursor = database.rawQuery(SQLQueries.selectFloorForCoordinate(destinationLatLng), null);
-                    if (cursor.moveToFirst())
-                        floorDestination = Integer.parseInt(cursor.getString(cursor.getColumnIndex(FLOOR)).substring(0, 1));
-                    else {
-                        // TODO: Remove commented code after and only after the app will work with 3D coordinates and the DB will support them
-                        // To be honest, the error message should be shown. If there was no floor detection on server shortest path will work incorrectly.
-                        // Since, as I hope, we will rewrite app and DB to support 3D coordinates and such floor detection won't be needed
-                        // I will leave it as it is. But honestly, I understand that everything here holds on a hair.
-                        Log.e(LOG, String.format("%1$s %2$s: %3$s, %4$s: %5$s", Constants.FLOOR_CALCULATION_ERROR, Constants.LATITUDE,
-                                destinationLatLng.latitude, Constants.LONGITUDE, destinationLatLng.longitude));
-                    }
-                    cursor.close();
+                    CoordinateDAO coordinateDAO = new CoordinateDAO(getContext());
+                    int floorDestination = coordinateDAO.getFloorByLatitudeAndLongitudeIfSuchCoordinateExistsOrOne(destinationLatLng.latitude, destinationLatLng.longitude);
 
-                    LatLngFlr source = new LatLngFlr(closest.latitude, closest.longitude, floorSource);
+                    // TODO: make destinationLatLng parameter of type LatLngFlr
+                    // To be honest, until destinationLatLng will be of type LatLngFlr the method will work incorrect in few cases.
+                    // If there was no floor detection on server shortest path will work incorrectly.
+                    // Since, as I hope, we will rewrite app and DB to support 3D coordinates and such floor detection won't be needed
+                    // I will leave it as it is. But honestly, I understand that everything here holds on a hair.
+
+                    LatLngFlr source = new LatLngFlr(closest.getLatitude(), closest.getLongitude(), closest.getFloor());
                     LatLngFlr destination = new LatLngFlr(destinationLatLng.latitude, destinationLatLng.longitude, floorDestination);
 
                     showRoute(source, destination);
@@ -755,8 +733,8 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         Intent intent = new Intent(getActivity(), Scanner.class);
         Bundle bundle = new Bundle();
         // TODO: extract constants
-        bundle.putDouble(LATITUDE, closest.latitude);
-        bundle.putDouble(LONGITUDE, closest.longitude);
+        bundle.putDouble(LATITUDE, closest.getLatitude());
+        bundle.putDouble(LONGITUDE, closest.getLongitude());
         intent.putExtras(bundle);
         startActivity(intent);
     }

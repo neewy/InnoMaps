@@ -36,6 +36,11 @@ public class LatLngFlr extends LatLng {
         return new LatLng(getLatitude(), getLongitude());
     }
 
+    @JsonIgnore
+    public com.google.android.gms.maps.model.LatLng getAndroidGMSLatLng() {
+        return new com.google.android.gms.maps.model.LatLng(getLatitude(), getLongitude());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)

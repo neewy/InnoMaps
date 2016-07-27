@@ -1,6 +1,5 @@
 package com.innopolis.maps.innomaps.maps;
 
-import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
@@ -28,7 +27,6 @@ import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.app.CustomScrollView;
 import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.app.SearchableItem;
-import com.innopolis.maps.innomaps.database.SQLQueries;
 import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.EventCreatorAppointmentDAO;
@@ -63,11 +61,7 @@ import java.util.regex.Pattern;
 
 import static com.innopolis.maps.innomaps.database.TableFields.EMPTY;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT;
-import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
-import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
-import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.POI;
-import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
 
 
 public class BottomSheet extends Fragment {
@@ -93,7 +87,7 @@ public class BottomSheet extends Fragment {
     List<Marker> markerList; //to store markers on map
     RadioGroup floorPicker;
 
-    protected LatLng closest = null;
+    protected LatLngFlr closest = null;
 
     public void inSearchBottomList(SearchableItem item) {
         ((RadioButton) floorPicker.getChildAt(5 - item.getCoordinate().getFloor())).setChecked(true);
@@ -319,7 +313,7 @@ public class BottomSheet extends Fragment {
         } else {
             scrollView.setVisibility(View.GONE);
         }
-        markerOptions.position(closest == null || closestDistance > 0.012 ? latLng : closest);
+        markerOptions.position(closest == null || closestDistance > 0.012 ? latLng : closest.getAndroidGMSLatLng());
         Marker marker = map.addMarker(markerOptions);
         marker.showInfoWindow();
         markerList.add(marker);
@@ -327,16 +321,14 @@ public class BottomSheet extends Fragment {
 
     // TODO: Fix. Works incorrectly, usually takes point from the first floor if it is not a room
     // It will work correctly when we will move to 3D coordinates and new database structure
-    private TreeMap<String, LatLng> findClosestPOI(LatLng latLng) {
-        TreeMap<String, LatLng> result = new TreeMap<>();
+    private TreeMap<String, LatLngFlr> findClosestPOI(LatLng latLng) {
+        TreeMap<String, LatLngFlr> result = new TreeMap<>();
         if (latLngMap != null) {
             NetworkController networkController = new NetworkController();
-            Cursor dbCursor = MarkersAdapter.database.rawQuery(SQLQueries.selectFloorForCoordinate(latLng), null);
-            int floor = 1;
+            CoordinateDAO coordinateDAO = new CoordinateDAO(this.getContext());
+            int floor = coordinateDAO.getFloorByLatitudeAndLongitudeIfSuchCoordinateExistsOrOne(latLng.latitude, latLng.longitude);
             // Selecting floor doesn't always work
-            if (dbCursor.moveToFirst())
-                floor = Integer.parseInt(dbCursor.getString(dbCursor.getColumnIndex(FLOOR)).substring(0, 1));
-            dbCursor.close();
+            // TODO: Rewrite pinMarker method to use LatLngFlr as a parameter instead of LatLng
 
             ClosestCoordinateWithDistance closestCoordinateWithDistance = null;
 
@@ -348,15 +340,11 @@ public class BottomSheet extends Fragment {
                 closestDistance = Double.MAX_VALUE;
 
             if (closestDistance < 0.012) {
-                closest = new LatLng(closestCoordinateWithDistance.getCoordinate().getLatitude(), closestCoordinateWithDistance.getCoordinate().getLongitude());
+                closest = new LatLngFlr(closestCoordinateWithDistance.getCoordinate().getLatitude(),
+                        closestCoordinateWithDistance.getCoordinate().getLongitude(), closestCoordinateWithDistance.getCoordinate().getFloor());
                 Log.d(getContext().getString(R.string.distance), EMPTY + closestDistance);
-                String sqlQuery = SQLQueries.distanceQuery(POI, POI_NAME, LATITUDE, LONGITUDE);
-                Cursor cursor = MarkersAdapter.database.rawQuery(sqlQuery,
-                        new String[]{String.valueOf(closestCoordinateWithDistance.getCoordinate().getLatitude()),
-                                String.valueOf(closestCoordinateWithDistance.getCoordinate().getLongitude())});
-                cursor.moveToFirst();
-                result.put(cursor.getString(cursor.getColumnIndex(POI_NAME)), closest);
-                cursor.close();
+                String coordinateName = coordinateDAO.findCoordinateByLatLngFlr(closest).getName();
+                result.put(coordinateName, closest);
                 return result;
             }
         }

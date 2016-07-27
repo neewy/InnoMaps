@@ -7,6 +7,7 @@ import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.db.DatabaseHelper;
 import com.innopolis.maps.innomaps.db.DatabaseManager;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
+import com.innopolis.maps.innomaps.maps.LatLngFlr;
 import com.j256.ormlite.stmt.QueryBuilder;
 
 import java.sql.SQLException;
@@ -152,5 +153,34 @@ public class CoordinateDAO implements ExtendedCrud {
         }
 
         return index;
+    }
+
+    public int getFloorByLatitudeAndLongitudeIfSuchCoordinateExistsOrOne(double latitude, double longitude) {
+        int floor = 1;
+        try {
+            QueryBuilder<Coordinate, Integer> qBuilder = helper.getCoordinateDao().queryBuilder();
+            qBuilder.where().eq(Constants.LATITUDE, latitude).and().eq(Constants.LONGITUDE, longitude);
+            if (qBuilder.query().size() > 0)
+                floor = helper.getCoordinateDao().queryForId(qBuilder.query().get(0).getId()).getFloor();
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    CoordinateDAO.class.getSimpleName());
+        }
+        return floor;
+    }
+
+    public Coordinate findCoordinateByLatLngFlr(LatLngFlr latLngFlr) {
+        Coordinate coordinate = null;
+        try {
+            QueryBuilder<Coordinate, Integer> qBuilder = helper.getCoordinateDao().queryBuilder();
+            qBuilder.where().eq(Constants.LATITUDE, latLngFlr.getLatitude()).and()
+                    .eq(Constants.LONGITUDE, latLngFlr.getLongitude()).and().eq(Constants.FLOOR, latLngFlr.getFloor());
+            if (qBuilder.query().size() > 0)
+                coordinate = qBuilder.query().get(0);
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    CoordinateDAO.class.getSimpleName());
+        }
+        return coordinate;
     }
 }

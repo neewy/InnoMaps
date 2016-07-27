@@ -30,6 +30,9 @@ public final class Constants {
     public static final String ID = "id";
     public static final String END_DATETIME = "end_datetime";
     public static final String LOCATION_ID = "location_id";
+    public static final String LATITUDE = "latitude";
+    public static final String LONGITUDE = "longitude";
+    public static final String FLOOR = "floor";
 
     public static final String SYNC = "sync";
     public static final String LAST = "last";
