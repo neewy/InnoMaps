@@ -95,8 +95,8 @@ public class BottomSheet extends Fragment {
 
     protected LatLng closest = null;
 
-    public void inSearchBottomList(SearchableItem item, String text) {
-        ((RadioButton) floorPicker.getChildAt(5 - Integer.parseInt(item.getFloor().substring(0, 1)))).setChecked(true);
+    public void inSearchBottomList(SearchableItem item) {
+        ((RadioButton) floorPicker.getChildAt(5 - item.getCoordinate().getFloor())).setChecked(true);
 
         List<String> location = new LinkedList<>();
         if (item.getBuilding() != null) location.add(item.getBuilding());
@@ -309,7 +309,7 @@ public class BottomSheet extends Fragment {
             boolean found = false;
             for (SearchableItem item : ((MainActivity) getActivity()).searchItems) {
                 if (item.getName().toLowerCase().contains(title.toLowerCase()) && item.getCoordinate().getLatLng().equals(latLng)) {
-                    inSearchBottomList(item, title);
+                    inSearchBottomList(item);
                     scrollView.setVisibility(View.VISIBLE);
                     found = true;
                 }

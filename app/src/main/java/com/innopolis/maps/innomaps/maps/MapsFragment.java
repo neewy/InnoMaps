@@ -35,7 +35,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.CheckedTextView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -439,7 +438,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 SearchableItem item = (SearchableItem) parent.getAdapter().getItem(position);
-                inSearchBottomList(item, ((CheckedTextView) view.findViewById(R.id.name)).getText().toString());
+                inSearchBottomList(item);
                 menu.findItem(R.id.search).collapseActionView();
             }
         });
