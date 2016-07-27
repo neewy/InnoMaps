@@ -18,7 +18,6 @@ import android.widget.ArrayAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.database.DBHelper;
@@ -73,7 +72,7 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
     String source;
     String type;
 
-    String latitudeDest, longitudeDest;
+    LatLngFlr destination;
 
 
     @Override
@@ -178,7 +177,7 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
                 if (source.equals(activity.getString(R.string.detailed_event))) {
                     displayMapsFragment();
                 }
-                maps.allowSelection(MapFragmentAskForRouteDialog.this.getDialog(), new LatLng(Double.parseDouble(latitudeDest), Double.parseDouble(longitudeDest)));
+                maps.allowSelection(MapFragmentAskForRouteDialog.this.getDialog(), destination);
             }
         });
 
@@ -210,15 +209,7 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
                             displayMapsFragment();
                         }
 
-                        LatLng destinationLatLng = new LatLng(Double.parseDouble(latitudeDest), Double.parseDouble(longitudeDest));
-                        Cursor dbCursor = database.rawQuery(SQLQueries.selectFloorForCoordinate(destinationLatLng), null);
-                        int floorDestination = 1;
-                        if (dbCursor.moveToFirst())
-                            floorDestination = Integer.parseInt(dbCursor.getString(dbCursor.getColumnIndex(FLOOR)).substring(0, 1));
-                        dbCursor.close();
-
                         LatLngFlr start = new LatLngFlr(Double.parseDouble(latitudeSource), Double.parseDouble(longitudeSource), floorSource);
-                        LatLngFlr destination = new LatLngFlr(destinationLatLng.latitude, destinationLatLng.longitude, floorDestination);
 
                         maps.showRoute(start, destination);
 
@@ -236,22 +227,23 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
 
     private void setDestination(Bundle arguments, SQLiteDatabase database) {
         Cursor cursorDest = null;
-        String[] destination = arguments.getString(activity.getString(R.string.destination)).split(", ");
+        String[] destinationArray = arguments.getString(activity.getString(R.string.destination)).split(", ");
 
         if (source.equals(activity.getString(R.string.maps_fragment))) {
             if (type.equals(EVENT)) {
-                cursorDest = database.rawQuery(SQLQueries.typeEqualsEvent(destination), null);
+                cursorDest = database.rawQuery(SQLQueries.typeEqualsEvent(destinationArray), null);
             } else {
                 String idPoi = arguments.getString(ID);
                 cursorDest = database.rawQuery(typeEqualsEventNone(idPoi), null);
             }
         } else if (source.equals(activity.getString(R.string.detailed_event))) {
-            cursorDest = database.rawQuery(sourceEqualsDetailedEvent(destination), null);
+            cursorDest = database.rawQuery(sourceEqualsDetailedEvent(destinationArray), null);
         }
 
         if (cursorDest.moveToFirst()) {
-            latitudeDest = cursorDest.getString(cursorDest.getColumnIndex(LATITUDE));
-            longitudeDest = cursorDest.getString(cursorDest.getColumnIndex(LONGITUDE));
+            destination = new LatLngFlr(Double.parseDouble(cursorDest.getString(cursorDest.getColumnIndex(LATITUDE))),
+                    Double.parseDouble(cursorDest.getString(cursorDest.getColumnIndex(LONGITUDE))),
+                    Integer.parseInt(cursorDest.getString(cursorDest.getColumnIndex(FLOOR))));
         }
         cursorDest.close();
 

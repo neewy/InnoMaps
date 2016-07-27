@@ -640,7 +640,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         filterList.add(num);
     }
 
-    public void allowSelection(final Dialog dialog, final LatLng destinationLatLng) {
+    public void allowSelection(final Dialog dialog, final LatLngFlr destination) {
         // TODO: this is so wrong!
         dialog.hide();
 
@@ -681,26 +681,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                 if (closest != null) {
                     ((RelativeLayout) getView()).removeView(buttons);
 
-                    // TODO: Figure out why the floor for the point from the graph cannot be detected
-                    // Will write an error message to log. Don't know why it cannot determine the floor
-                    // for the point from the graph.
-                    // All should be fixed with the planned change of the database structure
-                    // Currently everything works fine because there are no coordinates with the same
-                    // latitude and longitude but with different floor numbers and because the floor for
-                    // given latitude and longitude is detected on the server side
-                    CoordinateDAO coordinateDAO = new CoordinateDAO(getContext());
-                    int floorDestination = coordinateDAO.getFloorByLatitudeAndLongitudeIfSuchCoordinateExistsOrOne(destinationLatLng.latitude, destinationLatLng.longitude);
-
-                    // TODO: make destinationLatLng parameter of type LatLngFlr
-                    // To be honest, until destinationLatLng will be of type LatLngFlr the method will work incorrect in few cases.
-                    // If there was no floor detection on server shortest path will work incorrectly.
-                    // Since, as I hope, we will rewrite app and DB to support 3D coordinates and such floor detection won't be needed
-                    // I will leave it as it is. But honestly, I understand that everything here holds on a hair.
-
-                    LatLngFlr source = new LatLngFlr(closest.getLatitude(), closest.getLongitude(), closest.getFloor());
-                    LatLngFlr destination = new LatLngFlr(destinationLatLng.latitude, destinationLatLng.longitude, floorDestination);
-
-                    showRoute(source, destination);
+                    showRoute(closest, destination);
                     dialog.cancel();
                 } else {
                     Toast.makeText(getContext(), R.string.marker_in_university, Toast.LENGTH_SHORT).show();
