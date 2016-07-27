@@ -130,9 +130,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
 
     private GroundOverlay imageOverlay;
     private LocationManager locationManager;
-    private DBHelper dbHelper;
 
-    private SearchView searchView;
     private SearchView.SearchAutoComplete searchBox;
 
     /*Don't be confused by class name - it is the element, which is shown during search, with 5 categories*/
@@ -149,7 +147,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
         View v = inflater.inflate(R.layout.maps_fragment, container, false);
-        dbHelper = new DBHelper(getContext());
+        DBHelper dbHelper = new DBHelper(getContext());
         database = dbHelper.getReadableDatabase();
 
         scrollView = (CustomScrollView) getActivity().findViewById(R.id.bottom_sheet);
@@ -354,7 +352,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     @Override
     public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchBox = (SearchView.SearchAutoComplete) searchView.findViewById(R.id.search_src_text);
         //Specifies number of characters to type before dropdown is shown
         searchBox.setThreshold(1);
