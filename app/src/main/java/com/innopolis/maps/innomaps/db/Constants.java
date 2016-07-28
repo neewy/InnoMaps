@@ -87,6 +87,9 @@ public final class Constants {
     // For MapFragmentAskForRouteDialog
     public static final String TYPE = "type";
 
+    // For DetailedEvent
+    public static final String EVENT_SCHEDULE_ID = "event_schedule_id";
+
 
     // Utility classes, which are a collection of static members, are not meant to be instantiated
     private Constants() {

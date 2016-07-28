@@ -17,11 +17,10 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import java.util.List;
-
-import static com.innopolis.maps.innomaps.database.TableFields.EVENT_ID;
 
 public class MapBottomEventListAdapter extends BaseAdapter {
 
@@ -73,7 +72,8 @@ public class MapBottomEventListAdapter extends BaseAdapter {
             public void onClick(View v) {
                 Fragment fragment = new DetailedEvent();
                 Bundle bundle = new Bundle();
-                bundle.putString(EVENT_ID, event.getEventID());
+                bundle.putInt(Constants.EVENT_ID, event.getEventID());
+                bundle.putInt(Constants.EVENT_SCHEDULE_ID, event.getEventScheduleId());
                 fragment.setArguments(bundle);
                 DrawerLayout drawer = (DrawerLayout) activity.findViewById(R.id.drawer_layout);
                 Toolbar toolbar = (Toolbar) activity.findViewById(R.id.toolbar);

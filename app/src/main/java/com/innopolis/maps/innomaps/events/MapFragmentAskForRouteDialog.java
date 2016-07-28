@@ -58,6 +58,7 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
     String source;
     String type;
     int id;
+    int eventId;
 
     LatLngFlr destination;
 
@@ -93,6 +94,8 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
         source = arguments.getString(activity.getString(R.string.dialogSource));
         type = arguments.getString(Constants.TYPE);
         id = Integer.parseInt(arguments.getString(Constants.ID));
+        if (getString(R.string.detailed_event).equals(source))
+            eventId = arguments.getInt(Constants.EVENT_ID);
 
         setDestination(getContext());
 

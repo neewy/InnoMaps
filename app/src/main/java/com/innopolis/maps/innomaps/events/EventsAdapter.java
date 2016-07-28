@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.database.DBHelper;
+import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +33,6 @@ import java.util.List;
 import xyz.hanks.library.SmallBang;
 
 import static com.innopolis.maps.innomaps.database.TableFields.EVENTS;
-import static com.innopolis.maps.innomaps.database.TableFields.EVENT_ID;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENT_ID_EQUAL;
 import static com.innopolis.maps.innomaps.database.TableFields.FAV;
 import static com.innopolis.maps.innomaps.database.TableFields.NULL_STRING;
@@ -112,7 +112,8 @@ public class EventsAdapter extends BaseAdapter {
                 if (!(finalView.getParent().getParent() instanceof SwipeRefreshLayout) || !((SwipeRefreshLayout) finalView.getParent().getParent()).isRefreshing()) {
                     Fragment fragment = new DetailedEvent();
                     Bundle bundle = new Bundle();
-                    bundle.putString(EVENT_ID, event.getEventID());
+                    bundle.putInt(Constants.EVENT_ID, event.getEventID());
+                    bundle.putInt(Constants.EVENT_SCHEDULE_ID, event.getEventScheduleId());
                     fragment.setArguments(bundle);
                     DrawerLayout drawer = (DrawerLayout) activity.findViewById(R.id.drawer_layout);
                     Toolbar toolbar = (Toolbar) activity.findViewById(R.id.toolbar);
@@ -143,12 +144,12 @@ public class EventsAdapter extends BaseAdapter {
                 }
                 String isFav = (favCheckBox.isChecked()) ? "1" : "0";
                 event.setChecked(isFav);
-                String eventID = event.getEventID();
+                int eventId = event.getEventID();
                 ContentValues cv = new ContentValues();
                 dbHelper = new DBHelper(context);
                 database = dbHelper.getWritableDatabase();
                 cv.put(FAV, isFav);
-                database.update(EVENTS, cv, EVENT_ID_EQUAL, new String[]{eventID});
+                database.update(EVENTS, cv, EVENT_ID_EQUAL, new String[]{Integer.toString(eventId)});
                 dbHelper.close();
             }
         });

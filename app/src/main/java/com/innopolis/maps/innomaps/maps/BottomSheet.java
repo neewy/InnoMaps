@@ -270,10 +270,9 @@ public class BottomSheet extends Fragment {
             } catch (ParseException e) {
                 Log.e(getContext().getString(R.string.maps), getContext().getString(R.string.date_parse_exception), e);
             }
-            eventForGUI.setEventID(Integer.toString(eventFavorable.getId()));
-            if (eventForGUI.getEventID() != null) {
-                events.add(eventForGUI);
-            }
+            eventForGUI.setEventID(eventFavorable.getId());
+            eventForGUI.setEventScheduleId(eventSchedule.getId());
+            events.add(eventForGUI);
         }
         if (events.size() == 0) {
             TextView noEvents = new TextView(getContext());

@@ -10,6 +10,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -225,6 +226,7 @@ public class MapRoute {
         }
         current.setPolyline(map, polylineOptions);
         current.setFloor(floor);
+        map.animateCamera(CameraUpdateFactory.newLatLng(path.get(0).getVertex().getAndroidGMSLatLng()));
     }
 
     /**

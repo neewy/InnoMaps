@@ -257,7 +257,11 @@ public class SearchableItem implements Comparable<SearchableItem> {
     }
 
     private static String getBuildingNameForEvent(int coordinateId) {
-        Room room = roomDAO.getFirstRecordByCoordinateId(coordinateId);
+        RoomType roomType = roomTypeDAO.findRoomTypeByName(Constants.DOOR);
+        List<Integer> typeIds = new ArrayList<>();
+        if (null != roomType)
+            typeIds.add(roomType.getId());
+        Room room = roomDAO.getFirstRecordByCoordinateIdExceptWithFollowingTypes(typeIds, coordinateId);
         if (room == null)
             return getBuildingNameForCoordinate(coordinateId);
         else {
