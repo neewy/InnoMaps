@@ -62,7 +62,6 @@ import com.innopolis.maps.innomaps.app.CustomScrollView;
 import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.app.SearchableItem;
 import com.innopolis.maps.innomaps.app.SuggestionAdapter;
-import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateDAO;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 import com.innopolis.maps.innomaps.network.NetworkController;
@@ -144,8 +143,6 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
         View v = inflater.inflate(R.layout.maps_fragment, container, false);
-        DBHelper dbHelper = new DBHelper(getContext());
-        database = dbHelper.getReadableDatabase();
 
         scrollView = (CustomScrollView) getActivity().findViewById(R.id.bottom_sheet);
         durationLayout = (LinearLayout) scrollView.findViewById(R.id.durationLayout);

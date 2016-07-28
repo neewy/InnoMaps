@@ -6,6 +6,7 @@ import android.util.Log;
 import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.db.DatabaseHelper;
 import com.innopolis.maps.innomaps.db.DatabaseManager;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -160,8 +161,8 @@ public class RoomDAO implements ExtendedCrud {
         List<Room> rooms = new ArrayList<>();
 
         try {
-            if(null != roomTypeIds && !roomTypeIds.isEmpty()) {
-                if(roomTypeIds.contains(null))
+            if (null != roomTypeIds && !roomTypeIds.isEmpty()) {
+                if (roomTypeIds.contains(null))
                     roomTypeIds.remove(null);
                 QueryBuilder<Room, Integer> qBuilder = helper.getRoomDao().queryBuilder();
                 qBuilder.where().notIn(Constants.TYPE_ID, roomTypeIds);
@@ -196,5 +197,65 @@ public class RoomDAO implements ExtendedCrud {
                     RoomDAO.class.getSimpleName());
         }
         return floors;
+    }
+
+    public List<Room> findRoomsWithFollowingTypesAndFloor(List<Integer> roomTypeIds, int floor) {
+
+        List<Room> rooms = new ArrayList<>();
+
+        try {
+            if (null != roomTypeIds && !roomTypeIds.isEmpty()) {
+                if (roomTypeIds.contains(null))
+                    roomTypeIds.remove(null);
+                List<Integer> coordinateIdsOnFloor = new ArrayList<>();
+                QueryBuilder<Coordinate, Integer> queryBuilder = helper.getCoordinateDao().queryBuilder();
+                queryBuilder.where().eq(Constants.FLOOR, floor);
+                if (queryBuilder.query().size() > 0) {
+                    for (Coordinate coordinate : queryBuilder.query())
+                        coordinateIdsOnFloor.add(coordinate.getId());
+                }
+
+                QueryBuilder<Room, Integer> qBuilder = helper.getRoomDao().queryBuilder();
+                qBuilder.where().in(Constants.TYPE_ID, roomTypeIds).and().in(Constants.COORDINATE_ID, coordinateIdsOnFloor);
+                PreparedQuery<Room> pc = qBuilder.prepare();
+                if (helper.getRoomDao().query(pc).size() > 0)
+                    rooms = helper.getRoomDao().query(pc);
+            }
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    RoomDAO.class.getSimpleName());
+        }
+
+        return rooms;
+    }
+
+    public List<Room> findRoomsOnFloorExceptWithFollowingTypes(List<Integer> roomTypeIds, int floor) {
+
+        List<Room> rooms = new ArrayList<>();
+
+        try {
+            if (null != roomTypeIds && !roomTypeIds.isEmpty()) {
+                if (roomTypeIds.contains(null))
+                    roomTypeIds.remove(null);
+                List<Integer> coordinateIdsOnFloor = new ArrayList<>();
+                QueryBuilder<Coordinate, Integer> queryBuilder = helper.getCoordinateDao().queryBuilder();
+                queryBuilder.where().eq(Constants.FLOOR, floor);
+                if (queryBuilder.query().size() > 0) {
+                    for (Coordinate coordinate : queryBuilder.query())
+                        coordinateIdsOnFloor.add(coordinate.getId());
+                }
+
+                QueryBuilder<Room, Integer> qBuilder = helper.getRoomDao().queryBuilder();
+                qBuilder.where().notIn(Constants.TYPE_ID, roomTypeIds).and().in(Constants.COORDINATE_ID, coordinateIdsOnFloor);
+                PreparedQuery<Room> pc = qBuilder.prepare();
+                if (helper.getRoomDao().query(pc).size() > 0)
+                    rooms = helper.getRoomDao().query(pc);
+            }
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    RoomDAO.class.getSimpleName());
+        }
+
+        return rooms;
     }
 }

@@ -33,6 +33,7 @@ public final class Constants {
     public static final String LATITUDE = "latitude";
     public static final String LONGITUDE = "longitude";
     public static final String FLOOR = "floor";
+    public static final String NAME = "name";
 
     public static final String SYNC = "sync";
     public static final String LAST = "last";
@@ -59,6 +60,20 @@ public final class Constants {
     public static final String ROOM_STARTING_FROM_CAPITAL_LETTER = "Room";
     public static final String FLOOR_LOWERCASE = "floor";
     public static final String EMPTY_STRING = "";
+
+    // For SearchableItem and MarkersAdapter
+    //DOOR, ELEVATOR, STAIRS, ROOM, FOOD, WC, CLINIC, READING, LIBRARY, EASTER_EGG, EVENT
+    public static final String DOOR = "DOOR";
+    public static final String ELEVATOR = "ELEVATOR";
+    public static final String STAIRS = "STAIRS";
+    public static final String ROOM_CAPITAL_CASE = "ROOM";
+    public static final String FOOD = "FOOD";
+    public static final String WC = "WC";
+    public static final String CLINIC = "CLINIC";
+    public static final String READING = "READING";
+    public static final String LIBRARY = "LIBRARY";
+    public static final String EASTER_EGG = "EASTER_EGG";
+    public static final String EVENT_CAPITAL_CASE = "EVENT";
 
     // For BottomSheet
     public static final String NEW_LINE = "\n";

@@ -138,5 +138,19 @@ public class RoomTypeDAO implements ExtendedCrud {
 
         return index;
     }
+
+    public RoomType findRoomTypeByName(String typeName) {
+        RoomType roomType = null;
+        try {
+            QueryBuilder<RoomType, Integer> qBuilder = helper.getRoomTypeDao().queryBuilder();
+            qBuilder.where().eq(Constants.NAME, typeName);
+            if (qBuilder.query().size() > 0)
+                roomType = qBuilder.query().get(0);
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    RoomTypeDAO.class.getSimpleName());
+        }
+        return roomType;
+    }
 }
 

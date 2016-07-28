@@ -169,18 +169,12 @@ public class SearchableItem implements Comparable<SearchableItem> {
         List<Integer> ignoredRoomTypes = new ArrayList<>();
         ignoredRoomTypes.add(inverseRoomTypesMap.get(SearchableItemType.DOOR));
         List<Room> rooms = roomDAO.findRoomsExceptWithFollowingTypes(ignoredRoomTypes);
-        List<Coordinate> coordinates = getCoordinatesOfStairsAndElevators();
+        List<Coordinate> coordinates = getCoordinatesOfStairsAndElevators(context);
 
         for (Room room : rooms) {
             SearchableItem searchableItem = new SearchableItem(context);
             Coordinate roomsCoordinate = (Coordinate) coordinateDAO.findById(room.getCoordinate_id());
-            if (null != roomsCoordinate.getName() && !Constants.EMPTY_STRING.equals(roomsCoordinate.getName()))
-                searchableItem.setName(roomsCoordinate.getName());
-            else if (null != room.getNumber())
-                searchableItem.setName(Constants.ROOM_STARTING_FROM_CAPITAL_LETTER + Constants.SPACE + Integer.toString(room.getNumber()));
-            else {
-                searchableItem.setName(null);
-            }
+            searchableItem.setName(getRoomsName(room, roomsCoordinate));
 
             searchableItem.setType(roomTypesMap.get(room.getType_id()));
             searchableItem.setId(room.getId());
@@ -215,27 +209,27 @@ public class SearchableItem implements Comparable<SearchableItem> {
 
     public static SearchableItemType determineSearchableItemType(String typeStr) {
         switch (typeStr) {
-            case "DOOR":
+            case Constants.DOOR:
                 return SearchableItemType.DOOR;
-            case "STAIRS":
+            case Constants.STAIRS:
                 return SearchableItemType.STAIRS;
-            case "ELEVATOR":
+            case Constants.ELEVATOR:
                 return SearchableItemType.ELEVATOR;
-            case "ROOM":
+            case Constants.ROOM_CAPITAL_CASE:
                 return SearchableItemType.ROOM;
-            case "FOOD":
+            case Constants.FOOD:
                 return SearchableItemType.FOOD;
-            case "WC":
+            case Constants.WC:
                 return SearchableItemType.WC;
-            case "CLINIC":
+            case Constants.CLINIC:
                 return SearchableItemType.CLINIC;
-            case "READING":
+            case Constants.READING:
                 return SearchableItemType.READING;
-            case "LIBRARY":
+            case Constants.LIBRARY:
                 return SearchableItemType.LIBRARY;
-            case "EASTER_EGG":
+            case Constants.EASTER_EGG:
                 return SearchableItemType.EASTER_EGG;
-            case "EVENT":
+            case Constants.EVENT_CAPITAL_CASE:
                 return SearchableItemType.EVENT;
             default:
                 return SearchableItemType.DEFAULT;
@@ -271,6 +265,18 @@ public class SearchableItem implements Comparable<SearchableItem> {
         }
     }
 
+    public static String getRoomsName(Room room, Coordinate roomsCoordinate) {
+        String roomsName;
+        if (null != roomsCoordinate.getName() && !Constants.EMPTY_STRING.equals(roomsCoordinate.getName()))
+            roomsName = roomsCoordinate.getName();
+        else if (null != room.getNumber())
+            roomsName = Constants.ROOM_STARTING_FROM_CAPITAL_LETTER + Constants.SPACE + Integer.toString(room.getNumber());
+        else
+            roomsName = null;
+
+        return roomsName;
+    }
+
     public static Predicate<SearchableItem> isWc = new Predicate<SearchableItem>() {
         @Override
         public boolean apply(SearchableItem input) {
@@ -278,7 +284,8 @@ public class SearchableItem implements Comparable<SearchableItem> {
         }
     };
 
-    public static List<Coordinate> getCoordinatesOfStairsAndElevators() {
+    public static List<Coordinate> getCoordinatesOfStairsAndElevators(Context context) {
+        initializeDAOs(context);
         List<Coordinate> stairsAndElevatorsCoordinates = new ArrayList<>();
         List<CoordinateType> coordinateTypes = (List<CoordinateType>) coordinateTypeDAO.findAll();
         HashMap<SearchableItemType, Integer> coordinateTypesMap = new HashMap<>();

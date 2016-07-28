@@ -1,7 +1,5 @@
 package com.innopolis.maps.innomaps.maps;
 
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -14,35 +12,29 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.innopolis.maps.innomaps.R;
+import com.innopolis.maps.innomaps.app.MainActivity;
+import com.innopolis.maps.innomaps.app.SearchableItem;
+import com.innopolis.maps.innomaps.db.Constants;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateTypeDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventScheduleDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.RoomDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.RoomTypeDAO;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.CoordinateType;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventFavorable;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventSchedule;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomType;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import static com.innopolis.maps.innomaps.database.SQLQueries.makeAllMarkersQuery;
-import static com.innopolis.maps.innomaps.database.SQLQueries.makeEventsMarkersQuery;
-import static com.innopolis.maps.innomaps.database.SQLQueries.makeFoodMarkersQuery;
-import static com.innopolis.maps.innomaps.database.SQLQueries.makeOtherMarkersQuery;
-import static com.innopolis.maps.innomaps.database.SQLQueries.makeWcMarkersQuery;
 import static com.innopolis.maps.innomaps.database.TableFields.ALL_FILTER;
-import static com.innopolis.maps.innomaps.database.TableFields.CLINIC;
-import static com.innopolis.maps.innomaps.database.TableFields.DOOR;
-import static com.innopolis.maps.innomaps.database.TableFields.EASTER_EGG;
-import static com.innopolis.maps.innomaps.database.TableFields.ELEVATOR;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENTS_FILTER;
-import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
-import static com.innopolis.maps.innomaps.database.TableFields.FOOD;
 import static com.innopolis.maps.innomaps.database.TableFields.FOOD_FILTER;
-import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
-import static com.innopolis.maps.innomaps.database.TableFields.LIBRARY;
-import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.OTHER_FILTER;
-import static com.innopolis.maps.innomaps.database.TableFields.POI;
-import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
-import static com.innopolis.maps.innomaps.database.TableFields.READING;
-import static com.innopolis.maps.innomaps.database.TableFields.ROOM;
-import static com.innopolis.maps.innomaps.database.TableFields.STAIRS;
-import static com.innopolis.maps.innomaps.database.TableFields.TYPE;
-import static com.innopolis.maps.innomaps.database.TableFields.WC;
-import static com.innopolis.maps.innomaps.database.TableFields.WC_DOOR;
 import static com.innopolis.maps.innomaps.database.TableFields.WC_FILTER;
 
 
@@ -52,10 +44,16 @@ import static com.innopolis.maps.innomaps.database.TableFields.WC_FILTER;
  */
 
 public class MarkersAdapter extends BottomSheet {
-    static SQLiteDatabase database;
     MapView mapView;
     List<Marker> markers; //store all markers
     List<Integer> filterList; //to store elements after choosing filter
+
+    RoomDAO roomDAO = new RoomDAO(MainActivity.getMainActivityContext());
+    RoomTypeDAO roomTypeDAO = new RoomTypeDAO(MainActivity.getMainActivityContext());
+    CoordinateDAO coordinateDAO = new CoordinateDAO(MainActivity.getMainActivityContext());
+    CoordinateTypeDAO coordinateTypeDAO = new CoordinateTypeDAO(MainActivity.getMainActivityContext());
+    EventDAO eventDAO = new EventDAO(MainActivity.getMainActivityContext());
+    EventScheduleDAO eventScheduleDAO = new EventScheduleDAO(MainActivity.getMainActivityContext());
 
 
     /**
@@ -86,12 +84,19 @@ public class MarkersAdapter extends BottomSheet {
      * @param floor
      */
     private void makeWcMarkers(int floor) {
-        String numFloor = String.valueOf(floor) + FLOOR;
+        List<MarkerForRoom> markersForRooms = new ArrayList<>();
+        RoomType roomType = roomTypeDAO.findRoomTypeByName(Constants.WC);
+        List<Integer> typeIds = new ArrayList<>();
+        typeIds.add(roomType.getId());
+        List<Room> rooms = roomDAO.findRoomsWithFollowingTypesAndFloor(typeIds, floor);
+        for (Room room : rooms) {
+            Coordinate roomsCoordinate = (Coordinate) coordinateDAO.findById(room.getCoordinate_id());
+            String roomsName = SearchableItem.getRoomsName(room, roomsCoordinate);
+            if (null != roomsName)
+                markersForRooms.add(new MarkerForRoom(roomsName, Constants.WC, roomsCoordinate.getLatitude(), roomsCoordinate.getLongitude()));
+        }
 
-        String sqlQuery = makeWcMarkersQuery();
-        Cursor cursor = database.rawQuery(sqlQuery, new String[]{numFloor});
-        refreshMarkers(cursor);
-
+        refreshMarkers(markersForRooms);
     }
 
     /**
@@ -100,12 +105,19 @@ public class MarkersAdapter extends BottomSheet {
      * @param floor
      */
     private void makeFoodMarkers(int floor) {
-        String numFloor = String.valueOf(floor) + FLOOR;
+        List<MarkerForRoom> markersForRooms = new ArrayList<>();
+        RoomType roomType = roomTypeDAO.findRoomTypeByName(Constants.FOOD);
+        List<Integer> typeIds = new ArrayList<>();
+        typeIds.add(roomType.getId());
+        List<Room> rooms = roomDAO.findRoomsWithFollowingTypesAndFloor(typeIds, floor);
+        for (Room room : rooms) {
+            Coordinate roomsCoordinate = (Coordinate) coordinateDAO.findById(room.getCoordinate_id());
+            String roomsName = SearchableItem.getRoomsName(room, roomsCoordinate);
+            if (null != roomsName)
+                markersForRooms.add(new MarkerForRoom(roomsName, Constants.FOOD, roomsCoordinate.getLatitude(), roomsCoordinate.getLongitude()));
+        }
 
-        String sqlQuery = makeFoodMarkersQuery();
-        Cursor cursor = database.rawQuery(sqlQuery, new String[]{numFloor});
-        refreshMarkers(cursor);
-
+        refreshMarkers(markersForRooms);
     }
 
     /**
@@ -114,11 +126,27 @@ public class MarkersAdapter extends BottomSheet {
      * @param floor
      */
     private void makeOtherMarkers(int floor) {
-        String selection = makeOtherMarkersQuery();
-        String[] selectionArgs = {floor + FLOOR, ROOM, FOOD, STAIRS, ELEVATOR, WC_DOOR, WC, DOOR};
-        Cursor cursor = database.query(POI, null, selection, selectionArgs, null, null, null);
-        refreshMarkers(cursor);
+        List<MarkerForRoom> markersForRooms = new ArrayList<>();
+        List<Integer> typeIds = new ArrayList<>();
+        typeIds.add(roomTypeDAO.findRoomTypeByName(Constants.DOOR).getId());
+        typeIds.add(roomTypeDAO.findRoomTypeByName(Constants.WC).getId());
+        typeIds.add(roomTypeDAO.findRoomTypeByName(Constants.FOOD).getId());
+        List<Room> rooms = roomDAO.findRoomsOnFloorExceptWithFollowingTypes(typeIds, floor);
+        for (Room room : rooms) {
+            Coordinate roomsCoordinate = (Coordinate) coordinateDAO.findById(room.getCoordinate_id());
+            String roomsName = SearchableItem.getRoomsName(room, roomsCoordinate);
+            if (null != roomsName)
+                markersForRooms.add(new MarkerForRoom(roomsName, Constants.FOOD, roomsCoordinate.getLatitude(), roomsCoordinate.getLongitude()));
+        }
+        List<Coordinate> coordinates = SearchableItem.getCoordinatesOfStairsAndElevators(MainActivity.getMainActivityContext());
+        for (Coordinate coordinate : coordinates) {
+            if (null != coordinate.getName() && !Constants.EMPTY_STRING.equals(coordinate.getName())) {
+                CoordinateType coordinateType = (CoordinateType) coordinateTypeDAO.findById(coordinate.getType_id());
+                markersForRooms.add(new MarkerForRoom(coordinate.getName(), coordinateType.getName(), coordinate.getLatitude(), coordinate.getLongitude()));
+            }
+        }
 
+        refreshMarkers(markersForRooms);
     }
 
 
@@ -128,11 +156,27 @@ public class MarkersAdapter extends BottomSheet {
      * @param floor
      */
     protected void makeAllMarkers(int floor) {
-        String selection = makeAllMarkersQuery();
-        String[] selectionArgs = {floor + FLOOR, ROOM, WC, FOOD, LIBRARY, CLINIC, READING};
-        Cursor cursor = database.query(POI, null, selection, selectionArgs, null, null, null);
-        refreshMarkers(cursor);
+        List<MarkerForRoom> markersForRooms = new ArrayList<>();
+        RoomType roomType = roomTypeDAO.findRoomTypeByName(Constants.DOOR);
+        List<Integer> typeIds = new ArrayList<>();
+        typeIds.add(roomType.getId());
+        List<Room> rooms = roomDAO.findRoomsOnFloorExceptWithFollowingTypes(typeIds, floor);
+        for (Room room : rooms) {
+            Coordinate roomsCoordinate = (Coordinate) coordinateDAO.findById(room.getCoordinate_id());
+            String roomsName = SearchableItem.getRoomsName(room, roomsCoordinate);
+            RoomType roomsType = (RoomType) roomTypeDAO.findById(room.getType_id());
+            if (null != roomsName)
+                markersForRooms.add(new MarkerForRoom(roomsName, roomsType.getName(), roomsCoordinate.getLatitude(), roomsCoordinate.getLongitude()));
+        }
+        List<Coordinate> coordinates = SearchableItem.getCoordinatesOfStairsAndElevators(MainActivity.getMainActivityContext());
+        for (Coordinate coordinate : coordinates) {
+            if (null != coordinate.getName() && !Constants.EMPTY_STRING.equals(coordinate.getName())) {
+                CoordinateType coordinateType = (CoordinateType) coordinateTypeDAO.findById(coordinate.getType_id());
+                markersForRooms.add(new MarkerForRoom(coordinate.getName(), coordinateType.getName(), coordinate.getLatitude(), coordinate.getLongitude()));
+            }
+        }
 
+        refreshMarkers(markersForRooms);
     }
 
 
@@ -142,20 +186,25 @@ public class MarkersAdapter extends BottomSheet {
      * @param floor
      */
     protected void makeEventsMarkers(int floor) {
-        String selection = makeEventsMarkersQuery();
-        String[] selectionArgs = {floor + FLOOR, ROOM};
-        Cursor cursor = database.rawQuery(selection, selectionArgs);
-        refreshMarkers(cursor);
+        List<MarkerForRoom> markersForRooms = new ArrayList<>();
 
+        List<EventSchedule> eventSchedules = eventScheduleDAO.findUpcomingAndOngoingScheduledEvents();
+        for (EventSchedule eventSchedule : eventSchedules) {
+            if (eventSchedule.getLocation_id() != null) {
+                EventFavorable event = (EventFavorable) eventDAO.findById(eventSchedule.getEvent_id());
+                Coordinate eventsCoordinate = (Coordinate) coordinateDAO.findById(eventSchedule.getLocation_id());
+                markersForRooms.add(new MarkerForRoom(event.getName(), Constants.EVENT_CAPITAL_CASE, eventsCoordinate.getLatitude(), eventsCoordinate.getLongitude()));
+            }
+        }
+
+        refreshMarkers(markersForRooms);
     }
 
 
     /**
      * Clears markers and finds new
-     *
-     * @param cursor - keep and search info in db table
      */
-    private void refreshMarkers(Cursor cursor) {
+    private void refreshMarkers(List<MarkerForRoom> markersForRooms) {
         if (markers != null) {
             for (Marker marker : markers) {
                 marker.remove();
@@ -163,35 +212,23 @@ public class MarkersAdapter extends BottomSheet {
             markers.clear();
         }
 
-        if (cursor.moveToFirst()) {
-            do {
-                String room = cursor.getString(cursor.getColumnIndex(POI_NAME));
-                String type = cursor.getString(cursor.getColumnIndex(TYPE));
-                String latitude = cursor.getString(cursor.getColumnIndex(LATITUDE));
-                String longitude = cursor.getString(cursor.getColumnIndex(LONGITUDE));
-                setMarkersRoom(room, type, latitude, longitude);
-            } while (cursor.moveToNext());
+        for (MarkerForRoom markersRoom : markersForRooms) {
+            setMarkerForRoom(markersRoom);
         }
-        cursor.close();
     }
 
 
     /**
      * Puts markers with custom icons on the map
      * Params are info in db table
-     *
-     * @param room
-     * @param type
-     * @param latitude
-     * @param longitude
      */
-    private void setMarkersRoom(String room, String type, String latitude, String longitude) {
+    private void setMarkerForRoom(MarkerForRoom marker) {
 
         float center = 0.5f;
         final Marker markersRoom = map.addMarker(new MarkerOptions()
-                .position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)))
-                .icon(iconBitmapAdapter(type))
-                .title(room)
+                .position(new LatLng(marker.getLatitude(), marker.getLongitude()))
+                .icon(iconBitmapAdapter(marker.getType()))
+                .title(marker.title)
                 .anchor(center, center)
 
         );
@@ -214,34 +251,40 @@ public class MarkersAdapter extends BottomSheet {
         int px_small = 15;
 
         switch (type) {
-            case ROOM:
+            case Constants.EVENT:
+
+            case Constants.STAIRS:
+
+            case Constants.ELEVATOR:
+
+            case Constants.ROOM_CAPITAL_CASE:
                 src = R.drawable.ic_room;
                 px = px_small;
                 break;
 
-            case WC:
+            case Constants.WC:
                 src = R.drawable.wc;
                 px = px_large;
                 break;
 
-            case FOOD:
+            case Constants.FOOD:
                 src = R.drawable.ic_food;
                 px = px_large;
                 break;
 
-            case CLINIC:
+            case Constants.CLINIC:
                 src = R.drawable.ic_clinic;
                 px = px_large;
                 break;
 
-            case LIBRARY:
+            case Constants.LIBRARY:
 
-            case READING:
+            case Constants.READING:
                 src = R.drawable.ic_library;
                 px = px_large;
                 break;
 
-            case EASTER_EGG:
+            case Constants.EASTER_EGG:
                 src = R.drawable.ic_egg;
                 px = px_large;
                 break;
@@ -279,5 +322,35 @@ public class MarkersAdapter extends BottomSheet {
         }
         icon = BitmapDescriptorFactory.fromBitmap(markerBitmap);
         return icon;
+    }
+
+    private static class MarkerForRoom {
+        private String title;
+        private String type;
+        private Double latitude;
+        private Double longitude;
+
+        public MarkerForRoom(String title, String type, Double latitude, Double longitude) {
+            this.title = title;
+            this.type = type;
+            this.latitude = latitude;
+            this.longitude = longitude;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public Double getLatitude() {
+            return latitude;
+        }
+
+        public Double getLongitude() {
+            return longitude;
+        }
     }
 }
