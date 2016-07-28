@@ -87,7 +87,8 @@ public class MarkersAdapter extends BottomSheet {
         List<MarkerForRoom> markersForRooms = new ArrayList<>();
         RoomType roomType = roomTypeDAO.findRoomTypeByName(Constants.WC);
         List<Integer> typeIds = new ArrayList<>();
-        typeIds.add(roomType.getId());
+        if (null != roomType)
+            typeIds.add(roomType.getId());
         List<Room> rooms = roomDAO.findRoomsWithFollowingTypesAndFloor(typeIds, floor);
         for (Room room : rooms) {
             Coordinate roomsCoordinate = (Coordinate) coordinateDAO.findById(room.getCoordinate_id());
@@ -108,7 +109,8 @@ public class MarkersAdapter extends BottomSheet {
         List<MarkerForRoom> markersForRooms = new ArrayList<>();
         RoomType roomType = roomTypeDAO.findRoomTypeByName(Constants.FOOD);
         List<Integer> typeIds = new ArrayList<>();
-        typeIds.add(roomType.getId());
+        if (null != roomType)
+            typeIds.add(roomType.getId());
         List<Room> rooms = roomDAO.findRoomsWithFollowingTypesAndFloor(typeIds, floor);
         for (Room room : rooms) {
             Coordinate roomsCoordinate = (Coordinate) coordinateDAO.findById(room.getCoordinate_id());
@@ -128,9 +130,15 @@ public class MarkersAdapter extends BottomSheet {
     private void makeOtherMarkers(int floor) {
         List<MarkerForRoom> markersForRooms = new ArrayList<>();
         List<Integer> typeIds = new ArrayList<>();
-        typeIds.add(roomTypeDAO.findRoomTypeByName(Constants.DOOR).getId());
-        typeIds.add(roomTypeDAO.findRoomTypeByName(Constants.WC).getId());
-        typeIds.add(roomTypeDAO.findRoomTypeByName(Constants.FOOD).getId());
+        RoomType roomType = roomTypeDAO.findRoomTypeByName(Constants.DOOR);
+        if (null != roomType)
+            typeIds.add(roomType.getId());
+        roomType = roomTypeDAO.findRoomTypeByName(Constants.WC);
+        if (null != roomType)
+            typeIds.add(roomType.getId());
+        roomType = roomTypeDAO.findRoomTypeByName(Constants.FOOD);
+        if (null != roomType)
+            typeIds.add(roomType.getId());
         List<Room> rooms = roomDAO.findRoomsOnFloorExceptWithFollowingTypes(typeIds, floor);
         for (Room room : rooms) {
             Coordinate roomsCoordinate = (Coordinate) coordinateDAO.findById(room.getCoordinate_id());
@@ -160,7 +168,8 @@ public class MarkersAdapter extends BottomSheet {
         List<MarkerForRoom> markersForRooms = new ArrayList<>();
         RoomType roomType = roomTypeDAO.findRoomTypeByName(Constants.DOOR);
         List<Integer> typeIds = new ArrayList<>();
-        typeIds.add(roomType.getId());
+        if (null != roomType)
+            typeIds.add(roomType.getId());
         List<Room> rooms = roomDAO.findRoomsOnFloorExceptWithFollowingTypes(typeIds, floor);
         for (Room room : rooms) {
             Coordinate roomsCoordinate = (Coordinate) coordinateDAO.findById(room.getCoordinate_id());
@@ -359,9 +368,11 @@ public class MarkersAdapter extends BottomSheet {
         List<Coordinate> stairsAndElevatorsCoordinates = new ArrayList<>();
         CoordinateType coordinateType;
         coordinateType = coordinateTypeDAO.findCoordinateTypeByName(Constants.STAIRS);
-        stairsAndElevatorsCoordinates.addAll(coordinateDAO.getCoordinatesByTypeIdAndFloor(coordinateType.getId(), floor));
+        if (null != coordinateType)
+            stairsAndElevatorsCoordinates.addAll(coordinateDAO.getCoordinatesByTypeIdAndFloor(coordinateType.getId(), floor));
         coordinateType = coordinateTypeDAO.findCoordinateTypeByName(Constants.ELEVATOR);
-        stairsAndElevatorsCoordinates.addAll(coordinateDAO.getCoordinatesByTypeIdAndFloor(coordinateType.getId(), floor));
+        if (null != coordinateType)
+            stairsAndElevatorsCoordinates.addAll(coordinateDAO.getCoordinatesByTypeIdAndFloor(coordinateType.getId(), floor));
 
         return stairsAndElevatorsCoordinates;
     }

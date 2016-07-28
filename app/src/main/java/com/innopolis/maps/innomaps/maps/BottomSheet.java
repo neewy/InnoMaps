@@ -348,9 +348,12 @@ public class BottomSheet extends Fragment {
                 closest = new LatLngFlr(closestCoordinateWithDistance.getCoordinate().getLatitude(),
                         closestCoordinateWithDistance.getCoordinate().getLongitude(), closestCoordinateWithDistance.getCoordinate().getFloor());
                 Log.d(getContext().getString(R.string.distance), EMPTY + closestDistance);
-                String coordinateName = coordinateDAO.findCoordinateByLatLngFlr(closest).getName();
-                result.put(coordinateName, closest);
-                return result;
+                Coordinate closestCoordinate = coordinateDAO.findCoordinateByLatLngFlr(closest);
+                if (null != closestCoordinate) {
+                    String coordinateName = closestCoordinate.getName();
+                    result.put(coordinateName, closest);
+                    return result;
+                }
             }
         }
 
