@@ -135,10 +135,11 @@ public class MarkersAdapter extends BottomSheet {
         for (Room room : rooms) {
             Coordinate roomsCoordinate = (Coordinate) coordinateDAO.findById(room.getCoordinate_id());
             String roomsName = SearchableItem.getRoomsName(room, roomsCoordinate);
+            RoomType roomsType = (RoomType) roomTypeDAO.findById(room.getType_id());
             if (null != roomsName)
-                markersForRooms.add(new MarkerForRoom(roomsName, Constants.FOOD, roomsCoordinate.getLatitude(), roomsCoordinate.getLongitude()));
+                markersForRooms.add(new MarkerForRoom(roomsName, roomsType.getName(), roomsCoordinate.getLatitude(), roomsCoordinate.getLongitude()));
         }
-        List<Coordinate> coordinates = SearchableItem.getCoordinatesOfStairsAndElevators(MainActivity.getMainActivityContext());
+        List<Coordinate> coordinates = getCoordinatesOfStairsAndElevatorsForFloor(floor);
         for (Coordinate coordinate : coordinates) {
             if (null != coordinate.getName() && !Constants.EMPTY_STRING.equals(coordinate.getName())) {
                 CoordinateType coordinateType = (CoordinateType) coordinateTypeDAO.findById(coordinate.getType_id());
@@ -168,7 +169,7 @@ public class MarkersAdapter extends BottomSheet {
             if (null != roomsName)
                 markersForRooms.add(new MarkerForRoom(roomsName, roomsType.getName(), roomsCoordinate.getLatitude(), roomsCoordinate.getLongitude()));
         }
-        List<Coordinate> coordinates = SearchableItem.getCoordinatesOfStairsAndElevators(MainActivity.getMainActivityContext());
+        List<Coordinate> coordinates = getCoordinatesOfStairsAndElevatorsForFloor(floor);
         for (Coordinate coordinate : coordinates) {
             if (null != coordinate.getName() && !Constants.EMPTY_STRING.equals(coordinate.getName())) {
                 CoordinateType coordinateType = (CoordinateType) coordinateTypeDAO.findById(coordinate.getType_id());
@@ -188,7 +189,7 @@ public class MarkersAdapter extends BottomSheet {
     protected void makeEventsMarkers(int floor) {
         List<MarkerForRoom> markersForRooms = new ArrayList<>();
 
-        List<EventSchedule> eventSchedules = eventScheduleDAO.findUpcomingAndOngoingScheduledEvents();
+        List<EventSchedule> eventSchedules = eventScheduleDAO.findUpcomingAndOngoingScheduledEventsOnTheSpecifiedFloor(floor);
         for (EventSchedule eventSchedule : eventSchedules) {
             if (eventSchedule.getLocation_id() != null) {
                 EventFavorable event = (EventFavorable) eventDAO.findById(eventSchedule.getEvent_id());
@@ -251,7 +252,7 @@ public class MarkersAdapter extends BottomSheet {
         int px_small = 15;
 
         switch (type) {
-            case Constants.EVENT:
+            case Constants.EVENT_CAPITAL_CASE:
 
             case Constants.STAIRS:
 
@@ -352,5 +353,16 @@ public class MarkersAdapter extends BottomSheet {
         public Double getLongitude() {
             return longitude;
         }
+    }
+
+    public List<Coordinate> getCoordinatesOfStairsAndElevatorsForFloor(int floor) {
+        List<Coordinate> stairsAndElevatorsCoordinates = new ArrayList<>();
+        CoordinateType coordinateType;
+        coordinateType = coordinateTypeDAO.findCoordinateTypeByName(Constants.STAIRS);
+        stairsAndElevatorsCoordinates.addAll(coordinateDAO.getCoordinatesByTypeIdAndFloor(coordinateType.getId(), floor));
+        coordinateType = coordinateTypeDAO.findCoordinateTypeByName(Constants.ELEVATOR);
+        stairsAndElevatorsCoordinates.addAll(coordinateDAO.getCoordinatesByTypeIdAndFloor(coordinateType.getId(), floor));
+
+        return stairsAndElevatorsCoordinates;
     }
 }

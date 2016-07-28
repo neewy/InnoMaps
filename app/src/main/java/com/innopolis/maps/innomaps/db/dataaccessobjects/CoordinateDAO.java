@@ -126,7 +126,8 @@ public class CoordinateDAO implements ExtendedCrud {
         try {
             QueryBuilder<Coordinate, Integer> queryBuilder = helper.getCoordinateDao().queryBuilder();
             queryBuilder.where().eq(Constants.TYPE_ID, coordinateTypeId);
-            coordinates = queryBuilder.query();
+            if (queryBuilder.query().size() > 0)
+                coordinates = queryBuilder.query();
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
                     CoordinateDAO.class.getSimpleName());
@@ -155,20 +156,6 @@ public class CoordinateDAO implements ExtendedCrud {
         return index;
     }
 
-    public int getFloorByLatitudeAndLongitudeIfSuchCoordinateExistsOrOne(double latitude, double longitude) {
-        int floor = 1;
-        try {
-            QueryBuilder<Coordinate, Integer> qBuilder = helper.getCoordinateDao().queryBuilder();
-            qBuilder.where().eq(Constants.LATITUDE, latitude).and().eq(Constants.LONGITUDE, longitude);
-            if (qBuilder.query().size() > 0)
-                floor = helper.getCoordinateDao().queryForId(qBuilder.query().get(0).getId()).getFloor();
-        } catch (SQLException e) {
-            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
-                    CoordinateDAO.class.getSimpleName());
-        }
-        return floor;
-    }
-
     public Coordinate findCoordinateByLatLngFlr(LatLngFlr latLngFlr) {
         Coordinate coordinate = null;
         try {
@@ -190,6 +177,22 @@ public class CoordinateDAO implements ExtendedCrud {
         try {
             QueryBuilder<Coordinate, Integer> queryBuilder = helper.getCoordinateDao().queryBuilder();
             queryBuilder.where().eq(Constants.FLOOR, floor);
+            if (queryBuilder.query().size() > 0)
+                coordinates = queryBuilder.query();
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    CoordinateDAO.class.getSimpleName());
+        }
+
+        return coordinates;
+    }
+
+    public List<Coordinate> getCoordinatesByTypeIdAndFloor(int coordinateTypeId, int floor) {
+        List<Coordinate> coordinates = new ArrayList<>();
+
+        try {
+            QueryBuilder<Coordinate, Integer> queryBuilder = helper.getCoordinateDao().queryBuilder();
+            queryBuilder.where().eq(Constants.TYPE_ID, coordinateTypeId).and().eq(Constants.FLOOR, floor);
             if (queryBuilder.query().size() > 0)
                 coordinates = queryBuilder.query();
         } catch (SQLException e) {

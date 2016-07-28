@@ -138,4 +138,18 @@ public class CoordinateTypeDAO implements ExtendedCrud {
 
         return index;
     }
+
+    public CoordinateType findCoordinateTypeByName(String typeName) {
+        CoordinateType coordinateType = null;
+        try {
+            QueryBuilder<CoordinateType, Integer> qBuilder = helper.getCoordinateTypeDao().queryBuilder();
+            qBuilder.where().eq(Constants.NAME, typeName);
+            if (qBuilder.query().size() > 0)
+                coordinateType = qBuilder.query().get(0);
+        } catch (SQLException e) {
+            Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
+                    CoordinateTypeDAO.class.getSimpleName());
+        }
+        return coordinateType;
+    }
 }
