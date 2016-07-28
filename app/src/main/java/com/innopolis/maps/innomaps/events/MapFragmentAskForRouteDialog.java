@@ -226,22 +226,24 @@ public class MapFragmentAskForRouteDialog extends DialogFragment {
             ed.apply();
         } else {
             Coordinate coordinate;
+            int prevId = Integer.parseInt(sPref.getString(activity.getString(R.string.current_location), Constants.EMPTY_STRING));
             switch (currentLocationType) {
                 case Constants.EVENT:
-                    EventSchedule eventSchedule = (EventSchedule) eventScheduleDAO.findById(id);
+                    EventSchedule eventSchedule = (EventSchedule) eventScheduleDAO.findById(prevId);
                     coordinate = (Coordinate) coordinateDAO.findById(eventSchedule.getLocation_id());
                     break;
                 case Constants.ROOM:
-                    Room room = (Room) roomDAO.findById(id);
+                    Room room = (Room) roomDAO.findById(prevId);
                     coordinate = (Coordinate) coordinateDAO.findById(room.getCoordinate_id());
                     break;
                 default: // Coordinate
-                    coordinate = (Coordinate) coordinateDAO.findById(id);
+                    coordinate = (Coordinate) coordinateDAO.findById(prevId);
                     break;
             }
 
             int floor = coordinate.getFloor();
             Utils.selectSpinnerItemByValue(floorSpinner, floor);
+            ed.putString(activity.getString(R.string.current_location_type), type);
             ed.putString(activity.getString(R.string.current_location), arguments.getString(Constants.ID));
             ed.apply();
         }
