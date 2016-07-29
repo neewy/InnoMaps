@@ -40,7 +40,7 @@ public class SuggestionAdapter extends ArrayAdapter<SearchableItem> {
         if (item.getBuilding() != null) location.add(item.getBuilding());
         if (item.getFloor() != null) location.add(item.getFloor());
         if (item.getRoom() != null) location.add(item.getRoom());
-        String[] locationText  = new String[location.size()];
+        String[] locationText = new String[location.size()];
         ((CheckedTextView) convertView.findViewById(R.id.name))
                 .setText(item.getName());
         ((TextView) convertView.findViewById(R.id.location))
@@ -82,7 +82,7 @@ public class SuggestionAdapter extends ArrayAdapter<SearchableItem> {
         protected FilterResults performFiltering(CharSequence prefix) {
             FilterResults results = new FilterResults();
             List<SearchableItem> resList = new LinkedList<>();
-            for (SearchableItem item: items){
+            for (SearchableItem item : items) {
                 if (prefix != null && (item.getName().toLowerCase().contains(prefix.toString().toLowerCase()) ||
                         item.getBuilding().toLowerCase().contains(prefix.toString().toLowerCase()) ||
                         item.getFloor().toLowerCase().contains(prefix.toString().toLowerCase()) ||

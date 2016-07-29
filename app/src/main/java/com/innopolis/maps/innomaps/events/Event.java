@@ -3,6 +3,7 @@ package com.innopolis.maps.innomaps.events;
 import android.support.annotation.NonNull;
 
 import com.google.common.base.Predicate;
+import com.innopolis.maps.innomaps.maps.LatLngFlr;
 
 import java.util.Calendar;
 import java.util.Comparator;
@@ -15,18 +16,19 @@ public class Event implements Comparable<Event> {
     private String htmlLink;
     private Date start;
     private Date end;
-    private String eventID;
-    private String checked;
+    private int eventID;
+    private int eventScheduleId;
+    private boolean checked;
     private String description;
     private String creatorName;
     private String creatorEmail;
     private String building;
-    private String floor;
+    private String floorStr;
     private String room;
-    private String latitude;
-    private String longitude;
+    private LatLngFlr coordinateLatLngFlr;
 
-    public Event() {}
+    public Event() {
+    }
 
     public String getSummary() {
         return summary;
@@ -60,19 +62,19 @@ public class Event implements Comparable<Event> {
         this.end = end;
     }
 
-    public String getEventID() {
+    public int getEventID() {
         return eventID;
     }
 
-    public void setEventID(String eventID) {
+    public void setEventID(int eventID) {
         this.eventID = eventID;
     }
 
-    public String getChecked() {
+    public boolean isChecked() {
         return checked;
     }
 
-    public void setChecked(String checked) {
+    public void setChecked(boolean checked) {
         this.checked = checked;
     }
 
@@ -109,10 +111,12 @@ public class Event implements Comparable<Event> {
         this.building = building;
     }
 
-    public String getFloor() { return floor; }
+    public String getFloorStr() {
+        return floorStr;
+    }
 
-    public void setFloor(String floor) {
-        this.floor = floor;
+    public void setFloorStr(String floorStr) {
+        this.floorStr = floorStr;
     }
 
     public String getRoom() {
@@ -123,20 +127,20 @@ public class Event implements Comparable<Event> {
         this.room = room;
     }
 
-    public String getLatitude() {
-        return latitude;
+    public LatLngFlr getCoordinateLatLngFlr() {
+        return coordinateLatLngFlr;
     }
 
-    public void setLatitude(String latitude) {
-        this.latitude = latitude;
+    public void setCoordinateLatLngFlr(LatLngFlr coordinateLatLngFlr) {
+        this.coordinateLatLngFlr = coordinateLatLngFlr;
     }
 
-    public String getLongitude() {
-        return longitude;
+    public int getEventScheduleId() {
+        return eventScheduleId;
     }
 
-    public void setLongitude(String longitude) {
-        this.longitude = longitude;
+    public void setEventScheduleId(int eventScheduleId) {
+        this.eventScheduleId = eventScheduleId;
     }
 
     @Override
@@ -176,7 +180,7 @@ public class Event implements Comparable<Event> {
             Date today = new Date();
             Calendar c = Calendar.getInstance();
             c.setTime(today);
-            c.add(Calendar.DAY_OF_WEEK, c.getFirstDayOfWeek()+6);
+            c.add(Calendar.DAY_OF_WEEK, c.getFirstDayOfWeek() + 6);
             Date endOfWeek = c.getTime();
             return (event.getStart().after(today) && event.getEnd().before(endOfWeek));
         }
@@ -192,49 +196,53 @@ public class Event implements Comparable<Event> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Event)) return false;
 
         Event event = (Event) o;
 
-        if (!summary.equals(event.summary)) return false;
-        if (htmlLink != null ? !htmlLink.equals(event.htmlLink) : event.htmlLink != null)
+        if (getEventID() != event.getEventID()) return false;
+        if (getEventScheduleId() != event.getEventScheduleId()) return false;
+        if (isChecked() != event.isChecked()) return false;
+        if (getSummary() != null ? !getSummary().equals(event.getSummary()) : event.getSummary() != null)
             return false;
-        if (!start.equals(event.start)) return false;
-        if (!end.equals(event.end)) return false;
-        if (eventID != null ? !eventID.equals(event.eventID) : event.eventID != null) return false;
-        if (checked != null ? !checked.equals(event.checked) : event.checked != null) return false;
-        if (description != null ? !description.equals(event.description) : event.description != null)
+        if (getHtmlLink() != null ? !getHtmlLink().equals(event.getHtmlLink()) : event.getHtmlLink() != null)
             return false;
-        if (creatorName != null ? !creatorName.equals(event.creatorName) : event.creatorName != null)
+        if (getStart() != null ? !getStart().equals(event.getStart()) : event.getStart() != null)
             return false;
-        if (creatorEmail != null ? !creatorEmail.equals(event.creatorEmail) : event.creatorEmail != null)
+        if (getEnd() != null ? !getEnd().equals(event.getEnd()) : event.getEnd() != null)
             return false;
-        if (building != null ? !building.equals(event.building) : event.building != null)
+        if (getDescription() != null ? !getDescription().equals(event.getDescription()) : event.getDescription() != null)
             return false;
-        if (floor != null ? !floor.equals(event.floor) : event.floor != null) return false;
-        if (room != null ? !room.equals(event.room) : event.room != null) return false;
-        if (latitude != null ? !latitude.equals(event.latitude) : event.latitude != null)
+        if (getCreatorName() != null ? !getCreatorName().equals(event.getCreatorName()) : event.getCreatorName() != null)
             return false;
-        return !(longitude != null ? !longitude.equals(event.longitude) : event.longitude != null);
+        if (getCreatorEmail() != null ? !getCreatorEmail().equals(event.getCreatorEmail()) : event.getCreatorEmail() != null)
+            return false;
+        if (getBuilding() != null ? !getBuilding().equals(event.getBuilding()) : event.getBuilding() != null)
+            return false;
+        if (getFloorStr() != null ? !getFloorStr().equals(event.getFloorStr()) : event.getFloorStr() != null)
+            return false;
+        if (getRoom() != null ? !getRoom().equals(event.getRoom()) : event.getRoom() != null)
+            return false;
+        return coordinateLatLngFlr != null ? coordinateLatLngFlr.equals(event.coordinateLatLngFlr) : event.coordinateLatLngFlr == null;
 
     }
 
     @Override
     public int hashCode() {
-        int result = summary.hashCode();
-        result = 31 * result + (htmlLink != null ? htmlLink.hashCode() : 0);
-        result = 31 * result + start.hashCode();
-        result = 31 * result + end.hashCode();
-        result = 31 * result + (eventID != null ? eventID.hashCode() : 0);
-        result = 31 * result + (checked != null ? checked.hashCode() : 0);
-        result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + (creatorName != null ? creatorName.hashCode() : 0);
-        result = 31 * result + (creatorEmail != null ? creatorEmail.hashCode() : 0);
-        result = 31 * result + (building != null ? building.hashCode() : 0);
-        result = 31 * result + (floor != null ? floor.hashCode() : 0);
-        result = 31 * result + (room != null ? room.hashCode() : 0);
-        result = 31 * result + (latitude != null ? latitude.hashCode() : 0);
-        result = 31 * result + (longitude != null ? longitude.hashCode() : 0);
+        int result = getSummary() != null ? getSummary().hashCode() : 0;
+        result = 31 * result + (getHtmlLink() != null ? getHtmlLink().hashCode() : 0);
+        result = 31 * result + (getStart() != null ? getStart().hashCode() : 0);
+        result = 31 * result + (getEnd() != null ? getEnd().hashCode() : 0);
+        result = 31 * result + getEventID();
+        result = 31 * result + getEventScheduleId();
+        result = 31 * result + (isChecked() ? 1 : 0);
+        result = 31 * result + (getDescription() != null ? getDescription().hashCode() : 0);
+        result = 31 * result + (getCreatorName() != null ? getCreatorName().hashCode() : 0);
+        result = 31 * result + (getCreatorEmail() != null ? getCreatorEmail().hashCode() : 0);
+        result = 31 * result + (getBuilding() != null ? getBuilding().hashCode() : 0);
+        result = 31 * result + (getFloorStr() != null ? getFloorStr().hashCode() : 0);
+        result = 31 * result + (getRoom() != null ? getRoom().hashCode() : 0);
+        result = 31 * result + (coordinateLatLngFlr != null ? coordinateLatLngFlr.hashCode() : 0);
         return result;
     }
 }

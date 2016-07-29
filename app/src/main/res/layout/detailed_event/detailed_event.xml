@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/topLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/upper_part"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/all_descr"
+            android:background="@color/colorPrimary"
+            android:orientation="horizontal" />
+
+        <include
+            layout="@layout/detailed_event_top_title"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:elevation="0dp"
+            android:id="@id/eventName"/>
+
+        <include
+            layout="@layout/detailed_event_top_upper_text"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:elevation="0dp"
+            android:id="@id/upper_text"
+            android:layout_below="@id/eventName"/>
+
+        <include
+            layout="@layout/detailed_event_top_lower_text"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:elevation="0dp"
+            android:id="@id/lower_text"
+            android:layout_below="@+id/upper_text"/>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/lower_text"
+            android:orientation="vertical"
+            android:id="@+id/all_descr">
+
+            <include
+                layout="@layout/detailed_event_description"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:elevation="0dp"
+                android:layout_weight="0.5"/>
+
+            <include
+                layout="@layout/detailed_event_map"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:elevation="0dp"
+                android:layout_weight="0.5"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:clickable="true"
+        android:src="@drawable/ic_directions_36"
+        app:layout_anchor="@id/mapDesc"
+        app:layout_anchorGravity="top|right|end" />
+
+
+</android.support.design.widget.CoordinatorLayout>

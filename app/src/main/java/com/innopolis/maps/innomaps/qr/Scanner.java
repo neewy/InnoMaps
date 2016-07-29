@@ -1,43 +1,41 @@
 package com.innopolis.maps.innomaps.qr;
 
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
+import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.app.MainActivity;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.RoomDAO;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
+import com.innopolis.maps.innomaps.maps.LatLngFlr;
 import com.innopolis.maps.innomaps.maps.MapsFragment;
-import com.innopolis.maps.innomaps.database.DBHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
-import static com.innopolis.maps.innomaps.database.TableFields.*;
 
-
-public class Scanner extends AppCompatActivity implements ZXingScannerView.ResultHandler  {
+public class Scanner extends AppCompatActivity implements ZXingScannerView.ResultHandler {
 
     private ZXingScannerView mScannerView;
 
-    DBHelper dbHelper;
-    SQLiteDatabase database;
-
     Double destinationLatitude;
     Double destinationLongitude;
+    int destinationFloor;
 
     @Override
     public void onCreate(Bundle state) {
         Bundle extras = getIntent().getExtras();
-        destinationLatitude = extras.getDouble(LATITUDE);
-        destinationLongitude = extras.getDouble(LONGITUDE);
+        destinationLatitude = extras.getDouble(com.innopolis.maps.innomaps.db.Constants.LATITUDE);
+        destinationLongitude = extras.getDouble(com.innopolis.maps.innomaps.db.Constants.LONGITUDE);
+        destinationFloor = extras.getInt(com.innopolis.maps.innomaps.db.Constants.FLOOR);
 
         super.onCreate(state);
         mScannerView = new ZXingScannerView(this);   // Programmatically initialize the scanner view
@@ -45,8 +43,6 @@ public class Scanner extends AppCompatActivity implements ZXingScannerView.Resul
         formatList.add(BarcodeFormat.QR_CODE);
         mScannerView.setFormats(formatList);
         setContentView(mScannerView);                // Set the scanner view as the content view
-        dbHelper = new DBHelper(this);
-        database = dbHelper.getReadableDatabase();
     }
 
     @Override
@@ -65,19 +61,24 @@ public class Scanner extends AppCompatActivity implements ZXingScannerView.Resul
     @Override
     public void handleResult(Result rawResult) {
         // Do something with the result here
-        Cursor cursor = database.rawQuery("SELECT * FROM poi where _id like '"+ rawResult.getText() +"'", null);
-        if (cursor.moveToFirst()) {
+        RoomDAO roomDAO = new RoomDAO(MainActivity.getMainActivityContext());
+        Room room = (Room) roomDAO.findById(Integer.parseInt(rawResult.getText()));
+        if (null != room) {
             FragmentManager fm = MainActivity.getInstance().getSupportFragmentManager();
-            MapsFragment maps = (MapsFragment) fm.findFragmentByTag("Maps");
-            String latitude = cursor.getString(cursor.getColumnIndex(LATITUDE));
-            String longitude = cursor.getString(cursor.getColumnIndex(LONGITUDE));
-            maps.showRoute(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)), new LatLng(destinationLatitude, destinationLongitude));
+            MapsFragment maps = (MapsFragment) fm.findFragmentByTag(getString(R.string.maps));
+
+            CoordinateDAO coordinateDAO = new CoordinateDAO(MainActivity.getMainActivityContext());
+            Coordinate roomsCoordinate = (Coordinate) coordinateDAO.findById(room.getCoordinate_id());
+
+            LatLngFlr source = new LatLngFlr(roomsCoordinate.getLatitude(), roomsCoordinate.getLongitude(), roomsCoordinate.getFloor());
+            LatLngFlr destination = new LatLngFlr(destinationLatitude, destinationLongitude, destinationFloor);
+
+            maps.showRoute(source, destination);
             maps.currentDialog.cancel();
             this.finish();
         } else {
-            Toast.makeText(this, "This QR code cannot be used", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.wrond_qr, Toast.LENGTH_SHORT).show();
             mScannerView.resumeCameraPreview(this);
         }
-        cursor.close();
     }
 }

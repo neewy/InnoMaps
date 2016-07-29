@@ -10,18 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.common.base.Joiner;
 import com.innopolis.maps.innomaps.R;
 
-import java.util.LinkedList;
-import java.util.List;
-
 public class About extends Fragment {
-    // TODO: decide on access level
-    TextView creators;
-    TextView about;
 
-    // TODO: Replace author list with XML array resource
-    List<String> authorsList;
+    private String[] authorsArray;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,13 +26,15 @@ public class About extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.about, container, false);
-        authorsList = new LinkedList<>();
 
-        creators = (TextView) view.findViewById(R.id.t3_1);
-        about = (TextView) view.findViewById(R.id.t4);
+        authorsArray = getResources().getStringArray(R.array.authors_array);
+
+        TextView creators = (TextView) view.findViewById(R.id.creators_about);
+        TextView about = (TextView) view.findViewById(R.id.text_about);
 
         about.setText(R.string.about_text);
         creators.setText(makeAuthors());
+
         return view;
     }
 
@@ -54,24 +50,8 @@ public class About extends Fragment {
     }
 
     private String makeAuthors() {
-        String authors = "";
-        appendText();
-
-        for (String string : authorsList) {
-            if (authorsList.indexOf(string) < (authorsList.size() - 1)) {
-                authors += string + " • ";
-            } else {
-                authors += string;
-            }
-        }
+        String authors = Joiner.on(" • ").join(authorsArray);
         return authors;
     }
 
-    private void appendText() {
-        authorsList.add("Yushkevich N");
-        authorsList.add("Munichev K");
-        authorsList.add("Yusupov Z");
-        authorsList.add("Grishina E");
-        authorsList.add("Shalavin M");
-    }
 }

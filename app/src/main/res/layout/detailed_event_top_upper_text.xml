@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/upper_text_part"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="12dp"
+        android:layout_weight="1"
+        android:elevation="2dp"
+        android:weightSum="100">
+
+        <TextView
+            android:id="@+id/location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="false"
+            android:layout_alignParentTop="false"
+            android:layout_marginLeft="25dp"
+            android:layout_weight="53.84"
+            android:ellipsize="end"
+            android:gravity="left"
+            android:maxWidth="80dp"
+            android:textColor="@color/textColor" />
+
+
+        <TextView
+            android:id="@+id/timeLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="false"
+            android:layout_marginRight="25dp"
+            android:layout_toRightOf="@+id/location"
+            android:layout_weight="50"
+            android:gravity="right"
+            android:minWidth="32dp"
+            android:textColor="@color/textColor" />
+
+    </LinearLayout>
+</LinearLayout>

@@ -1,10 +1,7 @@
 package com.innopolis.maps.innomaps.events;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,7 +12,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -42,7 +38,26 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.app.MainActivity;
-import com.innopolis.maps.innomaps.database.DBHelper;
+import com.innopolis.maps.innomaps.db.Constants;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingAuxiliaryCoordinateDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventCreatorAppointmentDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventCreatorDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventScheduleDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.RoomDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.RoomTypeDAO;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Building;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingAuxiliaryCoordinate;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreator;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreatorAppointment;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventFavorable;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventSchedule;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomType;
+import com.innopolis.maps.innomaps.maps.LatLngFlr;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -56,27 +71,10 @@ import java.util.regex.Pattern;
 
 import xyz.hanks.library.SmallBang;
 
-import static com.innopolis.maps.innomaps.database.TableFields.BUILDING;
-import static com.innopolis.maps.innomaps.database.TableFields.DESCRIPTION;
-import static com.innopolis.maps.innomaps.database.TableFields.END;
-import static com.innopolis.maps.innomaps.database.TableFields.EVENTS;
-import static com.innopolis.maps.innomaps.database.TableFields.EVENT_ID;
-import static com.innopolis.maps.innomaps.database.TableFields.EVENT_TYPE;
-import static com.innopolis.maps.innomaps.database.TableFields.FAV;
-import static com.innopolis.maps.innomaps.database.TableFields.FLOOR;
-import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
-import static com.innopolis.maps.innomaps.database.TableFields.LINK;
-import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
-import static com.innopolis.maps.innomaps.database.TableFields.ROOM;
-import static com.innopolis.maps.innomaps.database.TableFields.START;
-import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY;
-
 
 public class DetailedEvent extends Fragment {
 
     Context context;
-    DBHelper dbHelper;
-    SQLiteDatabase database;
 
     TextView eventName;
     TextView timeLeft;
@@ -92,8 +90,10 @@ public class DetailedEvent extends Fragment {
     private GroundOverlay imageOverlay;
 
 
-    String summary, htmlLink, start, end, descriptionStr, creator,
-            eventID, building, floor, room, latitude, longitude, checked;
+    String summary, htmlLink, start, end, descriptionStr, building, floorString, room;
+    LatLngFlr coordinateLatLngFlr;
+    int eventId, eventScheduleId;
+    boolean checked;
 
 
     @Override
@@ -123,9 +123,10 @@ public class DetailedEvent extends Fragment {
 
     private void actionShare() {
         Intent i = new Intent(Intent.ACTION_SEND);
-        i.setType("text/plain");
+        i.setType(context.getString(R.string.text_plain));
         i.putExtra(Intent.EXTRA_SUBJECT, eventName.getText());
-        i.putExtra(Intent.EXTRA_TEXT, (eventName.getText() + " begins in " + dateTime.getText() + ". Join us!"));
+        i.putExtra(Intent.EXTRA_TEXT, (String.format(context.getString(R.string.share_sms),
+                eventName.getText(), dateTime.getText())));
         startActivity(i);
     }
 
@@ -133,68 +134,89 @@ public class DetailedEvent extends Fragment {
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         ((DrawerLayout) getActivity().findViewById(R.id.drawer_layout)).setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Event details");
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.event_details);
         context = getActivity().getApplicationContext();
         View view = inflater.inflate(R.layout.detailed_event, container, false);
-        dbHelper = new DBHelper(context);
-        database = dbHelper.getWritableDatabase();
-        eventName = (TextView) view.findViewById(R.id.eventName);
+        eventName = (TextView) view.findViewById(R.id.eventName_part);
         timeLeft = (TextView) view.findViewById(R.id.timeLeft);
         location = (TextView) view.findViewById(R.id.location);
         dateTime = (TextView) view.findViewById(R.id.dateTime);
         description = (LinkableTextView) view.findViewById(R.id.description);
         noEventText = (TextView) view.findViewById(R.id.noEventTextView);
         duration = (TextView) view.findViewById(R.id.duration);
-        final CheckBox favCheckBox =(CheckBox) view.findViewById(R.id.favCheckBox);
+        final CheckBox favCheckBox = (CheckBox) view.findViewById(R.id.favCheckBox);
 
         Bundle bundle = this.getArguments();
         if (bundle != null) {
-            String NULL = "";
-            eventID = bundle.getString(EVENT_ID, NULL);
+            eventId = bundle.getInt(Constants.EVENT_ID);
+            eventScheduleId = bundle.getInt(Constants.EVENT_SCHEDULE_ID);
         }
-        final Cursor cursor = database.query(EVENTS, null, "eventID=?", new String[]{eventID}, null, null, null);
-        cursor.moveToFirst();
-        do {
-            int summary, htmlLink, start, end, checked;
-            summary = cursor.getColumnIndex(SUMMARY);
-            htmlLink = cursor.getColumnIndex(LINK);
-            start = cursor.getColumnIndex(START);
-            end = cursor.getColumnIndex(END);
-            checked = cursor.getColumnIndex(FAV);
-            this.summary = cursor.getString(summary);
-            this.htmlLink = cursor.getString(htmlLink);
-            this.start = cursor.getString(start);
-            this.end = cursor.getString(end);
-            this.checked = cursor.getString(checked);
-            String[] summaryArgs = new String[]{cursor.getString(summary)};
-            Cursor cursor1 = database.query(EVENT_TYPE, null, "summary=?", summaryArgs, null, null, null);
-            cursor1.moveToFirst();
-            int description = cursor1.getColumnIndex(DESCRIPTION);
-            this.descriptionStr = cursor1.getString(description);
 
+        final EventDAO eventDAO = new EventDAO(context);
+        EventScheduleDAO eventScheduleDAO = new EventScheduleDAO(context);
+        CoordinateDAO coordinateDAO = new CoordinateDAO(context);
+        EventCreatorAppointmentDAO eventCreatorAppointmentDAO = new EventCreatorAppointmentDAO(context);
+        EventCreatorDAO eventCreatorDAO = new EventCreatorDAO(context);
+        final EventFavorable event = (EventFavorable) eventDAO.findById(eventId);
+        EventSchedule eventSchedule = (EventSchedule) eventScheduleDAO.findById(eventScheduleId);
+        Coordinate eventsCoordinate = (Coordinate) coordinateDAO.findById(eventSchedule.getLocation_id());
 
-            cursor1.close();
-        } while (cursor.moveToNext());
-        cursor.close();
-        Cursor locationC = database.rawQuery("SELECT * FROM poi INNER JOIN event_poi on event_poi.poi_id = poi._id WHERE event_poi.eventID LIKE '%" + eventID + "%'", null);
-        if (locationC.moveToFirst()) {
-            building = locationC.getString(locationC.getColumnIndex(BUILDING));
-            floor = locationC.getString(locationC.getColumnIndex(FLOOR));
-            room = locationC.getString(locationC.getColumnIndex(ROOM));
-            latitude = locationC.getString(locationC.getColumnIndex(LATITUDE));
-            longitude = locationC.getString(locationC.getColumnIndex(LONGITUDE));
+        this.summary = eventSchedule.getComment();
+        this.htmlLink = event.getLink();
+        this.start = eventSchedule.getStart_datetime();
+        this.end = eventSchedule.getEnd_datetime();
+        this.checked = event.isFavourite();
+
+        String eventDescription = event.getDescription();
+        if (!Constants.EMPTY_STRING.equals(eventDescription))
+            eventDescription += Constants.NEW_LINE + eventSchedule.getComment();
+        else
+            eventDescription += eventSchedule.getComment();
+
+        String linksToEventCreatorsTelegramAccountsOrGroups = Constants.EMPTY_STRING;
+        boolean groupLinkAdded = false;
+        if (null != event.getLink() && !Constants.EMPTY_STRING.equals(event.getLink())) {
+            linksToEventCreatorsTelegramAccountsOrGroups += Constants.GROUP_LINK;
+            linksToEventCreatorsTelegramAccountsOrGroups += event.getLink();
+            linksToEventCreatorsTelegramAccountsOrGroups += Constants.SPACE;
+            groupLinkAdded = true;
         }
-        database.close();
-        locationC.close();
+
+        List<EventCreatorAppointment> eventCreatorAppointments = eventCreatorAppointmentDAO.findByEventId(event.getId());
+
+        for (int i = 0; i < eventCreatorAppointments.size(); i++) {
+            EventCreator eventCreator = (EventCreator) eventCreatorDAO.findById(eventCreatorAppointments.get(i).getEvent_creator_id());
+            if (groupLinkAdded && i == 0)
+                linksToEventCreatorsTelegramAccountsOrGroups += Constants.NEW_LINE;
+            if (i == 0)
+                linksToEventCreatorsTelegramAccountsOrGroups += Constants.CONTACT;
+
+            linksToEventCreatorsTelegramAccountsOrGroups += Constants.AT_SIGN;
+            linksToEventCreatorsTelegramAccountsOrGroups += eventCreator.getTelegram_username();
+            linksToEventCreatorsTelegramAccountsOrGroups += Constants.SPACE;
+        }
+        if (!Constants.EMPTY_STRING.equals(linksToEventCreatorsTelegramAccountsOrGroups) && !Constants.EMPTY_STRING.equals(eventDescription))
+            linksToEventCreatorsTelegramAccountsOrGroups = Constants.NEW_LINE + linksToEventCreatorsTelegramAccountsOrGroups;
+
+        this.descriptionStr = eventDescription + linksToEventCreatorsTelegramAccountsOrGroups;
+
+        building = getBuildingNameForEvent(eventsCoordinate.getId(), context);
+        if (eventsCoordinate.getType_id() == 3 /*if type is ROOM*/ && null != eventsCoordinate.getName() && !Constants.EMPTY_STRING.equals(eventsCoordinate.getName()))
+            room = eventsCoordinate.getName();
+        else
+            room = null;
+
+        coordinateLatLngFlr = new LatLngFlr(eventsCoordinate.getLatitude(), eventsCoordinate.getLongitude(), eventsCoordinate.getFloor());
+        floorString = Integer.toString(eventsCoordinate.getFloor()) + Constants.SPACE + Constants.FLOOR;
 
         Link.OnClickListener telegramLinkListener = new Link.OnClickListener() {
             @Override
             public void onClick(String text) {
                 DialogFragment newFragment = new TelegramOpenDialog();
                 Bundle bundle = new Bundle();
-                bundle.putString("dialogText", text);
+                bundle.putString(getContext().getString(R.string.dialog_text), text);
                 newFragment.setArguments(bundle);
-                newFragment.show(getActivity().getSupportFragmentManager(), "Telegram");
+                newFragment.show(getActivity().getSupportFragmentManager(), getContext().getString(R.string.telegram));
             }
         };
 
@@ -219,17 +241,17 @@ public class DetailedEvent extends Fragment {
         Date startDate = null;
         Date endDate = null;
         try {
-            startDate = Utils.googleTimeFormat.parse(start);
-            endDate = Utils.googleTimeFormat.parse(end);
+            startDate = com.innopolis.maps.innomaps.network.Constants.serverDateFormat.parse(start);
+            endDate = com.innopolis.maps.innomaps.network.Constants.serverDateFormat.parse(end);
         } catch (ParseException e) {
             e.printStackTrace();
         }
         timeLeft.setText(Utils.prettyTime.format(startDate));
-        String[] locationText = {building, floor, room};
+        String[] locationText = {building, floorString, room};
         location.setText(StringUtils.join(Utils.clean(locationText), ", "));
         dateTime.setText(Utils.commonTime.format(startDate));
         Long durationTime = TimeUnit.MILLISECONDS.toMinutes(endDate.getTime() - startDate.getTime());
-        duration.setText("Duration: " + String.valueOf(durationTime) + "min");
+        duration.setText(String.format(context.getString(R.string.duration_text), String.valueOf(durationTime)));
 
         if (this.descriptionStr.length() != 0) {
             description
@@ -238,11 +260,7 @@ public class DetailedEvent extends Fragment {
                     .build();
         } else noEventText.setVisibility(View.VISIBLE);
 
-        if (checked.equals("1")) {
-            favCheckBox.setChecked(true);
-        } else {
-            favCheckBox.setChecked(false);
-        }
+        favCheckBox.setChecked(checked);
 
         final SmallBang mSmallBang;
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -260,13 +278,8 @@ public class DetailedEvent extends Fragment {
                     mSmallBang = SmallBang.attach2Window(getActivity());
                     mSmallBang.bang(favCheckBox);
                 }
-                String isFav = (favCheckBox.isChecked()) ? "1" : "0";
-                ContentValues cv = new ContentValues();
-                dbHelper = new DBHelper(context);
-                database = dbHelper.getWritableDatabase();
-                cv.put(FAV, isFav);
-                database.update(EVENTS, cv, "eventID = ?", new String[]{eventID});
-                dbHelper.close();
+                EventFavorable updatedEvent = new EventFavorable(event.getId(), event.getName(), event.getDescription(), event.getLink(), event.getGcals_event_id(), event.getModified(), favCheckBox.isChecked());
+                eventDAO.update(updatedEvent);
             }
         });
 
@@ -280,24 +293,24 @@ public class DetailedEvent extends Fragment {
             public void onClick(View v) {
                 DialogFragment newFragment = new MapFragmentAskForRouteDialog();
                 Bundle bundle = new Bundle();
-                bundle.putString("dialogSource", "DetailedEvent");
-                bundle.putString("type", "event");
-                bundle.putString("destination", location.getText().toString());
+                bundle.putString(getString(R.string.dialogSource), context.getString(R.string.detailed_event));
+                bundle.putString(getString(R.string.type), Constants.EVENT);
+                bundle.putString(getString(R.string.destination), location.getText().toString());
+                bundle.putString(getString(R.string.id), Integer.toString(eventScheduleId));
+                bundle.putInt(Constants.EVENT_ID, eventId);
                 newFragment.setArguments(bundle);
-                newFragment.show(getActivity().getSupportFragmentManager(), "FindRoute");
+                newFragment.show(getActivity().getSupportFragmentManager(), context.getString(R.string.FindRoute));
 
             }
         });
-        initializeMap(latitude, longitude);
+        initializeMap(coordinateLatLngFlr);
 
         return view;
     }
 
 
-
-    public void initializeMap(final String latitude, final String longitude) {
-        final LatLng[] southWest = new LatLng[1];
-        final LatLng[] northEast = new LatLng[1];
+    public void initializeMap(final LatLngFlr coordinate) {
+        final LatLng[] southWestAndNorthEast = new LatLng[2];
         mSupportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapDesc);
         if (mSupportMapFragment == null) {
             FragmentManager fragmentManager = getFragmentManager();
@@ -316,37 +329,35 @@ public class DetailedEvent extends Fragment {
                     mSettings.setMyLocationButtonEnabled(false);
 
 
-                    if (latitude != null && longitude != null) {
-                        LatLng position = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 19));
-                        mMap.addMarker(new MarkerOptions().position(position).title(room));
-                        switch (floor) {
-                            case "1floor":
-                                southWest[0] = new LatLng(55.752533, 48.742492);
-                                northEast[0] = new LatLng(55.754656, 48.744589);
-                                putOverlayToMap(southWest[0], northEast[0], BitmapDescriptorFactory.fromResource(R.raw.ai6_floor1));
-                                break;
-                            case "2floor":
-                                southWest[0] = new LatLng(55.752828, 48.742661);
-                                northEast[0] = new LatLng(55.754597, 48.744469);
-                                putOverlayToMap(southWest[0], northEast[0], BitmapDescriptorFactory.fromResource(R.raw.ai6_floor2));
-                                break;
-                            case "3floor":
-                                southWest[0] = new LatLng(55.752875, 48.742739);
-                                northEast[0] = new LatLng(55.754572, 48.744467);
-                                putOverlayToMap(southWest[0], northEast[0], BitmapDescriptorFactory.fromResource(R.raw.ai6_floor3));
-                                break;
-                            case "4floor":
-                                southWest[0] = new LatLng(55.752789, 48.742711);
-                                northEast[0] = new LatLng(55.754578, 48.744569);
-                                putOverlayToMap(southWest[0], northEast[0], BitmapDescriptorFactory.fromResource(R.raw.ai6_floor4));
-                                break;
-                            case "5floor":
-                                southWest[0] = new LatLng(55.752808, 48.743497);
-                                northEast[0] = new LatLng(55.753383, 48.744519);
-                                putOverlayToMap(southWest[0], northEast[0], BitmapDescriptorFactory.fromResource(R.raw.ai6_floor5));
-                                break;
-                        }
+                    LatLng position = coordinate.getAndroidGMSLatLng();
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 19));
+                    mMap.addMarker(new MarkerOptions().position(position).title(room));
+                    switch (coordinate.getFloor()) {
+                        case 1:
+                            southWestAndNorthEast[0] = new LatLng(55.752533, 48.742492);
+                            southWestAndNorthEast[1] = new LatLng(55.754656, 48.744589);
+                            putOverlayToMap(southWestAndNorthEast[0], southWestAndNorthEast[1], BitmapDescriptorFactory.fromResource(R.raw.ai6_floor1));
+                            break;
+                        case 2:
+                            southWestAndNorthEast[0] = new LatLng(55.752828, 48.742661);
+                            southWestAndNorthEast[1] = new LatLng(55.754597, 48.744469);
+                            putOverlayToMap(southWestAndNorthEast[0], southWestAndNorthEast[1], BitmapDescriptorFactory.fromResource(R.raw.ai6_floor2));
+                            break;
+                        case 3:
+                            southWestAndNorthEast[0] = new LatLng(55.752875, 48.742739);
+                            southWestAndNorthEast[1] = new LatLng(55.754572, 48.744467);
+                            putOverlayToMap(southWestAndNorthEast[0], southWestAndNorthEast[1], BitmapDescriptorFactory.fromResource(R.raw.ai6_floor3));
+                            break;
+                        case 4:
+                            southWestAndNorthEast[0] = new LatLng(55.752789, 48.742711);
+                            southWestAndNorthEast[1] = new LatLng(55.754578, 48.744569);
+                            putOverlayToMap(southWestAndNorthEast[0], southWestAndNorthEast[1], BitmapDescriptorFactory.fromResource(R.raw.ai6_floor4));
+                            break;
+                        case 5:
+                            southWestAndNorthEast[0] = new LatLng(55.752808, 48.743497);
+                            southWestAndNorthEast[1] = new LatLng(55.753383, 48.744519);
+                            putOverlayToMap(southWestAndNorthEast[0], southWestAndNorthEast[1], BitmapDescriptorFactory.fromResource(R.raw.ai6_floor5));
+                            break;
                     }
 
                     mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
@@ -355,9 +366,9 @@ public class DetailedEvent extends Fragment {
                         public void onInfoWindowClick(Marker marker) {
                             DialogFragment newFragment = new MapFragmentAskForRouteDialog();
                             Bundle bundle = new Bundle();
-                            bundle.putString(SUMMARY, summary);
+                            bundle.putString(Constants.SUMMARY, summary);
                             newFragment.setArguments(bundle);
-                            newFragment.show(getActivity().getSupportFragmentManager(), "FindRoute");
+                            newFragment.show(getActivity().getSupportFragmentManager(), context.getString(R.string.FindRoute));
                         }
                     });
                 }
@@ -370,7 +381,7 @@ public class DetailedEvent extends Fragment {
         super.onResume();
 
         // Tracking the screen view
-        MainActivity.getInstance().trackScreenView("Detailed Events Fragment");
+        MainActivity.getInstance().trackScreenView(context.getString(R.string.detailed_event_fragment));
     }
 
     private void putOverlayToMap(LatLng southWest, LatLng northEast, BitmapDescriptor bitmapDescriptor) {
@@ -387,4 +398,46 @@ public class DetailedEvent extends Fragment {
     }
 
 
+    private static String getBuildingNameForRoom(int buildingId, Context context) {
+        BuildingDAO buildingDAO = new BuildingDAO(context);
+        CoordinateDAO coordinateDAO = new CoordinateDAO(context);
+
+        Building roomsBuilding = (Building) buildingDAO.findById(buildingId);
+        Coordinate buildingsCoordinate = (Coordinate) coordinateDAO.findById(roomsBuilding.getCoordinate_id());
+        if (Constants.EMPTY_STRING.equals(buildingsCoordinate.getName()))
+            return null;
+        else
+            return buildingsCoordinate.getName();
+    }
+
+    private static String getBuildingNameForCoordinate(int coordinateId, Context context) {
+        BuildingDAO buildingDAO = new BuildingDAO(context);
+        CoordinateDAO coordinateDAO = new CoordinateDAO(context);
+        BuildingAuxiliaryCoordinateDAO buildingAuxiliaryCoordinateDAO = new BuildingAuxiliaryCoordinateDAO(context);
+
+        BuildingAuxiliaryCoordinate buildingAuxiliaryCoordinateWithSpecifiedCoordinateId = buildingAuxiliaryCoordinateDAO.getFirstRecordByCoordinateId(coordinateId);
+        if (buildingAuxiliaryCoordinateWithSpecifiedCoordinateId == null)
+            return null;
+        else {
+            Building coordinatesBuilding = (Building) buildingDAO.findById(buildingAuxiliaryCoordinateWithSpecifiedCoordinateId.getBuilding_id());
+            Coordinate buildingsCoordinate = (Coordinate) coordinateDAO.findById(coordinatesBuilding.getCoordinate_id());
+            return buildingsCoordinate.getName();
+        }
+    }
+
+    public static String getBuildingNameForEvent(int coordinateId, Context context) {
+        RoomTypeDAO roomTypeDAO = new RoomTypeDAO(context);
+        RoomDAO roomDAO = new RoomDAO(context);
+
+        RoomType roomType = roomTypeDAO.findRoomTypeByName(Constants.DOOR);
+        List<Integer> typeIds = new ArrayList<>();
+        if (null != roomType)
+            typeIds.add(roomType.getId());
+        Room room = roomDAO.getFirstRecordByCoordinateIdExceptWithFollowingTypes(typeIds, coordinateId);
+        if (room == null)
+            return getBuildingNameForCoordinate(coordinateId, context);
+        else {
+            return getBuildingNameForRoom(room.getBuilding_id(), context);
+        }
+    }
 }

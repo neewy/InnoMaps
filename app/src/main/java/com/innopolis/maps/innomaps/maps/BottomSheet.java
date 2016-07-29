@@ -1,6 +1,5 @@
 package com.innopolis.maps.innomaps.maps;
 
-import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
@@ -21,16 +20,30 @@ import com.apradanas.simplelinkabletext.Link;
 import com.apradanas.simplelinkabletext.LinkableTextView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.app.CustomScrollView;
 import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.app.SearchableItem;
+import com.innopolis.maps.innomaps.db.Constants;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventCreatorAppointmentDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventCreatorDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventScheduleDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.RoomDAO;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreator;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreatorAppointment;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventFavorable;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventSchedule;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
 import com.innopolis.maps.innomaps.events.Event;
 import com.innopolis.maps.innomaps.events.MapBottomEventListAdapter;
 import com.innopolis.maps.innomaps.events.TelegramOpenDialog;
+import com.innopolis.maps.innomaps.network.NetworkController;
+import com.innopolis.maps.innomaps.network.clientservercommunicationclasses.ClosestCoordinateWithDistance;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -38,30 +51,17 @@ import org.apache.commons.lang3.StringUtils;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.Locale;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
-
-import static com.innopolis.maps.innomaps.database.TableFields.DESCRIPTION;
-import static com.innopolis.maps.innomaps.database.TableFields.EVENT;
-import static com.innopolis.maps.innomaps.database.TableFields.EVENT_ID;
-import static com.innopolis.maps.innomaps.database.TableFields.EVENT_TYPE;
-import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
-import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
-import static com.innopolis.maps.innomaps.database.TableFields.POI;
-import static com.innopolis.maps.innomaps.database.TableFields.POI_NAME;
-import static com.innopolis.maps.innomaps.database.TableFields.START;
-import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY;
 
 
 public class BottomSheet extends Fragment {
     protected BottomSheetBehavior mBottomSheetBehavior;
     protected GoogleMap map;
-    protected HashMap<String, String> latLngMap;
+    protected List<LatLngFlr> latLngFlrList; //
 
     private double closestDistance;
 
@@ -75,16 +75,17 @@ public class BottomSheet extends Fragment {
     TextView durationText;
     FrameLayout relatedLayout;
     TextView idPoi;
+    TextView typePoi;
     LinearLayout durationLayout;
     LinearLayout startLayout;
 
     List<Marker> markerList; //to store markers on map
     RadioGroup floorPicker;
 
-    protected LatLng closest = null;
+    protected LatLngFlr closest = null;
 
-    public void inSearchBottomList(SearchableItem item, String text) {
-        ((RadioButton) floorPicker.getChildAt(5 - Integer.parseInt(item.getFloor().substring(0, 1)))).setChecked(true);
+    public void inSearchBottomList(SearchableItem item) {
+        ((RadioButton) floorPicker.getChildAt(5 - item.getCoordinate().getFloor())).setChecked(true);
 
         List<String> location = new LinkedList<>();
         if (item.getBuilding() != null) location.add(item.getBuilding());
@@ -102,18 +103,27 @@ public class BottomSheet extends Fragment {
         durationText = (TextView) scrollView.findViewById(R.id.durationText);
         relatedLayout = (FrameLayout) scrollView.findViewById(R.id.relatedLayout);
         idPoi = (TextView) scrollView.findViewById(R.id.idPoi);
+        typePoi = (TextView) scrollView.findViewById(R.id.typePoi);
 
         if (relatedLayout.getChildCount() != 0) {
             relatedLayout.removeView(relatedLayout.getChildAt(0));
         }
 
-        if (item.getType().equals(EVENT)) {
-            typeEvent(text);
-            idPoi.setText(EVENT);
+        idPoi.setText(String.format(Locale.ENGLISH, "%d", item.getId()));
+
+        if (item.getType() == SearchableItem.SearchableItemType.STAIRS || item.getType() == SearchableItem.SearchableItemType.ELEVATOR)
+            typePoi.setText(Constants.COORDINATE);
+        else if (item.getType() == SearchableItem.SearchableItemType.EVENT)
+            typePoi.setText(Constants.EVENT);
+        else
+            typePoi.setText(Constants.ROOM);
+
+        if (item.getType() == SearchableItem.SearchableItemType.EVENT) {
+            typeEvent(item.getId());
         } else {
-            idPoi.setText(item.getId());
-            typeEventNon(item.getId());
+            typeEventNon(item);
         }
+
         locationText.setText(StringUtils.join(locationArray, ", "));
         if (scrollView.getVisibility() == View.GONE) {
             scrollView.setVisibility(View.VISIBLE);
@@ -122,29 +132,21 @@ public class BottomSheet extends Fragment {
     }
 
 
-    protected void typeEvent(String summary) {
-        String sqlQuery = "SELECT * FROM events INNER JOIN event_poi ON events.eventID = event_poi.eventID INNER JOIN poi ON event_poi.poi_id = poi._id WHERE events.summary=?";
+    protected void typeEvent(int eventScheduleId) {
 
-        String name = "", latitude = "", longitude = "", startDateText = "", description = "";
-        Date startDate = null;
-
-        Cursor cursor = MarkersAdapter.database.rawQuery(sqlQuery, new String[]{summary});
+        EventDAO eventDAO = new EventDAO(this.getContext());
+        EventScheduleDAO eventScheduleDAO = new EventScheduleDAO(this.getContext());
+        EventCreatorDAO eventCreatorDAO = new EventCreatorDAO(this.getContext());
+        CoordinateDAO coordinateDAO = new CoordinateDAO(this.getContext());
+        EventCreatorAppointmentDAO eventCreatorAppointmentDAO = new EventCreatorAppointmentDAO(this.getContext());
 
         durationLayout.setVisibility(View.VISIBLE);
         startLayout.setVisibility(View.VISIBLE);
 
-        if (cursor.moveToFirst()) {
-            latitude = cursor.getString(cursor.getColumnIndex(LATITUDE));
-            longitude = cursor.getString(cursor.getColumnIndex(LONGITUDE));
-            startDateText = cursor.getString(cursor.getColumnIndex(START));
-            name = cursor.getString(cursor.getColumnIndex(SUMMARY));
-
-            Cursor cursor_type = MarkersAdapter.database.query(EVENT_TYPE, null, "summary=?", new String[]{summary}, null, null, null);
-            if (cursor_type.moveToFirst()) {
-                description = cursor_type.getString(cursor_type.getColumnIndex(DESCRIPTION));
-            }
-            cursor_type.close();
-            cursor.close();
+        EventSchedule eventSchedule = (EventSchedule) eventScheduleDAO.findById(eventScheduleId);
+        EventFavorable event = (EventFavorable) eventDAO.findById(eventSchedule.getEvent_id());
+        Coordinate eventCoordinate = (Coordinate) coordinateDAO.findById(eventSchedule.getLocation_id());
+        if (event != null && eventSchedule != null) {
             LinkableTextView descriptionText = new LinkableTextView(getContext());
 
             Link.OnClickListener telegramLinkListener = new Link.OnClickListener() {
@@ -152,9 +154,9 @@ public class BottomSheet extends Fragment {
                 public void onClick(String text) {
                     DialogFragment newFragment = new TelegramOpenDialog();
                     Bundle bundle = new Bundle();
-                    bundle.putString("dialogText", text);
+                    bundle.putString(getContext().getString(R.string.dialog_text), text);
                     newFragment.setArguments(bundle);
-                    newFragment.show(getActivity().getSupportFragmentManager(), "Telegram");
+                    newFragment.show(getActivity().getSupportFragmentManager(), getContext().getString(R.string.telegram));
                 }
             };
 
@@ -180,77 +182,114 @@ public class BottomSheet extends Fragment {
 
             descriptionText.setTextSize(16);
             descriptionText.setPadding(0, 20, 10, 10);
-            descriptionText.setText(description).addLinks(links).build();
-            relatedLayout.addView(descriptionText);
-            try {
-                startDate = Utils.googleTimeFormat.parse(startDateText);
-            } catch (ParseException e) {
-                Log.e("Maps", "Time parse exception", e);
+
+            String description = event.getDescription();
+            if (!Constants.EMPTY_STRING.equals(description))
+                description += Constants.NEW_LINE + eventSchedule.getComment();
+            else
+                description += eventSchedule.getComment();
+
+            String linksToEventCreatorsTelegramAccountsOrGroups = Constants.EMPTY_STRING;
+            boolean groupLinkAdded = false;
+            if (null != event.getLink() && !Constants.EMPTY_STRING.equals(event.getLink())) {
+                linksToEventCreatorsTelegramAccountsOrGroups += Constants.GROUP_LINK;
+                linksToEventCreatorsTelegramAccountsOrGroups += event.getLink();
+                linksToEventCreatorsTelegramAccountsOrGroups += Constants.SPACE;
+                groupLinkAdded = true;
             }
-            LatLng place = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
+
+            List<EventCreatorAppointment> eventCreatorAppointments = eventCreatorAppointmentDAO.findByEventId(event.getId());
+
+            for (int i = 0; i < eventCreatorAppointments.size(); i++) {
+                EventCreator eventCreator = (EventCreator) eventCreatorDAO.findById(eventCreatorAppointments.get(i).getEvent_creator_id());
+                if (groupLinkAdded && i == 0)
+                    linksToEventCreatorsTelegramAccountsOrGroups += Constants.NEW_LINE;
+                if (i == 0)
+                    linksToEventCreatorsTelegramAccountsOrGroups += Constants.CONTACT;
+
+                linksToEventCreatorsTelegramAccountsOrGroups += Constants.AT_SIGN;
+                linksToEventCreatorsTelegramAccountsOrGroups += eventCreator.getTelegram_username();
+                linksToEventCreatorsTelegramAccountsOrGroups += Constants.SPACE;
+            }
+            if (!Constants.EMPTY_STRING.equals(linksToEventCreatorsTelegramAccountsOrGroups) && !Constants.EMPTY_STRING.equals(description))
+                linksToEventCreatorsTelegramAccountsOrGroups = Constants.NEW_LINE + linksToEventCreatorsTelegramAccountsOrGroups;
+
+            descriptionText.setText(description + linksToEventCreatorsTelegramAccountsOrGroups).addLinks(links).build();
+            relatedLayout.addView(descriptionText);
+            LatLngFlr place = new LatLngFlr(eventCoordinate.getLatitude(), eventCoordinate.getLongitude(), eventCoordinate.getFloor());
             pinMarker(place, false);
-            map.animateCamera(CameraUpdateFactory.newLatLng(place));
+            map.animateCamera(CameraUpdateFactory.newLatLng(place.getAndroidGMSLatLng()));
         }
 
-        headerText.setText(name);
+        headerText.setText(event.getName());
+        Date startDate = null;
+        try {
+            startDate = com.innopolis.maps.innomaps.network.Constants.serverDateFormat.parse(eventSchedule.getStart_datetime());
+        } catch (ParseException e) {
+            Log.e(getContext().getString(R.string.maps), getContext().getString(R.string.time_parse_exception), e);
+        }
         startText.setText(Utils.commonTime.format(startDate));
         durationText.setText(Utils.prettyTime.format(startDate));
-        setPeekHeight("event");
+        setPeekHeight(Constants.EVENT);
     }
 
 
-    public void typeEventNon(String poi_id) {
+    public void typeEventNon(SearchableItem item) {
 
-        String sqlQuery = "SELECT * FROM poi LEFT OUTER JOIN event_poi on event_poi.poi_id = poi._id LEFT OUTER JOIN events on events.eventID = event_poi.eventID WHERE poi._id=?";
+        CoordinateDAO coordinateDAO = new CoordinateDAO(this.getContext());
+        RoomDAO roomDAO = new RoomDAO(this.getContext());
+        EventScheduleDAO eventScheduleDAO = new EventScheduleDAO(this.getContext());
+        EventDAO eventDAO = new EventDAO(this.getContext());
 
-        Cursor cursor = MarkersAdapter.database.rawQuery(sqlQuery, new String[]{poi_id});
-        String poi_name, latitude, longitude;
+        Coordinate coordinate;
+        if (item.getType() == SearchableItem.SearchableItemType.ELEVATOR || item.getType() == SearchableItem.SearchableItemType.STAIRS) // then id is coordinateId
+            coordinate = (Coordinate) coordinateDAO.findById(item.getId());
+        else { // then id is roomId
+            Room room = (Room) roomDAO.findById(item.getId());
+            coordinate = (Coordinate) coordinateDAO.findById(room.getCoordinate_id());
+        }
 
         durationLayout.setVisibility(View.GONE);
         startLayout.setVisibility(View.GONE);
 
-        if (cursor.moveToFirst()) {
-            poi_name = cursor.getString(cursor.getColumnIndex(POI_NAME));
-            latitude = cursor.getString(cursor.getColumnIndex(LATITUDE));
-            longitude = cursor.getString(cursor.getColumnIndex(LONGITUDE));
-            List<Event> events = new LinkedList<>();
-            do {
-                Event event = new Event();
-                event.setSummary(cursor.getString(cursor.getColumnIndex(SUMMARY)));
-                try {
-                    if (cursor.getString(cursor.getColumnIndex(START)) != null) {
-                        event.setStart(Utils.googleTimeFormat.parse(cursor.getString(cursor.getColumnIndex(START))));
-                    }
-                } catch (ParseException e) {
-                    Log.e("Maps", "Date parse exception", e);
-                }
-                event.setEventID(cursor.getString(cursor.getColumnIndex(EVENT_ID)));
-                if (event.getEventID() != null) {
-                    events.add(event);
-                }
-            } while (cursor.moveToNext());
-            if (events.size() == 0) {
-                TextView noEvents = new TextView(getContext());
-                noEvents.setText(R.string.no_events);
-                relatedLayout.addView(noEvents);
-            } else {
-                final ListView eventList = new ListView(getContext());
-                eventList.setAdapter(new MapBottomEventListAdapter(getContext(), events, getActivity()));
-                relatedLayout.addView(eventList);
+        // TODO: Discuss whether or not to keep events.Event class or rewrite everything based on db.tablesrepresentations.EventFavorable
+        // (events.Event is good for GUI, but have many seemingly unassigned parameters)
+        List<Event> events = new LinkedList<>();
+
+        List<EventSchedule> eventSchedules = eventScheduleDAO.findUpcomingAndOngoingScheduledEventsInSpecifiedLocation(coordinate.getId());
+        for (EventSchedule eventSchedule : eventSchedules) {
+            Event eventForGUI = new Event();
+            EventFavorable eventFavorable = (EventFavorable) eventDAO.findById(eventSchedule.getEvent_id());
+            eventForGUI.setSummary(eventFavorable.getName());
+            try {
+                eventForGUI.setStart(com.innopolis.maps.innomaps.network.Constants.serverDateFormat.parse(eventSchedule.getStart_datetime()));
+            } catch (ParseException e) {
+                Log.e(getContext().getString(R.string.maps), getContext().getString(R.string.date_parse_exception), e);
             }
-            cursor.close();
-            headerText.setText(poi_name);
-            LatLng place = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
-            pinMarker(place, false);
-            map.animateCamera(CameraUpdateFactory.newLatLng(place));
-            setPeekHeight("poi");
+            eventForGUI.setEventID(eventFavorable.getId());
+            eventForGUI.setEventScheduleId(eventSchedule.getId());
+            events.add(eventForGUI);
         }
+        if (events.size() == 0) {
+            TextView noEvents = new TextView(getContext());
+            noEvents.setText(R.string.no_events);
+            relatedLayout.addView(noEvents);
+        } else {
+            final ListView eventList = new ListView(getContext());
+            eventList.setAdapter(new MapBottomEventListAdapter(getContext(), events, getActivity()));
+            relatedLayout.addView(eventList);
+        }
+        headerText.setText(item.getName());
+        LatLngFlr place = new LatLngFlr(coordinate.getLatitude(), coordinate.getLongitude(), coordinate.getFloor());
+        pinMarker(place, false);
+        map.animateCamera(CameraUpdateFactory.newLatLng(place.getAndroidGMSLatLng()));
+        setPeekHeight(Constants.POI);
     }
 
 
     protected void clearMarkerList() {
         if (markerList != null && markerList.size() > 0) {
-            for (Marker marker: markerList){
+            for (Marker marker : markerList) {
                 marker.remove();
             }
             markerList.clear();
@@ -258,16 +297,16 @@ public class BottomSheet extends Fragment {
     }
 
 
-    public void pinMarker(LatLng latLng, boolean firstTimeFlag) {
+    public void pinMarker(LatLngFlr latLngFlr, boolean firstTimeFlag) {
         clearMarkerList();
         MarkerOptions markerOptions = new MarkerOptions();
-        String title = findClosestPOI(latLng).firstKey();
+        String title = findClosestPOI(latLngFlr).firstKey();
         markerOptions.title(title);
-        if (title!=null && !"".equals(title) && firstTimeFlag){
+        if (title != null && !"".equals(title) && firstTimeFlag) {
             boolean found = false;
-            for (SearchableItem item: ((MainActivity)getActivity()).searchItems){
-                if (item.getName().toLowerCase().contains(title.toLowerCase()) && item.getCoordinate().equals(latLng)){
-                    inSearchBottomList(item, title);
+            for (SearchableItem item : MainActivity.searchItems) {
+                if (item.getName().toLowerCase().contains(title.toLowerCase()) && item.getCoordinate().equals(latLngFlr)) {
+                    inSearchBottomList(item);
                     scrollView.setVisibility(View.VISIBLE);
                     found = true;
                 }
@@ -277,36 +316,39 @@ public class BottomSheet extends Fragment {
         } else {
             scrollView.setVisibility(View.GONE);
         }
-        markerOptions.position(closest == null || closestDistance > 0.012 ? latLng : closest);
+        markerOptions.position(closest == null || closestDistance > 0.012 ? latLngFlr.getAndroidGMSLatLng() : closest.getAndroidGMSLatLng());
         Marker marker = map.addMarker(markerOptions);
         marker.showInfoWindow();
         markerList.add(marker);
     }
 
-    private TreeMap<String, LatLng> findClosestPOI(LatLng latLng) {
-        TreeMap<String, LatLng> result = new TreeMap<>();
-        if (latLngMap != null) {
-            Iterator iterator = latLngMap.entrySet().iterator();
-            closestDistance = Double.MAX_VALUE;
-            String lat = "", lng = "";
-            while (iterator.hasNext()) {
-                Map.Entry pair = (Map.Entry) iterator.next();
-                double distance = Utils.haversine(latLng.latitude, latLng.longitude, Double.parseDouble(pair.getKey().toString()), Double.parseDouble(pair.getValue().toString()));
-                if (distance < closestDistance) {
-                    closestDistance = distance;
-                    lat = pair.getKey().toString();
-                    lng = pair.getValue().toString();
+    // TODO: Fix. Works incorrectly, usually takes point from the first floor if it is not a room
+    // It will work correctly when we will move to 3D coordinates and new database structure
+    private TreeMap<String, LatLngFlr> findClosestPOI(LatLngFlr latLngFlr) {
+        TreeMap<String, LatLngFlr> result = new TreeMap<>();
+        if (latLngFlrList != null) {
+            NetworkController networkController = new NetworkController();
+            CoordinateDAO coordinateDAO = new CoordinateDAO(this.getContext());
+
+            ClosestCoordinateWithDistance closestCoordinateWithDistance = null;
+
+            // TODO: Find out if we need to get rid of latLngFlrList and check if latLng!=null instead
+            if (!latLngFlrList.isEmpty()) {
+                closestCoordinateWithDistance = networkController.findClosestPointFromGraph(latLngFlr.getLatitude(), latLngFlr.getLongitude(), latLngFlr.getFloor());
+                closestDistance = closestCoordinateWithDistance.getDistance();
+            } else
+                closestDistance = Double.MAX_VALUE;
+
+            if (closestDistance < 0.012) {
+                closest = new LatLngFlr(closestCoordinateWithDistance.getCoordinate().getLatitude(),
+                        closestCoordinateWithDistance.getCoordinate().getLongitude(), closestCoordinateWithDistance.getCoordinate().getFloor());
+                Log.d(getContext().getString(R.string.distance), Constants.EMPTY_STRING + closestDistance);
+                Coordinate closestCoordinate = coordinateDAO.findCoordinateByLatLngFlr(closest);
+                if (null != closestCoordinate) {
+                    String coordinateName = closestCoordinate.getName();
+                    result.put(coordinateName, closest);
+                    return result;
                 }
-            }
-            if (closestDistance < 0.012){
-                closest = new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
-                Log.d("DISTANCE: ", ""+closestDistance);
-                String sqlQuery = "SELECT " + POI_NAME + " FROM " + POI + " WHERE " + LATITUDE + "=?" + " AND " + LONGITUDE + "=?";
-                Cursor cursor = MarkersAdapter.database.rawQuery(sqlQuery, new String[]{lat, lng});
-                cursor.moveToFirst();
-                result.put(cursor.getString(cursor.getColumnIndex(POI_NAME)), closest);
-                cursor.close();
-                return result;
             }
         }
 
@@ -325,7 +367,7 @@ public class BottomSheet extends Fragment {
                 int durationLayoutHeight = durationLayout.getHeight();
                 int startLayoutHeight = startLayout.getHeight();
                 int locationTextHeight = locationText.getHeight();
-                if (type.equals("event")) {
+                if (type.equals(Constants.EMPTY_STRING)) {
                     height = scrollView.getHeight() - (relatedLayoutHeight + durationLayoutHeight + startLayoutHeight + locationTextHeight + (int) Utils.convertDpToPixel(32, getContext()));
                 } else {
                     height = scrollView.getHeight() - (relatedLayoutHeight + locationTextHeight + (int) Utils.convertDpToPixel(32, getContext()));

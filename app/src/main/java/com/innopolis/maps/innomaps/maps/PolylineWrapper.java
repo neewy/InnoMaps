@@ -7,23 +7,24 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 public class PolylineWrapper {
 
-    String floor;
+    int floor;
     Polyline polyline;
     PolylineOptions polylineOptions;
 
-    public PolylineWrapper(){}
+    public PolylineWrapper() {
+    }
 
-    public PolylineWrapper(String floor, Polyline polyline, PolylineOptions polylineOptions) {
+    public PolylineWrapper(int floor, Polyline polyline, PolylineOptions polylineOptions) {
         this.floor = floor;
         this.polyline = polyline;
         this.polylineOptions = polylineOptions;
     }
 
-    public String getFloor() {
+    public int getFloor() {
         return floor;
     }
 
-    public void setFloor(String floor) {
+    public void setFloor(int floor) {
         this.floor = floor;
     }
 
@@ -53,6 +54,6 @@ public class PolylineWrapper {
     }
 
     public boolean isNull() {
-        return floor == null & polyline == null & polylineOptions == null;
+        return polyline == null & polylineOptions == null;
     }
 }

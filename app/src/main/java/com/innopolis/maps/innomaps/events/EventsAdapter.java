@@ -1,9 +1,7 @@
 package com.innopolis.maps.innomaps.events;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -21,8 +19,9 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.innopolis.maps.innomaps.R;
-import com.innopolis.maps.innomaps.database.DBHelper;
-import com.innopolis.maps.innomaps.database.TableFields;
+import com.innopolis.maps.innomaps.db.Constants;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventDAO;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventFavorable;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -38,8 +37,6 @@ public class EventsAdapter extends BaseAdapter {
     public List<Event> events;
     private Context context;
     private LayoutInflater lInflater;
-    private DBHelper dbHelper;
-    private SQLiteDatabase database;
     private Activity activity;
     private FragmentManager fm;
 
@@ -79,25 +76,22 @@ public class EventsAdapter extends BaseAdapter {
         TextView nameEvent = (TextView) view.findViewById(R.id.nameEvent);
         TextView location = (TextView) view.findViewById(R.id.location);
         TextView dateTime = (TextView) view.findViewById(R.id.dateTime);
-        final CheckBox favCheckBox =(CheckBox) view.findViewById(R.id.favCheckBox);
-
+        final CheckBox favCheckBox = (CheckBox) view.findViewById(R.id.favCheckBox);
+        final EventDAO eventDAO = new EventDAO(context);
+        final EventFavorable eventFavorable = (EventFavorable) eventDAO.findById(event.getEventID());
 
         nameEvent.setText(event.getSummary());
         String[] locationText = new String[3];
-        locationText[0] = (event.getBuilding() != null) ? event.getBuilding() : "null";
-        locationText[1] = (event.getFloor() != null) ? event.getFloor() : "null";
-        locationText[2] = (event.getRoom() != null) ? event.getRoom() : "null";
+        locationText[0] = (event.getBuilding() != null) ? event.getBuilding() : Constants.NULL_STRING;
+        locationText[1] = (event.getFloorStr() != null) ? event.getFloorStr() : Constants.NULL_STRING;
+        locationText[2] = (event.getRoom() != null) ? event.getRoom() : Constants.NULL_STRING;
         location.setText(StringUtils.join(Utils.clean(locationText), ", "));
         Date startTime = event.getStart();
         if (startTime != null) {
             dateTime.setText(Utils.commonTime.format(startTime));
             timeLeft.setText(Utils.prettyTime.format(startTime));
         }
-        if (event.getChecked().equals("1")) {
-            favCheckBox.setChecked(true);
-        } else {
-            favCheckBox.setChecked(false);
-        }
+        favCheckBox.setChecked(event.isChecked());
 
 
         final View finalView = view;
@@ -107,7 +101,8 @@ public class EventsAdapter extends BaseAdapter {
                 if (!(finalView.getParent().getParent() instanceof SwipeRefreshLayout) || !((SwipeRefreshLayout) finalView.getParent().getParent()).isRefreshing()) {
                     Fragment fragment = new DetailedEvent();
                     Bundle bundle = new Bundle();
-                    bundle.putString("eventID", event.getEventID());
+                    bundle.putInt(Constants.EVENT_ID, event.getEventID());
+                    bundle.putInt(Constants.EVENT_SCHEDULE_ID, event.getEventScheduleId());
                     fragment.setArguments(bundle);
                     DrawerLayout drawer = (DrawerLayout) activity.findViewById(R.id.drawer_layout);
                     Toolbar toolbar = (Toolbar) activity.findViewById(R.id.toolbar);
@@ -121,7 +116,7 @@ public class EventsAdapter extends BaseAdapter {
                     });
                     FragmentTransaction ft = fm.beginTransaction();
                     ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                    ft.replace(R.id.content_frame, fragment, "Detailed").addToBackStack("Detailed");
+                    ft.replace(R.id.content_frame, fragment, context.getString(R.string.detailed)).addToBackStack(context.getString(R.string.detailed));
                     ft.commit();
                 }
             }
@@ -136,20 +131,15 @@ public class EventsAdapter extends BaseAdapter {
                     mSmallBang = SmallBang.attach2Window(activity);
                     mSmallBang.bang(favCheckBox);
                 }
-                String isFav = (favCheckBox.isChecked()) ? "1" : "0";
-                event.setChecked(isFav);
-                String eventID = event.getEventID();
-                ContentValues cv = new ContentValues();
-                dbHelper = new DBHelper(context);
-                database = dbHelper.getWritableDatabase();
-                cv.put(TableFields.FAV, isFav);
-                database.update(TableFields.EVENTS, cv, "eventID = ?", new String[]{eventID});
-                dbHelper.close();
+                event.setChecked(favCheckBox.isChecked());
+
+                EventFavorable updatedEvent = new EventFavorable(eventFavorable.getId(), eventFavorable.getName(), eventFavorable.getDescription(),
+                        eventFavorable.getLink(), eventFavorable.getGcals_event_id(), eventFavorable.getModified(), favCheckBox.isChecked());
+                eventDAO.update(updatedEvent);
             }
         });
         return view;
     }
-
 
 
     Event getEventRow(int position) {

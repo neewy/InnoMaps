@@ -9,36 +9,37 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
+import com.innopolis.maps.innomaps.R;
+
 
 public class TelegramOpenDialog extends DialogFragment {
     String message;
     String link;
     String url;
-    private static final String CONTACT_URL = "https://telegram.me/";
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        String nickURL = getArguments().getString("dialogText");
+        String nickURL = getArguments().getString(getContext().getString(R.string.dialog_text));
 
         if (nickURL.contains("@")) {
             link = nickURL.substring(nickURL.indexOf("@") + 1);
-            message = "Get in touch with " + link + " via telegram";
-            url = CONTACT_URL + link;
+            message = String.format(getContext().getString(R.string.telegram_in_touch), link);
+            url = getContext().getString(R.string.contact_url) + link;
         } else {
-            message = "Open link " + nickURL + " ?";
-            link = getArguments().getString("dialogText");
+            message = String.format(getContext().getString(R.string.open_link), nickURL);
+            link = getArguments().getString(getContext().getString(R.string.dialog_text));
             url = link;
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(message)
-                .setPositiveButton("Open", new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.open, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         intentMessageTelegram();
                     }
                 })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         TelegramOpenDialog.this.getDialog().cancel();
                     }
@@ -49,8 +50,8 @@ public class TelegramOpenDialog extends DialogFragment {
 
 
     protected void intentMessageTelegram() {
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(url));
-            startActivity(i);
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        startActivity(i);
     }
 }

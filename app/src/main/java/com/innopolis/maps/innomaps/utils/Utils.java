@@ -16,6 +16,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import com.innopolis.maps.innomaps.db.Constants;
+
 import org.ocpsoft.prettytime.PrettyTime;
 
 import java.io.BufferedReader;
@@ -26,7 +28,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -112,17 +116,18 @@ public class Utils {
         return result;
     }
 
-    public static String[] clean(final String[] v) {
-        int r, w, n = r = w = v.length;
-        while (r > 0) {
-            final String s = v[--r];
-            if (!s.equals(NULL)) {
-                v[--w] = s;
-            }
+    public static String[] clean(final String[] strings) {
+        String[] result;
+        List<String> stringList = new ArrayList<>();
+        for (int i = 0; i < strings.length; i++) {
+            if (null != strings[i] && !Constants.EMPTY_STRING.equals(strings[i]) && !Constants.NULL_STRING.equals(strings[i]))
+                stringList.add(strings[i]);
         }
-        final String[] c = new String[n -= w];
-        System.arraycopy(v, w, c, 0, n);
-        return c;
+        result = new String[stringList.size()];
+        for (int i = 0; i < stringList.size(); i++) {
+            result[i] = stringList.get(i);
+        }
+        return result;
     }
 
     public static double haversine(double lat1, double lon1, double lat2, double lon2) {
@@ -154,9 +159,9 @@ public class Utils {
         }
     }
 
-    public static Bitmap drawableToBitmap (Drawable drawable) {
+    public static Bitmap drawableToBitmap(Drawable drawable) {
         if (drawable instanceof BitmapDrawable) {
-            return ((BitmapDrawable)drawable).getBitmap();
+            return ((BitmapDrawable) drawable).getBitmap();
         }
 
         int width = drawable.getIntrinsicWidth();
@@ -172,19 +177,19 @@ public class Utils {
         return bitmap;
     }
 
-    public static void selectSpinnerItemByValue(Spinner spnr, String value) {
-        ArrayAdapter<String> adapter = (ArrayAdapter<String>) spnr.getAdapter();
+    public static void selectSpinnerItemByValue(Spinner spnr, int value) {
+        ArrayAdapter<Integer> adapter = (ArrayAdapter<Integer>) spnr.getAdapter();
         for (int position = 0; position < adapter.getCount(); position++) {
-            if(adapter.getItem(position).equals(value)) {
+            if (adapter.getItem(position) == value) {
                 spnr.setSelection(position, true);
                 return;
             }
         }
     }
 
-    public static float convertDpToPixel(float dp, Context context){
+    public static float convertDpToPixel(float dp, Context context) {
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
-        return dp * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        return dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 }

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/lower_text_part"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="6dp"
+        android:elevation="2dp"
+        android:paddingTop="3dp"
+        android:weightSum="100">
+
+        <TextView
+            android:id="@+id/dateTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="25dp"
+            android:layout_weight="50"
+            android:ellipsize="end"
+            android:gravity="left"
+            android:textColor="@color/textColor" />
+
+        <TextView
+            android:id="@+id/duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="25dp"
+            android:layout_toRightOf="@+id/dateTime"
+            android:layout_weight="50"
+            android:gravity="right"
+            android:hyphenationFrequency="full"
+            android:textColor="@color/textColor" />
+
+    </LinearLayout>
+</LinearLayout>
