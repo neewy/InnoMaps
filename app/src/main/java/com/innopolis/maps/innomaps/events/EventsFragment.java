@@ -343,7 +343,8 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
                 eventForGUI.setCoordinateLatLngFlr(new LatLngFlr(eventsCoordinate.getLatitude(), eventsCoordinate.getLongitude(), eventsCoordinate.getFloor()));
 
                 Date date = new Date();
-                //if the date exceeds current date – we don't store it
+                // if the date exceeds current date – we don't store it, actually sync will remove them anyway,
+                // but synchronization starts every 2.5 minutes and it may be the case that overdue events are still displayed
                 if (eventForGUI.getStart().before(date)) {
                     eventScheduleDAO.delete(eventSchedule);
                 } else {
