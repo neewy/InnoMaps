@@ -42,6 +42,8 @@ import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingAuxiliaryCoordinateDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventCreatorAppointmentDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventCreatorDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.EventDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.EventScheduleDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.RoomDAO;
@@ -49,6 +51,8 @@ import com.innopolis.maps.innomaps.db.dataaccessobjects.RoomTypeDAO;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Building;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.BuildingAuxiliaryCoordinate;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreator;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreatorAppointment;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventFavorable;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventSchedule;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Room;
@@ -151,6 +155,8 @@ public class DetailedEvent extends Fragment {
         final EventDAO eventDAO = new EventDAO(context);
         EventScheduleDAO eventScheduleDAO = new EventScheduleDAO(context);
         CoordinateDAO coordinateDAO = new CoordinateDAO(context);
+        EventCreatorAppointmentDAO eventCreatorAppointmentDAO = new EventCreatorAppointmentDAO(context);
+        EventCreatorDAO eventCreatorDAO = new EventCreatorDAO(context);
         final EventFavorable event = (EventFavorable) eventDAO.findById(eventId);
         EventSchedule eventSchedule = (EventSchedule) eventScheduleDAO.findById(eventScheduleId);
         Coordinate eventsCoordinate = (Coordinate) coordinateDAO.findById(eventSchedule.getLocation_id());
@@ -160,7 +166,39 @@ public class DetailedEvent extends Fragment {
         this.start = eventSchedule.getStart_datetime();
         this.end = eventSchedule.getEnd_datetime();
         this.checked = event.isFavourite();
-        this.descriptionStr = event.getDescription();
+
+        String eventDescription = event.getDescription();
+        if (!Constants.EMPTY_STRING.equals(eventDescription))
+            eventDescription += Constants.NEW_LINE + eventSchedule.getComment();
+        else
+            eventDescription += eventSchedule.getComment();
+
+        String linksToEventCreatorsTelegramAccountsOrGroups = Constants.EMPTY_STRING;
+        boolean groupLinkAdded = false;
+        if (null != event.getLink() && !Constants.EMPTY_STRING.equals(event.getLink())) {
+            linksToEventCreatorsTelegramAccountsOrGroups += Constants.GROUP_LINK;
+            linksToEventCreatorsTelegramAccountsOrGroups += event.getLink();
+            linksToEventCreatorsTelegramAccountsOrGroups += Constants.SPACE;
+            groupLinkAdded = true;
+        }
+
+        List<EventCreatorAppointment> eventCreatorAppointments = eventCreatorAppointmentDAO.findByEventId(event.getId());
+
+        for (int i = 0; i < eventCreatorAppointments.size(); i++) {
+            EventCreator eventCreator = (EventCreator) eventCreatorDAO.findById(eventCreatorAppointments.get(i).getEvent_creator_id());
+            if (groupLinkAdded && i == 0)
+                linksToEventCreatorsTelegramAccountsOrGroups += Constants.NEW_LINE;
+            if (i == 0)
+                linksToEventCreatorsTelegramAccountsOrGroups += Constants.CONTACT;
+
+            linksToEventCreatorsTelegramAccountsOrGroups += Constants.AT_SIGN;
+            linksToEventCreatorsTelegramAccountsOrGroups += eventCreator.getTelegram_username();
+            linksToEventCreatorsTelegramAccountsOrGroups += Constants.SPACE;
+        }
+        if (!Constants.EMPTY_STRING.equals(linksToEventCreatorsTelegramAccountsOrGroups) && !Constants.EMPTY_STRING.equals(eventDescription))
+            linksToEventCreatorsTelegramAccountsOrGroups = Constants.NEW_LINE + linksToEventCreatorsTelegramAccountsOrGroups;
+
+        this.descriptionStr = eventDescription + linksToEventCreatorsTelegramAccountsOrGroups;
 
         building = getBuildingNameForEvent(eventsCoordinate.getId(), context);
         if (eventsCoordinate.getType_id() == 3 /*if type is ROOM*/ && null != eventsCoordinate.getName() && !Constants.EMPTY_STRING.equals(eventsCoordinate.getName()))
