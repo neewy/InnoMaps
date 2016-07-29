@@ -17,7 +17,7 @@ public class Event implements Comparable<Event> {
     private Date end;
     private int eventID;
     private int eventScheduleId;
-    private String checked;
+    private boolean checked;
     private String description;
     private String creatorName;
     private String creatorEmail;
@@ -70,11 +70,11 @@ public class Event implements Comparable<Event> {
         this.eventID = eventID;
     }
 
-    public String getChecked() {
+    public boolean isChecked() {
         return checked;
     }
 
-    public void setChecked(String checked) {
+    public void setChecked(boolean checked) {
         this.checked = checked;
     }
 
@@ -203,16 +203,16 @@ public class Event implements Comparable<Event> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (!(o instanceof Event))
-            return false;
+        if (this == o) return true;
+        if (!(o instanceof Event)) return false;
 
         Event event = (Event) o;
 
         if (getEventID() != event.getEventID())
             return false;
         if (getEventScheduleId() != event.getEventScheduleId())
+            return false;
+        if (isChecked() != event.isChecked())
             return false;
         if (getSummary() != null ? !getSummary().equals(event.getSummary()) : event.getSummary() != null)
             return false;
@@ -221,8 +221,6 @@ public class Event implements Comparable<Event> {
         if (getStart() != null ? !getStart().equals(event.getStart()) : event.getStart() != null)
             return false;
         if (getEnd() != null ? !getEnd().equals(event.getEnd()) : event.getEnd() != null)
-            return false;
-        if (getChecked() != null ? !getChecked().equals(event.getChecked()) : event.getChecked() != null)
             return false;
         if (getDescription() != null ? !getDescription().equals(event.getDescription()) : event.getDescription() != null)
             return false;
@@ -250,7 +248,7 @@ public class Event implements Comparable<Event> {
         result = 31 * result + (getEnd() != null ? getEnd().hashCode() : 0);
         result = 31 * result + getEventID();
         result = 31 * result + getEventScheduleId();
-        result = 31 * result + (getChecked() != null ? getChecked().hashCode() : 0);
+        result = 31 * result + (isChecked() ? 1 : 0);
         result = 31 * result + (getDescription() != null ? getDescription().hashCode() : 0);
         result = 31 * result + (getCreatorName() != null ? getCreatorName().hashCode() : 0);
         result = 31 * result + (getCreatorEmail() != null ? getCreatorEmail().hashCode() : 0);

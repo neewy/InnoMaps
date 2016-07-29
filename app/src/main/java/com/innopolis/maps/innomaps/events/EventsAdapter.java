@@ -23,6 +23,8 @@ import android.widget.TextView;
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.db.Constants;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventDAO;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventFavorable;
 import com.innopolis.maps.innomaps.utils.Utils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -43,8 +45,6 @@ public class EventsAdapter extends BaseAdapter {
     public List<Event> events;
     private Context context;
     private LayoutInflater lInflater;
-    private DBHelper dbHelper;
-    private SQLiteDatabase database;
     private Activity activity;
     private FragmentManager fm;
 
@@ -85,7 +85,8 @@ public class EventsAdapter extends BaseAdapter {
         TextView location = (TextView) view.findViewById(R.id.location);
         TextView dateTime = (TextView) view.findViewById(R.id.dateTime);
         final CheckBox favCheckBox = (CheckBox) view.findViewById(R.id.favCheckBox);
-
+        final EventDAO eventDAO = new EventDAO(context);
+        final EventFavorable eventFavorable = (EventFavorable) eventDAO.findById(event.getEventID());
 
         nameEvent.setText(event.getSummary());
         String[] locationText = new String[3];
@@ -98,11 +99,7 @@ public class EventsAdapter extends BaseAdapter {
             dateTime.setText(Utils.commonTime.format(startTime));
             timeLeft.setText(Utils.prettyTime.format(startTime));
         }
-        if (event.getChecked().equals("1")) {
-            favCheckBox.setChecked(true);
-        } else {
-            favCheckBox.setChecked(false);
-        }
+        favCheckBox.setChecked(event.isChecked());
 
 
         final View finalView = view;
@@ -142,15 +139,11 @@ public class EventsAdapter extends BaseAdapter {
                     mSmallBang = SmallBang.attach2Window(activity);
                     mSmallBang.bang(favCheckBox);
                 }
-                String isFav = (favCheckBox.isChecked()) ? "1" : "0";
-                event.setChecked(isFav);
-                int eventId = event.getEventID();
-                ContentValues cv = new ContentValues();
-                dbHelper = new DBHelper(context);
-                database = dbHelper.getWritableDatabase();
-                cv.put(FAV, isFav);
-                database.update(EVENTS, cv, EVENT_ID_EQUAL, new String[]{Integer.toString(eventId)});
-                dbHelper.close();
+                event.setChecked(favCheckBox.isChecked());
+
+                EventFavorable updatedEvent = new EventFavorable(eventFavorable.getId(), eventFavorable.getName(), eventFavorable.getDescription(),
+                        eventFavorable.getLink(), eventFavorable.getGcals_event_id(), eventFavorable.getModified(), favCheckBox.isChecked());
+                eventDAO.update(updatedEvent);
             }
         });
         return view;

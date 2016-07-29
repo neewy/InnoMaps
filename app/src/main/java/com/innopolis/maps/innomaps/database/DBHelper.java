@@ -126,8 +126,11 @@ public class DBHelper extends SQLiteOpenHelper {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                event.setEventID(Integer.parseInt(cursor.getString(eventID)));
-                event.setChecked(cursor.getString(checked));
+                event.setEventID(eventID);
+                if(checked == 1)
+                    event.setChecked(true);
+                else
+                    event.setChecked(false);
                 event.setDescription(cursor.getString(description));
                 event.setCreatorName(cursor.getString(creator_name));
                 event.setCreatorEmail(cursor.getString(creator_email));
