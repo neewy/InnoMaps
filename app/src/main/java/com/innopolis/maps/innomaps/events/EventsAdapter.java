@@ -1,9 +1,7 @@
 package com.innopolis.maps.innomaps.events;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -21,7 +19,6 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.innopolis.maps.innomaps.R;
-import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.EventDAO;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.EventFavorable;
@@ -34,9 +31,6 @@ import java.util.List;
 
 import xyz.hanks.library.SmallBang;
 
-import static com.innopolis.maps.innomaps.database.TableFields.EVENTS;
-import static com.innopolis.maps.innomaps.database.TableFields.EVENT_ID_EQUAL;
-import static com.innopolis.maps.innomaps.database.TableFields.FAV;
 import static com.innopolis.maps.innomaps.database.TableFields.NULL_STRING;
 
 
@@ -91,7 +85,7 @@ public class EventsAdapter extends BaseAdapter {
         nameEvent.setText(event.getSummary());
         String[] locationText = new String[3];
         locationText[0] = (event.getBuilding() != null) ? event.getBuilding() : NULL_STRING;
-        locationText[1] = (event.getFloor() != null) ? event.getFloor() : NULL_STRING;
+        locationText[1] = (event.getFloorStr() != null) ? event.getFloorStr() : NULL_STRING;
         locationText[2] = (event.getRoom() != null) ? event.getRoom() : NULL_STRING;
         location.setText(StringUtils.join(Utils.clean(locationText), ", "));
         Date startTime = event.getStart();

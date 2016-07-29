@@ -16,6 +16,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import com.innopolis.maps.innomaps.database.TableFields;
+import com.innopolis.maps.innomaps.db.Constants;
+
 import org.ocpsoft.prettytime.PrettyTime;
 
 import java.io.BufferedReader;
@@ -26,7 +29,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -112,17 +117,18 @@ public class Utils {
         return result;
     }
 
-    public static String[] clean(final String[] v) {
-        int r, w, n = r = w = v.length;
-        while (r > 0) {
-            final String s = v[--r];
-            if (!s.equals(NULL)) {
-                v[--w] = s;
-            }
+    public static String[] clean(final String[] strings) {
+        String[] result;
+        List<String> stringList = new ArrayList<>();
+        for (int i = 0; i < strings.length; i++) {
+            if (null != strings[i] && !Constants.EMPTY_STRING.equals(strings[i]) && !TableFields.NULL_STRING.equals(strings[i]))
+                stringList.add(strings[i]);
         }
-        final String[] c = new String[n -= w];
-        System.arraycopy(v, w, c, 0, n);
-        return c;
+        result = new String[stringList.size()];
+        for (int i = 0; i < stringList.size(); i++) {
+            result[i] = stringList.get(i);
+        }
+        return result;
     }
 
     public static double haversine(double lat1, double lon1, double lat2, double lon2) {

@@ -2,7 +2,6 @@ package com.innopolis.maps.innomaps.events;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -30,13 +29,25 @@ import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.app.SearchableItem;
 import com.innopolis.maps.innomaps.app.SuggestionAdapter;
-import com.innopolis.maps.innomaps.database.DBHelper;
-import com.innopolis.maps.innomaps.database.DBUpdater;
+import com.innopolis.maps.innomaps.db.Constants;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventCreatorAppointmentDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventCreatorDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventDAO;
+import com.innopolis.maps.innomaps.db.dataaccessobjects.EventScheduleDAO;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreator;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventCreatorAppointment;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventFavorable;
+import com.innopolis.maps.innomaps.db.tablesrepresentations.EventSchedule;
+import com.innopolis.maps.innomaps.maps.LatLngFlr;
 import com.innopolis.maps.innomaps.utils.Utils;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import static com.innopolis.maps.innomaps.database.TableFields.EMPTY;
@@ -49,8 +60,6 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
     EventsAdapter adapter; //to populate list above
     SwipeRefreshLayout swipeRefreshLayout;
 
-    DBHelper dbHelper;
-    SQLiteDatabase database;
     SharedPreferences sPref; //to store md5 hash of loaded file
 
     String hashPref;
@@ -94,16 +103,13 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
         listView.setAdapter(this.adapter);
         listView.setItemsCanFocus(true);
 
-        dbHelper = new DBHelper(context);
-        database = dbHelper.getWritableDatabase();
-
         if (!hashPref.equals(EMPTY)) {
             adapter.events.clear();
-            list = DBHelper.readEvents(getContext(), false);
+            list = readEvents(getContext(), false);
+
             adapter.events = list;
             Collections.sort(adapter.events);
             adapter.notifyDataSetChanged();
-            database.close();
         } else {
             onRefresh();
         }
@@ -111,29 +117,23 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
     @Override
     public void onRefresh() {
-        dbHelper = new DBHelper(context);
-        database = dbHelper.getWritableDatabase();
-        updateFilters(DBHelper.readEvents(getContext(), false));
+        updateFilters(readEvents(getContext(), false));
 
         if (Utils.isNetworkAvailable(context)) {
             adapter.events.clear();
             swipeRefreshLayout.setRefreshing(true);
-            new DBUpdater(context).updateEvents();
-            adapter.events = DBHelper.readEvents(getContext(), false);
+            adapter.events = readEvents(getContext(), false);
             Collections.sort(adapter.events);
             adapter.notifyDataSetChanged();
-            database.close();
             swipeRefreshLayout.setRefreshing(false);
         } else if (!Utils.isNetworkAvailable(context) && !hashPref.equals(EMPTY)) {
             adapter.events.clear();
             Toast.makeText(context, R.string.offline_message, Toast.LENGTH_SHORT).show();
-            adapter.events = DBHelper.readEvents(getContext(), false);
+            adapter.events = readEvents(getContext(), false);
             Collections.sort(adapter.events);
             adapter.notifyDataSetChanged();
-            database.close();
         } else if (!Utils.isNetworkAvailable(context) && hashPref.equals(EMPTY)) {
             Toast.makeText(context, R.string.internet_connect, Toast.LENGTH_SHORT).show();
-            database.close();
         }
     }
 
@@ -143,7 +143,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
         super.onCreateOptionsMenu(menu, inflater);
 
         this.menu = menu;
-        updateFilters(DBHelper.readEvents(getContext(), false));
+        updateFilters(readEvents(getContext(), false));
         final List<SearchableItem> adapterList = new ArrayList<>(eventNames);
         searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchBox = (SearchView.SearchAutoComplete) searchView.findViewById(R.id.search_src_text);
@@ -196,7 +196,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        List<Event> filteredList = DBHelper.readEvents(getContext(), false);
+        List<Event> filteredList = readEvents(getContext(), false);
         item.setChecked(!item.isChecked());
         boolean addToEvents = item.isChecked();
         switch (item.getItemId()) {
@@ -286,5 +286,75 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
                 }
             }
         }
+    }
+
+
+    /**
+     * Returns the list with events
+     *
+     * @param areFavourite - whether to put marked events or all of them
+     */
+    public static List<Event> readEvents(Context context, boolean areFavourite) {
+        List<Event> events = new ArrayList<>();
+        final EventDAO eventDAO = new EventDAO(context);
+        EventScheduleDAO eventScheduleDAO = new EventScheduleDAO(context);
+        CoordinateDAO coordinateDAO = new CoordinateDAO(context);
+        EventCreatorAppointmentDAO eventCreatorAppointmentDAO = new EventCreatorAppointmentDAO(context);
+        EventCreatorDAO eventCreatorDAO = new EventCreatorDAO(context);
+
+        List<EventSchedule> eventSchedules = eventScheduleDAO.findUpcomingAndOngoingScheduledEvents();
+        for (EventSchedule eventSchedule : eventSchedules) {
+            EventFavorable event = (EventFavorable) eventDAO.findById(eventSchedule.getEvent_id());
+            Coordinate eventsCoordinate;
+            if (eventSchedule.getLocation_id() != null && (!areFavourite || event.isFavourite() == areFavourite)) {
+                eventsCoordinate = (Coordinate) coordinateDAO.findById(eventSchedule.getLocation_id());
+
+                Event eventForGUI = new Event();
+                eventForGUI.setSummary(event.getName());
+                eventForGUI.setHtmlLink(event.getLink());
+                try {
+                    eventForGUI.setStart(com.innopolis.maps.innomaps.network.Constants.serverDateFormat.parse(eventSchedule.getStart_datetime()));
+                    eventForGUI.setEnd(com.innopolis.maps.innomaps.network.Constants.serverDateFormat.parse(eventSchedule.getEnd_datetime()));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                eventForGUI.setEventID(event.getId());
+                eventForGUI.setEventScheduleId(eventSchedule.getId());
+                eventForGUI.setChecked(event.isFavourite());
+                String description = event.getDescription();
+                if (!Constants.EMPTY_STRING.equals(description))
+                    description += Constants.NEW_LINE + eventSchedule.getComment();
+                else
+                    description += eventSchedule.getComment();
+                eventForGUI.setDescription(description);
+                List<EventCreatorAppointment> eventCreatorAppointments = eventCreatorAppointmentDAO.findByEventId(event.getId());
+                if (!eventCreatorAppointments.isEmpty()) {
+                    EventCreator eventCreator = (EventCreator) eventCreatorDAO.findById(eventCreatorAppointments.get(0).getEvent_creator_id());
+                    eventForGUI.setCreatorName(eventCreator.getName());
+                    eventForGUI.setCreatorEmail(eventCreator.getEmail());
+                } else {
+                    eventForGUI.setCreatorName(null);
+                    eventForGUI.setCreatorEmail(null);
+                }
+                eventForGUI.setBuilding(DetailedEvent.getBuildingNameForEvent(eventsCoordinate.getId(), context));
+                eventForGUI.setFloorStr(Integer.toString(eventsCoordinate.getFloor()) + Constants.SPACE + Constants.FLOOR);
+                if (eventsCoordinate.getType_id() == 3 /*if type is ROOM*/ && null != eventsCoordinate.getName() && !Constants.EMPTY_STRING.equals(eventsCoordinate.getName()))
+                    eventForGUI.setRoom(eventsCoordinate.getName());
+                else
+                    eventForGUI.setRoom(null);
+                eventForGUI.setCoordinateLatLngFlr(new LatLngFlr(eventsCoordinate.getLatitude(), eventsCoordinate.getLongitude(), eventsCoordinate.getFloor()));
+
+                Date date = new Date();
+                //if the date exceeds current date – we don't store it
+                if (eventForGUI.getStart().before(date)) {
+                    eventScheduleDAO.delete(eventSchedule);
+                } else {
+                    events.add(eventForGUI);
+                }
+            }
+        }
+
+
+        return events;
     }
 }

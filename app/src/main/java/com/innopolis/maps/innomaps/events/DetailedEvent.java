@@ -2,7 +2,6 @@ package com.innopolis.maps.innomaps.events;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -39,7 +38,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.app.MainActivity;
-import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingAuxiliaryCoordinateDAO;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.BuildingDAO;
@@ -75,8 +73,6 @@ import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY;
 public class DetailedEvent extends Fragment {
 
     Context context;
-    DBHelper dbHelper;
-    SQLiteDatabase database;
 
     TextView eventName;
     TextView timeLeft;
@@ -168,14 +164,14 @@ public class DetailedEvent extends Fragment {
         this.checked = event.isFavourite();
         this.descriptionStr = event.getDescription();
 
-        building = getBuildingNameForRoom(eventsCoordinate.getId(), context);
+        building = getBuildingNameForEvent(eventsCoordinate.getId(), context);
         if (eventsCoordinate.getType_id() == 3 /*if type is ROOM*/ && null != eventsCoordinate.getName() && !Constants.EMPTY_STRING.equals(eventsCoordinate.getName()))
             room = eventsCoordinate.getName();
         else
             room = null;
 
         coordinateLatLngFlr = new LatLngFlr(eventsCoordinate.getLatitude(), eventsCoordinate.getLongitude(), eventsCoordinate.getFloor());
-        floorString = Integer.toString(eventsCoordinate.getFloor()) + Constants.SPACE + Constants.FLOOR_LOWERCASE;
+        floorString = Integer.toString(eventsCoordinate.getFloor()) + Constants.SPACE + Constants.FLOOR;
 
         Link.OnClickListener telegramLinkListener = new Link.OnClickListener() {
             @Override
@@ -209,8 +205,8 @@ public class DetailedEvent extends Fragment {
         Date startDate = null;
         Date endDate = null;
         try {
-            startDate = Utils.googleTimeFormat.parse(start);
-            endDate = Utils.googleTimeFormat.parse(end);
+            startDate = com.innopolis.maps.innomaps.network.Constants.serverDateFormat.parse(start);
+            endDate = com.innopolis.maps.innomaps.network.Constants.serverDateFormat.parse(end);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -393,7 +389,7 @@ public class DetailedEvent extends Fragment {
         }
     }
 
-    private static String getBuildingNameForEvent(int coordinateId, Context context) {
+    public static String getBuildingNameForEvent(int coordinateId, Context context) {
         RoomTypeDAO roomTypeDAO = new RoomTypeDAO(context);
         RoomDAO roomDAO = new RoomDAO(context);
 

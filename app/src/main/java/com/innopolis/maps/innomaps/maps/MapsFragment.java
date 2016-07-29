@@ -62,6 +62,7 @@ import com.innopolis.maps.innomaps.app.CustomScrollView;
 import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.app.SearchableItem;
 import com.innopolis.maps.innomaps.app.SuggestionAdapter;
+import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.db.dataaccessobjects.CoordinateDAO;
 import com.innopolis.maps.innomaps.db.tablesrepresentations.Coordinate;
 import com.innopolis.maps.innomaps.network.NetworkController;
@@ -85,8 +86,6 @@ import static com.innopolis.maps.innomaps.database.TableFields.EVENTS_CAPITAL;
 import static com.innopolis.maps.innomaps.database.TableFields.EVENTS_FILTER;
 import static com.innopolis.maps.innomaps.database.TableFields.FOOD_CAPITAL;
 import static com.innopolis.maps.innomaps.database.TableFields.FOOD_FILTER;
-import static com.innopolis.maps.innomaps.database.TableFields.LATITUDE;
-import static com.innopolis.maps.innomaps.database.TableFields.LONGITUDE;
 import static com.innopolis.maps.innomaps.database.TableFields.OTHER_CAPITAL;
 import static com.innopolis.maps.innomaps.database.TableFields.OTHER_FILTER;
 import static com.innopolis.maps.innomaps.database.TableFields.WC_CAPITAL;
@@ -694,8 +693,9 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         Intent intent = new Intent(getActivity(), Scanner.class);
         Bundle bundle = new Bundle();
         // TODO: extract constants
-        bundle.putDouble(LATITUDE, closest.getLatitude());
-        bundle.putDouble(LONGITUDE, closest.getLongitude());
+        bundle.putDouble(Constants.LATITUDE, closest.getLatitude());
+        bundle.putDouble(Constants.LONGITUDE, closest.getLongitude());
+        bundle.putInt(Constants.FLOOR, closest.getFloor());
         intent.putExtras(bundle);
         startActivity(intent);
     }

@@ -23,7 +23,6 @@ import com.innopolis.maps.innomaps.R;
 import com.innopolis.maps.innomaps.app.MainActivity;
 import com.innopolis.maps.innomaps.app.SearchableItem;
 import com.innopolis.maps.innomaps.app.SuggestionAdapter;
-import com.innopolis.maps.innomaps.database.DBHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,7 +61,7 @@ public class FavouriteFragment extends EventsFragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.events_menu, menu);
         this.menu = menu;
-        updateFilters(DBHelper.readEvents(getContext(), true));
+        updateFilters(EventsFragment.readEvents(getContext(), true));
         searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         final List<SearchableItem> adapterList = new ArrayList<>(favouriteNames);
         searchBox = (SearchView.SearchAutoComplete) searchView.findViewById(R.id.search_src_text);
@@ -119,7 +118,7 @@ public class FavouriteFragment extends EventsFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        List<Event> filteredList = DBHelper.readEvents(getContext(), true);
+        List<Event> filteredList = EventsFragment.readEvents(getContext(), true);
         item.setChecked(!item.isChecked());
         boolean addToEvents = item.isChecked();
         switch (item.getItemId()) {
@@ -172,15 +171,12 @@ public class FavouriteFragment extends EventsFragment {
 
     @Override
     public void onRefresh() {
-        dbHelper = new DBHelper(context);
-        database = dbHelper.getWritableDatabase();
-        updateFilters(DBHelper.readEvents(getContext(), true));
+        updateFilters(readEvents(getContext(), true));
 
         list.clear();
-        list = DBHelper.readEvents(getContext(), true);
+        list = EventsFragment.readEvents(getContext(), true);
         adapter.events = list;
         adapter.notifyDataSetChanged();
-        database.close();
         swipeRefreshLayout.setRefreshing(false);
     }
 

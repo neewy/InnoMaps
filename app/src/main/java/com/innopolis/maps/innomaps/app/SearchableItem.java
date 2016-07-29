@@ -137,7 +137,7 @@ public class SearchableItem implements Comparable<SearchableItem> {
                 searchableItem.setId(eventSchedule.getId());
                 eventsCoordinate = (Coordinate) coordinateDAO.findById(eventSchedule.getLocation_id());
                 searchableItem.setBuilding(getBuildingNameForEvent(eventsCoordinate.getId()));
-                searchableItem.setFloor(Integer.toString(eventsCoordinate.getFloor()) + Constants.SPACE + Constants.FLOOR_LOWERCASE);
+                searchableItem.setFloor(Integer.toString(eventsCoordinate.getFloor()) + Constants.SPACE + Constants.FLOOR);
                 if (eventsCoordinate.getType_id() == 3 /*if type is ROOM*/ && null != eventsCoordinate.getName() && !Constants.EMPTY_STRING.equals(eventsCoordinate.getName()))
                     searchableItem.setRoom(eventsCoordinate.getName());
                 else
@@ -179,7 +179,7 @@ public class SearchableItem implements Comparable<SearchableItem> {
             searchableItem.setType(roomTypesMap.get(room.getType_id()));
             searchableItem.setId(room.getId());
             searchableItem.setBuilding(getBuildingNameForRoom(room.getBuilding_id()));
-            searchableItem.setFloor(Integer.toString(roomsCoordinate.getFloor()) + Constants.SPACE + Constants.FLOOR_LOWERCASE);
+            searchableItem.setFloor(Integer.toString(roomsCoordinate.getFloor()) + Constants.SPACE + Constants.FLOOR);
             searchableItem.setRoom(searchableItem.getName());
             searchableItem.setCoordinate(new LatLngFlr(roomsCoordinate.getLatitude(), roomsCoordinate.getLongitude(), roomsCoordinate.getFloor()));
 
@@ -198,7 +198,7 @@ public class SearchableItem implements Comparable<SearchableItem> {
             searchableItem.setType(coordinateTypesMap.get(coordinate.getType_id()));
             searchableItem.setId(coordinate.getId());
             searchableItem.setBuilding(getBuildingNameForCoordinate(coordinate.getId()));
-            searchableItem.setFloor(Integer.toString(coordinate.getFloor()) + Constants.SPACE + Constants.FLOOR_LOWERCASE);
+            searchableItem.setFloor(Integer.toString(coordinate.getFloor()) + Constants.SPACE + Constants.FLOOR);
             searchableItem.setRoom(searchableItem.getName());
             searchableItem.setCoordinate(new LatLngFlr(coordinate.getLatitude(), coordinate.getLongitude(), coordinate.getFloor()));
 

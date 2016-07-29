@@ -15,7 +15,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.innopolis.maps.innomaps.R;
-import com.innopolis.maps.innomaps.database.DBHelper;
 import com.innopolis.maps.innomaps.db.Constants;
 import com.innopolis.maps.innomaps.db.DatabaseManager;
 import com.innopolis.maps.innomaps.db.DatabaseSync;
@@ -56,8 +55,6 @@ public class MainActivity extends MainActivityLogic
             getSupportActionBar().setTitle(maps);
         else
             Log.e("NullPointException: ", getResources().getString(R.string.supportedActionBarIsNull));
-        DBHelper dbHelper = new DBHelper(MainActivity.this);
-        database = dbHelper.getReadableDatabase();
 
         int secondsToFirstSynchronization = 5;
         prefs = getSharedPreferences("firstRun", MODE_PRIVATE);

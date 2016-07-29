@@ -3,6 +3,7 @@ package com.innopolis.maps.innomaps.events;
 import android.support.annotation.NonNull;
 
 import com.google.common.base.Predicate;
+import com.innopolis.maps.innomaps.maps.LatLngFlr;
 
 import java.util.Calendar;
 import java.util.Comparator;
@@ -22,10 +23,9 @@ public class Event implements Comparable<Event> {
     private String creatorName;
     private String creatorEmail;
     private String building;
-    private String floor;
+    private String floorStr;
     private String room;
-    private String latitude;
-    private String longitude;
+    private LatLngFlr coordinateLatLngFlr;
 
     public Event() {
     }
@@ -111,12 +111,12 @@ public class Event implements Comparable<Event> {
         this.building = building;
     }
 
-    public String getFloor() {
-        return floor;
+    public String getFloorStr() {
+        return floorStr;
     }
 
-    public void setFloor(String floor) {
-        this.floor = floor;
+    public void setFloorStr(String floorStr) {
+        this.floorStr = floorStr;
     }
 
     public String getRoom() {
@@ -127,20 +127,12 @@ public class Event implements Comparable<Event> {
         this.room = room;
     }
 
-    public String getLatitude() {
-        return latitude;
+    public LatLngFlr getCoordinateLatLngFlr() {
+        return coordinateLatLngFlr;
     }
 
-    public void setLatitude(String latitude) {
-        this.latitude = latitude;
-    }
-
-    public String getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(String longitude) {
-        this.longitude = longitude;
+    public void setCoordinateLatLngFlr(LatLngFlr coordinateLatLngFlr) {
+        this.coordinateLatLngFlr = coordinateLatLngFlr;
     }
 
     public int getEventScheduleId() {
@@ -208,12 +200,9 @@ public class Event implements Comparable<Event> {
 
         Event event = (Event) o;
 
-        if (getEventID() != event.getEventID())
-            return false;
-        if (getEventScheduleId() != event.getEventScheduleId())
-            return false;
-        if (isChecked() != event.isChecked())
-            return false;
+        if (getEventID() != event.getEventID()) return false;
+        if (getEventScheduleId() != event.getEventScheduleId()) return false;
+        if (isChecked() != event.isChecked()) return false;
         if (getSummary() != null ? !getSummary().equals(event.getSummary()) : event.getSummary() != null)
             return false;
         if (getHtmlLink() != null ? !getHtmlLink().equals(event.getHtmlLink()) : event.getHtmlLink() != null)
@@ -230,13 +219,11 @@ public class Event implements Comparable<Event> {
             return false;
         if (getBuilding() != null ? !getBuilding().equals(event.getBuilding()) : event.getBuilding() != null)
             return false;
-        if (getFloor() != null ? !getFloor().equals(event.getFloor()) : event.getFloor() != null)
+        if (getFloorStr() != null ? !getFloorStr().equals(event.getFloorStr()) : event.getFloorStr() != null)
             return false;
         if (getRoom() != null ? !getRoom().equals(event.getRoom()) : event.getRoom() != null)
             return false;
-        if (getLatitude() != null ? !getLatitude().equals(event.getLatitude()) : event.getLatitude() != null)
-            return false;
-        return getLongitude() != null ? getLongitude().equals(event.getLongitude()) : event.getLongitude() == null;
+        return coordinateLatLngFlr != null ? coordinateLatLngFlr.equals(event.coordinateLatLngFlr) : event.coordinateLatLngFlr == null;
 
     }
 
@@ -253,10 +240,9 @@ public class Event implements Comparable<Event> {
         result = 31 * result + (getCreatorName() != null ? getCreatorName().hashCode() : 0);
         result = 31 * result + (getCreatorEmail() != null ? getCreatorEmail().hashCode() : 0);
         result = 31 * result + (getBuilding() != null ? getBuilding().hashCode() : 0);
-        result = 31 * result + (getFloor() != null ? getFloor().hashCode() : 0);
+        result = 31 * result + (getFloorStr() != null ? getFloorStr().hashCode() : 0);
         result = 31 * result + (getRoom() != null ? getRoom().hashCode() : 0);
-        result = 31 * result + (getLatitude() != null ? getLatitude().hashCode() : 0);
-        result = 31 * result + (getLongitude() != null ? getLongitude().hashCode() : 0);
+        result = 31 * result + (coordinateLatLngFlr != null ? coordinateLatLngFlr.hashCode() : 0);
         return result;
     }
 }

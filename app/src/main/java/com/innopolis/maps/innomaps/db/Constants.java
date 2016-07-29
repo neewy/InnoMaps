@@ -58,7 +58,6 @@ public final class Constants {
 
     // For SearchableItem
     public static final String ROOM_STARTING_FROM_CAPITAL_LETTER = "Room";
-    public static final String FLOOR_LOWERCASE = "floor";
     public static final String EMPTY_STRING = "";
 
     // For SearchableItem and MarkersAdapter
