@@ -161,7 +161,7 @@ public class DetailedEvent extends Fragment {
         EventSchedule eventSchedule = (EventSchedule) eventScheduleDAO.findById(eventScheduleId);
         Coordinate eventsCoordinate = (Coordinate) coordinateDAO.findById(eventSchedule.getLocation_id());
 
-        this.summary = eventSchedule.getComment();
+        this.summary = event.getName();
         this.htmlLink = event.getLink();
         this.start = eventSchedule.getStart_datetime();
         this.end = eventSchedule.getEnd_datetime();
