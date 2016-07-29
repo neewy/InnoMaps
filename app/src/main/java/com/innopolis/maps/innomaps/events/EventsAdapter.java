@@ -31,8 +31,6 @@ import java.util.List;
 
 import xyz.hanks.library.SmallBang;
 
-import static com.innopolis.maps.innomaps.database.TableFields.NULL_STRING;
-
 
 public class EventsAdapter extends BaseAdapter {
 
@@ -84,9 +82,9 @@ public class EventsAdapter extends BaseAdapter {
 
         nameEvent.setText(event.getSummary());
         String[] locationText = new String[3];
-        locationText[0] = (event.getBuilding() != null) ? event.getBuilding() : NULL_STRING;
-        locationText[1] = (event.getFloorStr() != null) ? event.getFloorStr() : NULL_STRING;
-        locationText[2] = (event.getRoom() != null) ? event.getRoom() : NULL_STRING;
+        locationText[0] = (event.getBuilding() != null) ? event.getBuilding() : Constants.NULL_STRING;
+        locationText[1] = (event.getFloorStr() != null) ? event.getFloorStr() : Constants.NULL_STRING;
+        locationText[2] = (event.getRoom() != null) ? event.getRoom() : Constants.NULL_STRING;
         location.setText(StringUtils.join(Utils.clean(locationText), ", "));
         Date startTime = event.getStart();
         if (startTime != null) {

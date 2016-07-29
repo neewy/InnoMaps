@@ -50,8 +50,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static com.innopolis.maps.innomaps.database.TableFields.EMPTY;
-
 public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     Context context;
     ListView listView;
@@ -86,8 +84,8 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
         listView = (ListView) view.findViewById(R.id.eventList);
 
         sPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        hashPref = sPref.getString(context.getString(R.string.hash), EMPTY); //field, storing hash
-        updatedPref = sPref.getString(context.getString(R.string.last_update), EMPTY); //field, storing starting day of last week
+        hashPref = sPref.getString(context.getString(R.string.hash), Constants.EMPTY_STRING); //field, storing hash
+        updatedPref = sPref.getString(context.getString(R.string.last_update), Constants.EMPTY_STRING); //field, storing starting day of last week
         //the data were updated
 
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
@@ -103,7 +101,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
         listView.setAdapter(this.adapter);
         listView.setItemsCanFocus(true);
 
-        if (!hashPref.equals(EMPTY)) {
+        if (!hashPref.equals(Constants.EMPTY_STRING)) {
             adapter.events.clear();
             list = readEvents(getContext(), false);
 
@@ -126,13 +124,13 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
             Collections.sort(adapter.events);
             adapter.notifyDataSetChanged();
             swipeRefreshLayout.setRefreshing(false);
-        } else if (!Utils.isNetworkAvailable(context) && !hashPref.equals(EMPTY)) {
+        } else if (!Utils.isNetworkAvailable(context) && !hashPref.equals(Constants.EMPTY_STRING)) {
             adapter.events.clear();
             Toast.makeText(context, R.string.offline_message, Toast.LENGTH_SHORT).show();
             adapter.events = readEvents(getContext(), false);
             Collections.sort(adapter.events);
             adapter.notifyDataSetChanged();
-        } else if (!Utils.isNetworkAvailable(context) && hashPref.equals(EMPTY)) {
+        } else if (!Utils.isNetworkAvailable(context) && hashPref.equals(Constants.EMPTY_STRING)) {
             Toast.makeText(context, R.string.internet_connect, Toast.LENGTH_SHORT).show();
         }
     }

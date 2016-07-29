@@ -80,16 +80,6 @@ import static android.widget.AdapterView.OnItemClickListener;
 import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_NORMAL;
 import static com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import static com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
-import static com.innopolis.maps.innomaps.database.TableFields.ALL_CAPITAL;
-import static com.innopolis.maps.innomaps.database.TableFields.ALL_FILTER;
-import static com.innopolis.maps.innomaps.database.TableFields.EVENTS_CAPITAL;
-import static com.innopolis.maps.innomaps.database.TableFields.EVENTS_FILTER;
-import static com.innopolis.maps.innomaps.database.TableFields.FOOD_CAPITAL;
-import static com.innopolis.maps.innomaps.database.TableFields.FOOD_FILTER;
-import static com.innopolis.maps.innomaps.database.TableFields.OTHER_CAPITAL;
-import static com.innopolis.maps.innomaps.database.TableFields.OTHER_FILTER;
-import static com.innopolis.maps.innomaps.database.TableFields.WC_CAPITAL;
-import static com.innopolis.maps.innomaps.database.TableFields.WC_FILTER;
 import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.CAMERA_LAT_BOTTOM;
 import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.CAMERA_LAT_TOP;
 import static com.innopolis.maps.innomaps.maps.CoordinatesConstants.CAMERA_LNG_LEFT;
@@ -238,7 +228,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                     mSettings.setMapToolbarEnabled(false);
                     markers = new ArrayList<>();
                     filterList = new ArrayList<>();
-                    filterList.add(ALL_FILTER);
+                    filterList.add(Constants.ALL_FILTER);
 
                     map.setMapType(MAP_TYPE_NORMAL);
                     markerList = new ArrayList<>();
@@ -322,11 +312,11 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
 
         topNavigation = (AHBottomNavigation) view.findViewById(R.id.bottom_navigation);
         // TODO: probably these constants are part of your domain model
-        AHBottomNavigationItem wc = new AHBottomNavigationItem(WC_CAPITAL, R.drawable.wc_rast);
-        AHBottomNavigationItem food = new AHBottomNavigationItem(FOOD_CAPITAL, R.drawable.food_fork_drink);
-        AHBottomNavigationItem all = new AHBottomNavigationItem(ALL_CAPITAL, R.drawable.all_pack);
-        AHBottomNavigationItem events = new AHBottomNavigationItem(EVENTS_CAPITAL, R.drawable.calendar_mult);
-        AHBottomNavigationItem other = new AHBottomNavigationItem(OTHER_CAPITAL, R.drawable.duck_rast);
+        AHBottomNavigationItem wc = new AHBottomNavigationItem(Constants.WC, R.drawable.wc_rast);
+        AHBottomNavigationItem food = new AHBottomNavigationItem(Constants.FOOD_CAPITAL, R.drawable.food_fork_drink);
+        AHBottomNavigationItem all = new AHBottomNavigationItem(Constants.ALL_CAPITAL, R.drawable.all_pack);
+        AHBottomNavigationItem events = new AHBottomNavigationItem(Constants.EVENTS_CAPITAL, R.drawable.calendar_mult);
+        AHBottomNavigationItem other = new AHBottomNavigationItem(Constants.OTHER_CAPITAL, R.drawable.duck_rast);
         topNavigation.addItem(wc);
         topNavigation.addItem(food);
         topNavigation.addItem(all);
@@ -338,7 +328,7 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
         topNavigation.setInactiveColor(Color.WHITE);
         topNavigation.setVisibility(View.GONE);
         topNavigation.setForceTitlesDisplay(true);
-        topNavigation.setCurrentItem(ALL_FILTER);
+        topNavigation.setCurrentItem(Constants.ALL_FILTER);
     }
 
 
@@ -381,29 +371,29 @@ public class MapsFragment extends MarkersAdapter implements ActivityCompat.OnReq
                 if (!wasSelected) {
                     switch (position) {
                         // TODO: are these floors? +
-                        case WC_FILTER:
+                        case Constants.WC_FILTER:
                             input = Collections2.filter(allItems, SearchableItem.isWc);
                             snackbarText = getString(R.string.no_wc);
                             resetMarkers(position, snackbarText, items, input, floor);
                             break;
-                        case FOOD_FILTER:
+                        case Constants.FOOD_FILTER:
                             input = Collections2.filter(allItems, SearchableItem.isFood);
                             snackbarText = getString(R.string.no_food_poi);
                             resetMarkers(position, snackbarText, items, input, floor);
                             break;
-                        case ALL_FILTER:
-                            sortClearAdd(ALL_FILTER);
+                        case Constants.ALL_FILTER:
+                            sortClearAdd(Constants.ALL_FILTER);
                             items.clear();
                             for (SearchableItem item : allItems)
                                 items.add(item);
                             isMarkerSorted(floor);
                             break;
-                        case EVENTS_FILTER:
+                        case Constants.EVENTS_FILTER:
                             input = Collections2.filter(allItems, SearchableItem.isEvent);
                             snackbarText = getString(R.string.no_events);
                             resetMarkers(position, snackbarText, items, input, floor);
                             break;
-                        case OTHER_FILTER:
+                        case Constants.OTHER_FILTER:
                             input = Collections2.filter(allItems, SearchableItem.isOther);
                             snackbarText = getString(R.string.no_other_poi);
                             resetMarkers(position, snackbarText, items, input, floor);

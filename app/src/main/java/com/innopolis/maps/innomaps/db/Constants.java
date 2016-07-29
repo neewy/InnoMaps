@@ -50,10 +50,6 @@ public final class Constants {
 
     public static final String SYNC_ERROR = "SYNC_ERROR";
 
-    public static final int INTERNET_CHECK_TIMEOUT = 2000;
-
-    public static final int SYNCHRONIZATION_INTERVAL = 1000 * 60 * 2;
-
     public static final String SYNC_FINISHED_ON = "Synchronization finished on: ";
 
     // For SearchableItem
@@ -88,6 +84,28 @@ public final class Constants {
 
     // For DetailedEvent
     public static final String EVENT_SCHEDULE_ID = "event_schedule_id";
+
+    /* For events package */
+    public static final String SUMMARY = "summary"; //just a title
+
+
+    /*table names*/
+    public static final String POI = "poi";
+
+
+    /*misc*/
+    public static final String NULL_STRING = "null";
+
+    public static final String FOOD_CAPITAL = "Food";
+    public static final String EVENTS_CAPITAL = "Events";
+    public static final String ALL_CAPITAL = "All";
+    public static final String OTHER_CAPITAL = "Other";
+
+    public static final int ALL_FILTER = 2;
+    public static final int WC_FILTER = 0;
+    public static final int FOOD_FILTER = 1;
+    public static final int EVENTS_FILTER = 3;
+    public static final int OTHER_FILTER = 4;
 
 
     // Utility classes, which are a collection of static members, are not meant to be instantiated

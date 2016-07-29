@@ -31,12 +31,6 @@ import com.innopolis.maps.innomaps.db.tablesrepresentations.RoomType;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.innopolis.maps.innomaps.database.TableFields.ALL_FILTER;
-import static com.innopolis.maps.innomaps.database.TableFields.EVENTS_FILTER;
-import static com.innopolis.maps.innomaps.database.TableFields.FOOD_FILTER;
-import static com.innopolis.maps.innomaps.database.TableFields.OTHER_FILTER;
-import static com.innopolis.maps.innomaps.database.TableFields.WC_FILTER;
-
 
 /**
  * This class is responsible for drawing markers that show
@@ -64,15 +58,15 @@ public class MarkersAdapter extends BottomSheet {
 
     protected void isMarkerSorted(int floor) {
         int filter = filterList.get(0);
-        if (filter == WC_FILTER) {
+        if (filter == Constants.WC_FILTER) {
             makeWcMarkers(floor);
-        } else if (filter == FOOD_FILTER) {
+        } else if (filter == Constants.FOOD_FILTER) {
             makeFoodMarkers(floor);
-        } else if (filter == ALL_FILTER) {
+        } else if (filter == Constants.ALL_FILTER) {
             makeAllMarkers(floor);
-        } else if (filter == EVENTS_FILTER) {
+        } else if (filter == Constants.EVENTS_FILTER) {
             makeEventsMarkers(floor);
-        } else if (filter == OTHER_FILTER) {
+        } else if (filter == Constants.OTHER_FILTER) {
             makeOtherMarkers(floor);
         }
     }

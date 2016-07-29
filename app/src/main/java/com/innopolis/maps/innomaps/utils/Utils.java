@@ -16,7 +16,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
-import com.innopolis.maps.innomaps.database.TableFields;
 import com.innopolis.maps.innomaps.db.Constants;
 
 import org.ocpsoft.prettytime.PrettyTime;
@@ -121,7 +120,7 @@ public class Utils {
         String[] result;
         List<String> stringList = new ArrayList<>();
         for (int i = 0; i < strings.length; i++) {
-            if (null != strings[i] && !Constants.EMPTY_STRING.equals(strings[i]) && !TableFields.NULL_STRING.equals(strings[i]))
+            if (null != strings[i] && !Constants.EMPTY_STRING.equals(strings[i]) && !Constants.NULL_STRING.equals(strings[i]))
                 stringList.add(strings[i]);
         }
         result = new String[stringList.size()];

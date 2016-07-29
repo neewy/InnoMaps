@@ -57,10 +57,6 @@ import java.util.Locale;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
-import static com.innopolis.maps.innomaps.database.TableFields.EMPTY;
-import static com.innopolis.maps.innomaps.database.TableFields.EVENT;
-import static com.innopolis.maps.innomaps.database.TableFields.POI;
-
 
 public class BottomSheet extends Fragment {
     protected BottomSheetBehavior mBottomSheetBehavior;
@@ -234,7 +230,7 @@ public class BottomSheet extends Fragment {
         }
         startText.setText(Utils.commonTime.format(startDate));
         durationText.setText(Utils.prettyTime.format(startDate));
-        setPeekHeight(EVENT);
+        setPeekHeight(Constants.EVENT);
     }
 
 
@@ -287,7 +283,7 @@ public class BottomSheet extends Fragment {
         LatLngFlr place = new LatLngFlr(coordinate.getLatitude(), coordinate.getLongitude(), coordinate.getFloor());
         pinMarker(place, false);
         map.animateCamera(CameraUpdateFactory.newLatLng(place.getAndroidGMSLatLng()));
-        setPeekHeight(POI);
+        setPeekHeight(Constants.POI);
     }
 
 
@@ -346,7 +342,7 @@ public class BottomSheet extends Fragment {
             if (closestDistance < 0.012) {
                 closest = new LatLngFlr(closestCoordinateWithDistance.getCoordinate().getLatitude(),
                         closestCoordinateWithDistance.getCoordinate().getLongitude(), closestCoordinateWithDistance.getCoordinate().getFloor());
-                Log.d(getContext().getString(R.string.distance), EMPTY + closestDistance);
+                Log.d(getContext().getString(R.string.distance), Constants.EMPTY_STRING + closestDistance);
                 Coordinate closestCoordinate = coordinateDAO.findCoordinateByLatLngFlr(closest);
                 if (null != closestCoordinate) {
                     String coordinateName = closestCoordinate.getName();
@@ -371,7 +367,7 @@ public class BottomSheet extends Fragment {
                 int durationLayoutHeight = durationLayout.getHeight();
                 int startLayoutHeight = startLayout.getHeight();
                 int locationTextHeight = locationText.getHeight();
-                if (type.equals(EVENT)) {
+                if (type.equals(Constants.EMPTY_STRING)) {
                     height = scrollView.getHeight() - (relatedLayoutHeight + durationLayoutHeight + startLayoutHeight + locationTextHeight + (int) Utils.convertDpToPixel(32, getContext()));
                 } else {
                     height = scrollView.getHeight() - (relatedLayoutHeight + locationTextHeight + (int) Utils.convertDpToPixel(32, getContext()));

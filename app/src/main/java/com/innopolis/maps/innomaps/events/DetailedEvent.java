@@ -67,8 +67,6 @@ import java.util.regex.Pattern;
 
 import xyz.hanks.library.SmallBang;
 
-import static com.innopolis.maps.innomaps.database.TableFields.SUMMARY;
-
 
 public class DetailedEvent extends Fragment {
 
@@ -330,7 +328,7 @@ public class DetailedEvent extends Fragment {
                         public void onInfoWindowClick(Marker marker) {
                             DialogFragment newFragment = new MapFragmentAskForRouteDialog();
                             Bundle bundle = new Bundle();
-                            bundle.putString(SUMMARY, summary);
+                            bundle.putString(Constants.SUMMARY, summary);
                             newFragment.setArguments(bundle);
                             newFragment.show(getActivity().getSupportFragmentManager(), context.getString(R.string.FindRoute));
                         }
