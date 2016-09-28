@@ -114,7 +114,7 @@ public class BuildingDAO implements ExtendedCrud {
             building = helper.getBuildingDao().queryForId(qBuilder.query().get(0).getId());
         } catch (SQLException e) {
             Log.d(Constants.DAO_ERROR, Constants.SQL_EXCEPTION_IN + Constants.SPACE +
-                    PhotoDAO.class.getSimpleName());
+                    BuildingDAO.class.getSimpleName());
         }
         return building;
     }
